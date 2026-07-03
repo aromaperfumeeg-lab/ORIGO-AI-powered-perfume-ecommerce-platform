@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1100" role="img" aria-labelledby="title">
+  <title id="title">ORIGO Smoked Saffron perfume bottle</title>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#2c1713"/>
+      <stop offset=".45" stop-color="#a4582d"/>
+      <stop offset="1" stop-color="#e6b26b"/>
+    </linearGradient>
+    <linearGradient id="glass" x1=".1" y1="0" x2=".9" y2="1">
+      <stop stop-color="#e7aa55" stop-opacity=".92"/>
+      <stop offset=".28" stop-color="#6e251c" stop-opacity=".94"/>
+      <stop offset=".72" stop-color="#291111"/>
+      <stop offset="1" stop-color="#9a4b29"/>
+    </linearGradient>
+    <linearGradient id="cap" x1="0" y1="0" x2="1" y2="0">
+      <stop stop-color="#161111"/>
+      <stop offset=".28" stop-color="#74604e"/>
+      <stop offset=".5" stop-color="#211918"/>
+      <stop offset=".72" stop-color="#8d745d"/>
+      <stop offset="1" stop-color="#161111"/>
+    </linearGradient>
+    <filter id="smoke"><feGaussianBlur stdDeviation="18"/></filter>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="180%">
+      <feDropShadow dx="0" dy="36" stdDeviation="30" flood-color="#160b0a" flood-opacity=".62"/>
+    </filter>
+  </defs>
+  <rect width="900" height="1100" fill="url(#bg)"/>
+  <circle cx="728" cy="190" r="180" fill="#f8cc85" opacity=".26"/>
+  <g fill="none" stroke="#f2d6b0" stroke-linecap="round" filter="url(#smoke)" opacity=".27">
+    <path d="M95 945c114-128 16-220 132-339 79-81 5-164 79-254" stroke-width="42"/>
+    <path d="M746 925c-97-104-14-186-107-286-68-73-6-150-67-229" stroke-width="34"/>
+  </g>
+  <ellipse cx="448" cy="960" rx="286" ry="61" fill="#180d0b" opacity=".45"/>
+  <g filter="url(#shadow)">
+    <rect x="345" y="122" width="210" height="174" rx="20" fill="url(#cap)"/>
+    <rect x="373" y="91" width="154" height="54" rx="6" fill="#120e0d"/>
+    <path d="M239 278h422l42 92v491c0 52-42 94-94 94H291c-52 0-94-42-94-94V370Z" fill="url(#glass)" stroke="#f2c889" stroke-opacity=".35" stroke-width="8"/>
+    <path d="M231 383c0-32 17-61 43-80h37v539c0 34 15 63 40 83h-63c-31 0-57-25-57-57Z" fill="#ffd49b" opacity=".22"/>
+    <path d="M636 332c24 30 31 57 31 97v384c0 43-15 76-42 103" fill="none" stroke="#ffd7a1" stroke-opacity=".26" stroke-width="19" stroke-linecap="round"/>
+    <rect x="275" y="482" width="350" height="259" fill="#1b1210"/>
+    <rect x="291" y="498" width="318" height="227" fill="none" stroke="#c99644" stroke-width="3"/>
+    <text x="450" y="565" text-anchor="middle" font-family="Georgia,serif" font-size="29" letter-spacing="9" fill="#d7ad62">ORIGO</text>
+    <text x="450" y="624" text-anchor="middle" font-family="Georgia,serif" font-size="32" fill="#f5e6cc">SMOKED</text>
+    <text x="450" y="665" text-anchor="middle" font-family="Georgia,serif" font-size="32" fill="#f5e6cc">SAFFRON</text>
+    <text x="450" y="701" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" letter-spacing="6" fill="#be934b">SIGNATURE · 75 ML</text>
+  </g>
+</svg>

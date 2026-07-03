@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1100" role="img" aria-labelledby="title">
+  <title id="title">ORIGO Citrus Veil perfume bottle</title>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#f6f0d8"/>
+      <stop offset=".5" stop-color="#c7d6b1"/>
+      <stop offset="1" stop-color="#76968a"/>
+    </linearGradient>
+    <radialGradient id="slice">
+      <stop offset=".58" stop-color="#f6e98c"/>
+      <stop offset=".62" stop-color="#fff6c7"/>
+      <stop offset=".7" stop-color="#e1b840"/>
+      <stop offset=".78" stop-color="#fff8cf"/>
+      <stop offset="1" stop-color="#86a844"/>
+    </radialGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#8cc6b5"/>
+      <stop offset=".26" stop-color="#155f5f"/>
+      <stop offset=".64" stop-color="#0a3038"/>
+      <stop offset="1" stop-color="#4d9b8d"/>
+    </linearGradient>
+    <linearGradient id="cap" x1="0" y1="0" x2="1" y2="0">
+      <stop stop-color="#b18125"/>
+      <stop offset=".25" stop-color="#fae599"/>
+      <stop offset=".52" stop-color="#96702e"/>
+      <stop offset=".78" stop-color="#fff0b5"/>
+      <stop offset="1" stop-color="#77531c"/>
+    </linearGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="180%">
+      <feDropShadow dx="0" dy="36" stdDeviation="30" flood-color="#173f3d" flood-opacity=".42"/>
+    </filter>
+  </defs>
+  <rect width="900" height="1100" fill="url(#bg)"/>
+  <circle cx="95" cy="330" r="190" fill="url(#slice)" opacity=".94"/>
+  <g stroke="#fff5bc" stroke-width="5" opacity=".75">
+    <path d="M95 140v380M-95 330h380M-39 196l268 268M229 196-39 464"/>
+  </g>
+  <path d="M690 0c-62 155-48 292 52 404 55 62 107 119 158 211V0Z" fill="#325e4d" opacity=".38"/>
+  <g fill="none" stroke="#315f4f" stroke-width="12" stroke-linecap="round" opacity=".5">
+    <path d="M726 70c-20 136 23 243 128 321"/>
+    <path d="M742 175c47-18 83-53 107-105M751 237c-50-8-89-35-117-80"/>
+  </g>
+  <ellipse cx="452" cy="960" rx="286" ry="61" fill="#123d3c" opacity=".28"/>
+  <g filter="url(#shadow)">
+    <rect x="342" y="122" width="216" height="172" rx="26" fill="url(#cap)"/>
+    <rect x="371" y="89" width="158" height="59" rx="12" fill="#183735"/>
+    <path d="M233 284h434l45 91v490c0 50-40 90-90 90H278c-50 0-90-40-90-90V375Z" fill="url(#glass)" stroke="#def1df" stroke-opacity=".48" stroke-width="8"/>
+    <path d="M224 391c0-34 15-61 43-84h43v526c0 40 14 70 43 92h-71c-32 0-58-26-58-58Z" fill="#e8fff5" opacity=".2"/>
+    <path d="M642 337c24 24 34 54 34 92v392c0 44-17 76-43 99" fill="none" stroke="#eafff4" stroke-opacity=".25" stroke-width="18" stroke-linecap="round"/>
+    <rect x="278" y="487" width="344" height="251" rx="74" fill="#eff2dc"/>
+    <path d="M327 526h246" stroke="#b38c36" stroke-width="3"/>
+    <text x="450" y="584" text-anchor="middle" font-family="Georgia,serif" font-size="29" letter-spacing="9" fill="#175c58">ORIGO</text>
+    <text x="450" y="641" text-anchor="middle" font-family="Georgia,serif" font-size="36" fill="#102f31">CITRUS VEIL</text>
+    <text x="450" y="690" text-anchor="middle" font-family="Arial,sans-serif" font-size="15" letter-spacing="6" fill="#8b702f">ESSENTIALS · 75 ML</text>
+  </g>
+</svg>

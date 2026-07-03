@@ -1,0 +1,9 @@
+{
+  "name": "origo-store",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.mjs",
+    "build:knowledge": "node scripts/build-fragrance-knowledge.mjs"
+  }
+}
