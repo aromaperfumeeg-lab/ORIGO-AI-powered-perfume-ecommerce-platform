@@ -1,0 +1,646 @@
+import { mkdirSync } from "node:fs";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+import { DatabaseSync } from "node:sqlite";
+import {
+  createHash,
+  randomBytes,
+  scrypt as scryptCallback,
+  timingSafeEqual
+} from "node:crypto";
+import { promisify } from "node:util";
+
+const ROOT = resolve(fileURLToPath(new URL(".", import.meta.url)));
+const DB_PATH = resolve(process.env.ORIGO_DB_PATH || resolve(ROOT, "data", "origo.db"));
+const SESSION_DAYS = Math.max(1, Number(process.env.ORIGO_SESSION_DAYS || 30));
+const scrypt = promisify(scryptCallback);
+
+mkdirSync(dirname(DB_PATH), { recursive: true });
+
+export const db = new DatabaseSync(DB_PATH);
+db.exec(`
+  PRAGMA foreign_keys = ON;
+  PRAGMA journal_mode = WAL;
+  PRAGMA busy_timeout = 5000;
+
+  CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE COLLATE NOCASE,
+    password_hash TEXT NOT NULL,
+    phone TEXT NOT NULL DEFAULT '',
+    role TEXT NOT NULL DEFAULT 'customer' CHECK (role IN ('customer', 'admin')),
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE TABLE IF NOT EXISTS products (
+    id TEXT PRIMARY KEY,
+    sku TEXT NOT NULL DEFAULT '',
+    brand TEXT NOT NULL,
+    name_ar TEXT NOT NULL,
+    name_en TEXT NOT NULL DEFAULT '',
+    category TEXT NOT NULL DEFAULT 'perfume',
+    type_ar TEXT NOT NULL DEFAULT 'للجنسين',
+    type_en TEXT NOT NULL DEFAULT 'Unisex',
+    concentration TEXT NOT NULL DEFAULT '',
+    sizes_json TEXT NOT NULL DEFAULT '[]',
+    notes_ar_json TEXT NOT NULL DEFAULT '[]',
+    notes_en_json TEXT NOT NULL DEFAULT '[]',
+    price REAL NOT NULL CHECK (price >= 0),
+    old_price REAL,
+    badge_ar TEXT NOT NULL DEFAULT '',
+    badge_en TEXT NOT NULL DEFAULT '',
+    image TEXT NOT NULL DEFAULT '',
+    description_ar TEXT NOT NULL DEFAULT '',
+    description_en TEXT NOT NULL DEFAULT '',
+    catalog_json TEXT NOT NULL DEFAULT '{}',
+    status TEXT NOT NULL DEFAULT 'published' CHECK (status IN ('draft', 'published', 'unavailable')),
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE TABLE IF NOT EXISTS carts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    product_id TEXT NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+    quantity INTEGER NOT NULL CHECK (quantity BETWEEN 1 AND 10),
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (user_id, product_id)
+  );
+
+  CREATE TABLE IF NOT EXISTS orders (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    order_number TEXT NOT NULL UNIQUE,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE RESTRICT,
+    customer_name TEXT NOT NULL,
+    phone TEXT NOT NULL,
+    address TEXT NOT NULL,
+    governorate TEXT NOT NULL,
+    notes TEXT NOT NULL DEFAULT '',
+    payment_method TEXT NOT NULL DEFAULT 'cod' CHECK (payment_method IN ('cod')),
+    status TEXT NOT NULL DEFAULT 'new' CHECK (status IN ('new', 'processing', 'shipped', 'completed', 'cancelled')),
+    subtotal REAL NOT NULL CHECK (subtotal >= 0),
+    shipping_total REAL NOT NULL DEFAULT 0 CHECK (shipping_total >= 0),
+    total REAL NOT NULL CHECK (total >= 0),
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE TABLE IF NOT EXISTS order_items (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    order_id INTEGER NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
+    product_id TEXT REFERENCES products(id) ON DELETE SET NULL,
+    product_name TEXT NOT NULL,
+    sku TEXT NOT NULL DEFAULT '',
+    unit_price REAL NOT NULL CHECK (unit_price >= 0),
+    quantity INTEGER NOT NULL CHECK (quantity > 0),
+    line_total REAL NOT NULL CHECK (line_total >= 0)
+  );
+
+  CREATE TABLE IF NOT EXISTS sessions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    token_hash TEXT NOT NULL UNIQUE,
+    expires_at TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_carts_user ON carts(user_id);
+  CREATE INDEX IF NOT EXISTS idx_orders_user ON orders(user_id);
+  CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status, created_at DESC);
+  CREATE INDEX IF NOT EXISTS idx_order_items_order ON order_items(order_id);
+  CREATE INDEX IF NOT EXISTS idx_sessions_expiry ON sessions(expires_at);
+`);
+
+const productColumns = new Set(db.prepare("PRAGMA table_info(products)").all().map((column) => column.name));
+if (!productColumns.has("catalog_json")) {
+  db.exec("ALTER TABLE products ADD COLUMN catalog_json TEXT NOT NULL DEFAULT '{}'");
+}
+
+const seedProducts = [
+  {
+    id: "nocturne",
+    sku: "ORI-NOC-01",
+    brand: "ORIGO PRIVATE BLEND",
+    nameAr: "NOCTURNE 01",
+    nameEn: "NOCTURNE 01",
+    category: "perfume",
+    typeAr: "للجنسين",
+    typeEn: "Unisex",
+    concentration: "Parfum",
+    sizes: ["75 ML"],
+    notesAr: ["عود", "ورد", "عنبر"],
+    notesEn: ["Oud", "Rose", "Amber"],
+    price: 3250,
+    oldPrice: null,
+    badgeAr: "الأكثر مبيعًا",
+    badgeEn: "BESTSELLER",
+    image: "assets/nocturne-01.svg"
+  },
+  {
+    id: "velvet-iris",
+    sku: "ORI-VIR-75",
+    brand: "ATELIER ORIGO",
+    nameAr: "VELVET IRIS",
+    nameEn: "VELVET IRIS",
+    category: "perfume",
+    typeAr: "نسائي",
+    typeEn: "Women",
+    concentration: "EDP",
+    sizes: ["75 ML"],
+    notesAr: ["سوسن", "فانيليا", "مسك"],
+    notesEn: ["Iris", "Vanilla", "Musk"],
+    price: 2890,
+    oldPrice: 3200,
+    badgeAr: "وصل حديثًا",
+    badgeEn: "NEW",
+    image: "assets/velvet-iris.svg"
+  },
+  {
+    id: "smoked",
+    sku: "ORI-SSF-75",
+    brand: "ORIGO SIGNATURE",
+    nameAr: "SMOKED SAFFRON",
+    nameEn: "SMOKED SAFFRON",
+    category: "perfume",
+    typeAr: "رجالي",
+    typeEn: "Men",
+    concentration: "Parfum",
+    sizes: ["75 ML"],
+    notesAr: ["جلد", "زعفران", "أخشاب"],
+    notesEn: ["Leather", "Saffron", "Woods"],
+    price: 2450,
+    oldPrice: null,
+    badgeAr: "إصدار محدود",
+    badgeEn: "LIMITED",
+    image: "assets/smoked-saffron.svg"
+  },
+  {
+    id: "citrus-veil",
+    sku: "ORI-CVE-75",
+    brand: "ORIGO ESSENTIALS",
+    nameAr: "CITRUS VEIL",
+    nameEn: "CITRUS VEIL",
+    category: "perfume",
+    typeAr: "للجنسين",
+    typeEn: "Unisex",
+    concentration: "EDT",
+    sizes: ["75 ML"],
+    notesAr: ["برغموت", "نيرولي", "أرز"],
+    notesEn: ["Bergamot", "Neroli", "Cedar"],
+    price: 1980,
+    oldPrice: 2250,
+    badgeAr: "اختيار الصيف",
+    badgeEn: "SUMMER PICK",
+    image: "assets/citrus-veil.svg"
+  }
+];
+
+const insertSeedProduct = db.prepare(`
+  INSERT OR IGNORE INTO products (
+    id, sku, brand, name_ar, name_en, category, type_ar, type_en, concentration,
+    sizes_json, notes_ar_json, notes_en_json, price, old_price, badge_ar, badge_en,
+    image, status
+  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'published')
+`);
+
+for (const product of seedProducts) {
+  insertSeedProduct.run(
+    product.id,
+    product.sku,
+    product.brand,
+    product.nameAr,
+    product.nameEn,
+    product.category,
+    product.typeAr,
+    product.typeEn,
+    product.concentration,
+    JSON.stringify(product.sizes),
+    JSON.stringify(product.notesAr),
+    JSON.stringify(product.notesEn),
+    product.price,
+    product.oldPrice,
+    product.badgeAr,
+    product.badgeEn,
+    product.image
+  );
+}
+
+function parseJSON(value, fallback = []) {
+  try {
+    return JSON.parse(value);
+  } catch {
+    return fallback;
+  }
+}
+
+function publicUser(row) {
+  if (!row) return null;
+  return {
+    id: Number(row.id),
+    name: row.name,
+    email: row.email,
+    phone: row.phone || "",
+    role: row.role,
+    createdAt: row.created_at
+  };
+}
+
+function productFromRow(row, includeMetadata = false) {
+  if (!row) return null;
+  const product = {
+    id: row.id,
+    sku: row.sku,
+    brand: row.brand,
+    nameAr: row.name_ar,
+    nameEn: row.name_en,
+    category: row.category,
+    type: row.type_ar,
+    typeEn: row.type_en,
+    concentration: row.concentration,
+    sizes: parseJSON(row.sizes_json),
+    notesAr: parseJSON(row.notes_ar_json),
+    notesEn: parseJSON(row.notes_en_json),
+    price: Number(row.price),
+    oldPrice: row.old_price == null ? null : Number(row.old_price),
+    badgeAr: row.badge_ar,
+    badgeEn: row.badge_en,
+    image: row.image,
+    descriptionAr: row.description_ar,
+    descriptionEn: row.description_en,
+    status: row.status
+  };
+  if (!includeMetadata) return product;
+  const metadata = parseJSON(row.catalog_json, {});
+  return {
+    ...metadata,
+    ...product,
+    images: Array.isArray(metadata.images)
+      ? metadata.images
+      : (product.image ? [{ url: product.image, provider: "ORIGO", selected: true }] : [])
+  };
+}
+
+function clean(value, max = 200) {
+  return String(value ?? "").trim().slice(0, max);
+}
+
+function normalizedEmail(value) {
+  return clean(value, 254).toLowerCase();
+}
+
+export async function hashPassword(password) {
+  const salt = randomBytes(16);
+  const derived = await scrypt(String(password), salt, 64, { N: 16384, r: 8, p: 1 });
+  return `scrypt$16384$8$1$${salt.toString("base64url")}$${Buffer.from(derived).toString("base64url")}`;
+}
+
+export async function verifyPassword(password, encoded) {
+  try {
+    const [algorithm, n, r, p, saltText, hashText] = String(encoded).split("$");
+    if (algorithm !== "scrypt") return false;
+    const expected = Buffer.from(hashText, "base64url");
+    const actual = Buffer.from(await scrypt(
+      String(password),
+      Buffer.from(saltText, "base64url"),
+      expected.length,
+      { N: Number(n), r: Number(r), p: Number(p) }
+    ));
+    return expected.length === actual.length && timingSafeEqual(expected, actual);
+  } catch {
+    return false;
+  }
+}
+
+export function findUserByEmail(email) {
+  return db.prepare("SELECT * FROM users WHERE email = ?").get(normalizedEmail(email));
+}
+
+export function findUserById(id) {
+  return publicUser(db.prepare("SELECT * FROM users WHERE id = ?").get(Number(id)));
+}
+
+export function createUser({ name, email, passwordHash, phone = "", role = "customer" }) {
+  const result = db.prepare(`
+    INSERT INTO users (name, email, password_hash, phone, role)
+    VALUES (?, ?, ?, ?, ?)
+  `).run(clean(name, 100), normalizedEmail(email), passwordHash, clean(phone, 30), role);
+  return findUserById(result.lastInsertRowid);
+}
+
+function tokenHash(token) {
+  return createHash("sha256").update(token).digest("hex");
+}
+
+export function createSession(userId) {
+  db.prepare("DELETE FROM sessions WHERE julianday(expires_at) <= julianday('now')").run();
+  const token = randomBytes(32).toString("base64url");
+  const expiresAt = new Date(Date.now() + SESSION_DAYS * 86_400_000).toISOString();
+  db.prepare("INSERT INTO sessions (user_id, token_hash, expires_at) VALUES (?, ?, ?)")
+    .run(Number(userId), tokenHash(token), expiresAt);
+  return { token, expiresAt, maxAge: SESSION_DAYS * 86_400 };
+}
+
+export function deleteSession(token) {
+  if (!token) return;
+  db.prepare("DELETE FROM sessions WHERE token_hash = ?").run(tokenHash(token));
+}
+
+export function userFromSession(token) {
+  if (!token) return null;
+  const row = db.prepare(`
+    SELECT u.*
+    FROM sessions s
+    JOIN users u ON u.id = s.user_id
+    WHERE s.token_hash = ? AND julianday(s.expires_at) > julianday('now')
+  `).get(tokenHash(token));
+  return publicUser(row);
+}
+
+export function listProducts({ includeHidden = false } = {}) {
+  const rows = includeHidden
+    ? db.prepare("SELECT * FROM products ORDER BY created_at DESC").all()
+    : db.prepare("SELECT * FROM products WHERE status = 'published' ORDER BY created_at, id").all();
+  return rows.map((row) => productFromRow(row, includeHidden));
+}
+
+export function upsertProduct(input) {
+  const id = clean(input.id, 120) || `product-${Date.now().toString(36)}`;
+  const status = ["draft", "published", "unavailable"].includes(input.status) ? input.status : "draft";
+  const price = Math.max(0, Number(input.price || 0));
+  const genderTypes = {
+    men: ["رجالي", "Men"],
+    women: ["نسائي", "Women"],
+    unisex: ["للجنسين", "Unisex"]
+  };
+  const inferredType = genderTypes[input.gender] || genderTypes.unisex;
+  db.prepare(`
+    INSERT INTO products (
+      id, sku, brand, name_ar, name_en, category, type_ar, type_en, concentration,
+      sizes_json, notes_ar_json, notes_en_json, price, old_price, badge_ar, badge_en,
+      image, description_ar, description_en, catalog_json, status
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ON CONFLICT(id) DO UPDATE SET
+      sku = excluded.sku,
+      brand = excluded.brand,
+      name_ar = excluded.name_ar,
+      name_en = excluded.name_en,
+      category = excluded.category,
+      type_ar = excluded.type_ar,
+      type_en = excluded.type_en,
+      concentration = excluded.concentration,
+      sizes_json = excluded.sizes_json,
+      notes_ar_json = excluded.notes_ar_json,
+      notes_en_json = excluded.notes_en_json,
+      price = excluded.price,
+      old_price = excluded.old_price,
+      badge_ar = excluded.badge_ar,
+      badge_en = excluded.badge_en,
+      image = excluded.image,
+      description_ar = excluded.description_ar,
+      description_en = excluded.description_en,
+      catalog_json = excluded.catalog_json,
+      status = excluded.status,
+      updated_at = CURRENT_TIMESTAMP
+  `).run(
+    id,
+    clean(input.sku, 120),
+    clean(input.brand, 120) || "ORIGO",
+    clean(input.nameAr, 180) || clean(input.nameEn, 180) || "منتج جديد",
+    clean(input.nameEn, 180),
+    clean(input.category, 40) || "perfume",
+    clean(input.type || input.typeAr, 60) || inferredType[0],
+    clean(input.typeEn, 60) || inferredType[1],
+    clean(input.concentration, 60),
+    JSON.stringify(Array.isArray(input.sizes) ? input.sizes.slice(0, 20) : []),
+    JSON.stringify(Array.isArray(input.notesAr) ? input.notesAr.slice(0, 30) : []),
+    JSON.stringify(Array.isArray(input.notesEn) ? input.notesEn.slice(0, 30) : []),
+    price,
+    input.oldPrice == null ? null : Math.max(0, Number(input.oldPrice)),
+    clean(input.badgeAr, 80),
+    clean(input.badgeEn, 80),
+    clean(
+      input.image
+        || input.images?.find((image) => image?.selected)?.url
+        || input.images?.[0]?.url,
+      2_000_000
+    ),
+    clean(input.descriptionAr, 4000),
+    clean(input.descriptionEn, 4000),
+    JSON.stringify(input),
+    status
+  );
+  return productFromRow(db.prepare("SELECT * FROM products WHERE id = ?").get(id), true);
+}
+
+export function getCart(userId) {
+  return db.prepare(`
+    SELECT c.product_id AS id, c.quantity
+    FROM carts c
+    JOIN products p ON p.id = c.product_id
+    WHERE c.user_id = ? AND p.status = 'published'
+    ORDER BY c.created_at
+  `).all(Number(userId)).map((row) => ({ id: row.id, quantity: Number(row.quantity) }));
+}
+
+export function replaceCart(userId, rawItems) {
+  const merged = new Map();
+  for (const item of Array.isArray(rawItems) ? rawItems : []) {
+    const id = clean(item?.id, 120);
+    const quantity = Math.min(10, Math.max(0, Math.floor(Number(item?.quantity || 0))));
+    if (id && quantity) merged.set(id, Math.min(10, (merged.get(id) || 0) + quantity));
+  }
+
+  const validIds = new Set();
+  const productExists = db.prepare("SELECT id FROM products WHERE id = ? AND status = 'published'");
+  for (const id of merged.keys()) {
+    if (productExists.get(id)) validIds.add(id);
+  }
+
+  db.exec("BEGIN IMMEDIATE");
+  try {
+    db.prepare("DELETE FROM carts WHERE user_id = ?").run(Number(userId));
+    const insert = db.prepare("INSERT INTO carts (user_id, product_id, quantity) VALUES (?, ?, ?)");
+    for (const id of validIds) insert.run(Number(userId), id, merged.get(id));
+    db.exec("COMMIT");
+  } catch (error) {
+    db.exec("ROLLBACK");
+    throw error;
+  }
+  return getCart(userId);
+}
+
+export function mergeCart(userId, rawItems) {
+  const combined = new Map(getCart(userId).map((item) => [item.id, item.quantity]));
+  for (const item of Array.isArray(rawItems) ? rawItems : []) {
+    const id = clean(item?.id, 120);
+    const quantity = Math.min(10, Math.max(0, Math.floor(Number(item?.quantity || 0))));
+    if (id && quantity) combined.set(id, Math.min(10, (combined.get(id) || 0) + quantity));
+  }
+  return replaceCart(userId, [...combined].map(([id, quantity]) => ({ id, quantity })));
+}
+
+function generateOrderNumber() {
+  const day = new Date().toISOString().slice(0, 10).replaceAll("-", "");
+  return `ORG-${day}-${randomBytes(3).toString("hex").toUpperCase()}`;
+}
+
+function orderItems(orderId) {
+  return db.prepare(`
+    SELECT product_id AS productId, product_name AS productName, sku,
+           unit_price AS unitPrice, quantity, line_total AS lineTotal
+    FROM order_items
+    WHERE order_id = ?
+    ORDER BY id
+  `).all(Number(orderId)).map((item) => ({
+    ...item,
+    unitPrice: Number(item.unitPrice),
+    quantity: Number(item.quantity),
+    lineTotal: Number(item.lineTotal)
+  }));
+}
+
+function orderFromRow(row) {
+  return {
+    id: Number(row.id),
+    orderNumber: row.order_number,
+    userId: Number(row.user_id),
+    customerName: row.customer_name,
+    phone: row.phone,
+    address: row.address,
+    governorate: row.governorate,
+    notes: row.notes,
+    paymentMethod: row.payment_method,
+    status: row.status,
+    subtotal: Number(row.subtotal),
+    shippingTotal: Number(row.shipping_total),
+    total: Number(row.total),
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+    items: orderItems(row.id)
+  };
+}
+
+export function createOrder(userId, customer) {
+  const items = db.prepare(`
+    SELECT c.product_id, c.quantity, p.name_ar, p.name_en, p.sku, p.price
+    FROM carts c
+    JOIN products p ON p.id = c.product_id
+    WHERE c.user_id = ? AND p.status = 'published'
+    ORDER BY c.id
+  `).all(Number(userId));
+  if (!items.length) {
+    const error = new Error("EMPTY_CART");
+    error.code = "EMPTY_CART";
+    throw error;
+  }
+
+  const subtotal = items.reduce((sum, item) => sum + Number(item.price) * Number(item.quantity), 0);
+  const shippingTotal = 0;
+  const total = subtotal + shippingTotal;
+  let orderNumber = generateOrderNumber();
+
+  db.exec("BEGIN IMMEDIATE");
+  try {
+    let result;
+    for (let attempt = 0; attempt < 4; attempt += 1) {
+      try {
+        result = db.prepare(`
+          INSERT INTO orders (
+            order_number, user_id, customer_name, phone, address, governorate,
+            notes, payment_method, subtotal, shipping_total, total
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, 'cod', ?, ?, ?)
+        `).run(
+          orderNumber,
+          Number(userId),
+          clean(customer.name, 100),
+          clean(customer.phone, 30),
+          clean(customer.address, 500),
+          clean(customer.governorate, 100),
+          clean(customer.notes, 1000),
+          subtotal,
+          shippingTotal,
+          total
+        );
+        break;
+      } catch (error) {
+        if (!String(error.message).includes("UNIQUE") || attempt === 3) throw error;
+        orderNumber = generateOrderNumber();
+      }
+    }
+
+    const insertItem = db.prepare(`
+      INSERT INTO order_items (
+        order_id, product_id, product_name, sku, unit_price, quantity, line_total
+      ) VALUES (?, ?, ?, ?, ?, ?, ?)
+    `);
+    for (const item of items) {
+      const productName = item.name_ar || item.name_en;
+      const lineTotal = Number(item.price) * Number(item.quantity);
+      insertItem.run(
+        result.lastInsertRowid,
+        item.product_id,
+        productName,
+        item.sku,
+        Number(item.price),
+        Number(item.quantity),
+        lineTotal
+      );
+    }
+    db.prepare("DELETE FROM carts WHERE user_id = ?").run(Number(userId));
+    db.exec("COMMIT");
+    return getOrderById(result.lastInsertRowid);
+  } catch (error) {
+    db.exec("ROLLBACK");
+    throw error;
+  }
+}
+
+export function getOrderById(orderId) {
+  const row = db.prepare("SELECT * FROM orders WHERE id = ?").get(Number(orderId));
+  return row ? orderFromRow(row) : null;
+}
+
+export function listOrdersForUser(userId) {
+  return db.prepare("SELECT * FROM orders WHERE user_id = ? ORDER BY created_at DESC")
+    .all(Number(userId))
+    .map(orderFromRow);
+}
+
+export function listAllOrders() {
+  return db.prepare("SELECT * FROM orders ORDER BY created_at DESC").all().map(orderFromRow);
+}
+
+export function updateOrderStatus(orderId, status) {
+  const allowed = new Set(["new", "processing", "shipped", "completed", "cancelled"]);
+  if (!allowed.has(status)) return null;
+  const result = db.prepare(`
+    UPDATE orders SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?
+  `).run(status, Number(orderId));
+  return result.changes ? getOrderById(orderId) : null;
+}
+
+export async function ensureAdminFromEnvironment() {
+  const email = normalizedEmail(process.env.ORIGO_ADMIN_EMAIL);
+  const password = String(process.env.ORIGO_ADMIN_PASSWORD || "");
+  if (!email || !password) return null;
+  const existing = findUserByEmail(email);
+  if (existing) {
+    if (existing.role !== "admin") {
+      db.prepare("UPDATE users SET role = 'admin', updated_at = CURRENT_TIMESTAMP WHERE id = ?")
+        .run(existing.id);
+    }
+    return findUserById(existing.id);
+  }
+  if (password.length < 10) throw new Error("ORIGO_ADMIN_PASSWORD must contain at least 10 characters.");
+  return createUser({
+    name: clean(process.env.ORIGO_ADMIN_NAME, 100) || "ORIGO Admin",
+    email,
+    passwordHash: await hashPassword(password),
+    role: "admin"
+  });
+}
+
+export const databasePath = DB_PATH;

@@ -180,6 +180,23 @@ const translations = {
     subtotal: "المجموع",
     checkout: "إتمام الطلب",
     shippingCalculated: "الشحن والخصم يُحسبان في الخطوة التالية.",
+    checkoutEyebrow: "إتمام الطلب",
+    deliveryDetails: "بيانات التوصيل",
+    checkoutIntro: "راجع بياناتك، وسنتواصل معك لتأكيد الطلب قبل الشحن.",
+    fullName: "الاسم بالكامل",
+    phone: "رقم الهاتف",
+    governorate: "المحافظة",
+    chooseGovernorate: "اختر المحافظة",
+    address: "العنوان بالتفصيل",
+    orderNotes: "ملاحظات للطلب (اختياري)",
+    cashOnDelivery: "الدفع عند الاستلام",
+    cashOnDeliveryBody: "ادفع نقدًا عند وصول الطلب.",
+    confirmOrder: "تأكيد الطلب",
+    orderSummary: "ملخص الطلب",
+    total: "الإجمالي",
+    storeOrders: "طلبات المتجر",
+    manageOrders: "متابعة الطلبات",
+    orders: "الطلبات",
     catalogStudio: "استوديو الكتالوج",
     smartImport: "إضافة المنتج الذكية",
     smartImportBody: "نجمع البيانات من مصادر عامة مسموحة، ثم تبقى بانتظار مراجعتك قبل الحفظ.",
@@ -385,6 +402,23 @@ const translations = {
     subtotal: "Subtotal",
     checkout: "Checkout",
     shippingCalculated: "Shipping and discounts are calculated next.",
+    checkoutEyebrow: "CHECKOUT",
+    deliveryDetails: "Delivery details",
+    checkoutIntro: "Review your details. We will contact you to confirm before shipping.",
+    fullName: "Full name",
+    phone: "Phone number",
+    governorate: "Governorate",
+    chooseGovernorate: "Choose a governorate",
+    address: "Detailed address",
+    orderNotes: "Order notes (optional)",
+    cashOnDelivery: "Cash on delivery",
+    cashOnDeliveryBody: "Pay in cash when your order arrives.",
+    confirmOrder: "Confirm order",
+    orderSummary: "ORDER SUMMARY",
+    total: "Total",
+    storeOrders: "STORE ORDERS",
+    manageOrders: "Manage orders",
+    orders: "Orders",
     catalogStudio: "CATALOG STUDIO",
     smartImport: "Smart product import",
     smartImportBody: "We gather data from permitted public sources, then hold it for your review before saving.",
@@ -587,10 +621,77 @@ const state = {
   activeImportDraft: null,
   adminSuggestions: [],
   adminSearchController: null,
+  user: null,
+  orders: [],
+  adminOrders: [],
+  serverAvailable: false,
+  pendingAction: "",
   globalSearchQuery: "",
   storefrontSearchQuery: "",
   storefrontCategory: "all"
 };
+
+async function api(path, options = {}) {
+  const response = await fetch(path, {
+    credentials: "include",
+    ...options,
+    headers: {
+      ...(options.body ? { "Content-Type": "application/json" } : {}),
+      ...(options.headers || {})
+    }
+  });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const error = new Error(payload.error || (state.lang === "ar" ? "تعذر إكمال الطلب." : "The request could not be completed."));
+    error.status = response.status;
+    error.code = payload.code;
+    throw error;
+  }
+  return payload;
+}
+
+function mergeCartItems(first, second) {
+  const merged = new Map();
+  for (const item of [...(first || []), ...(second || [])]) {
+    const id = String(item?.id || "");
+    const quantity = Math.min(10, Math.max(0, Number(item?.quantity || 0)));
+    if (id && quantity) merged.set(id, Math.min(10, (merged.get(id) || 0) + quantity));
+  }
+  return [...merged].map(([id, quantity]) => ({ id, quantity }));
+}
+
+function serverProduct(product) {
+  const local = baseProducts.find((item) => item.id === product.id);
+  return local ? { ...local, ...product, insights: local.insights } : toStorefrontProduct(product);
+}
+
+let cartSyncTimer;
+async function pushCart() {
+  if (!state.user || !state.serverAvailable) return state.cart;
+  const result = await api("/api/cart", {
+    method: "POST",
+    body: JSON.stringify({ cart: state.cart })
+  });
+  state.cart = result.cart;
+  localStorage.setItem("origoCart", JSON.stringify(state.cart));
+  renderCart();
+  return state.cart;
+}
+
+function syncCart(delay = 350) {
+  if (!state.user || !state.serverAvailable) return;
+  clearTimeout(cartSyncTimer);
+  cartSyncTimer = setTimeout(async () => {
+    try {
+      await pushCart();
+    } catch (error) {
+      if (error.status === 401) {
+        state.user = null;
+        updateAccountIndicator();
+      }
+    }
+  }, delay);
+}
 
 const currencyConfig = {
   EGP: { rate: 1, currency: "EGP" },
@@ -618,6 +719,239 @@ function rebuildStorefrontProducts() {
 function persist() {
   localStorage.setItem("origoCart", JSON.stringify(state.cart));
   localStorage.setItem("origoWishlist", JSON.stringify(state.wishlist));
+  if (state.user) localStorage.setItem("origoCartUserId", String(state.user.id));
+  else localStorage.removeItem("origoCartUserId");
+  syncCart();
+}
+
+function updateAccountIndicator() {
+  $$(".account-button").forEach((button) => {
+    button.classList.toggle("signed-in", Boolean(state.user));
+    button.title = state.user
+      ? (state.lang === "ar" ? `حساب ${state.user.name}` : `${state.user.name}'s account`)
+      : translations[state.lang].account;
+  });
+}
+
+async function hydrateServer() {
+  const localCart = [...state.cart];
+  const cartOwner = localStorage.getItem("origoCartUserId");
+  try {
+    const [catalog, session] = await Promise.all([
+      api("/api/products"),
+      api("/api/session")
+    ]);
+    state.serverAvailable = true;
+    state.products = (catalog.products || []).map(serverProduct);
+    state.user = session.user || null;
+    if (state.user) {
+      if (cartOwner === String(state.user.id)) {
+        state.cart = session.cart || [];
+      } else {
+        state.cart = mergeCartItems(session.cart, localCart);
+        await pushCart();
+      }
+      localStorage.setItem("origoCartUserId", String(state.user.id));
+      if (state.user.role === "admin") await loadAdminCatalog();
+    } else if (cartOwner) {
+      state.cart = [];
+      localStorage.removeItem("origoCartUserId");
+    }
+    localStorage.setItem("origoCart", JSON.stringify(state.cart));
+    renderProducts($(".chip.active")?.dataset.filter || "all");
+    renderCart();
+    renderWishlist();
+    updateAccountIndicator();
+  } catch {
+    state.serverAvailable = false;
+    updateAccountIndicator();
+  }
+}
+
+async function loadAdminCatalog() {
+  if (state.user?.role !== "admin") return [];
+  const result = await api("/api/admin/products");
+  state.catalogProducts = result.products || [];
+  rebuildStorefrontProducts();
+  renderCatalogList();
+  renderProducts($(".chip.active")?.dataset.filter || "all");
+  return state.catalogProducts;
+}
+
+function renderAuth(mode = "login") {
+  const isRegister = mode === "register";
+  const ar = state.lang === "ar";
+  $("#account-content").innerHTML = `
+    <div class="auth-shell">
+      <div class="auth-art">
+        <span class="eyebrow light">ORIGO PRIVATE CIRCLE</span>
+        <h2>${ar ? "اختياراتك،<br>محفوظة لك." : "Your choices,<br>kept close."}</h2>
+        <p>${ar ? "احفظ حقيبتك وتابع طلباتك من أي جهاز." : "Keep your bag and follow every order from any device."}</p>
+      </div>
+      <div class="auth-body">
+        <div class="auth-tabs">
+          <button type="button" data-action="auth-mode" data-mode="login" class="${isRegister ? "" : "active"}">${ar ? "تسجيل الدخول" : "Sign in"}</button>
+          <button type="button" data-action="auth-mode" data-mode="register" class="${isRegister ? "active" : ""}">${ar ? "حساب جديد" : "Create account"}</button>
+        </div>
+        <form class="commerce-form" id="auth-form" data-mode="${isRegister ? "register" : "login"}">
+          <span class="eyebrow">${isRegister ? (ar ? "انضم إلى ORIGO" : "JOIN ORIGO") : (ar ? "مرحبًا بعودتك" : "WELCOME BACK")}</span>
+          <h2 id="account-title">${isRegister ? (ar ? "أنشئ حسابك" : "Create your account") : (ar ? "سجّل الدخول" : "Sign in")}</h2>
+          <p>${isRegister
+            ? (ar ? "بيانات قليلة، وتجربة تسوق أسهل." : "A few details for a smoother shopping experience.")
+            : (ar ? "أدخل بياناتك لمتابعة حقيبتك وطلباتك." : "Sign in to continue with your bag and orders.")}</p>
+          <div class="commerce-fields">
+            ${isRegister ? `<label class="wide"><span>${ar ? "الاسم" : "Name"}</span><input name="name" autocomplete="name" required minlength="2" maxlength="100" /></label>` : ""}
+            <label class="wide"><span>${ar ? "البريد الإلكتروني" : "Email address"}</span><input name="email" type="email" autocomplete="email" required maxlength="254" dir="ltr" /></label>
+            ${isRegister ? `<label class="wide"><span>${ar ? "رقم الهاتف (اختياري)" : "Phone (optional)"}</span><input name="phone" autocomplete="tel" inputmode="tel" dir="ltr" /></label>` : ""}
+            <label class="wide"><span>${ar ? "كلمة المرور" : "Password"}</span><input name="password" type="password" autocomplete="${isRegister ? "new-password" : "current-password"}" required minlength="10" maxlength="200" dir="ltr" /></label>
+          </div>
+          <p class="form-error" id="auth-error" role="alert"></p>
+          <button class="button burgundy-button full" type="submit">${isRegister ? (ar ? "إنشاء الحساب" : "Create account") : (ar ? "دخول" : "Sign in")}</button>
+        </form>
+      </div>
+    </div>`;
+}
+
+async function renderAccount() {
+  if (!state.user) {
+    renderAuth("login");
+    return;
+  }
+  const ar = state.lang === "ar";
+  const initial = escapeHTML(state.user.name.trim().charAt(0).toUpperCase() || "O");
+  $("#account-content").innerHTML = `
+    <div class="account-home">
+      <span class="eyebrow">${ar ? "حساب ORIGO" : "ORIGO ACCOUNT"}</span>
+      <h2 id="account-title">${ar ? "أهلًا" : "Welcome"}, ${escapeHTML(state.user.name)}</h2>
+      <p class="account-intro">${ar ? "من هنا تتابع طلباتك وتعود إلى اختياراتك." : "Follow your orders and return to your saved choices here."}</p>
+      <div class="account-profile">
+        <span class="account-avatar">${initial}</span>
+        <div><b>${escapeHTML(state.user.name)}</b><span dir="ltr">${escapeHTML(state.user.email)}</span>${state.user.phone ? `<span dir="ltr">${escapeHTML(state.user.phone)}</span>` : ""}</div>
+      </div>
+      <div class="account-actions">
+        ${state.user.role === "admin" ? `<button class="button burgundy-button" data-action="open-admin">${ar ? "إدارة المتجر" : "Manage store"}</button>` : ""}
+        <button class="button secondary-button" data-action="logout">${ar ? "تسجيل الخروج" : "Sign out"}</button>
+      </div>
+      <div class="account-orders">
+        <h3>${ar ? "طلباتي" : "My orders"}</h3>
+        <div id="account-orders-list"><div class="orders-loading">${ar ? "نحمّل طلباتك…" : "Loading your orders…"}</div></div>
+      </div>
+    </div>`;
+  try {
+    const result = await api("/api/orders");
+    state.orders = result.orders || [];
+    const list = $("#account-orders-list");
+    if (list) list.innerHTML = renderOrders(state.orders);
+  } catch (error) {
+    const list = $("#account-orders-list");
+    if (list) list.innerHTML = `<div class="orders-empty">${escapeHTML(error.message)}</div>`;
+  }
+}
+
+function openAccount(mode = "login", pendingAction = "") {
+  state.pendingAction = pendingAction;
+  if (state.user) renderAccount();
+  else renderAuth(mode);
+  openOverlay("#account-overlay");
+}
+
+const orderStatuses = {
+  new: ["جديد", "New"],
+  processing: ["قيد التجهيز", "Processing"],
+  shipped: ["تم الشحن", "Shipped"],
+  completed: ["مكتمل", "Completed"],
+  cancelled: ["ملغي", "Cancelled"]
+};
+
+function orderStatusLabel(status) {
+  const labels = orderStatuses[status] || [status, status];
+  return state.lang === "ar" ? labels[0] : labels[1];
+}
+
+function renderOrders(orders, admin = false) {
+  const ar = state.lang === "ar";
+  if (!orders.length) {
+    return `<div class="orders-empty">${admin
+      ? (ar ? "لا توجد طلبات حتى الآن." : "No store orders yet.")
+      : (ar ? "لم تنشئ أي طلب بعد." : "You have not placed an order yet.")}</div>`;
+  }
+  return orders.map((order) => {
+    const products = (order.items || []).map((item) => `${item.quantity}× ${item.productName}`).join(" · ");
+    const date = new Intl.DateTimeFormat(ar ? "ar-EG" : "en-GB", { dateStyle: "medium", timeStyle: "short" })
+      .format(new Date(String(order.createdAt).replace(" ", "T") + (String(order.createdAt).includes("Z") ? "" : "Z")));
+    return `<article class="order-card">
+      <div class="order-card-head">
+        <div><b dir="ltr">${escapeHTML(order.orderNumber)}</b><small>${escapeHTML(date)}</small></div>
+        <i class="order-status">${escapeHTML(orderStatusLabel(order.status))}</i>
+      </div>
+      <div class="order-card-body">
+        <p>${escapeHTML(products)}</p><strong>${formatPrice(order.total)}</strong>
+        ${admin ? `<div class="order-admin-meta">
+          <span>${escapeHTML(order.customerName)} · <bdi>${escapeHTML(order.phone)}</bdi> · ${escapeHTML(order.governorate)}<br>${escapeHTML(order.address)}</span>
+          <select data-action="order-status" data-id="${order.id}" aria-label="${ar ? "تغيير حالة الطلب" : "Change order status"}">
+            ${Object.keys(orderStatuses).map((status) => `<option value="${status}"${status === order.status ? " selected" : ""}>${escapeHTML(orderStatusLabel(status))}</option>`).join("")}
+          </select>
+        </div>` : ""}
+      </div>
+    </article>`;
+  }).join("");
+}
+
+async function openAdminOrders() {
+  const ar = state.lang === "ar";
+  const list = $("#admin-orders-list");
+  list.innerHTML = `<div class="orders-loading">${ar ? "نحمّل الطلبات…" : "Loading orders…"}</div>`;
+  openOverlay("#admin-orders-overlay");
+  try {
+    const result = await api("/api/admin/orders");
+    state.adminOrders = result.orders || [];
+    list.innerHTML = renderOrders(state.adminOrders, true);
+  } catch (error) {
+    list.innerHTML = `<div class="orders-empty">${escapeHTML(error.message)}</div>`;
+  }
+}
+
+let checkoutFormMarkup = "";
+function translateWithin(root) {
+  $$("[data-i18n]", root).forEach((node) => {
+    const value = translations[state.lang][node.dataset.i18n];
+    if (value) node.innerHTML = value;
+  });
+}
+
+function renderCheckout() {
+  const grid = $("#checkout-overlay .checkout-grid");
+  if (!$("#checkout-form")) {
+    grid.innerHTML = checkoutFormMarkup;
+    translateWithin(grid);
+  }
+  const form = $("#checkout-form");
+  form.elements.name.value = state.user?.name || "";
+  form.elements.phone.value = state.user?.phone || "";
+  const items = state.cart.map((item) => ({ item, product: getProduct(item.id) })).filter(({ product }) => product);
+  $("#checkout-items").innerHTML = items.map(({ item, product }) => `
+    <article class="checkout-summary-item">
+      <img src="${escapeHTML(product.image || "assets/origo-hero.png")}" alt="" />
+      <div><b>${escapeHTML(state.lang === "ar" ? product.nameAr : product.nameEn || product.nameAr)}</b><small>${item.quantity} × ${formatPrice(product.price)}</small></div>
+      <strong>${formatPrice(product.price * item.quantity)}</strong>
+    </article>`).join("");
+  $("#checkout-total").textContent = formatPrice(items.reduce((sum, { item, product }) => sum + item.quantity * product.price, 0));
+}
+
+function openCheckout() {
+  if (!state.cart.length) {
+    showToast(state.lang === "ar" ? "الحقيبة فارغة." : "Your bag is empty.");
+    return;
+  }
+  if (!state.user) {
+    toggleCart(false);
+    openAccount("login", "checkout");
+    showToast(state.lang === "ar" ? "سجّل الدخول أولًا لإتمام الطلب." : "Sign in first to complete checkout.");
+    return;
+  }
+  renderCheckout();
+  toggleCart(false);
+  openOverlay("#checkout-overlay");
 }
 
 function updateLanguage() {
@@ -640,6 +974,13 @@ function updateLanguage() {
   renderWishlist();
   renderCatalogList();
   refreshAIStatus();
+  updateAccountIndicator();
+  if ($("#account-overlay").classList.contains("open")) {
+    if (state.user) renderAccount();
+    else renderAuth($("#auth-form")?.dataset.mode || "login");
+  }
+  if ($("#checkout-overlay").classList.contains("open") && state.user && state.cart.length) renderCheckout();
+  if ($("#admin-orders-overlay").classList.contains("open")) $("#admin-orders-list").innerHTML = renderOrders(state.adminOrders, true);
   if (state.globalSearchQuery) renderSearchSuggestions(state.globalSearchQuery);
   if ($("#product-overlay").classList.contains("open") && state.activeProductId) {
     showProductDetails(getProduct(state.activeProductId), false);
@@ -719,7 +1060,7 @@ function getProduct(id) {
 function addToCart(product) {
   if (!product) return;
   const existing = state.cart.find((item) => item.id === product.id);
-  if (existing) existing.quantity += 1;
+  if (existing) existing.quantity = Math.min(10, existing.quantity + 1);
   else state.cart.push({ id: product.id, quantity: 1 });
   persist();
   renderCart();
@@ -729,7 +1070,7 @@ function addToCart(product) {
 function changeCartQuantity(productId, change) {
   const item = state.cart.find((entry) => entry.id === productId);
   if (!item) return;
-  item.quantity += change;
+  item.quantity = Math.min(10, item.quantity + change);
   if (item.quantity <= 0) {
     state.cart = state.cart.filter((entry) => entry.id !== productId);
   }
@@ -1558,8 +1899,8 @@ function updateDuplicateWarning(form) {
   return duplicate;
 }
 
-function saveCatalogProduct(form) {
-  const product = collectReviewProduct(form);
+async function saveCatalogProduct(form) {
+  let product = collectReviewProduct(form);
   const duplicate = findDuplicate(product, product.id);
   if (duplicate) {
     updateDuplicateWarning(form);
@@ -1570,18 +1911,37 @@ function saveCatalogProduct(form) {
     showToast(adminCopy("أدخل اسم المنتج بلغة واحدة على الأقل", "Enter the product name in at least one language"));
     return;
   }
-  product.updatedAt = new Date().toISOString();
-  product.createdAt = product.createdAt || product.updatedAt;
+  const submit = form.querySelector("[type='submit']");
+  submit.disabled = true;
+  const originalLabel = submit.innerHTML;
+  submit.textContent = adminCopy("جارٍ الحفظ…", "Saving…");
+  try {
+    if (state.serverAvailable) {
+      const result = await api("/api/admin/products", {
+        method: "POST",
+        body: JSON.stringify(product)
+      });
+      product = result.product;
+    } else {
+      product.updatedAt = new Date().toISOString();
+      product.createdAt = product.createdAt || product.updatedAt;
+    }
+  } catch (error) {
+    submit.disabled = false;
+    submit.innerHTML = originalLabel;
+    showToast(error.message);
+    return;
+  }
   const existingIndex = state.catalogProducts.findIndex((item) => item.id === product.id);
   if (existingIndex >= 0) state.catalogProducts.splice(existingIndex, 1, product);
   else state.catalogProducts.unshift(product);
-  try {
-    localStorage.setItem("origoCatalogProducts", JSON.stringify(state.catalogProducts));
-  } catch (error) {
-    showToast(adminCopy("مساحة المتصفح لا تكفي؛ قلّل عدد الصور أو حجمها", "Browser storage is full; remove or reduce images"));
-    if (existingIndex >= 0) state.catalogProducts.splice(existingIndex, 1, state.activeImportDraft);
-    else state.catalogProducts.shift();
-    return;
+  if (!state.serverAvailable) {
+    try {
+      localStorage.setItem("origoCatalogProducts", JSON.stringify(state.catalogProducts));
+    } catch {
+      showToast(adminCopy("مساحة المتصفح لا تكفي؛ قلّل عدد الصور أو حجمها", "Browser storage is full; remove or reduce images"));
+      return;
+    }
   }
   rebuildStorefrontProducts();
   renderProducts($(".chip.active")?.dataset.filter || "all");
@@ -1627,16 +1987,30 @@ function observeReveals() {
   $$(".reveal:not(.visible)").forEach((element) => revealObserver.observe(element));
 }
 
-document.addEventListener("click", (event) => {
+document.addEventListener("click", async (event) => {
   const actionElement = event.target.closest("[data-action]");
   if (!actionElement) return;
   const action = actionElement.dataset.action;
 
   if (action === "search") openOverlay("#search-overlay");
   if (action === "admin") {
-    renderCatalogList();
-    refreshAIStatus();
-    openOverlay("#admin-overlay");
+    toggleMobileMenu(false);
+    if (!state.user) {
+      openAccount("login", "admin");
+      showToast(adminCopy("سجّل الدخول بحساب المدير أولًا", "Sign in with an admin account first"));
+      return;
+    }
+    if (state.user.role !== "admin") {
+      showToast(adminCopy("هذه الصفحة متاحة لمدير المتجر فقط", "This area is for store administrators only"));
+      return;
+    }
+    try {
+      await loadAdminCatalog();
+      refreshAIStatus();
+      openOverlay("#admin-overlay");
+    } catch (error) {
+      showToast(error.message);
+    }
   }
   if (action === "mobile-menu") toggleMobileMenu(true);
   if (action === "close-mobile-menu") toggleMobileMenu(false);
@@ -1668,7 +2042,41 @@ document.addEventListener("click", (event) => {
     $("#global-search-input").value = query;
     renderSearchSuggestions(query);
   }
-  if (action === "account") showToast(adminCopy("تسجيل الدخول جاهز للربط بنظام الحسابات", "Sign-in is ready for account integration"));
+  if (action === "account") openAccount();
+  if (action === "auth-mode") renderAuth(actionElement.dataset.mode);
+  if (action === "logout") {
+    try {
+      await api("/api/auth/logout", { method: "POST", body: "{}" });
+    } catch {}
+    state.user = null;
+    state.orders = [];
+    state.cart = [];
+    localStorage.removeItem("origoCartUserId");
+    persist();
+    renderCart();
+    updateAccountIndicator();
+    closeOverlay($("#account-overlay"));
+    showToast(adminCopy("تم تسجيل الخروج", "Signed out"));
+  }
+  if (action === "open-admin") {
+    closeOverlay($("#account-overlay"));
+    try {
+      await loadAdminCatalog();
+      refreshAIStatus();
+      openOverlay("#admin-overlay");
+    } catch (error) {
+      showToast(error.message);
+    }
+  }
+  if (action === "admin-orders") {
+    closeOverlay($("#admin-overlay"));
+    await openAdminOrders();
+  }
+  if (action === "view-orders") {
+    closeOverlay($("#checkout-overlay"));
+    openAccount();
+  }
+  if (action === "continue-after-order") closeOverlay($("#checkout-overlay"));
   if (action === "cart") toggleCart(true);
   if (action === "wishlist") toggleWishlistDrawer(true);
   if (action === "close-drawer") {
@@ -1726,7 +2134,7 @@ document.addEventListener("click", (event) => {
     showProductDetails(product);
   }
   if (action === "checkout") {
-    showToast(state.lang === "ar" ? "نموذج الدفع جاهز للربط ببوابة الدفع" : "Checkout is ready for payment integration");
+    openCheckout();
   }
   if (action === "clear-notes") {
     state.selectedNotes = [];
@@ -1777,6 +2185,87 @@ document.addEventListener("click", (event) => {
 
 document.addEventListener("submit", async (event) => {
   event.preventDefault();
+  if (event.target.id === "auth-form") {
+    const form = event.target;
+    const mode = form.dataset.mode;
+    const values = Object.fromEntries(new FormData(form));
+    const button = form.querySelector("[type='submit']");
+    const error = $("#auth-error");
+    error.textContent = "";
+    button.disabled = true;
+    try {
+      const result = await api(`/api/auth/${mode}`, {
+        method: "POST",
+        body: JSON.stringify({ ...values, cart: state.cart })
+      });
+      state.serverAvailable = true;
+      state.user = result.user;
+      state.cart = result.cart || [];
+      localStorage.setItem("origoCartUserId", String(state.user.id));
+      persist();
+      renderCart();
+      updateAccountIndicator();
+      const pending = state.pendingAction;
+      state.pendingAction = "";
+      if (pending === "checkout") {
+        closeOverlay($("#account-overlay"));
+        openCheckout();
+      } else if (pending === "admin") {
+        if (state.user.role === "admin") {
+          closeOverlay($("#account-overlay"));
+          await loadAdminCatalog();
+          refreshAIStatus();
+          openOverlay("#admin-overlay");
+        } else {
+          await renderAccount();
+          showToast(adminCopy("الحساب ليس لديه صلاحية إدارة المتجر", "This account does not have store-admin access"));
+        }
+      } else {
+        await renderAccount();
+      }
+      showToast(mode === "register"
+        ? adminCopy("تم إنشاء حسابك بنجاح", "Your account was created")
+        : adminCopy("مرحبًا بعودتك", "Welcome back"));
+    } catch (requestError) {
+      error.textContent = requestError.message;
+      button.disabled = false;
+    }
+    return;
+  }
+  if (event.target.id === "checkout-form") {
+    const form = event.target;
+    const button = form.querySelector("[type='submit']");
+    const error = $("#checkout-error");
+    error.textContent = "";
+    button.disabled = true;
+    try {
+      clearTimeout(cartSyncTimer);
+      await pushCart();
+      const result = await api("/api/orders", {
+        method: "POST",
+        body: JSON.stringify(Object.fromEntries(new FormData(form)))
+      });
+      state.cart = [];
+      localStorage.setItem("origoCart", "[]");
+      renderCart();
+      const ar = state.lang === "ar";
+      $("#checkout-overlay .checkout-grid").innerHTML = `
+        <div class="order-success">
+          <span>✓</span>
+          <h2>${ar ? "تم استلام طلبك" : "Order received"}</h2>
+          <p>${ar ? "سنراجع التفاصيل ونتواصل معك لتأكيد الشحن. يمكنك متابعة الحالة من حسابك." : "We will review the details and contact you to confirm shipping. Follow its status from your account."}</p>
+          <b dir="ltr">${escapeHTML(result.order.orderNumber)}</b>
+          <div class="account-actions">
+            <button class="button burgundy-button" data-action="view-orders">${ar ? "عرض طلباتي" : "View my orders"}</button>
+            <button class="button secondary-button" data-action="continue-after-order">${ar ? "متابعة التسوق" : "Continue shopping"}</button>
+          </div>
+        </div>`;
+    } catch (requestError) {
+      error.textContent = requestError.message;
+      button.disabled = false;
+    }
+    return;
+  }
   if (event.target.id === "newsletter-form") {
     event.target.reset();
     showToast(state.lang === "ar" ? "أهلًا بك في دائرة ORIGO الخاصة" : "Welcome to the ORIGO private circle");
@@ -1785,7 +2274,7 @@ document.addEventListener("submit", async (event) => {
     const query = $("#web-product-query").value.trim();
     await runAdminSuggestions(query);
   }
-  if (event.target.id === "import-review-form") saveCatalogProduct(event.target);
+  if (event.target.id === "import-review-form") await saveCatalogProduct(event.target);
 });
 
 $$(".note-bubble").forEach((button) => button.addEventListener("click", () => updateNoteSelection(button)));
@@ -1817,10 +2306,27 @@ document.addEventListener("input", (event) => {
   if (event.target.closest("#import-review-form")) updateDuplicateWarning($("#import-review-form"));
 });
 
-document.addEventListener("change", (event) => {
+document.addEventListener("change", async (event) => {
   if (event.target.id === "gallery-upload") handleGalleryUpload(event.target);
   if (event.target.matches("[name='selectedImage']")) {
     $$(".review-image").forEach((label) => label.classList.toggle("selected", $("input", label).checked));
+  }
+  if (event.target.matches("[data-action='order-status']")) {
+    const select = event.target;
+    select.disabled = true;
+    try {
+      const result = await api(`/api/admin/orders/${select.dataset.id}/status`, {
+        method: "POST",
+        body: JSON.stringify({ status: select.value })
+      });
+      const index = state.adminOrders.findIndex((order) => order.id === result.order.id);
+      if (index >= 0) state.adminOrders[index] = result.order;
+      $("#admin-orders-list").innerHTML = renderOrders(state.adminOrders, true);
+      showToast(adminCopy("تم تحديث حالة الطلب", "Order status updated"));
+    } catch (error) {
+      select.disabled = false;
+      showToast(error.message);
+    }
   }
 });
 
@@ -1858,6 +2364,8 @@ window.addEventListener("scroll", () => {
   $(".site-header").classList.toggle("compact", window.scrollY > 28);
 }, { passive: true });
 
+checkoutFormMarkup = $("#checkout-overlay .checkout-grid").innerHTML;
 setupTheme();
 updateLanguage();
 observeReveals();
+hydrateServer();

@@ -515,6 +515,58 @@
       </section>
     </div>
 
+    <div class="overlay account-overlay" id="account-overlay" aria-hidden="true">
+      <section class="account-panel" role="dialog" aria-modal="true" aria-labelledby="account-title">
+        <button class="close-button" data-action="close-overlay" aria-label="إغلاق">×</button>
+        <div id="account-content"></div>
+      </section>
+    </div>
+
+    <div class="overlay checkout-overlay" id="checkout-overlay" aria-hidden="true">
+      <section class="checkout-panel" role="dialog" aria-modal="true" aria-labelledby="checkout-title">
+        <button class="close-button" data-action="close-overlay" aria-label="إغلاق">×</button>
+        <div class="checkout-grid">
+          <form class="checkout-form" id="checkout-form">
+            <span class="eyebrow" data-i18n="checkoutEyebrow">إتمام الطلب</span>
+            <h2 id="checkout-title" data-i18n="deliveryDetails">بيانات التوصيل</h2>
+            <p data-i18n="checkoutIntro">راجع بياناتك، وسنتواصل معك لتأكيد الطلب قبل الشحن.</p>
+            <div class="commerce-fields">
+              <label><span data-i18n="fullName">الاسم بالكامل</span><input name="name" autocomplete="name" required minlength="2" maxlength="100" /></label>
+              <label><span data-i18n="phone">رقم الهاتف</span><input name="phone" autocomplete="tel" inputmode="tel" required /></label>
+              <label><span data-i18n="governorate">المحافظة</span><select name="governorate" required>
+                <option value="" data-i18n="chooseGovernorate">اختر المحافظة</option>
+                <option>القاهرة</option><option>الجيزة</option><option>الإسكندرية</option><option>الدقهلية</option>
+                <option>البحر الأحمر</option><option>البحيرة</option><option>الفيوم</option><option>الغربية</option>
+                <option>الإسماعيلية</option><option>المنوفية</option><option>المنيا</option><option>القليوبية</option>
+                <option>الوادي الجديد</option><option>السويس</option><option>أسوان</option><option>أسيوط</option>
+                <option>بني سويف</option><option>بورسعيد</option><option>دمياط</option><option>الشرقية</option>
+                <option>جنوب سيناء</option><option>كفر الشيخ</option><option>مطروح</option><option>الأقصر</option>
+                <option>قنا</option><option>شمال سيناء</option><option>سوهاج</option>
+              </select></label>
+              <label class="wide"><span data-i18n="address">العنوان بالتفصيل</span><textarea name="address" autocomplete="street-address" required minlength="8" maxlength="500"></textarea></label>
+              <label class="wide"><span data-i18n="orderNotes">ملاحظات للطلب (اختياري)</span><textarea name="notes" maxlength="1000"></textarea></label>
+            </div>
+            <div class="payment-choice"><span>✓</span><div><b data-i18n="cashOnDelivery">الدفع عند الاستلام</b><small data-i18n="cashOnDeliveryBody">ادفع نقدًا عند وصول الطلب.</small></div></div>
+            <p class="form-error" id="checkout-error" role="alert"></p>
+            <button class="button burgundy-button full" type="submit" data-i18n="confirmOrder">تأكيد الطلب</button>
+          </form>
+          <aside class="checkout-summary">
+            <span class="eyebrow" data-i18n="orderSummary">ملخص الطلب</span>
+            <div id="checkout-items"></div>
+            <div class="checkout-total"><span data-i18n="total">الإجمالي</span><b id="checkout-total">0 ج.م</b></div>
+          </aside>
+        </div>
+      </section>
+    </div>
+
+    <div class="overlay admin-orders-overlay" id="admin-orders-overlay" aria-hidden="true">
+      <section class="orders-panel" role="dialog" aria-modal="true" aria-labelledby="admin-orders-title">
+        <button class="close-button" data-action="close-overlay" aria-label="إغلاق">×</button>
+        <div class="orders-head"><span class="eyebrow" data-i18n="storeOrders">طلبات المتجر</span><h2 id="admin-orders-title" data-i18n="manageOrders">متابعة الطلبات</h2></div>
+        <div class="orders-list" id="admin-orders-list"></div>
+      </section>
+    </div>
+
     <div class="overlay admin-overlay" id="admin-overlay" aria-hidden="true">
       <section class="admin-panel">
         <div class="admin-head">
@@ -523,7 +575,10 @@
             <h2 data-i18n="smartImport">إضافة المنتج الذكية</h2>
             <p data-i18n="smartImportBody">نجمع البيانات من مصادر عامة مسموحة، ثم تبقى بانتظار مراجعتك قبل الحفظ.</p>
           </div>
-          <button class="close-button" data-action="close-overlay" aria-label="إغلاق">×</button>
+          <div class="admin-head-actions">
+            <button class="secondary-button compact-button" data-action="admin-orders" data-i18n="orders">الطلبات</button>
+            <button class="close-button" data-action="close-overlay" aria-label="إغلاق">×</button>
+          </div>
         </div>
 
         <div class="admin-stats">
