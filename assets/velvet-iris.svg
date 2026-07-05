@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1100" role="img" aria-labelledby="title">
+  <title id="title">ORIGO Velvet Iris perfume bottle</title>
+  <defs>
+    <linearGradient id="bg" x1=".1" y1="0" x2=".9" y2="1">
+      <stop stop-color="#efe4dc"/>
+      <stop offset=".5" stop-color="#d3b2b8"/>
+      <stop offset="1" stop-color="#7f3349"/>
+    </linearGradient>
+    <radialGradient id="petal">
+      <stop stop-color="#f9d8df"/>
+      <stop offset=".65" stop-color="#8c2749"/>
+      <stop offset="1" stop-color="#4a1026"/>
+    </radialGradient>
+    <linearGradient id="bottle" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#411225"/>
+      <stop offset=".38" stop-color="#160c13"/>
+      <stop offset=".72" stop-color="#72223e"/>
+      <stop offset="1" stop-color="#12090f"/>
+    </linearGradient>
+    <linearGradient id="metal" x1="0" y1="0" x2="1" y2="0">
+      <stop stop-color="#5d4528"/>
+      <stop offset=".25" stop-color="#ead39f"/>
+      <stop offset=".52" stop-color="#8e7147"/>
+      <stop offset=".8" stop-color="#f6e7bd"/>
+      <stop offset="1" stop-color="#4e371f"/>
+    </linearGradient>
+    <filter id="blur"><feGaussianBlur stdDeviation="13"/></filter>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="180%">
+      <feDropShadow dx="0" dy="38" stdDeviation="32" flood-color="#250b15" flood-opacity=".55"/>
+    </filter>
+  </defs>
+  <rect width="900" height="1100" fill="url(#bg)"/>
+  <g opacity=".82">
+    <ellipse cx="108" cy="460" rx="150" ry="290" fill="url(#petal)" transform="rotate(-38 108 460)"/>
+    <ellipse cx="770" cy="370" rx="125" ry="260" fill="url(#petal)" transform="rotate(31 770 370)"/>
+    <ellipse cx="748" cy="930" rx="165" ry="285" fill="url(#petal)" transform="rotate(67 748 930)"/>
+  </g>
+  <circle cx="136" cy="170" r="95" fill="#fff0f2" opacity=".4" filter="url(#blur)"/>
+  <ellipse cx="452" cy="958" rx="294" ry="63" fill="#210b14" opacity=".34"/>
+  <g filter="url(#shadow)">
+    <rect x="350" y="126" width="200" height="165" rx="30" fill="url(#metal)"/>
+    <rect x="378" y="92" width="144" height="58" rx="12" fill="#181015"/>
+    <path d="M235 286h430l47 82v505c0 42-34 76-76 76H264c-42 0-76-34-76-76V368Z" fill="url(#bottle)" stroke="#f3d9dd" stroke-opacity=".24" stroke-width="8"/>
+    <path d="M228 383c0-30 15-53 39-72h48v530c0 29 13 56 35 75h-82c-22 0-40-18-40-40Z" fill="#fff" opacity=".09"/>
+    <path d="M642 345c22 18 34 45 34 78v407c0 33-13 60-37 83" fill="none" stroke="#ffdce5" stroke-opacity=".2" stroke-width="18" stroke-linecap="round"/>
+    <rect x="281" y="489" width="338" height="251" fill="#f7efe7"/>
+    <rect x="297" y="505" width="306" height="219" fill="none" stroke="#b89456" stroke-width="3"/>
+    <text x="450" y="574" text-anchor="middle" font-family="Georgia,serif" font-size="29" letter-spacing="9" fill="#74152f">ORIGO</text>
+    <text x="450" y="632" text-anchor="middle" font-family="Georgia,serif" font-size="35" fill="#1c1116">VELVET IRIS</text>
+    <text x="450" y="680" text-anchor="middle" font-family="Arial,sans-serif" font-size="16" letter-spacing="6" fill="#92713d">EAU DE PARFUM</text>
+  </g>
+</svg>
