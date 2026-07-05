@@ -20,10 +20,12 @@ import {
   listActivity,
   listOrdersForUser,
   listProducts,
+  listStaff,
   mergeCart,
   replaceCart,
   saveFragranceNotesState,
   saveAdminWorkspaceState,
+  setUserRole,
   recordActivity,
   updateOrderAdmin,
   updateOrderStatus,
@@ -189,14 +191,26 @@ function expiredSessionCookie(request) {
   ].filter(Boolean).join("; ");
 }
 
-function requireUser(request, response, origin, role = "customer") {
+function userCan(user, permission) {
+  const permissions = user?.permissions || [];
+  if (permissions.includes("*")) return true;
+  if (permissions.includes(permission)) return true;
+  if (permission.endsWith(":view") && permissions.includes(permission.slice(0, -5))) return true;
+  return false;
+}
+
+function requireUser(request, response, origin, permission = "customer") {
   const user = requestUser(request);
   if (!user) {
     jsonResponse(response, 401, { error: "يجب تسجيل الدخول أولًا.", code: "AUTH_REQUIRED" }, origin);
     return null;
   }
-  if (role === "admin" && user.role === "customer") {
-    jsonResponse(response, 403, { error: "هذه الصفحة متاحة لمدير المتجر فقط.", code: "ADMIN_REQUIRED" }, origin);
+  if (permission !== "customer" && permission !== "staff" && !userCan(user, permission)) {
+    jsonResponse(response, 403, { error: "ليست لديك الصلاحية المطلوبة لهذه العملية.", code: "PERMISSION_REQUIRED" }, origin);
+    return null;
+  }
+  if (permission === "staff" && user.role === "customer") {
+    jsonResponse(response, 403, { error: "هذه الصفحة متاحة لفريق المتجر فقط.", code: "STAFF_REQUIRED" }, origin);
     return null;
   }
   return user;
@@ -464,8 +478,8 @@ async function handleAPI(request, response, url, origin) {
         name: userRow.name,
         email: userRow.email,
         phone: userRow.phone || "",
-        role: userRow.role,
-        permissions: ROLE_PERMISSIONS[userRow.role] || [],
+        role: userRow.staff_role || userRow.role,
+        permissions: ROLE_PERMISSIONS[userRow.staff_role || userRow.role] || [],
         createdAt: userRow.created_at
       };
       const cart = mergeCart(user.id, body.cart);
@@ -526,13 +540,13 @@ async function handleAPI(request, response, url, origin) {
   }
 
   if (url.pathname === "/api/admin/products" && request.method === "GET") {
-    const user = requireUser(request, response, origin, "admin");
+    const user = requireUser(request, response, origin, "catalog:view");
     if (!user) return;
     return jsonResponse(response, 200, { products: listProducts({ includeHidden: true }) }, origin);
   }
 
   if (url.pathname === "/api/admin/products" && request.method === "POST") {
-    const user = requireUser(request, response, origin, "admin");
+    const user = requireUser(request, response, origin, "catalog");
     if (!user) return;
     try {
       const body = await readJSONBody(request);
@@ -552,7 +566,7 @@ async function handleAPI(request, response, url, origin) {
   }
 
   if (url.pathname === "/api/admin/notes/state" && request.method === "POST") {
-    const user = requireUser(request, response, origin, "admin");
+    const user = requireUser(request, response, origin, "catalog");
     if (!user) return;
     try {
       const body = await readJSONBody(request);
@@ -568,7 +582,7 @@ async function handleAPI(request, response, url, origin) {
   }
 
   if (url.pathname === "/api/admin/workspace" && request.method === "GET") {
-    const user = requireUser(request, response, origin, "admin");
+    const user = requireUser(request, response, origin, "staff");
     if (!user) return;
     return jsonResponse(response, 200, {
       state: getAdminWorkspaceState(),
@@ -577,7 +591,7 @@ async function handleAPI(request, response, url, origin) {
   }
 
   if (url.pathname === "/api/admin/workspace" && request.method === "POST") {
-    const user = requireUser(request, response, origin, "admin");
+    const user = requireUser(request, response, origin, "staff");
     if (!user) return;
     try {
       const body = await readJSONBody(request);
@@ -591,15 +605,49 @@ async function handleAPI(request, response, url, origin) {
     }
   }
 
+  if (url.pathname === "/api/admin/staff" && request.method === "GET") {
+    const user = requireUser(request, response, origin, "users");
+    if (!user) return;
+    return jsonResponse(response, 200, { staff: listStaff() }, origin);
+  }
+
+  if (url.pathname === "/api/admin/staff" && request.method === "POST") {
+    const user = requireUser(request, response, origin, "users");
+    if (!user) return;
+    try {
+      const body = await readJSONBody(request);
+      const role = String(body.role || "");
+      if (!ROLE_PERMISSIONS[role]) return jsonResponse(response, 400, { error: "الدور غير صالح." }, origin);
+      let staff = findUserByEmail(body.email);
+      if (staff) {
+        staff = setUserRole(staff.id, role);
+      } else {
+        if (String(body.password || "").length < 10) {
+          return jsonResponse(response, 400, { error: "كلمة المرور يجب ألا تقل عن 10 أحرف." }, origin);
+        }
+        staff = createUser({
+          name: String(body.name || "").trim(),
+          email: String(body.email || "").trim(),
+          passwordHash: await hashPassword(body.password),
+          role
+        });
+      }
+      recordActivity(user.id, "staff_saved", "user", staff.id, { role });
+      return jsonResponse(response, 200, { staff }, origin);
+    } catch {
+      return jsonResponse(response, 400, { error: "تعذر حفظ حساب الموظف." }, origin);
+    }
+  }
+
   if (url.pathname === "/api/admin/orders" && request.method === "GET") {
-    const user = requireUser(request, response, origin, "admin");
+    const user = requireUser(request, response, origin, "orders:view");
     if (!user) return;
     return jsonResponse(response, 200, { orders: listAllOrders() }, origin);
   }
 
   const orderStatusMatch = url.pathname.match(/^\/api\/admin\/orders\/(\d+)\/status$/);
   if (orderStatusMatch && request.method === "POST") {
-    const user = requireUser(request, response, origin, "admin");
+    const user = requireUser(request, response, origin, "orders");
     if (!user) return;
     try {
       const body = await readJSONBody(request);
@@ -615,7 +663,7 @@ async function handleAPI(request, response, url, origin) {
 
   const orderAdminMatch = url.pathname.match(/^\/api\/admin\/orders\/(\d+)$/);
   if (orderAdminMatch && request.method === "POST") {
-    const user = requireUser(request, response, origin, "admin");
+    const user = requireUser(request, response, origin, "orders");
     if (!user) return;
     try {
       const body = await readJSONBody(request);
@@ -632,7 +680,7 @@ async function handleAPI(request, response, url, origin) {
   }
 
   if (url.pathname === "/api/catalog/ai-enrich" && request.method === "POST") {
-    const user = requireUser(request, response, origin, "admin");
+    const user = requireUser(request, response, origin, "catalog");
     if (!user) return;
     try {
       const body = await readJSONBody(request);

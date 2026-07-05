@@ -49,6 +49,7 @@ db.exec(`
       'customer_support', 'accountant', 'marketing_manager', 'warehouse_staff',
       'delivery_staff', 'content_editor'
     )),
+    staff_role TEXT NOT NULL DEFAULT '',
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
   );
@@ -174,6 +175,11 @@ db.exec(`
 const productColumns = new Set(db.prepare("PRAGMA table_info(products)").all().map((column) => column.name));
 if (!productColumns.has("catalog_json")) {
   db.exec("ALTER TABLE products ADD COLUMN catalog_json TEXT NOT NULL DEFAULT '{}'");
+}
+
+const userColumns = new Set(db.prepare("PRAGMA table_info(users)").all().map((column) => column.name));
+if (!userColumns.has("staff_role")) {
+  db.exec("ALTER TABLE users ADD COLUMN staff_role TEXT NOT NULL DEFAULT ''");
 }
 
 const orderColumns = new Set(db.prepare("PRAGMA table_info(orders)").all().map((column) => column.name));
@@ -311,13 +317,14 @@ function parseJSON(value, fallback = []) {
 
 function publicUser(row) {
   if (!row) return null;
+  const effectiveRole = row.staff_role || row.role;
   return {
     id: Number(row.id),
     name: row.name,
     email: row.email,
     phone: row.phone || "",
-    role: row.role,
-    permissions: ROLE_PERMISSIONS[row.role] || [],
+    role: effectiveRole,
+    permissions: ROLE_PERMISSIONS[effectiveRole] || [],
     createdAt: row.created_at
   };
 }
@@ -412,12 +419,27 @@ export function findUserById(id) {
   return publicUser(db.prepare("SELECT * FROM users WHERE id = ?").get(Number(id)));
 }
 
+export function listStaff() {
+  return db.prepare("SELECT * FROM users WHERE role <> 'customer' ORDER BY created_at DESC")
+    .all()
+    .map(publicUser);
+}
+
+export function setUserRole(id, role) {
+  if (!ROLE_PERMISSIONS[role]) return null;
+  db.prepare("UPDATE users SET role = 'admin', staff_role = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?")
+    .run(role, Number(id));
+  return findUserById(id);
+}
+
 export function createUser({ name, email, passwordHash, phone = "", role = "customer" }) {
   const safeRole = allowedRoles.has(role) ? role : "customer";
+  const databaseRole = safeRole === "customer" ? "customer" : "admin";
+  const staffRole = safeRole === "customer" ? "" : safeRole;
   const result = db.prepare(`
-    INSERT INTO users (name, email, password_hash, phone, role)
-    VALUES (?, ?, ?, ?, ?)
-  `).run(clean(name, 100), normalizedEmail(email), passwordHash, clean(phone, 30), safeRole);
+    INSERT INTO users (name, email, password_hash, phone, role, staff_role)
+    VALUES (?, ?, ?, ?, ?, ?)
+  `).run(clean(name, 100), normalizedEmail(email), passwordHash, clean(phone, 30), databaseRole, staffRole);
   return findUserById(result.lastInsertRowid);
 }
 

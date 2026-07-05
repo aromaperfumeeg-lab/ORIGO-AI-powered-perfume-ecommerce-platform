@@ -682,6 +682,7 @@ const state = {
   orders: [],
   adminOrders: [],
   adminActivity: [],
+  adminStaff: [],
   activeAdminOrderId: null,
   serverAvailable: false,
   pendingAction: "",
@@ -700,6 +701,24 @@ const state = {
 
 function isStaffUser(user = state.user) {
   return Boolean(user && user.role !== "customer");
+}
+
+function hasStaffPermission(permission, user = state.user) {
+  const permissions = user?.permissions || [];
+  return permissions.includes("*")
+    || permissions.includes(permission)
+    || (permission.endsWith(":view") && permissions.includes(permission.slice(0, -5)));
+}
+
+function sectionPermission(sectionId) {
+  return {
+    orders: "orders:view", products: "catalog:view", inventory: "inventory",
+    customers: "customers", notes: "catalog:view", categories: "catalog:view",
+    suppliers: "purchases", purchases: "purchases", marketing: "marketing",
+    coupons: "coupons", content: "content", reviews: "reviews",
+    accounting: "accounting", shipping: "shipping", reports: "reports:view",
+    support: "support", team: "users", settings: "settings"
+  }[sectionId] || "staff";
 }
 
 const adminSections = [
@@ -883,7 +902,7 @@ async function hydrateServer() {
 }
 
 async function loadAdminCatalog() {
-  if (!isStaffUser()) return [];
+  if (!isStaffUser() || !hasStaffPermission("catalog:view")) return [];
   const result = await api("/api/admin/products");
   state.catalogProducts = result.products || [];
   rebuildStorefrontProducts();
@@ -952,7 +971,9 @@ function orderStatusOptions(selected) {
 
 function adminNavMarkup() {
   let lastGroup = "";
-  return adminSections.map((section) => {
+  return adminSections.filter((section) => section.id === "overview"
+    || hasStaffPermission(sectionPermission(section.id))
+    || state.user?.permissions?.includes("*")).map((section) => {
     const group = state.lang === "ar" ? section.groupAr : section.groupEn;
     const heading = group !== lastGroup ? `<small>${escapeHTML(group)}</small>` : "";
     lastGroup = group;
@@ -997,11 +1018,16 @@ function customerRows() {
 }
 
 async function loadAdminDashboardData() {
-  await loadAdminCatalog();
   try {
-    const [ordersResult, workspaceResult] = await Promise.all([
-      api("/api/admin/orders"),
-      api("/api/admin/workspace")
+    await loadAdminCatalog();
+  } catch {
+    state.catalogProducts = [];
+  }
+  try {
+    const [ordersResult, workspaceResult, staffResult] = await Promise.all([
+      hasStaffPermission("orders:view") ? api("/api/admin/orders") : Promise.resolve({ orders: [] }),
+      api("/api/admin/workspace"),
+      hasStaffPermission("users") ? api("/api/admin/staff") : Promise.resolve({ staff: [] })
     ]);
     state.adminOrders = ordersResult.orders || [];
     if (workspaceResult.state && Object.keys(workspaceResult.state).length) {
@@ -1016,6 +1042,7 @@ async function loadAdminDashboardData() {
       localStorage.setItem("origoAdminWorkspace", JSON.stringify(state.adminWorkspace));
     }
     state.adminActivity = workspaceResult.activity || [];
+    state.adminStaff = staffResult.staff || [];
   } catch {
     state.adminOrders = [];
   }
@@ -1213,9 +1240,9 @@ function customersViewMarkup() {
 
 function teamViewMarkup() {
   const ar = state.lang === "ar";
-  return `<section class="admin-generic-grid">${(state.adminWorkspace.team || []).map((member) => `<article>
-    <header><span>♟</span><i class="${escapeHTML(member.status || "active")}">${adminStatusLabel(member.status || "active")}</i></header>
-    <h3>${escapeHTML(member.name)}</h3><p>${escapeHTML(member.role)} · ${escapeHTML(member.lastLogin || "")}</p>
+  return `<section class="admin-generic-grid">${state.adminStaff.map((member) => `<article>
+    <header><span>♟</span><i class="active">${adminStatusLabel("active")}</i></header>
+    <h3>${escapeHTML(member.name)}</h3><p>${escapeHTML(member.role)} · ${escapeHTML(member.email || "")}</p>
     <footer><b>${escapeHTML(member.id)}</b><button data-action="admin-edit-entity" data-view="team" data-id="${escapeHTML(member.id)}">•••</button></footer>
   </article>`).join("")}</section>
   <section class="admin-list-card"><header><div><span class="eyebrow">ROLE BASED ACCESS CONTROL</span><h3>${ar ? "مصفوفة الأدوار والصلاحيات" : "Roles and permissions matrix"}</h3></div></header>
@@ -1309,6 +1336,16 @@ function settingsMarkup() {
 
 function entityCreateForm(view) {
   const section = adminSection(view);
+  if (view === "team") {
+    return `<form id="admin-staff-form" class="admin-quick-create">
+      <div><span class="eyebrow">♟ TEAM & ROLES</span><h3>${state.lang === "ar" ? "إضافة حساب موظف" : "Add staff account"}</h3></div>
+      <label>${state.lang === "ar" ? "الاسم" : "Name"}<input name="name" required minlength="2" /></label>
+      <label>${state.lang === "ar" ? "البريد" : "Email"}<input name="email" type="email" required /></label>
+      <label>${state.lang === "ar" ? "كلمة المرور" : "Password"}<input name="password" type="password" minlength="10" required /></label>
+      <label>${state.lang === "ar" ? "الدور" : "Role"}<select name="role">${staffRoleDefinitions.map(([id, name]) => `<option value="${id}">${escapeHTML(name)}</option>`).join("")}</select></label>
+      <div><button type="button" class="secondary-button compact-button" data-action="cancel-admin-create">${state.lang === "ar" ? "إلغاء" : "Cancel"}</button>
+      <button class="button burgundy-button" type="submit">${state.lang === "ar" ? "إنشاء الحساب" : "Create account"}</button></div></form>`;
+  }
   return `<form id="admin-entity-form" class="admin-quick-create"><input type="hidden" name="view" value="${view}" />
     <div><span class="eyebrow">${section.icon} ${escapeHTML(state.lang === "ar" ? section.ar : section.en)}</span><h3>${state.lang === "ar" ? "إضافة سجل جديد" : "Add new record"}</h3></div>
     <label>${state.lang === "ar" ? "الاسم" : "Name"}<input name="name" required /></label>
@@ -3492,6 +3529,27 @@ document.addEventListener("click", async (event) => {
 
 document.addEventListener("submit", async (event) => {
   event.preventDefault();
+  if (event.target.id === "admin-staff-form") {
+    const data = new FormData(event.target);
+    try {
+      await api("/api/admin/staff", {
+        method: "POST",
+        body: JSON.stringify({
+          name: String(data.get("name") || "").trim(),
+          email: String(data.get("email") || "").trim(),
+          password: String(data.get("password") || ""),
+          role: String(data.get("role") || "manager")
+        })
+      });
+      const result = await api("/api/admin/staff");
+      state.adminStaff = result.staff || [];
+      renderAdminDashboard("team");
+      showToast(adminCopy("تم إنشاء حساب الموظف وصلاحياته", "Staff account and permissions created"));
+    } catch (error) {
+      showToast(error.message);
+    }
+    return;
+  }
   if (event.target.id === "admin-order-details-form") {
     const data = new FormData(event.target);
     try {
