@@ -100,6 +100,7 @@ db.exec(`
     governorate TEXT NOT NULL,
     notes TEXT NOT NULL DEFAULT '',
     payment_method TEXT NOT NULL DEFAULT 'cod' CHECK (payment_method IN ('cod')),
+    payment_provider TEXT NOT NULL DEFAULT 'cod',
     status TEXT NOT NULL DEFAULT 'new' CHECK (status IN ('new', 'processing', 'shipped', 'completed', 'cancelled')),
     workflow_status TEXT NOT NULL DEFAULT 'new',
     payment_status TEXT NOT NULL DEFAULT 'pending',
@@ -186,6 +187,7 @@ const orderColumns = new Set(db.prepare("PRAGMA table_info(orders)").all().map((
 const orderMigrations = [
   ["workflow_status", "TEXT NOT NULL DEFAULT 'new'"],
   ["payment_status", "TEXT NOT NULL DEFAULT 'pending'"],
+  ["payment_provider", "TEXT NOT NULL DEFAULT 'cod'"],
   ["shipping_carrier", "TEXT NOT NULL DEFAULT ''"],
   ["tracking_number", "TEXT NOT NULL DEFAULT ''"],
   ["internal_notes", "TEXT NOT NULL DEFAULT ''"]
@@ -285,26 +287,33 @@ const insertSeedProduct = db.prepare(`
   ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'published')
 `);
 
-for (const product of seedProducts) {
-  insertSeedProduct.run(
-    product.id,
-    product.sku,
-    product.brand,
-    product.nameAr,
-    product.nameEn,
-    product.category,
-    product.typeAr,
-    product.typeEn,
-    product.concentration,
-    JSON.stringify(product.sizes),
-    JSON.stringify(product.notesAr),
-    JSON.stringify(product.notesEn),
-    product.price,
-    product.oldPrice,
-    product.badgeAr,
-    product.badgeEn,
-    product.image
-  );
+db.exec("BEGIN IMMEDIATE");
+try {
+  for (const product of seedProducts) {
+    insertSeedProduct.run(
+      product.id,
+      product.sku,
+      product.brand,
+      product.nameAr,
+      product.nameEn,
+      product.category,
+      product.typeAr,
+      product.typeEn,
+      product.concentration,
+      JSON.stringify(product.sizes),
+      JSON.stringify(product.notesAr),
+      JSON.stringify(product.notesEn),
+      product.price,
+      product.oldPrice,
+      product.badgeAr,
+      product.badgeEn,
+      product.image
+    );
+  }
+  db.exec("COMMIT");
+} catch (error) {
+  db.exec("ROLLBACK");
+  throw error;
 }
 
 function parseJSON(value, fallback = []) {
@@ -484,12 +493,14 @@ export function upsertProduct(input) {
   const status = ["draft", "published", "unavailable"].includes(input.status) ? input.status : "draft";
   const price = Math.max(0, Number(input.price || 0));
   const structuredNotes = input.notes && typeof input.notes === "object" ? input.notes : {};
-  const notesAr = Array.isArray(input.notesAr)
-    ? input.notesAr
-    : [...(structuredNotes.topAr || []), ...(structuredNotes.heartAr || []), ...(structuredNotes.baseAr || [])];
-  const notesEn = Array.isArray(input.notesEn)
-    ? input.notesEn
-    : [...(structuredNotes.topEn || []), ...(structuredNotes.heartEn || []), ...(structuredNotes.baseEn || [])];
+  const hasStructuredNotes = ["topAr", "topEn", "heartAr", "heartEn", "baseAr", "baseEn"]
+    .some((key) => Array.isArray(structuredNotes[key]));
+  const notesAr = hasStructuredNotes
+    ? [...(structuredNotes.topAr || []), ...(structuredNotes.heartAr || []), ...(structuredNotes.baseAr || [])]
+    : (Array.isArray(input.notesAr) ? input.notesAr : []);
+  const notesEn = hasStructuredNotes
+    ? [...(structuredNotes.topEn || []), ...(structuredNotes.heartEn || []), ...(structuredNotes.baseEn || [])]
+    : (Array.isArray(input.notesEn) ? input.notesEn : []);
   const genderTypes = {
     men: ["رجالي", "Men"],
     women: ["نسائي", "Women"],
@@ -642,6 +653,7 @@ function orderFromRow(row) {
     governorate: row.governorate,
     notes: row.notes,
     paymentMethod: row.payment_method,
+    paymentProvider: row.payment_provider || row.payment_method || "cod",
     status: row.workflow_status || row.status,
     paymentStatus: row.payment_status || "pending",
     shippingCarrier: row.shipping_carrier || "",
@@ -684,8 +696,8 @@ export function createOrder(userId, customer) {
         result = db.prepare(`
           INSERT INTO orders (
             order_number, user_id, customer_name, phone, address, governorate,
-            notes, payment_method, subtotal, shipping_total, total
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, 'cod', ?, ?, ?)
+            notes, payment_method, payment_provider, subtotal, shipping_total, total
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, 'cod', ?, ?, ?, ?)
         `).run(
           orderNumber,
           Number(userId),
@@ -694,6 +706,7 @@ export function createOrder(userId, customer) {
           clean(customer.address, 500),
           clean(customer.governorate, 100),
           clean(customer.notes, 1000),
+          customer.paymentProvider === "paymob" ? "paymob" : "cod",
           subtotal,
           shippingTotal,
           total

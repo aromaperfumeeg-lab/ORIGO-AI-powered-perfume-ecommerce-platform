@@ -67,6 +67,28 @@ OPENAI_MODEL=gpt-5.4-mini
 
 تكاملات شركات الدفع والشحن والإعلانات وWhatsApp تحتاج مفاتيح وحسابات من المزود المختار؛ الواجهات والحقول جاهزة، لكن إرسال العمليات إلى مزود خارجي لا يبدأ قبل إضافة بيانات اعتماده.
 
+## الاتصالات الخارجية
+
+انسخ `.env.example` إلى إعدادات Environment Variables في Hostinger، ثم أدخل مفاتيح الحسابات التي تملكها. لا تُرسل هذه المفاتيح إلى المتصفح ولا تحفظها في Git.
+
+- الدفع: Paymob Intentions API وUnified Checkout.
+- الشحن: إنشاء شحنات Bosta وتخزين رقم التتبع داخل الطلب.
+- WhatsApp: إرسال قوالب حالة الطلب عبر WhatsApp Cloud API مع Webhook للتحقق.
+- Facebook وInstagram: Meta Pixel في المتصفح وConversions API من الخادم.
+- Snapchat: Snap Pixel وConversions API v3.
+- TikTok: TikTok Pixel وEvents API.
+- YouTube: Google tag وGoogle Ads API conversion uploads.
+
+تعرض صفحة الإعدادات في لوحة الإدارة حالة كل اتصال من دون إظهار المفتاح. لا تظهر أزرار Bosta وWhatsApp داخل الطلب إلا بعد اكتمال إعداد المزود. أدوات القياس في المتصفح لا تعمل قبل موافقة العميل من شريط الخصوصية، وتستخدم `event_id`/`transaction_id` لمنع احتساب عملية الشراء مرتين.
+
+مسارات الـWebhook:
+
+```text
+GET/POST /api/webhooks/whatsapp
+POST     /api/webhooks/paymob
+POST     /api/webhooks/bosta
+```
+
 عند إضافة عطر يمكن إدخال أسماء المكونات فقط داخل:
 
 ```text

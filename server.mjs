@@ -15,6 +15,7 @@ import {
   getAdminWorkspaceState,
   getFragranceNotesState,
   getCart,
+  getOrderById,
   hashPassword,
   listAllOrders,
   listActivity,
@@ -33,6 +34,14 @@ import {
   userFromSession,
   verifyPassword
 } from "./db.mjs";
+import {
+  createBostaDelivery,
+  createPaymobIntention,
+  dispatchPurchaseEvents,
+  integrationStatus,
+  publicTrackingConfig,
+  sendWhatsAppTemplate
+} from "./external-integrations.mjs";
 
 const ROOT = resolve(fileURLToPath(new URL(".", import.meta.url)));
 const HOST = process.env.ORIGO_HOST || "0.0.0.0";
@@ -228,6 +237,8 @@ function validateCustomer(body) {
     address: String(body.address || "").trim(),
     governorate: String(body.governorate || "").trim(),
     notes: String(body.notes || "").trim()
+    ,
+    paymentProvider: body.paymentProvider === "paymob" ? "paymob" : "cod"
   };
   if (customer.name.length < 2 || customer.name.length > 100) return { error: "أدخل اسمًا صحيحًا." };
   if (!/^[+\d][\d\s()-]{7,24}$/.test(customer.phone)) return { error: "أدخل رقم هاتف صحيحًا." };
@@ -408,6 +419,96 @@ async function handleAPI(request, response, url, origin) {
     }, origin);
   }
 
+  if (url.pathname === "/api/integrations/public" && request.method === "GET") {
+    return jsonResponse(response, 200, publicTrackingConfig(), origin);
+  }
+
+  if (url.pathname === "/api/admin/integrations" && request.method === "GET") {
+    const user = requireUser(request, response, origin, "settings");
+    if (!user) return;
+    return jsonResponse(response, 200, { integrations: integrationStatus() }, origin);
+  }
+
+  if (url.pathname === "/api/payments/paymob/intention" && request.method === "POST") {
+    const user = requireUser(request, response, origin);
+    if (!user) return;
+    try {
+      const body = await readJSONBody(request);
+      const order = getOrderById(body.orderId);
+      if (!order || Number(order.userId) !== Number(user.id)) {
+        return jsonResponse(response, 404, { error: "الطلب غير موجود." }, origin);
+      }
+      const payment = await createPaymobIntention(order, user);
+      return jsonResponse(response, 200, { payment }, origin);
+    } catch (error) {
+      return jsonResponse(response, error.message.includes("not configured") ? 503 : 502, {
+        error: "تعذر إنشاء جلسة الدفع عبر Paymob.",
+        detail: process.env.NODE_ENV === "production" ? undefined : error.message
+      }, origin);
+    }
+  }
+
+  const shipmentMatch = url.pathname.match(/^\/api\/admin\/orders\/(\d+)\/shipment$/);
+  if (shipmentMatch && request.method === "POST") {
+    const user = requireUser(request, response, origin, "shipping");
+    if (!user) return;
+    try {
+      const order = getOrderById(shipmentMatch[1]);
+      if (!order) return jsonResponse(response, 404, { error: "الطلب غير موجود." }, origin);
+      const shipment = await createBostaDelivery(order);
+      const tracking = shipment.trackingNumber || shipment.tracking_number || shipment._id || shipment.id || "";
+      const updatedOrder = updateOrderAdmin(order.id, {
+        shippingCarrier: "Bosta",
+        trackingNumber: String(tracking),
+        status: order.status
+      });
+      recordActivity(user.id, "bosta_delivery_created", "order", order.id, { tracking });
+      return jsonResponse(response, 200, { shipment, order: updatedOrder }, origin);
+    } catch (error) {
+      return jsonResponse(response, error.message.includes("not configured") ? 503 : 502, {
+        error: "تعذر إنشاء شحنة Bosta.",
+        detail: process.env.NODE_ENV === "production" ? undefined : error.message
+      }, origin);
+    }
+  }
+
+  const whatsappMatch = url.pathname.match(/^\/api\/admin\/orders\/(\d+)\/whatsapp$/);
+  if (whatsappMatch && request.method === "POST") {
+    const user = requireUser(request, response, origin, "support");
+    if (!user) return;
+    try {
+      const body = await readJSONBody(request);
+      const order = getOrderById(whatsappMatch[1]);
+      if (!order) return jsonResponse(response, 404, { error: "الطلب غير موجود." }, origin);
+      const result = await sendWhatsAppTemplate({
+        to: order.phone,
+        template: String(body.template || process.env.WHATSAPP_ORDER_TEMPLATE || "order_status_update"),
+        language: String(body.language || "ar"),
+        parameters: body.parameters || [order.customerName, order.orderNumber, order.status]
+      });
+      recordActivity(user.id, "whatsapp_sent", "order", order.id, { template: body.template || "order_status_update" });
+      return jsonResponse(response, 200, { result }, origin);
+    } catch (error) {
+      return jsonResponse(response, error.message.includes("not configured") ? 503 : 502, {
+        error: "تعذر إرسال رسالة WhatsApp.",
+        detail: process.env.NODE_ENV === "production" ? undefined : error.message
+      }, origin);
+    }
+  }
+
+  if (url.pathname === "/api/webhooks/whatsapp" && request.method === "GET") {
+    const verified = url.searchParams.get("hub.mode") === "subscribe"
+      && url.searchParams.get("hub.verify_token") === process.env.WHATSAPP_VERIFY_TOKEN;
+    response.writeHead(verified ? 200 : 403, { "Content-Type": "text/plain; charset=utf-8" });
+    response.end(verified ? url.searchParams.get("hub.challenge") || "" : "Verification failed");
+    return;
+  }
+
+  if (["/api/webhooks/whatsapp", "/api/webhooks/paymob", "/api/webhooks/bosta"].includes(url.pathname) && request.method === "POST") {
+    await readJSONBody(request).catch(() => ({}));
+    return jsonResponse(response, 202, { received: true }, origin);
+  }
+
   if (url.pathname === "/api/products" && request.method === "GET") {
     return jsonResponse(response, 200, { products: listProducts() }, origin);
   }
@@ -530,7 +631,15 @@ async function handleAPI(request, response, url, origin) {
       const validation = validateCustomer(body);
       if (validation.error) return jsonResponse(response, 400, { error: validation.error }, origin);
       const order = createOrder(user.id, validation.customer);
-      return jsonResponse(response, 201, { order, cart: [] }, origin);
+      const attribution = body.attribution && typeof body.attribution === "object" ? body.attribution : {};
+      const integrationResults = await dispatchPurchaseEvents(order, {
+        ...attribution,
+        email: user.email,
+        ip: String(request.headers["x-forwarded-for"] || request.socket.remoteAddress || "").split(",")[0].trim(),
+        userAgent: String(request.headers["user-agent"] || ""),
+        url: attribution.landingUrl || `${process.env.ORIGO_PUBLIC_URL || ""}/`
+      });
+      return jsonResponse(response, 201, { order, cart: [], integrations: integrationResults }, origin);
     } catch (error) {
       const empty = error.code === "EMPTY_CART";
       return jsonResponse(response, empty ? 409 : 400, {

@@ -7,5 +7,6 @@ data/
 *.sqlite
 *.sqlite-*
 *.tmp
+*.pid
 .DS_Store
 Thumbs.db

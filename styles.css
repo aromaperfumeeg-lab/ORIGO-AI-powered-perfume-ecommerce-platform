@@ -8305,3 +8305,60 @@ body.notes-route #storefront-main > section:not(#notes-library-page) {
     flex-direction: column-reverse;
   }
 }
+
+.marketing-consent {
+  position: fixed;
+  z-index: 10000;
+  inset-inline: clamp(12px, 4vw, 52px);
+  bottom: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 18px 22px;
+  border: 1px solid rgba(255, 255, 255, .16);
+  background: rgba(25, 18, 17, .96);
+  color: #fff;
+  box-shadow: 0 20px 70px rgba(0, 0, 0, .32);
+  backdrop-filter: blur(18px);
+}
+
+.marketing-consent p,
+.marketing-consent div {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0;
+}
+
+.marketing-consent span {
+  color: rgba(255, 255, 255, .72);
+}
+
+.marketing-consent button {
+  min-width: 90px;
+  padding: 10px 16px;
+  border: 1px solid rgba(255, 255, 255, .3);
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+}
+
+.marketing-consent button[data-consent="granted"] {
+  border-color: #f3d3a1;
+  background: #f3d3a1;
+  color: #2b1b18;
+}
+
+@media (max-width: 720px) {
+  .marketing-consent,
+  .marketing-consent p {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .marketing-consent div {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+}

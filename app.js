@@ -686,6 +686,8 @@ const state = {
   activeAdminOrderId: null,
   serverAvailable: false,
   pendingAction: "",
+  publicIntegrations: {},
+  integrationStatus: {},
   globalSearchQuery: "",
   storefrontSearchQuery: "",
   storefrontCategory: "all",
@@ -864,11 +866,13 @@ async function hydrateServer() {
   const localCart = [...state.cart];
   const cartOwner = localStorage.getItem("origoCartUserId");
   try {
-    const [catalog, session, notesState] = await Promise.all([
+    const [catalog, session, notesState, publicIntegrations] = await Promise.all([
       api("/api/products"),
       api("/api/session"),
-      api("/api/notes/state")
+      api("/api/notes/state"),
+      api("/api/integrations/public")
     ]);
+    state.publicIntegrations = publicIntegrations || {};
     state.serverAvailable = true;
     if (notesState.state && Object.keys(notesState.state).length) {
       window.ORIGOFragranceNotes?.setState(notesState.state);
@@ -1024,10 +1028,11 @@ async function loadAdminDashboardData() {
     state.catalogProducts = [];
   }
   try {
-    const [ordersResult, workspaceResult, staffResult] = await Promise.all([
+    const [ordersResult, workspaceResult, staffResult, integrationsResult] = await Promise.all([
       hasStaffPermission("orders:view") ? api("/api/admin/orders") : Promise.resolve({ orders: [] }),
       api("/api/admin/workspace"),
-      hasStaffPermission("users") ? api("/api/admin/staff") : Promise.resolve({ staff: [] })
+      hasStaffPermission("users") ? api("/api/admin/staff") : Promise.resolve({ staff: [] }),
+      hasStaffPermission("settings") ? api("/api/admin/integrations") : Promise.resolve({ integrations: {} })
     ]);
     state.adminOrders = ordersResult.orders || [];
     if (workspaceResult.state && Object.keys(workspaceResult.state).length) {
@@ -1043,6 +1048,7 @@ async function loadAdminDashboardData() {
     }
     state.adminActivity = workspaceResult.activity || [];
     state.adminStaff = staffResult.staff || [];
+    state.integrationStatus = integrationsResult.integrations || {};
   } catch {
     state.adminOrders = [];
   }
@@ -1178,6 +1184,8 @@ function orderDetailsMarkup(order) {
     <header><div><span class="eyebrow">ORDER ${escapeHTML(order.orderNumber)}</span><h3>${escapeHTML(order.customerName)}</h3></div>
       <div><button type="button" class="secondary-button compact-button" data-action="print-order" data-id="${order.id}" data-kind="invoice">${ar ? "طباعة فاتورة" : "Print invoice"}</button>
       <button type="button" class="secondary-button compact-button" data-action="print-order" data-id="${order.id}" data-kind="label">${ar ? "بوليصة شحن" : "Shipping label"}</button>
+      ${state.integrationStatus.bosta?.configured ? `<button type="button" class="secondary-button compact-button" data-action="create-bosta-shipment" data-id="${order.id}">${ar ? "إنشاء شحنة Bosta" : "Create Bosta shipment"}</button>` : ""}
+      ${state.integrationStatus.whatsapp?.configured ? `<button type="button" class="secondary-button compact-button" data-action="send-whatsapp-order" data-id="${order.id}">${ar ? "إرسال WhatsApp" : "Send WhatsApp"}</button>` : ""}
       <button type="button" class="icon-button" data-action="close-order-details">×</button></div></header>
     <section class="review-grid">
       <label>${ar ? "حالة الطلب" : "Order status"}<select name="status">${orderStatusOptions(order.status)}</select></label>
@@ -1282,7 +1290,9 @@ function genericRowsFor(view) {
     support: state.adminWorkspace.tickets.map((ticket) => ({ ...ticket, detail: `${ticket.customer} · ${ticket.priority}` })),
     team: state.adminWorkspace.team.map((member) => ({ ...member, detail: `${member.role} · ${member.lastLogin}` }))
   };
-  return [...(defaults[view] || []), ...(state.adminWorkspace.entities[view] || [])];
+  const rows = new Map((defaults[view] || []).map((item) => [item.id, item]));
+  for (const item of state.adminWorkspace.entities[view] || []) rows.set(item.id, item);
+  return [...rows.values()].filter((item) => !item._deleted);
 }
 
 function genericEntityMarkup(view) {
@@ -1290,7 +1300,7 @@ function genericEntityMarkup(view) {
   return `<section class="admin-generic-grid">${rows.map((item) => `<article><header><span>${adminSection(view).icon}</span><i class="${escapeHTML(item.status || "active")}">${escapeHTML(adminStatusLabel(item.status || "active"))}</i></header>
     <h3>${escapeHTML(item.name || item.id)}</h3><p>${escapeHTML(item.detail || item.contact || item.type || item.due || "")}</p>
     <footer>${item.amount != null ? `<b>${formatPrice(item.amount)}</b>` : item.fee != null ? `<b>${formatPrice(item.fee)}</b>` : item.budget != null ? `<b>${formatPrice(item.budget)}</b>` : `<b>${escapeHTML(item.id || "")}</b>`}
-      <button data-action="admin-edit-entity" data-view="${view}" data-id="${escapeHTML(item.id || "")}">•••</button></footer></article>`).join("")}
+      <span class="admin-table-actions"><button data-action="admin-edit-entity" data-view="${view}" data-id="${escapeHTML(item.id || "")}">${state.lang === "ar" ? "تعديل" : "Edit"}</button><button class="danger" data-action="admin-delete-entity" data-view="${view}" data-id="${escapeHTML(item.id || "")}">${state.lang === "ar" ? "حذف" : "Delete"}</button></span></footer></article>`).join("")}
     <button class="admin-add-entity-card" data-action="admin-create-entity" data-view="${view}"><span>＋</span><b>${state.lang === "ar" ? "إضافة سجل جديد" : "Add new record"}</b><small>${state.lang === "ar" ? "يحفظ محليًا وجاهز للربط مع API" : "Saved locally and API-ready"}</small></button></section>`;
 }
 
@@ -1307,8 +1317,8 @@ function accountingMarkup() {
     ${adminMetric("⇣", state.lang === "ar" ? "تكلفة البضاعة" : "Cost of goods", formatPrice(cost), "")}
     ${adminMetric("◎", state.lang === "ar" ? "تكلفة الإعلانات" : "Ad spend", formatPrice(ads), "")}
     ${adminMetric("◆", state.lang === "ar" ? "صافي الربح التقديري" : "Estimated net", formatPrice(net), net >= 0 ? "" : (state.lang === "ar" ? "بانتظار مبيعات فعلية" : "Awaiting live sales"), net < 0 ? "warning" : "burgundy")}
-    </section><div class="admin-integration-note"><span>i</span><div><b>${state.lang === "ar" ? "طبقة المحاسبة جاهزة للتكامل" : "Accounting layer is integration-ready"}</b>
-    <p>${state.lang === "ar" ? "أضف بوابات الدفع والمصروفات الفعلية لتحويل الأرقام التقديرية إلى تقارير مالية معتمدة." : "Connect payment gateways and live expenses to turn estimates into reconciled statements."}</p></div></div>`;
+    </section><div class="admin-integration-note"><span>i</span><div><b>${state.lang === "ar" ? "ملخص مالي من الطلبات المحفوظة" : "Financial summary from stored orders"}</b>
+    <p>${state.lang === "ar" ? "تُحسب الإيرادات والتكلفة والإنفاق الإعلاني من بيانات المتجر الحالية، وتتحدث عند حفظ أي عملية." : "Revenue, cost, and ad spend use the store's current saved data and update after every saved operation."}</p></div></div>`;
 }
 
 function reportsMarkup() {
@@ -1324,6 +1334,15 @@ function reportsMarkup() {
 
 function settingsMarkup() {
   const settings = state.adminWorkspace.settings;
+  const providers = [
+    ["paymob", "Paymob", "PAYMOB_SECRET_KEY · PAYMOB_PUBLIC_KEY · PAYMOB_INTEGRATION_IDS"],
+    ["bosta", "Bosta", "BOSTA_API_KEY"],
+    ["whatsapp", "WhatsApp Cloud", "WHATSAPP_ACCESS_TOKEN · WHATSAPP_PHONE_NUMBER_ID · WHATSAPP_VERIFY_TOKEN"],
+    ["metaAds", "Facebook + Instagram", "META_PIXEL_ID · META_CAPI_ACCESS_TOKEN"],
+    ["snapchatAds", "Snapchat", "SNAP_PIXEL_ID · SNAP_CAPI_ACCESS_TOKEN"],
+    ["tiktokAds", "TikTok", "TIKTOK_PIXEL_ID · TIKTOK_ACCESS_TOKEN"],
+    ["googleAds", "YouTube + Google Ads", "GOOGLE_ADS_* · GOOGLE_OAUTH_*"]
+  ];
   return `<form class="admin-settings-form" id="admin-settings-form"><section><div class="review-section-head"><span>01</span><div><b>${state.lang === "ar" ? "هوية المتجر" : "Store identity"}</b></div></div>
     <div class="review-grid"><label>${state.lang === "ar" ? "اسم المتجر" : "Store name"}<input name="storeName" value="${escapeHTML(settings.storeName)}" /></label>
     <label>${state.lang === "ar" ? "العملة" : "Currency"}<select name="currency">${selectOptions([["EGP","EGP"],["USD","USD"],["SAR","SAR"]], settings.currency)}</select></label>
@@ -1331,10 +1350,15 @@ function settingsMarkup() {
     <section><div class="review-section-head"><span>02</span><div><b>${state.lang === "ar" ? "الإشعارات والأمان" : "Notifications & security"}</b></div></div>
     <label class="admin-toggle-row"><span><b>${state.lang === "ar" ? "تنبيهات المخزون" : "Low-stock alerts"}</b><small>${state.lang === "ar" ? "تنبيه عند بلوغ الحد الأدنى" : "Notify at reorder threshold"}</small></span><input name="lowStockAlerts" type="checkbox"${settings.lowStockAlerts ? " checked" : ""} /></label>
     <label class="admin-toggle-row"><span><b>${state.lang === "ar" ? "إشعارات الطلبات" : "Order notifications"}</b><small>${state.lang === "ar" ? "إرسال تحديثات رحلة الطلب" : "Send order journey updates"}</small></span><input name="orderNotifications" type="checkbox"${settings.orderNotifications ? " checked" : ""} /></label></section>
+    <section><div class="review-section-head"><span>03</span><div><b>${state.lang === "ar" ? "الاتصالات الخارجية" : "External integrations"}</b><small>${state.lang === "ar" ? "لا تظهر المفاتيح السرية في المتصفح." : "Secret keys are never exposed to the browser."}</small></div></div>
+    <div class="admin-family-grid">${providers.map(([id, name, keys]) => {
+      const ready = Boolean(state.integrationStatus[id]?.configured);
+      return `<article style="--family-color:${ready ? "#247a55" : "#8f6d58"}"><span>${ready ? "✓" : "○"}</span><div><b>${name}</b><small>${ready ? (state.lang === "ar" ? "متصل وجاهز" : "Connected and ready") : keys}</small></div></article>`;
+    }).join("")}</div></section>
     <button class="button burgundy-button" type="submit">${state.lang === "ar" ? "حفظ الإعدادات" : "Save settings"} ←</button></form>`;
 }
 
-function entityCreateForm(view) {
+function entityCreateForm(view, item = null) {
   const section = adminSection(view);
   if (view === "team") {
     return `<form id="admin-staff-form" class="admin-quick-create">
@@ -1346,11 +1370,11 @@ function entityCreateForm(view) {
       <div><button type="button" class="secondary-button compact-button" data-action="cancel-admin-create">${state.lang === "ar" ? "إلغاء" : "Cancel"}</button>
       <button class="button burgundy-button" type="submit">${state.lang === "ar" ? "إنشاء الحساب" : "Create account"}</button></div></form>`;
   }
-  return `<form id="admin-entity-form" class="admin-quick-create"><input type="hidden" name="view" value="${view}" />
-    <div><span class="eyebrow">${section.icon} ${escapeHTML(state.lang === "ar" ? section.ar : section.en)}</span><h3>${state.lang === "ar" ? "إضافة سجل جديد" : "Add new record"}</h3></div>
-    <label>${state.lang === "ar" ? "الاسم" : "Name"}<input name="name" required /></label>
-    <label>${state.lang === "ar" ? "التفاصيل" : "Details"}<input name="detail" /></label>
-    <label>${state.lang === "ar" ? "الحالة" : "Status"}<select name="status"><option value="active">${adminStatusLabel("active")}</option><option value="draft">${adminStatusLabel("draft")}</option><option value="scheduled">${adminStatusLabel("scheduled")}</option></select></label>
+  return `<form id="admin-entity-form" class="admin-quick-create"><input type="hidden" name="view" value="${view}" /><input type="hidden" name="id" value="${escapeHTML(item?.id || "")}" />
+    <div><span class="eyebrow">${section.icon} ${escapeHTML(state.lang === "ar" ? section.ar : section.en)}</span><h3>${item ? (state.lang === "ar" ? "تعديل السجل" : "Edit record") : (state.lang === "ar" ? "إضافة سجل جديد" : "Add new record")}</h3></div>
+    <label>${state.lang === "ar" ? "الاسم" : "Name"}<input name="name" required value="${escapeHTML(item?.name || "")}" /></label>
+    <label>${state.lang === "ar" ? "التفاصيل" : "Details"}<input name="detail" value="${escapeHTML(item?.detail || item?.contact || item?.type || item?.due || "")}" /></label>
+    <label>${state.lang === "ar" ? "الحالة" : "Status"}<select name="status">${selectOptions([["active",adminStatusLabel("active")],["draft",adminStatusLabel("draft")],["scheduled",adminStatusLabel("scheduled")]], item?.status || "active")}</select></label>
     <div><button type="button" class="secondary-button compact-button" data-action="cancel-admin-create">${state.lang === "ar" ? "إلغاء" : "Cancel"}</button>
     <button class="button burgundy-button" type="submit">${state.lang === "ar" ? "حفظ" : "Save"}</button></div></form>`;
 }
@@ -1601,6 +1625,12 @@ function renderCheckout() {
     translateWithin(grid);
   }
   const form = $("#checkout-form");
+  const paymentChoice = form.querySelector(".payment-choice");
+  if (paymentChoice) {
+    paymentChoice.innerHTML = state.publicIntegrations.paymobAvailable
+      ? `<span>✓</span><label><b>${state.lang === "ar" ? "طريقة الدفع" : "Payment method"}</b><select name="paymentProvider"><option value="cod">${state.lang === "ar" ? "الدفع عند الاستلام" : "Cash on delivery"}</option><option value="paymob">${state.lang === "ar" ? "بطاقة أو محفظة عبر Paymob" : "Card or wallet via Paymob"}</option></select></label>`
+      : `<span>✓</span><div><b>${translations[state.lang].cashOnDelivery}</b><small>${translations[state.lang].cashOnDeliveryBody}</small></div><input type="hidden" name="paymentProvider" value="cod" />`;
+  }
   form.elements.name.value = state.user?.name || "";
   form.elements.phone.value = state.user?.phone || "";
   const items = state.cart.map((item) => ({ item, product: getProduct(item.id) })).filter(({ product }) => product);
@@ -3378,6 +3408,35 @@ document.addEventListener("click", async (event) => {
     const order = state.adminOrders.find((item) => Number(item.id) === Number(actionElement.dataset.id));
     if (order) printOrderDocument(order, actionElement.dataset.kind);
   }
+  if (action === "create-bosta-shipment") {
+    actionElement.disabled = true;
+    try {
+      const result = await api(`/api/admin/orders/${actionElement.dataset.id}/shipment`, {
+        method: "POST",
+        body: JSON.stringify({})
+      });
+      state.adminOrders = state.adminOrders.map((order) => Number(order.id) === Number(result.order.id) ? result.order : order);
+      renderAdminDashboard("orders");
+      showToast(adminCopy("تم إنشاء الشحنة وحفظ رقم التتبع", "Shipment created and tracking saved"));
+    } catch (error) {
+      showToast(error.message);
+      actionElement.disabled = false;
+    }
+  }
+  if (action === "send-whatsapp-order") {
+    actionElement.disabled = true;
+    try {
+      await api(`/api/admin/orders/${actionElement.dataset.id}/whatsapp`, {
+        method: "POST",
+        body: JSON.stringify({ language: state.lang })
+      });
+      showToast(adminCopy("تم إرسال رسالة WhatsApp", "WhatsApp message sent"));
+    } catch (error) {
+      showToast(error.message);
+    } finally {
+      actionElement.disabled = false;
+    }
+  }
   if (action === "open-notes-admin") {
     closeOverlay($("#admin-overlay"));
     renderNotesAdmin();
@@ -3390,7 +3449,25 @@ document.addEventListener("click", async (event) => {
   }
   if (action === "cancel-admin-create") renderAdminDashboard(state.adminView);
   if (action === "admin-edit-entity") {
-    showToast(adminCopy("السجل جاهز للتحرير عند ربط مزود البيانات النهائي", "Record is ready for editing when its provider API is connected"));
+    const view = actionElement.dataset.view || state.adminView;
+    const item = genericRowsFor(view).find((row) => String(row.id) === String(actionElement.dataset.id));
+    if (item) {
+      const content = $("#admin-dashboard-content");
+      content.insertAdjacentHTML("afterbegin", entityCreateForm(view, item));
+      content.querySelector("#admin-entity-form input[name='name']")?.focus();
+    }
+  }
+  if (action === "admin-delete-entity") {
+    const view = actionElement.dataset.view || state.adminView;
+    const id = String(actionElement.dataset.id || "");
+    if (window.confirm(adminCopy("حذف هذا السجل؟", "Delete this record?"))) {
+      const rows = (state.adminWorkspace.entities[view] || []).filter((item) => String(item.id) !== id);
+      rows.push({ id, _deleted: true });
+      state.adminWorkspace.entities[view] = rows;
+      saveAdminWorkspace(view);
+      renderAdminDashboard(view);
+      showToast(adminCopy("تم حذف السجل", "Record deleted"));
+    }
   }
   if (action === "admin-export") {
     exportAdminReport(actionElement.dataset.report || state.adminView, actionElement.dataset.format || "csv");
@@ -3575,12 +3652,16 @@ document.addEventListener("submit", async (event) => {
     const data = new FormData(event.target);
     const view = String(data.get("view") || state.adminView);
     const rows = state.adminWorkspace.entities[view] || [];
-    rows.unshift({
-      id: `${view}-${Date.now().toString(36)}`,
+    const id = String(data.get("id") || `${view}-${Date.now().toString(36)}`);
+    const next = {
+      id,
       name: String(data.get("name") || "").trim(),
       detail: String(data.get("detail") || "").trim(),
       status: String(data.get("status") || "active")
-    });
+    };
+    const existingIndex = rows.findIndex((item) => String(item.id) === id);
+    if (existingIndex >= 0) rows[existingIndex] = next;
+    else rows.unshift(next);
     state.adminWorkspace.entities[view] = rows;
     saveAdminWorkspace();
     renderAdminDashboard(view);
@@ -3707,8 +3788,20 @@ document.addEventListener("submit", async (event) => {
       await pushCart();
       const result = await api("/api/orders", {
         method: "POST",
-        body: JSON.stringify(Object.fromEntries(new FormData(form)))
+        body: JSON.stringify({
+          ...Object.fromEntries(new FormData(form)),
+          attribution: window.ORIGOTracking?.attribution?.() || {}
+        })
       });
+      window.ORIGOTracking?.purchase?.(result.order);
+      if (result.order.paymentProvider === "paymob") {
+        const paymentResult = await api("/api/payments/paymob/intention", {
+          method: "POST",
+          body: JSON.stringify({ orderId: result.order.id })
+        });
+        window.location.assign(paymentResult.payment.checkoutUrl);
+        return;
+      }
       state.cart = [];
       localStorage.setItem("origoCart", "[]");
       renderCart();
