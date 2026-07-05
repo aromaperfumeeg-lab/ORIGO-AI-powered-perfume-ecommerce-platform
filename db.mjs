@@ -15,6 +15,21 @@ const DB_PATH = resolve(process.env.ORIGO_DB_PATH || resolve(ROOT, "data", "orig
 const SESSION_DAYS = Math.max(1, Number(process.env.ORIGO_SESSION_DAYS || 30));
 const scrypt = promisify(scryptCallback);
 
+export const ROLE_PERMISSIONS = {
+  owner: ["*"],
+  admin: ["*"],
+  manager: ["catalog", "orders", "customers", "inventory", "reports"],
+  product_manager: ["catalog", "inventory"],
+  order_manager: ["orders", "customers", "shipping"],
+  customer_support: ["orders:view", "customers", "support", "reviews"],
+  accountant: ["orders:view", "accounting", "reports"],
+  marketing_manager: ["marketing", "coupons", "content", "reports:view"],
+  warehouse_staff: ["orders:view", "inventory", "purchases"],
+  delivery_staff: ["orders:view", "shipping"],
+  content_editor: ["catalog:view", "content", "reviews"]
+};
+const allowedRoles = new Set(["customer", ...Object.keys(ROLE_PERMISSIONS)]);
+
 mkdirSync(dirname(DB_PATH), { recursive: true });
 
 export const db = await openPortableDatabase(DB_PATH);
@@ -29,7 +44,11 @@ db.exec(`
     email TEXT NOT NULL UNIQUE COLLATE NOCASE,
     password_hash TEXT NOT NULL,
     phone TEXT NOT NULL DEFAULT '',
-    role TEXT NOT NULL DEFAULT 'customer' CHECK (role IN ('customer', 'admin')),
+    role TEXT NOT NULL DEFAULT 'customer' CHECK (role IN (
+      'customer', 'owner', 'admin', 'manager', 'product_manager', 'order_manager',
+      'customer_support', 'accountant', 'marketing_manager', 'warehouse_staff',
+      'delivery_staff', 'content_editor'
+    )),
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
   );
@@ -118,6 +137,22 @@ db.exec(`
     updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
   );
 
+  CREATE TABLE IF NOT EXISTS admin_workspace_state (
+    id INTEGER PRIMARY KEY CHECK (id = 1),
+    payload_json TEXT NOT NULL DEFAULT '{}',
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE TABLE IF NOT EXISTS activity_log (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    action TEXT NOT NULL,
+    entity_type TEXT NOT NULL DEFAULT '',
+    entity_id TEXT NOT NULL DEFAULT '',
+    details_json TEXT NOT NULL DEFAULT '{}',
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  );
+
   CREATE TABLE IF NOT EXISTS order_events (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     order_id INTEGER NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
@@ -133,6 +168,7 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_order_items_order ON order_items(order_id);
   CREATE INDEX IF NOT EXISTS idx_sessions_expiry ON sessions(expires_at);
   CREATE INDEX IF NOT EXISTS idx_order_events_order ON order_events(order_id, created_at DESC);
+  CREATE INDEX IF NOT EXISTS idx_activity_log_created ON activity_log(created_at DESC);
 `);
 
 const productColumns = new Set(db.prepare("PRAGMA table_info(products)").all().map((column) => column.name));
@@ -281,6 +317,7 @@ function publicUser(row) {
     email: row.email,
     phone: row.phone || "",
     role: row.role,
+    permissions: ROLE_PERMISSIONS[row.role] || [],
     createdAt: row.created_at
   };
 }
@@ -376,10 +413,11 @@ export function findUserById(id) {
 }
 
 export function createUser({ name, email, passwordHash, phone = "", role = "customer" }) {
+  const safeRole = allowedRoles.has(role) ? role : "customer";
   const result = db.prepare(`
     INSERT INTO users (name, email, password_hash, phone, role)
     VALUES (?, ?, ?, ?, ?)
-  `).run(clean(name, 100), normalizedEmail(email), passwordHash, clean(phone, 30), role);
+  `).run(clean(name, 100), normalizedEmail(email), passwordHash, clean(phone, 30), safeRole);
   return findUserById(result.lastInsertRowid);
 }
 
@@ -729,6 +767,55 @@ export function updateOrderStatus(orderId, status) {
   return result.changes ? getOrderById(orderId) : null;
 }
 
+export function updateOrderAdmin(orderId, input = {}) {
+  const allowedStatuses = new Set([
+    "new", "confirmed", "processing", "ready_to_ship", "shipped",
+    "delivered", "completed", "cancelled", "returned", "refunded"
+  ]);
+  const paymentStatuses = new Set(["pending", "paid", "partially_paid", "failed", "refunded"]);
+  const current = db.prepare("SELECT * FROM orders WHERE id = ?").get(Number(orderId));
+  if (!current) return null;
+  const nextStatus = allowedStatuses.has(input.status) ? input.status : (current.workflow_status || current.status);
+  const coarseStatus = {
+    new: "new", confirmed: "new", processing: "processing", ready_to_ship: "processing",
+    shipped: "shipped", delivered: "completed", completed: "completed",
+    cancelled: "cancelled", returned: "cancelled", refunded: "cancelled"
+  }[nextStatus];
+  const paymentStatus = paymentStatuses.has(input.paymentStatus) ? input.paymentStatus : current.payment_status;
+  const carrier = clean(input.shippingCarrier ?? current.shipping_carrier, 120);
+  const tracking = clean(input.trackingNumber ?? current.tracking_number, 160);
+  const internalNotes = clean(input.internalNotes ?? current.internal_notes, 4000);
+  db.exec("BEGIN IMMEDIATE");
+  try {
+    db.prepare(`
+      UPDATE orders SET status = ?, workflow_status = ?, payment_status = ?,
+        shipping_carrier = ?, tracking_number = ?, internal_notes = ?,
+        updated_at = CURRENT_TIMESTAMP
+      WHERE id = ?
+    `).run(coarseStatus, nextStatus, paymentStatus, carrier, tracking, internalNotes, Number(orderId));
+    if (nextStatus !== (current.workflow_status || current.status)) {
+      db.prepare(`
+        INSERT INTO order_events (order_id, event_type, status, note)
+        VALUES (?, 'status_changed', ?, '')
+      `).run(Number(orderId), nextStatus);
+    }
+    if (
+      paymentStatus !== current.payment_status || carrier !== current.shipping_carrier
+      || tracking !== current.tracking_number || internalNotes !== current.internal_notes
+    ) {
+      db.prepare(`
+        INSERT INTO order_events (order_id, event_type, status, note)
+        VALUES (?, 'admin_updated', ?, 'Order fulfilment details updated')
+      `).run(Number(orderId), nextStatus);
+    }
+    db.exec("COMMIT");
+  } catch (error) {
+    db.exec("ROLLBACK");
+    throw error;
+  }
+  return getOrderById(orderId);
+}
+
 export function getFragranceNotesState() {
   const row = db.prepare("SELECT payload_json FROM fragrance_notes_state WHERE id = 1").get();
   return parseJSON(row?.payload_json || "{}", {});
@@ -748,6 +835,47 @@ export function saveFragranceNotesState(payload) {
     ON CONFLICT(id) DO UPDATE SET payload_json = excluded.payload_json, updated_at = CURRENT_TIMESTAMP
   `).run(serialized);
   return getFragranceNotesState();
+}
+
+export function getAdminWorkspaceState() {
+  const row = db.prepare("SELECT payload_json FROM admin_workspace_state WHERE id = 1").get();
+  return parseJSON(row?.payload_json || "{}", {});
+}
+
+export function saveAdminWorkspaceState(payload) {
+  const value = payload && typeof payload === "object" ? payload : {};
+  const serialized = JSON.stringify(value);
+  if (Buffer.byteLength(serialized, "utf8") > 2_000_000) {
+    const error = new Error("ADMIN_STATE_TOO_LARGE");
+    error.code = "ADMIN_STATE_TOO_LARGE";
+    throw error;
+  }
+  db.prepare(`
+    INSERT INTO admin_workspace_state (id, payload_json, updated_at)
+    VALUES (1, ?, CURRENT_TIMESTAMP)
+    ON CONFLICT(id) DO UPDATE SET payload_json = excluded.payload_json, updated_at = CURRENT_TIMESTAMP
+  `).run(serialized);
+  return getAdminWorkspaceState();
+}
+
+export function recordActivity(userId, action, entityType = "", entityId = "", details = {}) {
+  db.prepare(`
+    INSERT INTO activity_log (user_id, action, entity_type, entity_id, details_json)
+    VALUES (?, ?, ?, ?, ?)
+  `).run(Number(userId) || null, clean(action, 120), clean(entityType, 80), clean(entityId, 160), JSON.stringify(details));
+}
+
+export function listActivity(limit = 100) {
+  return db.prepare(`
+    SELECT a.id, a.action, a.entity_type AS entityType, a.entity_id AS entityId,
+      a.details_json AS detailsJson, a.created_at AS createdAt,
+      u.name AS userName, u.email AS userEmail
+    FROM activity_log a LEFT JOIN users u ON u.id = a.user_id
+    ORDER BY a.id DESC LIMIT ?
+  `).all(Math.min(500, Math.max(1, Number(limit) || 100))).map((row) => ({
+    ...row,
+    details: parseJSON(row.detailsJson, {})
+  }));
 }
 
 export async function ensureAdminFromEnvironment() {

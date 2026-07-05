@@ -3,6 +3,7 @@ import { readFile, stat } from "node:fs/promises";
 import { extname, join, normalize, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
+  ROLE_PERMISSIONS,
   createOrder,
   createSession,
   createUser,
@@ -11,15 +12,20 @@ import {
   deleteSession,
   ensureAdminFromEnvironment,
   findUserByEmail,
+  getAdminWorkspaceState,
   getFragranceNotesState,
   getCart,
   hashPassword,
   listAllOrders,
+  listActivity,
   listOrdersForUser,
   listProducts,
   mergeCart,
   replaceCart,
   saveFragranceNotesState,
+  saveAdminWorkspaceState,
+  recordActivity,
+  updateOrderAdmin,
   updateOrderStatus,
   upsertProduct,
   userFromSession,
@@ -189,7 +195,7 @@ function requireUser(request, response, origin, role = "customer") {
     jsonResponse(response, 401, { error: "يجب تسجيل الدخول أولًا.", code: "AUTH_REQUIRED" }, origin);
     return null;
   }
-  if (role === "admin" && user.role !== "admin") {
+  if (role === "admin" && user.role === "customer") {
     jsonResponse(response, 403, { error: "هذه الصفحة متاحة لمدير المتجر فقط.", code: "ADMIN_REQUIRED" }, origin);
     return null;
   }
@@ -459,6 +465,7 @@ async function handleAPI(request, response, url, origin) {
         email: userRow.email,
         phone: userRow.phone || "",
         role: userRow.role,
+        permissions: ROLE_PERMISSIONS[userRow.role] || [],
         createdAt: userRow.created_at
       };
       const cart = mergeCart(user.id, body.cart);
@@ -535,7 +542,9 @@ async function handleAPI(request, response, url, origin) {
       if (!Number.isFinite(Number(body.price)) || Number(body.price) < 0) {
         return jsonResponse(response, 400, { error: "أدخل سعرًا صحيحًا." }, origin);
       }
-      return jsonResponse(response, 200, { product: upsertProduct(body) }, origin);
+      const product = upsertProduct(body);
+      recordActivity(user.id, "product_saved", "product", product.id, { status: product.status });
+      return jsonResponse(response, 200, { product }, origin);
     } catch (error) {
       console.error("[ORIGO PRODUCT]", error.message);
       return jsonResponse(response, 400, { error: "تعذر حفظ المنتج." }, origin);
@@ -547,11 +556,37 @@ async function handleAPI(request, response, url, origin) {
     if (!user) return;
     try {
       const body = await readJSONBody(request);
-      return jsonResponse(response, 200, { state: saveFragranceNotesState(body.state) }, origin);
+      const state = saveFragranceNotesState(body.state);
+      recordActivity(user.id, "notes_library_saved", "fragrance_notes", "library");
+      return jsonResponse(response, 200, { state }, origin);
     } catch (error) {
       const tooLarge = error.code === "NOTES_STATE_TOO_LARGE" || error.message === "REQUEST_TOO_LARGE";
       return jsonResponse(response, tooLarge ? 413 : 400, {
         error: tooLarge ? "بيانات المكتبة أكبر من الحد المسموح." : "تعذر حفظ مكتبة المكونات."
+      }, origin);
+    }
+  }
+
+  if (url.pathname === "/api/admin/workspace" && request.method === "GET") {
+    const user = requireUser(request, response, origin, "admin");
+    if (!user) return;
+    return jsonResponse(response, 200, {
+      state: getAdminWorkspaceState(),
+      activity: listActivity(100)
+    }, origin);
+  }
+
+  if (url.pathname === "/api/admin/workspace" && request.method === "POST") {
+    const user = requireUser(request, response, origin, "admin");
+    if (!user) return;
+    try {
+      const body = await readJSONBody(request);
+      const state = saveAdminWorkspaceState(body.state);
+      recordActivity(user.id, "workspace_saved", "workspace", "admin", { section: body.section || "" });
+      return jsonResponse(response, 200, { state }, origin);
+    } catch (error) {
+      return jsonResponse(response, error.code === "ADMIN_STATE_TOO_LARGE" ? 413 : 400, {
+        error: "تعذر حفظ بيانات لوحة الإدارة."
       }, origin);
     }
   }
@@ -569,11 +604,30 @@ async function handleAPI(request, response, url, origin) {
     try {
       const body = await readJSONBody(request);
       const order = updateOrderStatus(orderStatusMatch[1], String(body.status || ""));
+      if (order) recordActivity(user.id, "order_status_changed", "order", orderStatusMatch[1], { status: body.status });
       return order
         ? jsonResponse(response, 200, { order }, origin)
         : jsonResponse(response, 400, { error: "حالة الطلب غير صالحة." }, origin);
     } catch {
       return jsonResponse(response, 400, { error: "تعذر تحديث حالة الطلب." }, origin);
+    }
+  }
+
+  const orderAdminMatch = url.pathname.match(/^\/api\/admin\/orders\/(\d+)$/);
+  if (orderAdminMatch && request.method === "POST") {
+    const user = requireUser(request, response, origin, "admin");
+    if (!user) return;
+    try {
+      const body = await readJSONBody(request);
+      const order = updateOrderAdmin(orderAdminMatch[1], body);
+      if (!order) return jsonResponse(response, 404, { error: "الطلب غير موجود." }, origin);
+      recordActivity(user.id, "order_updated", "order", orderAdminMatch[1], {
+        status: order.status,
+        paymentStatus: order.paymentStatus
+      });
+      return jsonResponse(response, 200, { order }, origin);
+    } catch {
+      return jsonResponse(response, 400, { error: "تعذر تحديث تفاصيل الطلب." }, origin);
     }
   }
 

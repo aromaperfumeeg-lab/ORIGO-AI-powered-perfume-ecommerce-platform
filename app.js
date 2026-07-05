@@ -681,6 +681,8 @@ const state = {
   user: null,
   orders: [],
   adminOrders: [],
+  adminActivity: [],
+  activeAdminOrderId: null,
   serverAvailable: false,
   pendingAction: "",
   globalSearchQuery: "",
@@ -695,6 +697,10 @@ const state = {
   adminView: "overview",
   adminWorkspace
 };
+
+function isStaffUser(user = state.user) {
+  return Boolean(user && user.role !== "customer");
+}
 
 const adminSections = [
   { groupAr: "الرئيسية", groupEn: "OVERVIEW", id: "overview", icon: "◫", ar: "نظرة عامة", en: "Overview", descriptionAr: "ملخص المبيعات والطلبات والتنبيهات التي تحتاج انتباهك.", descriptionEn: "Store performance, live operations, and alerts." },
@@ -716,6 +722,20 @@ const adminSections = [
   { groupAr: "الإدارة", groupEn: "MANAGEMENT", id: "support", icon: "◌", ar: "خدمة العملاء", en: "Customer support", descriptionAr: "التذاكر والشكاوى وسجل التواصل.", descriptionEn: "Tickets, complaints, and communication history." },
   { groupAr: "الإدارة", groupEn: "MANAGEMENT", id: "team", icon: "♟", ar: "الفريق والصلاحيات", en: "Team & roles", descriptionAr: "الأدوار والصلاحيات وسجل نشاط الموظفين.", descriptionEn: "Roles, permissions, and staff activity." },
   { groupAr: "الإدارة", groupEn: "MANAGEMENT", id: "settings", icon: "⚙", ar: "الإعدادات", en: "Settings", descriptionAr: "إعدادات المتجر والأمان وSEO والإشعارات.", descriptionEn: "Store, security, SEO, and notification settings." }
+];
+
+const staffRoleDefinitions = [
+  ["owner", "Owner", "*"],
+  ["admin", "Admin", "*"],
+  ["manager", "Manager", "catalog · orders · customers · inventory · reports"],
+  ["product_manager", "Product Manager", "catalog · inventory"],
+  ["order_manager", "Order Manager", "orders · customers · shipping"],
+  ["customer_support", "Customer Support", "orders:view · customers · support · reviews"],
+  ["accountant", "Accountant", "orders:view · accounting · reports"],
+  ["marketing_manager", "Marketing Manager", "marketing · coupons · content · reports:view"],
+  ["warehouse_staff", "Warehouse Staff", "orders:view · inventory · purchases"],
+  ["delivery_staff", "Delivery Staff", "orders:view · shipping"],
+  ["content_editor", "Content Editor", "catalog:view · content · reviews"]
 ];
 
 async function api(path, options = {}) {
@@ -845,7 +865,7 @@ async function hydrateServer() {
         await pushCart();
       }
       localStorage.setItem("origoCartUserId", String(state.user.id));
-      if (state.user.role === "admin") await loadAdminCatalog();
+      if (isStaffUser()) await loadAdminCatalog();
     } else if (cartOwner) {
       state.cart = [];
       localStorage.removeItem("origoCartUserId");
@@ -863,7 +883,7 @@ async function hydrateServer() {
 }
 
 async function loadAdminCatalog() {
-  if (state.user?.role !== "admin") return [];
+  if (!isStaffUser()) return [];
   const result = await api("/api/admin/products");
   state.catalogProducts = result.products || [];
   rebuildStorefrontProducts();
@@ -872,8 +892,42 @@ async function loadAdminCatalog() {
   return state.catalogProducts;
 }
 
-function saveAdminWorkspace() {
+async function persistAdminProduct(product) {
+  const result = await api("/api/admin/products", {
+    method: "POST",
+    body: JSON.stringify(product)
+  });
+  await loadAdminCatalog();
+  if ($("#admin-overlay").classList.contains("open")) renderAdminDashboard("products");
+  return result.product;
+}
+
+function printOrderDocument(order, kind = "invoice") {
+  const ar = state.lang === "ar";
+  const isLabel = kind === "label";
+  const popup = window.open("", "_blank", "width=850,height=900");
+  if (!popup) return showToast(ar ? "اسمح بالنوافذ المنبثقة للطباعة." : "Allow popups to print.");
+  const items = (order.items || []).map((item) => `<tr><td>${escapeHTML(item.productName)}</td><td>${item.quantity}</td><td>${formatPrice(item.lineTotal)}</td></tr>`).join("");
+  popup.document.write(`<!doctype html><html lang="${ar ? "ar" : "en"}" dir="${ar ? "rtl" : "ltr"}"><meta charset="utf-8"><title>${escapeHTML(order.orderNumber)}</title>
+    <style>body{font-family:Arial,sans-serif;padding:40px;color:#181411}h1{letter-spacing:.12em}header{border-bottom:2px solid #6d1628;margin-bottom:24px}table{width:100%;border-collapse:collapse}td,th{padding:10px;border-bottom:1px solid #ddd;text-align:start}.label{font-size:20px;line-height:1.8;border:3px solid #111;padding:28px}.total{font-size:24px;font-weight:700;margin-top:24px}</style>
+    <header><h1>ORIGO</h1><p>${isLabel ? (ar ? "بوليصة شحن" : "SHIPPING LABEL") : (ar ? "فاتورة طلب" : "ORDER INVOICE")} · ${escapeHTML(order.orderNumber)}</p></header>
+    ${isLabel ? `<div class="label"><b>${escapeHTML(order.customerName)}</b><br>${escapeHTML(order.phone)}<br>${escapeHTML(order.address)}<br>${escapeHTML(order.governorate)}<hr>${escapeHTML(order.shippingCarrier || "")} · ${escapeHTML(order.trackingNumber || "")}</div>` :
+      `<p><b>${escapeHTML(order.customerName)}</b> · ${escapeHTML(order.phone)}</p><p>${escapeHTML(order.address)}، ${escapeHTML(order.governorate)}</p><table><thead><tr><th>${ar ? "المنتج" : "Product"}</th><th>${ar ? "الكمية" : "Qty"}</th><th>${ar ? "الإجمالي" : "Total"}</th></tr></thead><tbody>${items}</tbody></table><p class="total">${formatPrice(order.total)}</p>`}
+    <script>window.onload=()=>{window.print();window.onafterprint=()=>window.close()}<\/script></html>`);
+  popup.document.close();
+}
+
+let adminWorkspaceSyncTimer;
+function saveAdminWorkspace(section = state.adminView) {
   localStorage.setItem("origoAdminWorkspace", JSON.stringify(state.adminWorkspace));
+  if (!state.serverAvailable || !isStaffUser()) return;
+  clearTimeout(adminWorkspaceSyncTimer);
+  adminWorkspaceSyncTimer = setTimeout(() => {
+    api("/api/admin/workspace", {
+      method: "POST",
+      body: JSON.stringify({ state: state.adminWorkspace, section })
+    }).catch((error) => showToast(error.message));
+  }, 250);
 }
 
 function adminSection(id = state.adminView) {
@@ -945,8 +999,23 @@ function customerRows() {
 async function loadAdminDashboardData() {
   await loadAdminCatalog();
   try {
-    const result = await api("/api/admin/orders");
-    state.adminOrders = result.orders || [];
+    const [ordersResult, workspaceResult] = await Promise.all([
+      api("/api/admin/orders"),
+      api("/api/admin/workspace")
+    ]);
+    state.adminOrders = ordersResult.orders || [];
+    if (workspaceResult.state && Object.keys(workspaceResult.state).length) {
+      state.adminWorkspace = {
+        ...state.adminWorkspace,
+        ...workspaceResult.state,
+        analytics: { ...state.adminWorkspace.analytics, ...(workspaceResult.state.analytics || {}) },
+        inventory: { ...state.adminWorkspace.inventory, ...(workspaceResult.state.inventory || {}) },
+        entities: { ...state.adminWorkspace.entities, ...(workspaceResult.state.entities || {}) },
+        settings: { ...state.adminWorkspace.settings, ...(workspaceResult.state.settings || {}) }
+      };
+      localStorage.setItem("origoAdminWorkspace", JSON.stringify(state.adminWorkspace));
+    }
+    state.adminActivity = workspaceResult.activity || [];
   } catch {
     state.adminOrders = [];
   }
@@ -1061,12 +1130,39 @@ function ordersViewMarkup() {
   const headers = state.lang === "ar"
     ? ["الطلب", "العميل", "المنتجات", "الإجمالي", "الحالة", "التاريخ"]
     : ["Order", "Customer", "Products", "Total", "Status", "Date"];
-  const rows = state.adminOrders.map((order) => `<tr><td><b dir="ltr">${escapeHTML(order.orderNumber)}</b></td>
+  const rows = state.adminOrders.map((order) => `<tr><td><button class="table-action" data-action="open-order-details" data-id="${order.id}" dir="ltr">${escapeHTML(order.orderNumber)} ↗</button></td>
     <td><b>${escapeHTML(order.customerName)}</b><small>${escapeHTML(order.phone)}</small></td>
     <td>${(order.items || []).reduce((sum, item) => sum + Number(item.quantity), 0)}</td><td><b>${formatPrice(order.total)}</b></td>
     <td><select data-action="order-status" data-id="${order.id}">${orderStatusOptions(order.status)}</select></td>
     <td><small>${new Date(order.createdAt).toLocaleDateString(state.lang === "ar" ? "ar-EG" : "en-US")}</small></td></tr>`);
-  return `<div class="admin-workflow-strip">${orderStatusSummary()}</div>${adminTable(headers, rows, state.lang === "ar" ? "لا توجد طلبات بعد" : "No orders yet")}`;
+  const activeOrder = state.adminOrders.find((order) => Number(order.id) === Number(state.activeAdminOrderId));
+  return `${activeOrder ? orderDetailsMarkup(activeOrder) : ""}<div class="admin-workflow-strip">${orderStatusSummary()}</div>${adminTable(headers, rows, state.lang === "ar" ? "لا توجد طلبات بعد" : "No orders yet")}`;
+}
+
+function orderDetailsMarkup(order) {
+  const ar = state.lang === "ar";
+  const paymentOptions = [
+    ["pending", ar ? "معلّق" : "Pending"], ["paid", ar ? "مدفوع" : "Paid"],
+    ["partially_paid", ar ? "مدفوع جزئياً" : "Partially paid"],
+    ["failed", ar ? "فشل" : "Failed"], ["refunded", ar ? "مسترد" : "Refunded"]
+  ];
+  return `<form id="admin-order-details-form" class="admin-order-detail">
+    <input type="hidden" name="id" value="${order.id}" />
+    <header><div><span class="eyebrow">ORDER ${escapeHTML(order.orderNumber)}</span><h3>${escapeHTML(order.customerName)}</h3></div>
+      <div><button type="button" class="secondary-button compact-button" data-action="print-order" data-id="${order.id}" data-kind="invoice">${ar ? "طباعة فاتورة" : "Print invoice"}</button>
+      <button type="button" class="secondary-button compact-button" data-action="print-order" data-id="${order.id}" data-kind="label">${ar ? "بوليصة شحن" : "Shipping label"}</button>
+      <button type="button" class="icon-button" data-action="close-order-details">×</button></div></header>
+    <section class="review-grid">
+      <label>${ar ? "حالة الطلب" : "Order status"}<select name="status">${orderStatusOptions(order.status)}</select></label>
+      <label>${ar ? "حالة الدفع" : "Payment status"}<select name="paymentStatus">${selectOptions(paymentOptions, order.paymentStatus || "pending")}</select></label>
+      <label>${ar ? "شركة الشحن" : "Carrier"}<input name="shippingCarrier" value="${escapeHTML(order.shippingCarrier || "")}" /></label>
+      <label>${ar ? "رقم التتبع" : "Tracking number"}<input name="trackingNumber" value="${escapeHTML(order.trackingNumber || "")}" /></label>
+    </section>
+    <label>${ar ? "ملاحظات داخلية" : "Internal notes"}<textarea name="internalNotes" rows="3">${escapeHTML(order.internalNotes || "")}</textarea></label>
+    <div class="admin-order-items">${(order.items || []).map((item) => `<span><b>${item.quantity}× ${escapeHTML(item.productName)}</b><i>${formatPrice(item.lineTotal)}</i></span>`).join("")}</div>
+    <div class="admin-order-timeline">${(order.timeline || []).map((event) => `<span><i></i><b>${escapeHTML(event.status || event.type)}</b><small>${escapeHTML(event.createdAt || "")}</small></span>`).join("")}</div>
+    <footer><strong>${formatPrice(order.total)}</strong><button class="button burgundy-button" type="submit">${ar ? "حفظ تفاصيل الطلب" : "Save order details"}</button></footer>
+  </form>`;
 }
 
 function productViewMarkup() {
@@ -1079,7 +1175,12 @@ function productViewMarkup() {
       <td><small dir="ltr">${escapeHTML(product.sku || "—")}</small></td><td><b>${formatPrice(product.price)}</b></td>
       <td><span class="stock-pill ${inventory.quantity - inventory.reserved <= inventory.minimum ? "low" : ""}">${inventory.quantity - inventory.reserved}</span></td>
       <td><span class="admin-status ${escapeHTML(product.status || "published")}">${adminStatusLabel(product.status || "published")}</span></td>
-      <td><button class="table-action" data-action="edit-admin-product" data-id="${escapeHTML(product.id)}">${state.lang === "ar" ? "تعديل" : "Edit"} ↗</button></td></tr>`;
+      <td><span class="admin-table-actions">
+        <button class="table-action" data-action="edit-admin-product" data-id="${escapeHTML(product.id)}">${state.lang === "ar" ? "تعديل" : "Edit"}</button>
+        <button class="table-action" data-action="duplicate-admin-product" data-id="${escapeHTML(product.id)}">${state.lang === "ar" ? "نسخ" : "Duplicate"}</button>
+        <button class="table-action" data-action="toggle-admin-product" data-id="${escapeHTML(product.id)}">${product.status === "published" ? (state.lang === "ar" ? "إيقاف" : "Disable") : (state.lang === "ar" ? "نشر" : "Publish")}</button>
+        <button class="table-action danger" data-action="archive-admin-product" data-id="${escapeHTML(product.id)}">${state.lang === "ar" ? "أرشفة" : "Archive"}</button>
+      </span></td></tr>`;
   });
   return adminTable(headers, rows, state.lang === "ar" ? "لا توجد منتجات" : "No products");
 }
@@ -1108,6 +1209,21 @@ function customersViewMarkup() {
     <td dir="ltr">${escapeHTML(customer.phone)}</td><td>${customer.orders}</td><td><b>${formatPrice(customer.total)}</b></td>
     <td>${formatPrice(customer.total / customer.orders)}</td><td><span class="admin-status active">${customer.total > 5000 ? "VIP" : customer.orders > 1 ? (state.lang === "ar" ? "متكرر" : "Repeat") : (state.lang === "ar" ? "جديد" : "New")}</span></td></tr>`);
   return adminTable(headers, rows, state.lang === "ar" ? "تظهر ملفات العملاء بعد أول طلب" : "Customer profiles appear after the first order");
+}
+
+function teamViewMarkup() {
+  const ar = state.lang === "ar";
+  return `<section class="admin-generic-grid">${(state.adminWorkspace.team || []).map((member) => `<article>
+    <header><span>♟</span><i class="${escapeHTML(member.status || "active")}">${adminStatusLabel(member.status || "active")}</i></header>
+    <h3>${escapeHTML(member.name)}</h3><p>${escapeHTML(member.role)} · ${escapeHTML(member.lastLogin || "")}</p>
+    <footer><b>${escapeHTML(member.id)}</b><button data-action="admin-edit-entity" data-view="team" data-id="${escapeHTML(member.id)}">•••</button></footer>
+  </article>`).join("")}</section>
+  <section class="admin-list-card"><header><div><span class="eyebrow">ROLE BASED ACCESS CONTROL</span><h3>${ar ? "مصفوفة الأدوار والصلاحيات" : "Roles and permissions matrix"}</h3></div></header>
+    <div>${staffRoleDefinitions.map(([id, name, permissions]) => `<article class="admin-ranked-product"><b>♟</b><span><strong>${escapeHTML(name)}</strong><small>${escapeHTML(id)}</small></span><i>${escapeHTML(permissions)}</i></article>`).join("")}</div>
+  </section>
+  <section class="admin-list-card"><header><div><span class="eyebrow">ACTIVITY LOG</span><h3>${ar ? "آخر عمليات الموظفين" : "Recent staff activity"}</h3></div></header>
+    <div>${state.adminActivity.length ? state.adminActivity.slice(0, 20).map((entry) => `<article class="admin-ranked-product"><b>◷</b><span><strong>${escapeHTML(entry.action)}</strong><small>${escapeHTML(entry.userName || entry.userEmail || "System")}</small></span><i>${escapeHTML(entry.createdAt || "")}</i></article>`).join("") : `<div class="admin-table-empty">${ar ? "يظهر السجل بعد أول عملية إدارية." : "Activity appears after the first admin action."}</div>`}</div>
+  </section>`;
 }
 
 function notesViewMarkup() {
@@ -1175,8 +1291,8 @@ function reportsMarkup() {
     ["inventory", "تقرير المخزون", "Inventory report"], ["campaigns", "تقرير الإعلانات", "Campaign report"],
     ["shipping", "تقرير الشحن", "Shipping report"], ["returns", "تقرير المرتجعات", "Returns report"]
   ];
-  return `<section class="admin-report-grid">${reports.map(([id, ar, en]) => `<article><span>▥</span><div><b>${state.lang === "ar" ? ar : en}</b><small>CSV · Excel-ready</small></div>
-    <button data-action="admin-export" data-report="${id}">↓</button></article>`).join("")}</section>`;
+  return `<section class="admin-report-grid">${reports.map(([id, ar, en]) => `<article><span>▥</span><div><b>${state.lang === "ar" ? ar : en}</b><small>CSV · Excel · PDF</small></div>
+    <span class="admin-table-actions"><button data-action="admin-export" data-report="${id}" data-format="csv">CSV</button><button data-action="admin-export" data-report="${id}" data-format="xls">XLS</button><button data-action="admin-export" data-report="${id}" data-format="pdf">PDF</button></span></article>`).join("")}</section>`;
 }
 
 function settingsMarkup() {
@@ -1223,6 +1339,7 @@ function renderAdminDashboard(view = state.adminView) {
     products: productViewMarkup,
     inventory: inventoryViewMarkup,
     customers: customersViewMarkup,
+    team: teamViewMarkup,
     notes: notesViewMarkup,
     accounting: accountingMarkup,
     reports: reportsMarkup,
@@ -1243,7 +1360,7 @@ function adminSearchMarkup(query) {
     ${customerMatches.map((customer) => `<button data-action="admin-view" data-view="customers"><span>♙</span><div><b>${escapeHTML(customer.name)}</b><small>${escapeHTML(customer.phone)}</small></div><i>${state.lang === "ar" ? "عميل" : "Customer"}</i></button>`).join("")}</div></section>`;
 }
 
-function exportAdminReport(report) {
+function exportAdminReport(report, format = "csv") {
   let rows = [];
   if (report === "orders") rows = state.adminOrders.map((order) => ({
     order: order.orderNumber, customer: order.customerName, phone: order.phone,
@@ -1266,6 +1383,23 @@ function exportAdminReport(report) {
     return;
   }
   const headers = [...new Set(rows.flatMap((row) => Object.keys(row)))];
+  if (format === "pdf") {
+    const popup = window.open("", "_blank", "width=1000,height=900");
+    if (!popup) return showToast(adminCopy("اسمح بالنوافذ المنبثقة للطباعة", "Allow popups to print"));
+    popup.document.write(`<!doctype html><meta charset="utf-8"><title>ORIGO ${escapeHTML(report)}</title><style>body{font-family:Arial;padding:30px}table{width:100%;border-collapse:collapse}th,td{padding:8px;border:1px solid #ddd;text-align:start}h1{color:#6d1628}</style><h1>ORIGO · ${escapeHTML(report.toUpperCase())}</h1><table><thead><tr>${headers.map((header) => `<th>${escapeHTML(header)}</th>`).join("")}</tr></thead><tbody>${rows.map((row) => `<tr>${headers.map((header) => `<td>${escapeHTML(String(row[header] ?? ""))}</td>`).join("")}</tr>`).join("")}</tbody></table><script>window.onload=()=>window.print()<\/script>`);
+    popup.document.close();
+    return;
+  }
+  if (format === "xls") {
+    const html = `\uFEFF<table><thead><tr>${headers.map((header) => `<th>${escapeHTML(header)}</th>`).join("")}</tr></thead><tbody>${rows.map((row) => `<tr>${headers.map((header) => `<td>${escapeHTML(String(row[header] ?? ""))}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
+    const url = URL.createObjectURL(new Blob([html], { type: "application/vnd.ms-excel;charset=utf-8" }));
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `origo-${report}-${new Date().toISOString().slice(0, 10)}.xls`;
+    link.click();
+    URL.revokeObjectURL(url);
+    return showToast(adminCopy("تم تجهيز ملف Excel", "Excel file prepared"));
+  }
   const escapeCSV = (value) => `"${String(value ?? "").replaceAll("\"", "\"\"")}"`;
   const csvText = "\uFEFF" + [headers.map(escapeCSV).join(","), ...rows.map((row) => headers.map((header) => escapeCSV(row[header])).join(","))].join("\r\n");
   const url = URL.createObjectURL(new Blob([csvText], { type: "text/csv;charset=utf-8" }));
@@ -1328,7 +1462,7 @@ async function renderAccount() {
         <div><b>${escapeHTML(state.user.name)}</b><span dir="ltr">${escapeHTML(state.user.email)}</span>${state.user.phone ? `<span dir="ltr">${escapeHTML(state.user.phone)}</span>` : ""}</div>
       </div>
       <div class="account-actions">
-        ${state.user.role === "admin" ? `<button class="button burgundy-button" data-action="open-admin">${ar ? "إدارة المتجر" : "Manage store"}</button>` : ""}
+        ${isStaffUser() ? `<button class="button burgundy-button" data-action="open-admin">${ar ? "إدارة المتجر" : "Manage store"}</button>` : ""}
         <button class="button secondary-button" data-action="logout">${ar ? "تسجيل الخروج" : "Sign out"}</button>
       </div>
       <div class="account-orders">
@@ -2092,7 +2226,7 @@ function productNotePyramid(product) {
 async function persistNotesState() {
   const value = window.ORIGOFragranceNotes.getState();
   localStorage.setItem("origoFragranceNotesState", JSON.stringify(value));
-  if (state.serverAvailable && state.user?.role === "admin") {
+  if (state.serverAvailable && isStaffUser()) {
     const result = await api("/api/admin/notes/state", {
       method: "POST",
       body: JSON.stringify({ state: value })
@@ -3049,7 +3183,7 @@ document.addEventListener("click", async (event) => {
       showToast(adminCopy("سجّل الدخول بحساب المدير أولًا", "Sign in with an admin account first"));
       return;
     }
-    if (state.user.role !== "admin") {
+    if (!isStaffUser()) {
       showToast(adminCopy("هذه الصفحة متاحة لمدير المتجر فقط", "This area is for store administrators only"));
       return;
     }
@@ -3164,6 +3298,49 @@ document.addEventListener("click", async (event) => {
       renderImportReview(state.activeImportDraft);
     }
   }
+  if (["duplicate-admin-product", "toggle-admin-product", "archive-admin-product"].includes(action)) {
+    const product = state.catalogProducts.find((item) => item.id === actionElement.dataset.id);
+    if (product) {
+      try {
+        if (action === "duplicate-admin-product") {
+          const suffix = Date.now().toString(36);
+          await persistAdminProduct({
+            ...structuredClone(product),
+            id: `${product.id}-copy-${suffix}`,
+            sku: product.sku ? `${product.sku}-COPY` : "",
+            nameAr: `${product.nameAr || product.nameEn} — نسخة`,
+            nameEn: `${product.nameEn || product.nameAr} — Copy`,
+            status: "draft"
+          });
+          showToast(adminCopy("تم نسخ المنتج كمسودة", "Product duplicated as a draft"));
+        } else {
+          await persistAdminProduct({
+            ...structuredClone(product),
+            status: action === "archive-admin-product"
+              ? "unavailable"
+              : (product.status === "published" ? "unavailable" : "published")
+          });
+          showToast(action === "archive-admin-product"
+            ? adminCopy("تمت أرشفة المنتج", "Product archived")
+            : adminCopy("تم تحديث حالة النشر", "Publishing status updated"));
+        }
+      } catch (error) {
+        showToast(error.message);
+      }
+    }
+  }
+  if (action === "open-order-details") {
+    state.activeAdminOrderId = Number(actionElement.dataset.id);
+    renderAdminDashboard("orders");
+  }
+  if (action === "close-order-details") {
+    state.activeAdminOrderId = null;
+    renderAdminDashboard("orders");
+  }
+  if (action === "print-order") {
+    const order = state.adminOrders.find((item) => Number(item.id) === Number(actionElement.dataset.id));
+    if (order) printOrderDocument(order, actionElement.dataset.kind);
+  }
   if (action === "open-notes-admin") {
     closeOverlay($("#admin-overlay"));
     renderNotesAdmin();
@@ -3179,7 +3356,7 @@ document.addEventListener("click", async (event) => {
     showToast(adminCopy("السجل جاهز للتحرير عند ربط مزود البيانات النهائي", "Record is ready for editing when its provider API is connected"));
   }
   if (action === "admin-export") {
-    exportAdminReport(actionElement.dataset.report || state.adminView);
+    exportAdminReport(actionElement.dataset.report || state.adminView, actionElement.dataset.format || "csv");
   }
   if (action === "notes-admin-tab") switchNotesAdminTab(actionElement.dataset.tab);
   if (action === "new-note") {
@@ -3315,6 +3492,27 @@ document.addEventListener("click", async (event) => {
 
 document.addEventListener("submit", async (event) => {
   event.preventDefault();
+  if (event.target.id === "admin-order-details-form") {
+    const data = new FormData(event.target);
+    try {
+      const result = await api(`/api/admin/orders/${data.get("id")}`, {
+        method: "POST",
+        body: JSON.stringify({
+          status: String(data.get("status") || "new"),
+          paymentStatus: String(data.get("paymentStatus") || "pending"),
+          shippingCarrier: String(data.get("shippingCarrier") || "").trim(),
+          trackingNumber: String(data.get("trackingNumber") || "").trim(),
+          internalNotes: String(data.get("internalNotes") || "").trim()
+        })
+      });
+      state.adminOrders = state.adminOrders.map((order) => Number(order.id) === Number(result.order.id) ? result.order : order);
+      renderAdminDashboard("orders");
+      showToast(adminCopy("تم حفظ تفاصيل الطلب وسجل الحركة", "Order details and timeline saved"));
+    } catch (error) {
+      showToast(error.message);
+    }
+    return;
+  }
   if (event.target.id === "admin-entity-form") {
     const data = new FormData(event.target);
     const view = String(data.get("view") || state.adminView);
@@ -3421,7 +3619,7 @@ document.addEventListener("submit", async (event) => {
         closeOverlay($("#account-overlay"));
         openCheckout();
       } else if (pending === "admin") {
-        if (state.user.role === "admin") {
+        if (isStaffUser()) {
           closeOverlay($("#account-overlay"));
           await openAdminDashboard();
         } else {

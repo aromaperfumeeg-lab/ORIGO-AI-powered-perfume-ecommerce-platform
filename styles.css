@@ -19,6 +19,71 @@
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+.admin-table-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.table-action.danger {
+  color: #9d2439;
+}
+
+.admin-order-detail {
+  display: grid;
+  gap: 18px;
+  margin-bottom: 24px;
+  padding: clamp(18px, 3vw, 30px);
+  border: 1px solid rgba(109, 22, 40, .18);
+  background: var(--surface, #fff);
+  box-shadow: 0 18px 50px rgba(30, 19, 15, .08);
+}
+
+.admin-order-detail > header,
+.admin-order-detail > footer,
+.admin-order-detail > header > div,
+.admin-order-items span {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.admin-order-detail textarea {
+  width: 100%;
+  resize: vertical;
+}
+
+.admin-order-items,
+.admin-order-timeline {
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+  background: rgba(109, 22, 40, .04);
+}
+
+.admin-order-timeline span {
+  display: grid;
+  grid-template-columns: 10px 1fr auto;
+  align-items: center;
+  gap: 10px;
+}
+
+.admin-order-timeline i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #7a2639;
+}
+
+@media (max-width: 700px) {
+  .admin-order-detail > header,
+  .admin-order-detail > footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
+
 * {
   box-sizing: border-box;
 }
