@@ -82,7 +82,6 @@
         <a href="#featured" data-action="catalog-category" data-category="haircare" data-i18n="navHaircare">العناية بالشعر</a>
         <a href="#featured" data-action="catalog-category" data-category="incense" data-i18n="navIncense">البخور والمباخر</a>
         <a href="#featured" data-action="catalog-category" data-category="deodorant" data-i18n="navDeodorants">مزيلات العرق</a>
-        <a href="/notes" data-action="open-notes" data-i18n="notesLibrary">مكتبة المكونات</a>
         <a href="#offers" data-i18n="offers">العروض</a>
         <div class="brands-nav">
           <button data-action="brands-menu" aria-expanded="false"><span data-i18n="navBrands">البراندات</span><i>⌄</i></button>
@@ -112,7 +111,6 @@
         <a href="#featured" data-action="close-mobile-menu" data-i18n="navHaircare">العناية بالشعر</a>
         <a href="#featured" data-action="close-mobile-menu" data-i18n="navIncense">البخور والمباخر</a>
         <a href="#featured" data-action="close-mobile-menu" data-i18n="navDeodorants">مزيلات العرق</a>
-        <a href="/notes" data-action="open-notes" data-i18n="notesLibrary">مكتبة المكونات</a>
         <a href="#offers" data-action="close-mobile-menu" data-i18n="offers">العروض</a>
       </nav>
       <div class="mobile-brands">
@@ -193,6 +191,13 @@
         </article>
       </section>
 
+      <section class="brand-carousel-section" aria-label="العلامات التجارية">
+        <div class="brand-carousel-head"><div><span class="eyebrow">BRAND DIRECTORY</span><h2 data-i18n="navBrands">البراندات</h2></div>
+          <div><input id="brand-carousel-search" type="search" placeholder="ابحث عن براند" /><button data-action="brand-carousel-scroll" data-direction="-1" aria-label="السابق">→</button><button data-action="brand-carousel-scroll" data-direction="1" aria-label="التالي">←</button></div>
+        </div>
+        <div class="brand-carousel-track" id="brand-carousel-track"></div>
+      </section>
+
       <section class="section featured-section" id="featured">
         <div class="section-heading reveal">
           <div>
@@ -212,6 +217,7 @@
             </div>
           </div>
         </div>
+        <div class="dynamic-filter-bar" id="dynamic-filter-bar" aria-label="فلاتر القسم"></div>
         <div class="product-grid horizontal-scroll" id="product-grid"></div>
       </section>
 
@@ -275,7 +281,7 @@
           <span class="eyebrow light" data-i18n="olfactoryAtlas">أطلس الروائح</span>
           <h2 data-i18n="notesTitle">اقرأ العطر<br />من <em>مكوّناته.</em></h2>
           <p data-i18n="notesBody">مكتبة بصرية مبسطة تساعدك على فهم كل نوتة والعطور التي تظهر فيها.</p>
-          <a class="text-link light" href="/notes" data-action="open-notes"><span data-i18n="browseNotes">تصفح كل النوتات</span> <span>←</span></a>
+          <a class="text-link light" href="#discover"><span data-i18n="scentFinder">استخدم مستكشف العطر</span> <span>←</span></a>
         </div>
         <div class="note-category-grid reveal">
           <article class="note-category category-citrus">
@@ -476,7 +482,7 @@
         <p data-i18n="footerBody">متجر ومنصة اكتشاف تساعدك على فهم العطر قبل امتلاكه.</p>
       </div>
       <div class="footer-links">
-        <div><b data-i18n="explore">اكتشف</b><a href="#featured" data-i18n="newArrivals">وصل حديثًا</a><a href="#discover" data-i18n="scentFinder">مستكشف ORIGO</a><a href="/notes" data-action="open-notes" data-i18n="notesLibrary">مكتبة النوتات</a></div>
+        <div><b data-i18n="explore">اكتشف</b><a href="#featured" data-i18n="newArrivals">وصل حديثًا</a><a href="#discover" data-i18n="scentFinder">مستكشف ORIGO</a></div>
         <div><b data-i18n="service">الخدمة</b><a href="#" data-i18n="shipping">الشحن والتوصيل</a><a href="#" data-i18n="returns">الاستبدال والاسترجاع</a><a href="#" data-i18n="contact">تواصل معنا</a></div>
         <div><b data-i18n="about">عن ORIGO</b><a href="#" data-i18n="ourStory">قصتنا</a><a href="#" data-i18n="authenticity">ضمان الأصالة</a><button class="footer-admin" data-action="admin" data-i18n="adminLink">إدارة المنتجات</button></div>
       </div>
@@ -634,7 +640,7 @@
             <p data-i18n="smartImportBody">نجمع البيانات من مصادر عامة مسموحة، ثم تبقى بانتظار مراجعتك قبل الحفظ.</p>
           </div>
           <div class="admin-head-actions">
-            <button class="secondary-button compact-button" data-action="admin-notes">مكتبة المكونات</button>
+            <button class="secondary-button compact-button" data-action="admin-notes">Fragrance Knowledge Base</button>
             <button class="secondary-button compact-button" data-action="back-to-dashboard">لوحة التحكم</button>
             <button class="secondary-button compact-button" data-action="admin-orders" data-i18n="orders">الطلبات</button>
             <button class="close-button" data-action="close-overlay" aria-label="إغلاق">×</button>
@@ -736,6 +742,11 @@
                   <option value="multiple">متعدد</option>
                 </select></label>
                 <label>المرادفات<input name="aliases" placeholder="Oud, Oudh, Agarwood, عود" /></label>
+                <label>القوة الافتراضية (1–5)<input name="defaultIntensity" type="number" min="1" max="5" value="3" /></label>
+                <label>المكوّن الأب<input name="parentId" dir="ltr" placeholder="musk" /></label>
+                <label>مكونات قريبة<input name="related" dir="ltr" placeholder="white-musk, amber" /></label>
+                <label>مكونات متوافقة<input name="compatible" dir="ltr" placeholder="vanilla, rose" /></label>
+                <label>مكونات متعارضة<input name="opposite" dir="ltr" placeholder="marine-note" /></label>
               </div>
               <div class="review-grid description-grid">
                 <label>وصف الرائحة بالعربية<textarea name="descriptionAr" dir="rtl"></textarea></label>

@@ -7,6 +7,8 @@ import {
   createOrder,
   createSession,
   createUser,
+  deleteFilterDefinition,
+  deleteProduct,
   databaseDriver,
   databasePath,
   deleteSession,
@@ -19,6 +21,8 @@ import {
   hashPassword,
   listAllOrders,
   listActivity,
+  listFilterDefinitions,
+  listFragranceNoteEntities,
   listOrdersForUser,
   listProducts,
   listStaff,
@@ -27,9 +31,11 @@ import {
   saveFragranceNotesState,
   saveAdminWorkspaceState,
   setUserRole,
+  syncFragranceNoteEntities,
   recordActivity,
   updateOrderAdmin,
   updateOrderStatus,
+  upsertFilterDefinition,
   upsertProduct,
   userFromSession,
   verifyPassword
@@ -513,6 +519,12 @@ async function handleAPI(request, response, url, origin) {
     return jsonResponse(response, 200, { products: listProducts() }, origin);
   }
 
+  if (url.pathname === "/api/filters" && request.method === "GET") {
+    return jsonResponse(response, 200, {
+      filters: listFilterDefinitions(url.searchParams.get("category") || "")
+    }, origin);
+  }
+
   if (url.pathname === "/api/notes/state" && request.method === "GET") {
     return jsonResponse(response, 200, { state: getFragranceNotesState() }, origin);
   }
@@ -670,8 +682,49 @@ async function handleAPI(request, response, url, origin) {
       return jsonResponse(response, 200, { product }, origin);
     } catch (error) {
       console.error("[ORIGO PRODUCT]", error.message);
-      return jsonResponse(response, 400, { error: "تعذر حفظ المنتج." }, origin);
+      return jsonResponse(response, 400, { error: `تعذر حفظ المنتج: ${error.message}` }, origin);
     }
+  }
+
+  const adminProductMatch = url.pathname.match(/^\/api\/admin\/products\/([^/]+)$/);
+  if (adminProductMatch && request.method === "DELETE") {
+    const user = requireUser(request, response, origin, "catalog");
+    if (!user) return;
+    const id = decodeURIComponent(adminProductMatch[1]);
+    const deleted = deleteProduct(id);
+    if (!deleted) return jsonResponse(response, 404, { error: "المنتج غير موجود." }, origin);
+    recordActivity(user.id, "product_deleted", "product", id);
+    return jsonResponse(response, 200, { deleted: true, id }, origin);
+  }
+
+  if (url.pathname === "/api/admin/filters" && request.method === "GET") {
+    const user = requireUser(request, response, origin, "catalog:view");
+    if (!user) return;
+    return jsonResponse(response, 200, { filters: listFilterDefinitions() }, origin);
+  }
+
+  if (url.pathname === "/api/admin/filters" && request.method === "POST") {
+    const user = requireUser(request, response, origin, "catalog");
+    if (!user) return;
+    try {
+      const body = await readJSONBody(request);
+      const filter = upsertFilterDefinition(body);
+      if (!filter) return jsonResponse(response, 400, { error: "بيانات الفلتر غير مكتملة." }, origin);
+      recordActivity(user.id, "filter_saved", "filter", filter.id, { category: filter.category, key: filter.key });
+      return jsonResponse(response, 200, { filter }, origin);
+    } catch (error) {
+      return jsonResponse(response, 400, { error: error.message || "تعذر حفظ الفلتر." }, origin);
+    }
+  }
+
+  const adminFilterMatch = url.pathname.match(/^\/api\/admin\/filters\/(\d+)$/);
+  if (adminFilterMatch && request.method === "DELETE") {
+    const user = requireUser(request, response, origin, "catalog");
+    if (!user) return;
+    const deleted = deleteFilterDefinition(adminFilterMatch[1]);
+    if (!deleted) return jsonResponse(response, 404, { error: "الفلتر غير موجود." }, origin);
+    recordActivity(user.id, "filter_deleted", "filter", adminFilterMatch[1]);
+    return jsonResponse(response, 200, { deleted: true }, origin);
   }
 
   if (url.pathname === "/api/admin/notes/state" && request.method === "POST") {
@@ -680,14 +733,21 @@ async function handleAPI(request, response, url, origin) {
     try {
       const body = await readJSONBody(request);
       const state = saveFragranceNotesState(body.state);
+      const synced = body.knowledge ? syncFragranceNoteEntities(body.knowledge) : 0;
       recordActivity(user.id, "notes_library_saved", "fragrance_notes", "library");
-      return jsonResponse(response, 200, { state }, origin);
+      return jsonResponse(response, 200, { state, synced }, origin);
     } catch (error) {
       const tooLarge = error.code === "NOTES_STATE_TOO_LARGE" || error.message === "REQUEST_TOO_LARGE";
       return jsonResponse(response, tooLarge ? 413 : 400, {
         error: tooLarge ? "بيانات المكتبة أكبر من الحد المسموح." : "تعذر حفظ مكتبة المكونات."
       }, origin);
     }
+  }
+
+  if (url.pathname === "/api/admin/knowledge/notes" && request.method === "GET") {
+    const user = requireUser(request, response, origin, "catalog:view");
+    if (!user) return;
+    return jsonResponse(response, 200, { notes: listFragranceNoteEntities() }, origin);
   }
 
   if (url.pathname === "/api/admin/workspace" && request.method === "GET") {

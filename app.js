@@ -688,6 +688,10 @@ const state = {
   pendingAction: "",
   publicIntegrations: {},
   integrationStatus: {},
+  filterDefinitions: [],
+  activeDynamicFilters: {},
+  productEditorMode: localStorage.getItem("origoProductEditorMode") || "quick",
+  aiProductSuggestion: null,
   globalSearchQuery: "",
   storefrontSearchQuery: "",
   storefrontCategory: "all",
@@ -843,6 +847,7 @@ function rebuildStorefrontProducts() {
     .filter((product) => product.status === "published")
     .forEach((product) => productsById.set(product.id, serverProduct(product)));
   state.products = [...productsById.values()];
+  if ($("#brand-carousel-track")) renderBrandCarousel($("#brand-carousel-search")?.value || "");
 }
 
 function persist() {
@@ -866,13 +871,15 @@ async function hydrateServer() {
   const localCart = [...state.cart];
   const cartOwner = localStorage.getItem("origoCartUserId");
   try {
-    const [catalog, session, notesState, publicIntegrations] = await Promise.all([
+    const [catalog, session, notesState, publicIntegrations, filtersResult] = await Promise.all([
       api("/api/products"),
       api("/api/session"),
       api("/api/notes/state"),
-      api("/api/integrations/public")
+      api("/api/integrations/public"),
+      api("/api/filters")
     ]);
     state.publicIntegrations = publicIntegrations || {};
+    state.filterDefinitions = filtersResult.filters || [];
     state.serverAvailable = true;
     if (notesState.state && Object.keys(notesState.state).length) {
       window.ORIGOFragranceNotes?.setState(notesState.state);
@@ -894,6 +901,8 @@ async function hydrateServer() {
       localStorage.removeItem("origoCartUserId");
     }
     localStorage.setItem("origoCart", JSON.stringify(state.cart));
+    renderDynamicFilters();
+    renderBrandCarousel();
     renderProducts($(".chip.active")?.dataset.filter || "all");
     renderCart();
     renderWishlist();
@@ -1215,6 +1224,7 @@ function productViewMarkup() {
         <button class="table-action" data-action="duplicate-admin-product" data-id="${escapeHTML(product.id)}">${state.lang === "ar" ? "نسخ" : "Duplicate"}</button>
         <button class="table-action" data-action="toggle-admin-product" data-id="${escapeHTML(product.id)}">${product.status === "published" ? (state.lang === "ar" ? "إيقاف" : "Disable") : (state.lang === "ar" ? "نشر" : "Publish")}</button>
         <button class="table-action danger" data-action="archive-admin-product" data-id="${escapeHTML(product.id)}">${state.lang === "ar" ? "أرشفة" : "Archive"}</button>
+        <button class="table-action danger" data-action="delete-admin-product" data-id="${escapeHTML(product.id)}">${state.lang === "ar" ? "حذف" : "Delete"}</button>
       </span></td></tr>`;
   });
   return adminTable(headers, rows, state.lang === "ar" ? "لا توجد منتجات" : "No products");
@@ -1246,6 +1256,41 @@ function customersViewMarkup() {
   return adminTable(headers, rows, state.lang === "ar" ? "تظهر ملفات العملاء بعد أول طلب" : "Customer profiles appear after the first order");
 }
 
+function filterDefinitionForm(filter = null) {
+  const categories = [
+    ["perfume", "العطور / Perfume"], ["skincare", "العناية بالبشرة / Skincare"],
+    ["incense", "البخور / Incense"], ["burner", "المباخر / Burners"],
+    ["deodorant", "مزيلات العرق / Deodorants"], ["haircare", "العناية بالشعر / Haircare"]
+  ];
+  return `<form id="admin-filter-form" class="admin-quick-create">
+    <input type="hidden" name="id" value="${filter?.id || ""}" />
+    <div><span class="eyebrow">DYNAMIC FILTER ENGINE</span><h3>${filter ? adminCopy("تعديل الفلتر", "Edit filter") : adminCopy("إضافة فلتر", "Add filter")}</h3></div>
+    <label>${adminCopy("القسم", "Category")}<select name="category">${selectOptions(categories, filter?.category || "perfume")}</select></label>
+    <label>${adminCopy("المفتاح", "Key")}<input name="key" required value="${escapeHTML(filter?.key || "")}" placeholder="season" /></label>
+    <label>${adminCopy("الاسم العربي", "Arabic label")}<input name="labelAr" required value="${escapeHTML(filter?.labelAr || "")}" /></label>
+    <label>${adminCopy("الاسم الإنجليزي", "English label")}<input name="labelEn" required value="${escapeHTML(filter?.labelEn || "")}" /></label>
+    <label>${adminCopy("نوع الحقل", "Input type")}<select name="inputType">${selectOptions([
+      ["select","Select"],["multiselect","Multi select"],["range","Range"],["boolean","Boolean"],["text","Text"],["note","Knowledge note"]
+    ], filter?.inputType || "select")}</select></label>
+    <label>${adminCopy("الخيارات، مفصولة بفاصلة", "Comma-separated options")}<input name="options" value="${escapeHTML((filter?.options || []).join(", "))}" /></label>
+    <label class="admin-toggle-row"><span><b>${adminCopy("ظاهر", "Visible")}</b></span><input name="visible" type="checkbox"${filter?.visible !== false ? " checked" : ""} /></label>
+    <div><button type="button" class="secondary-button compact-button" data-action="cancel-admin-create">${adminCopy("إلغاء", "Cancel")}</button><button class="button burgundy-button" type="submit">${adminCopy("حفظ الفلتر", "Save filter")}</button></div>
+  </form>`;
+}
+
+function filtersViewMarkup() {
+  const grouped = new Map();
+  state.filterDefinitions.forEach((filter) => {
+    if (!grouped.has(filter.category)) grouped.set(filter.category, []);
+    grouped.get(filter.category).push(filter);
+  });
+  return `<section class="admin-filter-groups">${[...grouped].map(([category, filters]) => `<article class="admin-list-card">
+    <header><div><span class="eyebrow">${escapeHTML(category)}</span><h3>${escapeHTML(category)}</h3></div><b>${filters.length}</b></header>
+    <div>${filters.map((filter) => `<div class="admin-ranked-product"><b>${filter.visible ? "✓" : "○"}</b><span><strong>${escapeHTML(state.lang === "ar" ? filter.labelAr : filter.labelEn)}</strong><small>${escapeHTML(filter.key)} · ${escapeHTML(filter.inputType)}</small></span>
+      <span class="admin-table-actions"><button data-action="edit-filter" data-id="${filter.id}">${adminCopy("تعديل", "Edit")}</button><button class="danger" data-action="delete-filter" data-id="${filter.id}">${adminCopy("حذف", "Delete")}</button></span></div>`).join("")}</div>
+  </article>`).join("")}</section>`;
+}
+
 function teamViewMarkup() {
   const ar = state.lang === "ar";
   return `<section class="admin-generic-grid">${state.adminStaff.map((member) => `<article>
@@ -1266,8 +1311,7 @@ function notesViewMarkup() {
   return `<section class="admin-feature-hero notes-feature"><div><span class="eyebrow">FRAGRANCE NOTES LIBRARY</span>
     <h2>${state.lang === "ar" ? "مكتبة عطرية مترابطة" : "A connected olfactory library"}</h2>
     <p>${state.lang === "ar" ? "العائلات والمكونات والمرادفات والصور تتدفق تلقائيًا إلى هرم المنتج." : "Families, aliases, and artwork flow automatically into every product pyramid."}</p>
-    <div><button class="button burgundy-button" data-action="open-notes-admin">${state.lang === "ar" ? "إدارة المكتبة" : "Manage library"} ←</button>
-    <button class="button secondary-button" data-action="open-notes">${state.lang === "ar" ? "عرض صفحة المكتبة" : "View library"}</button></div></div>
+    <div><button class="button burgundy-button" data-action="open-notes-admin">${state.lang === "ar" ? "إدارة قاعدة المعرفة" : "Manage knowledge base"} ←</button></div></div>
     <div class="admin-notes-orbit"><strong>${library.notes.length}</strong><span>${state.lang === "ar" ? "مكوّن" : "notes"}</span><i>${library.families.length} ${state.lang === "ar" ? "عائلة" : "families"}</i></div></section>
     <section class="admin-family-grid">${library.families.map((family) => `<article style="--family-color:${escapeHTML(family.color)}"><span>${escapeHTML(family.symbol)}</span><div><b>${escapeHTML(state.lang === "ar" ? family.nameAr : family.nameEn)}</b>
       <small>${library.notes.filter((note) => note.familyId === family.id).length} ${state.lang === "ar" ? "مكوّن" : "notes"}</small></div></article>`).join("")}</section>`;
@@ -1390,7 +1434,8 @@ function renderAdminDashboard(view = state.adminView) {
     products: `<button class="button secondary-button" data-action="admin-export" data-report="products">${state.lang === "ar" ? "تصدير" : "Export"} ↓</button><button class="button burgundy-button" data-action="open-product-studio">${state.lang === "ar" ? "إضافة منتج" : "Add product"} ＋</button>`,
     orders: `<button class="button secondary-button" data-action="admin-export" data-report="orders">${state.lang === "ar" ? "تصدير الطلبات" : "Export orders"} ↓</button>`,
     inventory: `<button class="button secondary-button" data-action="admin-export" data-report="inventory">${state.lang === "ar" ? "تصدير المخزون" : "Export inventory"} ↓</button>`,
-    notes: `<button class="button burgundy-button" data-action="open-notes-admin">${state.lang === "ar" ? "إدارة المكتبة" : "Manage library"} ＋</button>`
+    notes: `<button class="button burgundy-button" data-action="open-notes-admin">${state.lang === "ar" ? "إدارة قاعدة المعرفة" : "Manage knowledge base"} ＋</button>`,
+    categories: `<button class="button burgundy-button" data-action="new-filter">${state.lang === "ar" ? "إضافة فلتر" : "Add filter"} ＋</button>`
   };
   $("#admin-view-actions").innerHTML = actions[view] || (["overview","accounting","reports","settings"].includes(view) ? "" :
     `<button class="button burgundy-button" data-action="admin-create-entity" data-view="${view}">${state.lang === "ar" ? "إضافة جديد" : "Add new"} ＋</button>`);
@@ -1400,6 +1445,7 @@ function renderAdminDashboard(view = state.adminView) {
     products: productViewMarkup,
     inventory: inventoryViewMarkup,
     customers: customersViewMarkup,
+    categories: filtersViewMarkup,
     team: teamViewMarkup,
     notes: notesViewMarkup,
     accounting: accountingMarkup,
@@ -1701,6 +1747,60 @@ function setupTheme() {
   localStorage.setItem("origoTheme", state.theme);
 }
 
+function productFilterValues(product, key) {
+  const values = {
+    notes: [...(product.notesAr || []), ...(product.notesEn || [])],
+    family: [state.lang === "ar" ? product.familyAr : product.familyEn],
+    brand: [product.brand],
+    concentration: [product.concentration],
+    gender: [product.gender || product.typeEn || product.type],
+    size: product.sizes || [],
+    origin: [state.lang === "ar" ? product.originCountryAr : product.originCountryEn],
+    season: product.seasons || [],
+    occasion: product.occasions || [],
+    personality: product.personalities || [],
+    longevity: [product.performance?.longevity],
+    projection: [product.performance?.projection || product.performance?.sillage]
+  }[key];
+  const custom = product.filters?.[key];
+  return (values || (Array.isArray(custom) ? custom : [custom])).filter((value) => value !== "" && value != null);
+}
+
+function renderDynamicFilters() {
+  const bar = $("#dynamic-filter-bar");
+  if (!bar) return;
+  const category = state.storefrontCategory === "all" ? "perfume" : state.storefrontCategory;
+  const definitions = state.filterDefinitions.filter((filter) => filter.category === category && filter.visible);
+  bar.innerHTML = definitions.map((filter) => {
+    const supplied = filter.options || [];
+    const derived = state.products
+      .filter((product) => product.category === category)
+      .flatMap((product) => productFilterValues(product, filter.key));
+    const options = [...new Set([...supplied, ...derived].map(String).filter(Boolean))].slice(0, 80);
+    if (!options.length || ["range", "text"].includes(filter.inputType)) return "";
+    const selected = state.activeDynamicFilters[filter.key] || "";
+    return `<label><span>${escapeHTML(state.lang === "ar" ? filter.labelAr : filter.labelEn)}</span><select data-dynamic-filter="${escapeHTML(filter.key)}"><option value="">${state.lang === "ar" ? "الكل" : "All"}</option>${options.map((option) => `<option value="${escapeHTML(option)}"${String(selected) === option ? " selected" : ""}>${escapeHTML(option)}</option>`).join("")}</select></label>`;
+  }).join("");
+  bar.hidden = !bar.children.length;
+}
+
+function renderBrandCarousel(query = "") {
+  const track = $("#brand-carousel-track");
+  if (!track) return;
+  const normalized = ORIGOCatalog.normalize(query);
+  const counts = new Map();
+  state.products.forEach((product) => {
+    const brand = String(product.brand || "ORIGO").trim();
+    counts.set(brand, (counts.get(brand) || 0) + 1);
+  });
+  const brands = [...counts].sort((a, b) => {
+    const aPinned = /^ORIGO/i.test(a[0]) ? 1 : 0;
+    const bPinned = /^ORIGO/i.test(b[0]) ? 1 : 0;
+    return bPinned - aPinned || b[1] - a[1] || a[0].localeCompare(b[0]);
+  }).filter(([brand]) => !normalized || ORIGOCatalog.normalize(brand).includes(normalized));
+  track.innerHTML = brands.map(([brand, count]) => `<button data-action="brand-search" data-query="${escapeHTML(brand)}"><span>${escapeHTML(brand.slice(0, 2).toUpperCase())}</span><b>${escapeHTML(brand)}</b><small>${count} ${state.lang === "ar" ? "منتج" : "products"}</small></button>`).join("");
+}
+
 function renderProducts(filter = "all") {
   const grid = $("#product-grid");
   const template = $("#product-template");
@@ -1708,6 +1808,9 @@ function renderProducts(filter = "all") {
   const visibleProducts = state.products
     .filter((product) => filter === "all" || product.type === filter)
     .filter((product) => state.storefrontCategory === "all" || product.category === state.storefrontCategory)
+    .filter((product) => Object.entries(state.activeDynamicFilters).every(([key, selected]) =>
+      !selected || productFilterValues(product, key).some((value) => ORIGOCatalog.normalize(value) === ORIGOCatalog.normalize(selected))
+    ))
     .filter((product) => !search || ORIGOCatalog.normalize([
       product.nameAr,
       product.nameEn,
@@ -2196,6 +2299,13 @@ function renderNoteDetail(note) {
 function handleNotesRoute({ replace = false } = {}) {
   const match = location.pathname.match(/^\/notes(?:\/([a-z0-9-]+))?\/?$/i);
   const page = $("#notes-library-page");
+  if (match && !isStaffUser()) {
+    document.body.classList.remove("notes-route");
+    page.hidden = true;
+    history.replaceState({}, "", "/#discover");
+    restoreStoreMeta();
+    return false;
+  }
   if (!match) {
     document.body.classList.remove("notes-route");
     page.hidden = true;
@@ -2294,9 +2404,22 @@ async function persistNotesState() {
   const value = window.ORIGOFragranceNotes.getState();
   localStorage.setItem("origoFragranceNotesState", JSON.stringify(value));
   if (state.serverAvailable && isStaffUser()) {
+    const knowledge = window.ORIGOFragranceNotes.notes.map((note) => ({
+      id: note.slug,
+      nameAr: note.nameAr,
+      nameEn: note.nameEn,
+      aliases: note.aliases || [],
+      image: note.image || "",
+      familyId: note.familyId,
+      parentId: note.parentId || null,
+      related: note.related || [],
+      compatible: note.compatible || [],
+      opposite: note.opposite || [],
+      defaultIntensity: Number(note.defaultIntensity || 3)
+    }));
     const result = await api("/api/admin/notes/state", {
       method: "POST",
-      body: JSON.stringify({ state: value })
+      body: JSON.stringify({ state: value, knowledge })
     });
     window.ORIGOFragranceNotes.setState(result.state);
     localStorage.setItem("origoFragranceNotesState", JSON.stringify(result.state));
@@ -2319,6 +2442,11 @@ function resetNoteAdminForm(seed = {}) {
   form.elements.nameEn.value = seed.nameEn || "";
   form.elements.slug.value = seed.slug || "";
   form.elements.position.value = seed.position || "multiple";
+  form.elements.defaultIntensity.value = seed.defaultIntensity || 3;
+  form.elements.parentId.value = seed.parentId || "";
+  form.elements.related.value = (seed.related || []).join(", ");
+  form.elements.compatible.value = (seed.compatible || []).join(", ");
+  form.elements.opposite.value = (seed.opposite || []).join(", ");
   form.elements.familyId.innerHTML = notesAdminOptions(seed.familyId || "uncategorized");
   $("#note-admin-image-preview").src = window.ORIGOFragranceNotes.artwork({
     nameAr: seed.nameAr || "مكوّن جديد", nameEn: seed.nameEn || "NEW NOTE",
@@ -2342,6 +2470,11 @@ function populateNoteAdminForm(note) {
   form.elements.familyId.innerHTML = notesAdminOptions(note.familyId);
   form.elements.position.value = note.position || "multiple";
   form.elements.aliases.value = (note.aliases || []).join(", ");
+  form.elements.defaultIntensity.value = note.defaultIntensity || 3;
+  form.elements.parentId.value = note.parentId || "";
+  form.elements.related.value = (note.related || []).join(", ");
+  form.elements.compatible.value = (note.compatible || []).join(", ");
+  form.elements.opposite.value = (note.opposite || []).join(", ");
   form.elements.descriptionAr.value = note.descriptionAr || "";
   form.elements.descriptionEn.value = note.descriptionEn || "";
   form.elements.image.value = note.image || "";
@@ -2696,12 +2829,18 @@ function resetImportWorkspace() {
   $("#admin-suggestions").innerHTML = "";
   $("#import-workspace").innerHTML = `
     <div class="import-empty"><span>⌕</span><h3>${adminCopy("ابدأ باسم المنتج أو الباركود", "Start with a product name or barcode")}</h3>
-    <p>${adminCopy("ستظهر اقتراحات مباشرة، ثم نجمع البيانات ونوضح مصدر كل معلومة ونسبة الثقة.", "Live suggestions appear first, then we collect data and show sources and confidence.")}</p></div>`;
+    <p>${adminCopy("ستظهر اقتراحات مباشرة، ثم نجمع البيانات ونوضح مصدر كل معلومة ونسبة الثقة.", "Live suggestions appear first, then we collect data and show sources and confidence.")}</p>
+    ${localStorage.getItem("origoProductAutosave") ? `<button class="button secondary-button" data-action="restore-product-draft">${adminCopy("استعادة آخر مسودة محفوظة", "Restore last autosaved draft")}</button>` : ""}</div>`;
   $$(".import-steps span").forEach((step, index) => step.classList.toggle("active", index === 0));
 }
 
-function startManualProduct() {
-  const product = ORIGOCatalog.emptyProduct();
+function startManualProduct(restore = false) {
+  let product = ORIGOCatalog.emptyProduct();
+  if (restore) {
+    try {
+      product = { ...product, ...JSON.parse(localStorage.getItem("origoProductAutosave") || "{}") };
+    } catch {}
+  }
   product.status = "draft";
   product.sourceLog.push({
     provider: "ORIGO",
@@ -2804,6 +2943,62 @@ function findDuplicate(product, excludeId = "") {
   });
 }
 
+function editorPreviewMarkup(product) {
+  const image = product.images?.find((item) => item.selected)?.url || product.images?.[0]?.url || "assets/origo-hero.png";
+  const checks = [
+    ["image", Boolean(product.images?.length)], ["price", Number(product.price) > 0],
+    ["Arabic", Boolean(product.descriptionAr)], ["English", Boolean(product.descriptionEn)],
+    ["notes", Boolean(Object.values(product.notes || {}).some((items) => items?.length))],
+    ["stock", Number(product.inventory?.quantity) > 0], ["SEO", Boolean(product.seo?.title && product.seo?.description)],
+    ["alternatives", Boolean(product.alternativeIds?.length)]
+  ];
+  return `<aside class="product-editor-preview">
+    <span class="eyebrow">LIVE PREVIEW</span><img id="editor-preview-image" src="${escapeHTML(image)}" alt="" />
+    <small id="editor-preview-brand">${escapeHTML(product.brand || "ORIGO")}</small>
+    <h3 id="editor-preview-name">${escapeHTML(product.nameAr || product.nameEn || adminCopy("منتج جديد", "New product"))}</h3>
+    <b id="editor-preview-price">${formatPrice(product.price || 0)}</b>
+    <p id="editor-preview-notes">${escapeHTML([...(product.notes?.topEn || []), ...(product.notes?.heartEn || []), ...(product.notes?.baseEn || [])].slice(0, 4).join(" · "))}</p>
+    <button type="button" disabled>${adminCopy("أضف إلى الحقيبة", "Add to bag")}</button>
+    <div class="product-editor-checklist" id="product-editor-checklist">${checks.map(([label, ready]) => `<span class="${ready ? "ready" : ""}"><i>${ready ? "✓" : "○"}</i>${label}</span>`).join("")}</div>
+    <small id="product-autosave-status">${adminCopy("المسودة جاهزة للحفظ التلقائي", "Draft autosave is ready")}</small>
+  </aside>`;
+}
+
+let productAutosaveTimer;
+function updateProductEditorPreview(form) {
+  if (!form) return;
+  const data = new FormData(form);
+  const name = String(data.get(state.lang === "ar" ? "nameAr" : "nameEn") || data.get("nameAr") || data.get("nameEn") || "");
+  $("#editor-preview-name").textContent = name || adminCopy("منتج جديد", "New product");
+  $("#editor-preview-brand").textContent = String(data.get("brand") || "ORIGO");
+  $("#editor-preview-price").textContent = formatPrice(Number(data.get("price") || 0));
+  $("#editor-preview-notes").textContent = [
+    ...csvValues(data.get("topEn") || data.get("topAr")),
+    ...csvValues(data.get("heartEn") || data.get("heartAr")),
+    ...csvValues(data.get("baseEn") || data.get("baseAr"))
+  ].slice(0, 4).join(" · ");
+  const draft = collectReviewProduct(form);
+  const checks = [
+    Boolean(draft.images?.length), Number(draft.price) > 0, Boolean(draft.descriptionAr),
+    Boolean(draft.descriptionEn), Boolean(Object.values(draft.notes).some((items) => items.length)),
+    Number(draft.inventory.quantity) > 0, Boolean(draft.seo.title && draft.seo.description),
+    Boolean(draft.alternativeIds.length)
+  ];
+  $$("#product-editor-checklist span").forEach((item, index) => {
+    item.classList.toggle("ready", checks[index]);
+    $("i", item).textContent = checks[index] ? "✓" : "○";
+  });
+  clearTimeout(productAutosaveTimer);
+  productAutosaveTimer = setTimeout(() => {
+    try {
+      localStorage.setItem("origoProductAutosave", JSON.stringify({ ...draft, images: draft.images?.filter((image) => !String(image.url).startsWith("data:")) }));
+      $("#product-autosave-status").textContent = adminCopy("تم الحفظ منذ لحظات", "Saved moments ago");
+    } catch {
+      $("#product-autosave-status").textContent = adminCopy("تعذر الحفظ التلقائي بسبب حجم الصور", "Autosave skipped because images are too large");
+    }
+  }, 700);
+}
+
 function renderImportReview(product) {
   product = {
     ...ORIGOCatalog.emptyProduct(),
@@ -2817,14 +3012,30 @@ function renderImportReview(product) {
   const missing = product.confidence?.missing || [];
   const images = product.images || [];
   $("#import-workspace").innerHTML = `
-    <form class="catalog-review" id="import-review-form">
+    <form class="catalog-review" id="import-review-form" data-editor-mode="${escapeHTML(state.productEditorMode)}">
+      <div class="product-editor-modes">
+        <button type="button" data-action="product-editor-mode" data-mode="quick" class="${state.productEditorMode === "quick" ? "active" : ""}">${adminCopy("إضافة سريعة", "Quick Add")}</button>
+        <button type="button" data-action="product-editor-mode" data-mode="smart" class="${state.productEditorMode === "smart" ? "active" : ""}">${adminCopy("إضافة ذكية", "Smart Add")}</button>
+        <button type="button" data-action="product-editor-mode" data-mode="advanced" class="${state.productEditorMode === "advanced" ? "active" : ""}">${adminCopy("متقدم", "Advanced")}</button>
+      </div>
+      <div class="product-ai-tools">
+        <span>AI</span>
+        ${[
+          ["description", adminCopy("اقتراح الوصف", "Suggest descriptions")],
+          ["seo", adminCopy("اقتراح SEO", "Suggest SEO")],
+          ["alternatives", adminCopy("اقتراح البدائل", "Suggest alternatives")],
+          ["analysis", adminCopy("تحليل العطر", "Analyze fragrance")]
+        ].map(([task, label]) => `<button type="button" data-action="ai-product-task" data-task="${task}">${label}</button>`).join("")}
+      </div>
+      <div id="ai-product-suggestion"></div>
+      ${editorPreviewMarkup(product)}
       <div class="review-summary">
         <div class="confidence-card ${level}"><span>◉</span><div><small>${adminCopy("ثقة البيانات", "DATA CONFIDENCE")}</small><b>${confidenceLabel(level)} · ${product.confidence?.score || 0}%</b></div></div>
         <div class="missing-card"><b>${missing.length}</b><span>${adminCopy("حقول ما زالت ناقصة ولن نملأها بتخمينات", "fields remain empty and will not be guessed")}</span></div>
         <div class="duplicate-alert" id="duplicate-alert" hidden></div>
       </div>
 
-      <section class="review-section">
+      <section class="review-section" data-editor-tier="core">
         <div class="review-section-head"><span>01</span><div><b>${adminCopy("هوية المنتج", "Product identity")}</b><small>${adminCopy("العربية والإنجليزية محفوظتان في حقول منفصلة", "Arabic and English are stored separately")}</small></div></div>
         <div class="review-grid">
           <label>${adminCopy("الاسم بالعربية", "Arabic name")}<input name="nameAr" dir="rtl" value="${escapeHTML(product.nameAr)}" /></label>
@@ -2852,7 +3063,7 @@ function renderImportReview(product) {
         </div>
       </section>
 
-      <section class="review-section">
+      <section class="review-section" data-editor-tier="smart">
         <div class="review-section-head"><span>02</span><div><b>${adminCopy("التصنيف والبيانات التجارية", "Classification & commerce")}</b></div></div>
         <div class="review-grid">
           <label>${adminCopy("الأحجام المتاحة", "Available sizes")}<input name="sizes" value="${escapeHTML(csv(product.sizes))}" placeholder="50 ML, 75 ML, 100 ML" /></label>
@@ -2871,7 +3082,7 @@ function renderImportReview(product) {
         </div>
       </section>
 
-      <section class="review-section">
+      <section class="review-section" data-editor-tier="smart">
         <div class="review-section-head"><span>03</span><div><b>${adminCopy("النوتات العطرية", "Fragrance notes")}</b><small>${adminCopy("كل مستوى واللغة في حقل مستقل", "Each level and language has its own field")}</small></div></div>
         <div class="review-grid note-review-grid">
           ${["top", "heart", "base"].map((level) => `
@@ -2891,7 +3102,7 @@ function renderImportReview(product) {
         </div>
       </section>
 
-      <section class="review-section">
+      <section class="review-section" data-editor-tier="core">
         <div class="review-section-head"><span>04</span><div><b>${adminCopy("الوصف والصور", "Descriptions & images")}</b></div></div>
         <div class="review-grid description-grid">
           <label>${adminCopy("الوصف بالعربية", "Arabic description")}<textarea name="descriptionAr" dir="rtl">${escapeHTML(product.descriptionAr)}</textarea></label>
@@ -2915,8 +3126,8 @@ function renderImportReview(product) {
         </div>
       </section>
 
-      <section class="review-section">
-        <div class="review-section-head"><span>05</span><div><b>${adminCopy("SEO والمتغيرات والربط", "SEO, variants & relationships")}</b><small>${adminCopy("جاهز لصفحات المنتج والفلاتر الديناميكية", "Ready for product pages and dynamic filters")}</small></div></div>
+      <section class="review-section" data-editor-tier="advanced">
+        <div class="review-section-head"><span>05</span><div><b>${adminCopy("SEO والمتغيرات والربط", "SEO, variants & relationships")}</b><small>${adminCopy("تستخدمها صفحات المنتج والفلاتر الديناميكية مباشرة", "Used directly by product pages and dynamic filters")}</small></div></div>
         <div class="review-grid">
           <label>${adminCopy("رابط المنتج", "URL slug")}<input name="slug" dir="ltr" value="${escapeHTML(product.slug || "")}" placeholder="nocturne-01" /></label>
           <label>SEO title<input name="seoTitle" value="${escapeHTML(product.seo?.title || "")}" /></label>
@@ -2928,7 +3139,7 @@ function renderImportReview(product) {
         </div>
       </section>
 
-      <section class="review-section source-log-section">
+      <section class="review-section source-log-section" data-editor-tier="advanced">
         <div class="review-section-head"><span>06</span><div><b>${adminCopy("سجل المصادر", "Source log")}</b><small>${adminCopy("ما الذي جاء من أين؟", "What came from where?")}</small></div></div>
         <div class="source-log">
           ${(product.sourceLog || []).map((source) => `
@@ -2949,6 +3160,7 @@ function renderImportReview(product) {
   $$("img", $("#import-workspace")).forEach((image) => image.addEventListener("error", () => image.closest(".review-image")?.classList.add("broken"), { once: true }));
   updateDuplicateWarning($("#import-review-form"));
   renderNoteMatchPreview($("#import-review-form"));
+  updateProductEditorPreview($("#import-review-form"));
 }
 
 function collectReviewProduct(form) {
@@ -3022,6 +3234,18 @@ function collectReviewProduct(form) {
       product.familyEn ||= noteLibrary.familyEn;
       product.noteLibrary = {
         slugs: [...new Set(noteLibrary.matches.map((note) => note.slug))],
+        refs: noteLibrary.matches.map((note, index) => ({
+          id: note.slug,
+          nameAr: note.nameAr,
+          nameEn: note.nameEn,
+          aliases: note.aliases || [],
+          image: note.image,
+          familyId: note.familyId,
+          position: note.requestedPosition || note.position || "multiple",
+          intensity: Number(product.noteIntensities?.[note.slug] || note.defaultIntensity || 3),
+          defaultIntensity: Number(note.defaultIntensity || 3),
+          sortOrder: index
+        })),
         unmatched: noteLibrary.unknown
       };
       localStorage.setItem("origoFragranceNotesState", JSON.stringify(window.ORIGOFragranceNotes.getState()));
@@ -3173,6 +3397,7 @@ async function saveCatalogProduct(form) {
     <div class="import-success"><span>✓</span><h3>${adminCopy("تمت إضافة المنتج إلى لوحة المنتجات", "Product added to the product panel")}</h3>
     <p>${product.status === "published" ? adminCopy("اخترت حالة منشور، لذلك أصبح ظاهرًا في المتجر.", "You selected Published, so it is now visible in the store.") : adminCopy("حُفظ كمسودة ولن يظهر للعميل حتى تغيّر حالته إلى منشور.", "Saved as a draft and hidden until you change its status to Published.")}</p>
     <div><button class="button secondary-button" data-action="edit-catalog-product" data-id="${escapeHTML(product.id)}">${adminCopy("مراجعة المنتج", "Review product")}</button><button class="button burgundy-button" data-action="new-product">${adminCopy("إضافة منتج آخر", "Add another product")}</button></div></div>`;
+  localStorage.removeItem("origoProductAutosave");
   showToast(adminCopy("تم حفظ المنتج بنجاح", "Product saved successfully"));
 }
 
@@ -3216,10 +3441,11 @@ document.addEventListener("click", async (event) => {
 
   if (action === "open-notes") {
     event.preventDefault();
-    navigateNotes();
+    if (isStaffUser()) navigateNotes();
   }
   if (action === "open-note") {
     event.preventDefault();
+    if (!isStaffUser()) return;
     const overlay = actionElement.closest(".overlay");
     if (overlay) closeOverlay(overlay);
     navigateNotes(actionElement.dataset.slug);
@@ -3286,9 +3512,13 @@ document.addEventListener("click", async (event) => {
     const query = actionElement.dataset.query || "";
     toggleMobileMenu(false);
     $(".brands-nav")?.classList.remove("open");
-    openOverlay("#search-overlay");
-    $("#global-search-input").value = query;
-    renderSearchSuggestions(query);
+    state.storefrontSearchQuery = query;
+    state.storefrontCategory = "all";
+    renderProducts("all");
+    $("#featured")?.scrollIntoView({ behavior: "smooth" });
+  }
+  if (action === "brand-carousel-scroll") {
+    $("#brand-carousel-track")?.scrollBy({ left: Number(actionElement.dataset.direction || 1) * 420, behavior: "smooth" });
   }
   if (action === "account") openAccount();
   if (action === "auth-mode") renderAuth(actionElement.dataset.mode);
@@ -3396,6 +3626,21 @@ document.addEventListener("click", async (event) => {
       }
     }
   }
+  if (action === "delete-admin-product") {
+    const id = String(actionElement.dataset.id || "");
+    if (window.confirm(adminCopy("حذف المنتج نهائياً؟ لا يمكن التراجع.", "Permanently delete this product? This cannot be undone."))) {
+      try {
+        await api(`/api/admin/products/${encodeURIComponent(id)}`, { method: "DELETE" });
+        state.catalogProducts = state.catalogProducts.filter((product) => product.id !== id);
+        rebuildStorefrontProducts();
+        renderAdminDashboard("products");
+        renderProducts($(".chip.active")?.dataset.filter || "all");
+        showToast(adminCopy("تم حذف المنتج من قاعدة البيانات", "Product deleted from the database"));
+      } catch (error) {
+        showToast(error.message);
+      }
+    }
+  }
   if (action === "open-order-details") {
     state.activeAdminOrderId = Number(actionElement.dataset.id);
     renderAdminDashboard("orders");
@@ -3446,6 +3691,25 @@ document.addEventListener("click", async (event) => {
     const content = $("#admin-dashboard-content");
     content.insertAdjacentHTML("afterbegin", entityCreateForm(actionElement.dataset.view || state.adminView));
     content.querySelector("#admin-entity-form input[name='name']")?.focus();
+  }
+  if (action === "new-filter") {
+    $("#admin-dashboard-content").insertAdjacentHTML("afterbegin", filterDefinitionForm());
+  }
+  if (action === "edit-filter") {
+    const filter = state.filterDefinitions.find((item) => Number(item.id) === Number(actionElement.dataset.id));
+    if (filter) $("#admin-dashboard-content").insertAdjacentHTML("afterbegin", filterDefinitionForm(filter));
+  }
+  if (action === "delete-filter") {
+    if (window.confirm(adminCopy("حذف هذا الفلتر؟", "Delete this filter?"))) {
+      try {
+        await api(`/api/admin/filters/${actionElement.dataset.id}`, { method: "DELETE" });
+        state.filterDefinitions = state.filterDefinitions.filter((item) => Number(item.id) !== Number(actionElement.dataset.id));
+        renderAdminDashboard("categories");
+        showToast(adminCopy("تم حذف الفلتر", "Filter deleted"));
+      } catch (error) {
+        showToast(error.message);
+      }
+    }
   }
   if (action === "cancel-admin-create") renderAdminDashboard(state.adminView);
   if (action === "admin-edit-entity") {
@@ -3585,7 +3849,9 @@ document.addEventListener("click", async (event) => {
   if (action === "catalog-category") {
     state.storefrontCategory = actionElement.dataset.category || "all";
     state.storefrontSearchQuery = "";
+    state.activeDynamicFilters = {};
     $$(".category-nav [data-category]").forEach((link) => link.classList.toggle("active", link === actionElement));
+    renderDynamicFilters();
     renderProducts("all");
   }
   if (action === "select-admin-suggestion") {
@@ -3595,6 +3861,60 @@ document.addEventListener("click", async (event) => {
     });
   }
   if (action === "new-product") startManualProduct();
+  if (action === "restore-product-draft") startManualProduct(true);
+  if (action === "product-editor-mode") {
+    state.productEditorMode = actionElement.dataset.mode || "quick";
+    localStorage.setItem("origoProductEditorMode", state.productEditorMode);
+    const form = $("#import-review-form");
+    if (form) {
+      form.dataset.editorMode = state.productEditorMode;
+      $$(".product-editor-modes button", form).forEach((button) => button.classList.toggle("active", button === actionElement));
+    }
+  }
+  if (action === "ai-product-task") {
+    const form = $("#import-review-form");
+    if (!form) return;
+    actionElement.disabled = true;
+    try {
+      const current = collectReviewProduct(form);
+      const taskLabel = {
+        description: "Generate original Arabic and English product descriptions",
+        seo: "Generate SEO title, meta description, slug, and keywords",
+        alternatives: "Suggest similar products, alternatives, upsell, and cross-sell relationships",
+        analysis: "Analyze fragrance accords, performance, season, occasion, style, and filter attributes"
+      }[actionElement.dataset.task] || "Enrich this product";
+      const result = await api("/api/catalog/ai-enrich", {
+        method: "POST",
+        body: JSON.stringify({
+          query: `${taskLabel}: ${current.brand} ${current.nameEn || current.nameAr}`,
+          knownProduct: { ...current, images: [] }
+        })
+      });
+      state.aiProductSuggestion = result.data;
+      $("#ai-product-suggestion").innerHTML = `<article class="ai-product-review"><div><b>${adminCopy("اقتراح AI جاهز للمراجعة", "AI suggestion ready for review")}</b><p>${escapeHTML(result.data.descriptionAr || result.data.descriptionEn || result.data.familyEn || taskLabel)}</p></div><button type="button" data-action="apply-ai-product-suggestion">${adminCopy("اعتماد داخل المسودة", "Apply to draft")}</button><button type="button" data-action="dismiss-ai-product-suggestion">${adminCopy("تجاهل", "Dismiss")}</button></article>`;
+    } catch (error) {
+      showToast(error.message);
+    } finally {
+      actionElement.disabled = false;
+    }
+  }
+  if (action === "apply-ai-product-suggestion" && state.aiProductSuggestion) {
+    const current = collectReviewProduct($("#import-review-form"));
+    state.activeImportDraft = {
+      ...current,
+      ...state.aiProductSuggestion,
+      notes: { ...current.notes, ...(state.aiProductSuggestion.notes || {}) },
+      seo: { ...current.seo, ...(state.aiProductSuggestion.seo || {}) },
+      status: current.status
+    };
+    state.aiProductSuggestion = null;
+    renderImportReview(state.activeImportDraft);
+    showToast(adminCopy("تم تطبيق الاقتراح داخل المسودة فقط", "Suggestion applied to the draft only"));
+  }
+  if (action === "dismiss-ai-product-suggestion") {
+    state.aiProductSuggestion = null;
+    $("#ai-product-suggestion").innerHTML = "";
+  }
   if (action === "edit-catalog-product") {
     const product = state.catalogProducts.find((item) => item.id === actionElement.dataset.id);
     if (product) {
@@ -3606,6 +3926,32 @@ document.addEventListener("click", async (event) => {
 
 document.addEventListener("submit", async (event) => {
   event.preventDefault();
+  if (event.target.id === "admin-filter-form") {
+    const data = new FormData(event.target);
+    try {
+      const result = await api("/api/admin/filters", {
+        method: "POST",
+        body: JSON.stringify({
+          id: Number(data.get("id") || 0) || undefined,
+          category: String(data.get("category") || "perfume"),
+          key: String(data.get("key") || "").trim(),
+          labelAr: String(data.get("labelAr") || "").trim(),
+          labelEn: String(data.get("labelEn") || "").trim(),
+          inputType: String(data.get("inputType") || "select"),
+          options: csvValues(data.get("options")),
+          visible: data.has("visible")
+        })
+      });
+      const index = state.filterDefinitions.findIndex((item) => Number(item.id) === Number(result.filter.id));
+      if (index >= 0) state.filterDefinitions[index] = result.filter;
+      else state.filterDefinitions.push(result.filter);
+      renderAdminDashboard("categories");
+      showToast(adminCopy("تم حفظ الفلتر في قاعدة البيانات", "Filter saved to the database"));
+    } catch (error) {
+      showToast(error.message);
+    }
+    return;
+  }
   if (event.target.id === "admin-staff-form") {
     const data = new FormData(event.target);
     try {
@@ -3693,6 +4039,11 @@ document.addEventListener("submit", async (event) => {
       familyId: String(data.get("familyId") || "uncategorized"),
       position: String(data.get("position") || "multiple"),
       aliases: csvValues(data.get("aliases")),
+      defaultIntensity: Math.min(5, Math.max(1, Number(data.get("defaultIntensity") || 3))),
+      parentId: String(data.get("parentId") || "").trim(),
+      related: csvValues(data.get("related")),
+      compatible: csvValues(data.get("compatible")),
+      opposite: csvValues(data.get("opposite")),
       descriptionAr: String(data.get("descriptionAr") || "").trim(),
       descriptionEn: String(data.get("descriptionEn") || "").trim(),
       image: state.pendingNoteImage || String(data.get("image") || "").trim()
@@ -3872,6 +4223,7 @@ document.addEventListener("input", (event) => {
     notesSearchTimer = setTimeout(renderNotesLibrary, 160);
   }
   if (event.target.id === "notes-admin-search") renderNotesAdmin();
+  if (event.target.id === "brand-carousel-search") renderBrandCarousel(event.target.value);
   if (event.target.closest("#note-admin-form") && event.target.name === "image") {
     $("#note-admin-image-preview").src = event.target.value || window.ORIGOFragranceNotes.artwork({
       nameAr: event.target.form.elements.nameAr.value,
@@ -3883,10 +4235,17 @@ document.addEventListener("input", (event) => {
   if (event.target.closest("#import-review-form")) {
     updateDuplicateWarning($("#import-review-form"));
     renderNoteMatchPreview($("#import-review-form"));
+    updateProductEditorPreview($("#import-review-form"));
   }
 });
 
 document.addEventListener("change", async (event) => {
+  if (event.target.matches("[data-dynamic-filter]")) {
+    const key = event.target.dataset.dynamicFilter;
+    if (event.target.value) state.activeDynamicFilters[key] = event.target.value;
+    else delete state.activeDynamicFilters[key];
+    renderProducts($(".chip.active")?.dataset.filter || "all");
+  }
   if (event.target.id === "gallery-upload") handleGalleryUpload(event.target);
   if (event.target.id === "note-image-upload") {
     const file = event.target.files?.[0];
@@ -3961,6 +4320,29 @@ window.addEventListener("scroll", () => {
 }, { passive: true });
 
 window.addEventListener("popstate", () => handleNotesRoute());
+
+const brandTrack = $("#brand-carousel-track");
+if (brandTrack) {
+  let brandDragging = false;
+  let brandStartX = 0;
+  let brandStartScroll = 0;
+  brandTrack.addEventListener("wheel", (event) => {
+    if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
+    event.preventDefault();
+    brandTrack.scrollLeft += event.deltaY;
+  }, { passive: false });
+  brandTrack.addEventListener("pointerdown", (event) => {
+    brandDragging = true;
+    brandStartX = event.clientX;
+    brandStartScroll = brandTrack.scrollLeft;
+    brandTrack.setPointerCapture?.(event.pointerId);
+  });
+  brandTrack.addEventListener("pointermove", (event) => {
+    if (brandDragging) brandTrack.scrollLeft = brandStartScroll - (event.clientX - brandStartX);
+  });
+  brandTrack.addEventListener("pointerup", () => { brandDragging = false; });
+  brandTrack.addEventListener("pointercancel", () => { brandDragging = false; });
+}
 
 checkoutFormMarkup = $("#checkout-overlay .checkout-grid").innerHTML;
 setupTheme();

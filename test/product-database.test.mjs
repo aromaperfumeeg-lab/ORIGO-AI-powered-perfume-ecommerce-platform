@@ -57,6 +57,22 @@ test("database migrates old users and structured notes override stale flat notes
     });
     assert.deepEqual(updated.notesAr, ["برغموت", "سوسن", "مسك"]);
     assert.deepEqual(updated.notesEn, ["Bergamot", "Iris", "Musk"]);
+    assert.deepEqual(updated.noteRefs.map((note) => note.id), ["bergamot", "iris", "musk"]);
+    assert.deepEqual(updated.noteRefs.map((note) => note.position), ["top", "heart", "base"]);
+    assert.equal(updated.filters.brand, "ORIGO");
+    assert.deepEqual(updated.filters.notes, ["Bergamot", "Iris", "Musk"]);
+
+    const customFilter = database.upsertFilterDefinition({
+      category: "perfume",
+      key: "mood",
+      labelAr: "المزاج",
+      labelEn: "Mood",
+      inputType: "multiselect",
+      options: ["Calm", "Bold"]
+    });
+    assert.equal(customFilter.key, "mood");
+    assert.equal(database.listFilterDefinitions("perfume").some((filter) => filter.key === "mood"), true);
+    assert.equal(database.deleteFilterDefinition(customFilter.id), true);
 
     const staff = database.createUser({
       name: "Product Manager",
@@ -66,6 +82,8 @@ test("database migrates old users and structured notes override stale flat notes
     });
     assert.equal(staff.role, "product_manager");
     assert.deepEqual(staff.permissions, ["catalog", "inventory"]);
+    assert.equal(database.deleteProduct(updated.id), true);
+    assert.equal(database.listProducts({ includeHidden: true }).some((product) => product.id === updated.id), false);
     database.db.close();
   } finally {
     if (previousPath == null) delete process.env.ORIGO_DB_PATH;

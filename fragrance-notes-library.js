@@ -184,6 +184,10 @@
           position: curated?.position || family?.position || "multiple",
           symbol: curated?.symbol || family?.symbol || "✦",
           image: "",
+          defaultIntensity: Number(curated?.defaultIntensity || 3),
+          related: curated?.related || [],
+          compatible: curated?.compatible || [],
+          opposite: curated?.opposite || [],
           generatedTranslation: !curated,
           sourceName: ingredient
         };
@@ -196,7 +200,10 @@
     curatedNotes.forEach((curated) => {
       if (result.has(curated.slug)) return;
       const family = families.find((item) => item.id === curated.familyId) || families[0];
-      const note = { ...curated, generatedTranslation: false, sourceName: curated.nameAr, image: "" };
+      const note = {
+        defaultIntensity: 3, related: [], compatible: [], opposite: [],
+        ...curated, generatedTranslation: false, sourceName: curated.nameAr, image: ""
+      };
       note.descriptionAr = originalDescription(note, family, "ar");
       note.descriptionEn = originalDescription(note, family, "en");
       result.set(note.slug, note);
@@ -207,6 +214,10 @@
       symbol: "✦",
       image: "",
       aliases: [],
+      defaultIntensity: 3,
+      related: [],
+      compatible: [],
+      opposite: [],
       generatedTranslation: false,
       ...note
     }));

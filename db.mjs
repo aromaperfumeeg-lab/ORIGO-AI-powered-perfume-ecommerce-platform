@@ -139,6 +139,52 @@ db.exec(`
     updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
   );
 
+  CREATE TABLE IF NOT EXISTS fragrance_note_entities (
+    id TEXT PRIMARY KEY,
+    name_ar TEXT NOT NULL DEFAULT '',
+    name_en TEXT NOT NULL DEFAULT '',
+    aliases_json TEXT NOT NULL DEFAULT '[]',
+    image TEXT NOT NULL DEFAULT '',
+    family_id TEXT NOT NULL DEFAULT 'uncategorized',
+    parent_id TEXT,
+    related_json TEXT NOT NULL DEFAULT '[]',
+    compatible_json TEXT NOT NULL DEFAULT '[]',
+    opposite_json TEXT NOT NULL DEFAULT '[]',
+    default_intensity INTEGER NOT NULL DEFAULT 3 CHECK (default_intensity BETWEEN 1 AND 5),
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE TABLE IF NOT EXISTS product_note_refs (
+    product_id TEXT NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+    note_id TEXT NOT NULL REFERENCES fragrance_note_entities(id) ON DELETE RESTRICT,
+    position TEXT NOT NULL CHECK (position IN ('top', 'heart', 'base', 'accord', 'multiple')),
+    intensity INTEGER NOT NULL DEFAULT 3 CHECK (intensity BETWEEN 1 AND 5),
+    sort_order INTEGER NOT NULL DEFAULT 0,
+    PRIMARY KEY (product_id, note_id, position)
+  );
+
+  CREATE TABLE IF NOT EXISTS filter_definitions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    category TEXT NOT NULL,
+    filter_key TEXT NOT NULL,
+    label_ar TEXT NOT NULL,
+    label_en TEXT NOT NULL,
+    input_type TEXT NOT NULL DEFAULT 'select',
+    options_json TEXT NOT NULL DEFAULT '[]',
+    sort_order INTEGER NOT NULL DEFAULT 0,
+    visible INTEGER NOT NULL DEFAULT 1,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (category, filter_key)
+  );
+
+  CREATE TABLE IF NOT EXISTS product_filter_values (
+    product_id TEXT NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+    filter_id INTEGER NOT NULL REFERENCES filter_definitions(id) ON DELETE CASCADE,
+    value_json TEXT NOT NULL DEFAULT 'null',
+    PRIMARY KEY (product_id, filter_id)
+  );
+
   CREATE TABLE IF NOT EXISTS admin_workspace_state (
     id INTEGER PRIMARY KEY CHECK (id = 1),
     payload_json TEXT NOT NULL DEFAULT '{}',
@@ -171,6 +217,8 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_sessions_expiry ON sessions(expires_at);
   CREATE INDEX IF NOT EXISTS idx_order_events_order ON order_events(order_id, created_at DESC);
   CREATE INDEX IF NOT EXISTS idx_activity_log_created ON activity_log(created_at DESC);
+  CREATE INDEX IF NOT EXISTS idx_product_note_refs_note ON product_note_refs(note_id, position);
+  CREATE INDEX IF NOT EXISTS idx_filter_definitions_category ON filter_definitions(category, sort_order);
 `);
 
 const productColumns = new Set(db.prepare("PRAGMA table_info(products)").all().map((column) => column.name));
@@ -316,12 +364,95 @@ try {
   throw error;
 }
 
+const defaultFilters = {
+  perfume: [
+    ["notes", "النوتات", "Notes", "note"], ["family", "العائلة العطرية", "Fragrance family", "select"],
+    ["brand", "البراند", "Brand", "select"], ["concentration", "التركيز", "Concentration", "select"],
+    ["longevity", "الثبات", "Longevity", "range"], ["projection", "الفوحان", "Projection", "range"],
+    ["season", "الموسم", "Season", "multiselect"], ["occasion", "المناسبة", "Occasion", "multiselect"],
+    ["gender", "الجنس", "Gender", "select"], ["size", "الحجم", "Size", "multiselect"],
+    ["origin", "بلد المنشأ", "Origin country", "select"], ["personality", "الشخصية", "Personality", "multiselect"]
+  ],
+  skincare: [
+    ["skin_type", "نوع البشرة", "Skin type", "multiselect"], ["product_type", "نوع المنتج", "Product type", "select"],
+    ["concern", "المشكلة", "Concern", "multiselect"], ["actives", "المكونات الفعالة", "Active ingredients", "multiselect"],
+    ["spf", "عامل الحماية", "SPF", "range"], ["fragrance_free", "خالٍ من العطور", "Fragrance free", "boolean"],
+    ["alcohol_free", "خالٍ من الكحول", "Alcohol free", "boolean"], ["paraben_free", "خالٍ من البارابين", "Paraben free", "boolean"]
+  ],
+  incense: [
+    ["type", "النوع", "Type", "select"], ["scent", "الرائحة", "Scent", "multiselect"],
+    ["origin", "المنشأ", "Origin", "select"], ["usage", "الاستخدام", "Usage", "multiselect"],
+    ["intensity", "الكثافة", "Intensity", "range"], ["burn_time", "مدة الاحتراق", "Burn time", "range"]
+  ],
+  burner: [
+    ["material", "المادة", "Material", "select"], ["size", "الحجم", "Size", "select"],
+    ["power", "نوع التشغيل", "Power type", "select"], ["color", "اللون", "Color", "multiselect"],
+    ["usage", "الاستخدام", "Usage", "multiselect"]
+  ],
+  deodorant: [
+    ["gender", "الجنس", "Gender", "select"], ["sensitive", "للجسم الحساس", "Sensitive skin", "boolean"],
+    ["aluminum_free", "خالٍ من الألومنيوم", "Aluminum free", "boolean"], ["protection", "مدة الحماية", "Protection duration", "range"],
+    ["package", "نوع العبوة", "Package type", "select"], ["scent", "الرائحة", "Scent", "select"]
+  ]
+};
+
+const insertDefaultFilter = db.prepare(`
+  INSERT OR IGNORE INTO filter_definitions
+    (category, filter_key, label_ar, label_en, input_type, sort_order)
+  VALUES (?, ?, ?, ?, ?, ?)
+`);
+db.exec("BEGIN IMMEDIATE");
+try {
+  for (const [category, filters] of Object.entries(defaultFilters)) {
+    filters.forEach((filter, index) => insertDefaultFilter.run(category, ...filter, index));
+  }
+  db.exec("COMMIT");
+} catch (error) {
+  db.exec("ROLLBACK");
+  throw error;
+}
+
 function parseJSON(value, fallback = []) {
   try {
     return JSON.parse(value);
   } catch {
     return fallback;
   }
+}
+
+function referenceId(value) {
+  return clean(value, 200).toLowerCase()
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^\p{L}\p{N}]+/gu, "-")
+    .replace(/^-+|-+$/g, "") || `note-${Date.now().toString(36)}`;
+}
+
+function noteRefsForProduct(productId) {
+  return db.prepare(`
+    SELECT r.note_id AS id, r.position, r.intensity, r.sort_order AS sortOrder,
+      n.name_ar AS nameAr, n.name_en AS nameEn, n.family_id AS familyId,
+      n.image, n.default_intensity AS defaultIntensity
+    FROM product_note_refs r
+    JOIN fragrance_note_entities n ON n.id = r.note_id
+    WHERE r.product_id = ?
+    ORDER BY CASE r.position WHEN 'top' THEN 1 WHEN 'heart' THEN 2 WHEN 'base' THEN 3 ELSE 4 END,
+      r.sort_order
+  `).all(productId).map((row) => ({
+    ...row,
+    intensity: Number(row.intensity),
+    sortOrder: Number(row.sortOrder),
+    defaultIntensity: Number(row.defaultIntensity)
+  }));
+}
+
+function filterValuesForProduct(productId) {
+  return Object.fromEntries(db.prepare(`
+    SELECT d.filter_key AS filterKey, v.value_json AS valueJson
+    FROM product_filter_values v
+    JOIN filter_definitions d ON d.id = v.filter_id
+    WHERE v.product_id = ?
+  `).all(productId).map((row) => [row.filterKey, parseJSON(row.valueJson, null)]));
 }
 
 function publicUser(row) {
@@ -376,6 +507,8 @@ function productFromRow(row, includeMetadata = false) {
     occasions: Array.isArray(metadata.occasions) ? metadata.occasions : [],
     personalities: Array.isArray(metadata.personalities) ? metadata.personalities : [],
     noteLibrary: metadata.noteLibrary || { slugs: [], unmatched: [] },
+    noteRefs: noteRefsForProduct(row.id),
+    filters: { ...(metadata.filters || {}), ...filterValuesForProduct(row.id) },
     slug: metadata.slug || row.id,
     seo: metadata.seo || {}
   };
@@ -488,6 +621,154 @@ export function listProducts({ includeHidden = false } = {}) {
   return rows.map((row) => productFromRow(row, includeHidden));
 }
 
+function productNoteReferences(input) {
+  const supplied = Array.isArray(input.noteLibrary?.refs) ? input.noteLibrary.refs : [];
+  if (supplied.length) return supplied.map((ref, index) => ({
+    id: referenceId(ref.id || ref.slug || ref.nameEn || ref.nameAr),
+    nameAr: clean(ref.nameAr, 180),
+    nameEn: clean(ref.nameEn, 180),
+    aliases: Array.isArray(ref.aliases) ? ref.aliases : [],
+    image: clean(ref.image, 2_000_000),
+    familyId: referenceId(ref.familyId || "uncategorized"),
+    parentId: ref.parentId ? referenceId(ref.parentId) : null,
+    related: Array.isArray(ref.related) ? ref.related.map(referenceId) : [],
+    compatible: Array.isArray(ref.compatible) ? ref.compatible.map(referenceId) : [],
+    opposite: Array.isArray(ref.opposite) ? ref.opposite.map(referenceId) : [],
+    position: ["top", "heart", "base", "accord", "multiple"].includes(ref.position) ? ref.position : "multiple",
+    intensity: Math.min(5, Math.max(1, Number(ref.intensity || ref.defaultIntensity || 3))),
+    defaultIntensity: Math.min(5, Math.max(1, Number(ref.defaultIntensity || 3))),
+    sortOrder: Number(ref.sortOrder ?? index)
+  }));
+
+  const structured = input.notes && typeof input.notes === "object" ? input.notes : {};
+  const refs = [];
+  for (const position of ["top", "heart", "base"]) {
+    const ar = Array.isArray(structured[`${position}Ar`]) ? structured[`${position}Ar`] : [];
+    const en = Array.isArray(structured[`${position}En`]) ? structured[`${position}En`] : [];
+    const count = Math.max(ar.length, en.length);
+    for (let index = 0; index < count; index += 1) {
+      const nameAr = clean(ar[index], 180);
+      const nameEn = clean(en[index], 180);
+      refs.push({
+        id: referenceId(nameEn || nameAr),
+        nameAr,
+        nameEn,
+        aliases: [],
+        image: "",
+        familyId: "uncategorized",
+        parentId: null,
+        related: [],
+        compatible: [],
+        opposite: [],
+        position,
+        intensity: 3,
+        defaultIntensity: 3,
+        sortOrder: index
+      });
+    }
+  }
+  if (!refs.length) {
+    const ar = Array.isArray(input.notesAr) ? input.notesAr : [];
+    const en = Array.isArray(input.notesEn) ? input.notesEn : [];
+    const count = Math.max(ar.length, en.length);
+    for (let index = 0; index < count; index += 1) {
+      const nameAr = clean(ar[index], 180);
+      const nameEn = clean(en[index], 180);
+      refs.push({
+        id: referenceId(nameEn || nameAr), nameAr, nameEn, aliases: [], image: "",
+        familyId: "uncategorized", parentId: null, related: [], compatible: [], opposite: [],
+        position: "multiple", intensity: 3, defaultIntensity: 3, sortOrder: index
+      });
+    }
+  }
+  return refs;
+}
+
+function syncProductNoteReferences(productId, input) {
+  const refs = productNoteReferences(input);
+  db.exec("BEGIN IMMEDIATE");
+  try {
+    db.prepare("DELETE FROM product_note_refs WHERE product_id = ?").run(productId);
+    const upsertNote = db.prepare(`
+      INSERT INTO fragrance_note_entities (
+        id, name_ar, name_en, aliases_json, image, family_id, parent_id,
+        related_json, compatible_json, opposite_json, default_intensity, updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+      ON CONFLICT(id) DO UPDATE SET
+        name_ar = CASE WHEN excluded.name_ar <> '' THEN excluded.name_ar ELSE name_ar END,
+        name_en = CASE WHEN excluded.name_en <> '' THEN excluded.name_en ELSE name_en END,
+        aliases_json = CASE WHEN excluded.aliases_json <> '[]' THEN excluded.aliases_json ELSE aliases_json END,
+        image = CASE WHEN excluded.image <> '' THEN excluded.image ELSE image END,
+        family_id = CASE WHEN excluded.family_id <> 'uncategorized' THEN excluded.family_id ELSE family_id END,
+        related_json = CASE WHEN excluded.related_json <> '[]' THEN excluded.related_json ELSE related_json END,
+        compatible_json = CASE WHEN excluded.compatible_json <> '[]' THEN excluded.compatible_json ELSE compatible_json END,
+        opposite_json = CASE WHEN excluded.opposite_json <> '[]' THEN excluded.opposite_json ELSE opposite_json END,
+        default_intensity = excluded.default_intensity,
+        updated_at = CURRENT_TIMESTAMP
+    `);
+    const insertRef = db.prepare(`
+      INSERT INTO product_note_refs (product_id, note_id, position, intensity, sort_order)
+      VALUES (?, ?, ?, ?, ?)
+    `);
+    for (const ref of refs) {
+      upsertNote.run(
+        ref.id, ref.nameAr, ref.nameEn, JSON.stringify(ref.aliases), ref.image, ref.familyId,
+        ref.parentId, JSON.stringify(ref.related), JSON.stringify(ref.compatible),
+        JSON.stringify(ref.opposite), ref.defaultIntensity
+      );
+      insertRef.run(productId, ref.id, ref.position, ref.intensity, ref.sortOrder);
+    }
+    db.exec("COMMIT");
+  } catch (error) {
+    db.exec("ROLLBACK");
+    throw error;
+  }
+}
+
+function syncProductFilterValues(productId, input) {
+  const category = clean(input.category, 80) || "perfume";
+  const explicit = input.filters && typeof input.filters === "object" ? input.filters : {};
+  const structured = input.notes && typeof input.notes === "object" ? input.notes : {};
+  const structuredNames = [
+    ...(structured.topEn || structured.topAr || []),
+    ...(structured.heartEn || structured.heartAr || []),
+    ...(structured.baseEn || structured.baseAr || [])
+  ];
+  const inferred = {
+    notes: input.noteLibrary?.slugs?.length ? input.noteLibrary.slugs : (structuredNames.length ? structuredNames : (input.notesEn || input.notesAr || [])),
+    family: input.familyEn || input.familyAr || "",
+    brand: input.brand || "",
+    concentration: input.concentration || "",
+    gender: input.gender || input.typeEn || input.typeAr || input.type || "",
+    size: input.sizes || [],
+    origin: input.originCountryEn || input.originCountryAr || "",
+    season: input.seasons || [],
+    occasion: input.occasions || [],
+    personality: input.personalities || [],
+    longevity: input.performance?.longevity ?? null,
+    projection: input.performance?.projection ?? input.performance?.sillage ?? null
+  };
+  const definitions = listFilterDefinitions(category);
+  db.exec("BEGIN IMMEDIATE");
+  try {
+    db.prepare("DELETE FROM product_filter_values WHERE product_id = ?").run(productId);
+    const insert = db.prepare(`
+      INSERT INTO product_filter_values (product_id, filter_id, value_json) VALUES (?, ?, ?)
+    `);
+    for (const definition of definitions) {
+      const inferredValue = inferred[definition.key];
+      const hasInferred = inferredValue != null && inferredValue !== "" && (!Array.isArray(inferredValue) || inferredValue.length);
+      const selected = hasInferred ? inferredValue : explicit[definition.key];
+      if (selected == null || selected === "" || (Array.isArray(selected) && !selected.length)) continue;
+      insert.run(productId, definition.id, JSON.stringify(selected));
+    }
+    db.exec("COMMIT");
+  } catch (error) {
+    db.exec("ROLLBACK");
+    throw error;
+  }
+}
+
 export function upsertProduct(input) {
   const id = clean(input.id, 120) || `product-${Date.now().toString(36)}`;
   const status = ["draft", "published", "unavailable"].includes(input.status) ? input.status : "draft";
@@ -563,7 +844,130 @@ export function upsertProduct(input) {
     JSON.stringify(input),
     status
   );
+  syncProductNoteReferences(id, input);
+  syncProductFilterValues(id, input);
   return productFromRow(db.prepare("SELECT * FROM products WHERE id = ?").get(id), true);
+}
+
+export function deleteProduct(productId) {
+  const result = db.prepare("DELETE FROM products WHERE id = ?").run(clean(productId, 120));
+  return result.changes > 0;
+}
+
+export function listFilterDefinitions(category = "") {
+  const rows = category
+    ? db.prepare("SELECT * FROM filter_definitions WHERE category = ? ORDER BY sort_order, id").all(clean(category, 80))
+    : db.prepare("SELECT * FROM filter_definitions ORDER BY category, sort_order, id").all();
+  return rows.map((row) => ({
+    id: Number(row.id),
+    category: row.category,
+    key: row.filter_key,
+    labelAr: row.label_ar,
+    labelEn: row.label_en,
+    inputType: row.input_type,
+    options: parseJSON(row.options_json, []),
+    sortOrder: Number(row.sort_order),
+    visible: Boolean(row.visible)
+  }));
+}
+
+export function upsertFilterDefinition(input) {
+  const category = clean(input.category, 80);
+  const key = referenceId(input.key || input.labelEn || input.labelAr);
+  if (!category || !key || !clean(input.labelAr || input.labelEn, 120)) return null;
+  const inputType = ["select", "multiselect", "range", "boolean", "text", "note"].includes(input.inputType)
+    ? input.inputType
+    : "select";
+  const options = Array.isArray(input.options) ? input.options.map((item) => clean(item, 120)).filter(Boolean) : [];
+  if (Number(input.id) > 0) {
+    db.prepare(`
+      UPDATE filter_definitions SET category = ?, filter_key = ?, label_ar = ?, label_en = ?,
+        input_type = ?, options_json = ?, sort_order = ?, visible = ?, updated_at = CURRENT_TIMESTAMP
+      WHERE id = ?
+    `).run(
+      category, key, clean(input.labelAr, 120) || clean(input.labelEn, 120),
+      clean(input.labelEn, 120) || clean(input.labelAr, 120), inputType,
+      JSON.stringify(options), Number(input.sortOrder || 0), input.visible === false ? 0 : 1, Number(input.id)
+    );
+    return listFilterDefinitions().find((item) => item.id === Number(input.id)) || null;
+  }
+  db.prepare(`
+    INSERT INTO filter_definitions (
+      category, filter_key, label_ar, label_en, input_type, options_json, sort_order, visible, updated_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+    ON CONFLICT(category, filter_key) DO UPDATE SET
+      label_ar = excluded.label_ar,
+      label_en = excluded.label_en,
+      input_type = excluded.input_type,
+      options_json = excluded.options_json,
+      sort_order = excluded.sort_order,
+      visible = excluded.visible,
+      updated_at = CURRENT_TIMESTAMP
+  `).run(
+    category, key, clean(input.labelAr, 120) || clean(input.labelEn, 120),
+    clean(input.labelEn, 120) || clean(input.labelAr, 120), inputType,
+    JSON.stringify(options), Number(input.sortOrder || 0), input.visible === false ? 0 : 1
+  );
+  return listFilterDefinitions(category).find((item) => item.key === key) || null;
+}
+
+export function deleteFilterDefinition(filterId) {
+  const result = db.prepare("DELETE FROM filter_definitions WHERE id = ?").run(Number(filterId));
+  return result.changes > 0;
+}
+
+export function syncFragranceNoteEntities(notes) {
+  const rows = Array.isArray(notes) ? notes.slice(0, 5_000) : [];
+  db.exec("BEGIN IMMEDIATE");
+  try {
+    const upsert = db.prepare(`
+      INSERT INTO fragrance_note_entities (
+        id, name_ar, name_en, aliases_json, image, family_id, parent_id,
+        related_json, compatible_json, opposite_json, default_intensity, updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+      ON CONFLICT(id) DO UPDATE SET
+        name_ar = excluded.name_ar, name_en = excluded.name_en,
+        aliases_json = excluded.aliases_json, image = excluded.image,
+        family_id = excluded.family_id, parent_id = excluded.parent_id,
+        related_json = excluded.related_json, compatible_json = excluded.compatible_json,
+        opposite_json = excluded.opposite_json, default_intensity = excluded.default_intensity,
+        updated_at = CURRENT_TIMESTAMP
+    `);
+    for (const note of rows) {
+      upsert.run(
+        referenceId(note.id || note.slug || note.nameEn || note.nameAr),
+        clean(note.nameAr, 180), clean(note.nameEn, 180),
+        JSON.stringify(Array.isArray(note.aliases) ? note.aliases.slice(0, 80) : []),
+        clean(note.image, 2_000_000), referenceId(note.familyId || "uncategorized"),
+        note.parentId ? referenceId(note.parentId) : null,
+        JSON.stringify(Array.isArray(note.related) ? note.related.map(referenceId) : []),
+        JSON.stringify(Array.isArray(note.compatible) ? note.compatible.map(referenceId) : []),
+        JSON.stringify(Array.isArray(note.opposite) ? note.opposite.map(referenceId) : []),
+        Math.min(5, Math.max(1, Number(note.defaultIntensity || 3)))
+      );
+    }
+    db.exec("COMMIT");
+  } catch (error) {
+    db.exec("ROLLBACK");
+    throw error;
+  }
+  return rows.length;
+}
+
+export function listFragranceNoteEntities() {
+  return db.prepare("SELECT * FROM fragrance_note_entities ORDER BY family_id, name_en, name_ar").all().map((row) => ({
+    id: row.id,
+    nameAr: row.name_ar,
+    nameEn: row.name_en,
+    aliases: parseJSON(row.aliases_json, []),
+    image: row.image,
+    familyId: row.family_id,
+    parentId: row.parent_id,
+    related: parseJSON(row.related_json, []),
+    compatible: parseJSON(row.compatible_json, []),
+    opposite: parseJSON(row.opposite_json, []),
+    defaultIntensity: Number(row.default_intensity)
+  }));
 }
 
 export function getCart(userId) {
@@ -912,6 +1316,35 @@ export function listActivity(limit = 100) {
     details: parseJSON(row.detailsJson, {})
   }));
 }
+
+function migrateLegacyProductNotes() {
+  const rows = db.prepare(`
+    SELECT p.* FROM products p
+    WHERE NOT EXISTS (SELECT 1 FROM product_note_refs r WHERE r.product_id = p.id)
+  `).all();
+  for (const row of rows) {
+    const metadata = parseJSON(row.catalog_json, {});
+    syncProductNoteReferences(row.id, {
+      ...metadata,
+      notes: metadata.notes || {},
+      notesAr: parseJSON(row.notes_ar_json),
+      notesEn: parseJSON(row.notes_en_json),
+      noteLibrary: metadata.noteLibrary || {}
+    });
+    syncProductFilterValues(row.id, {
+      ...metadata,
+      category: row.category,
+      brand: row.brand,
+      concentration: row.concentration,
+      type: row.type_ar,
+      typeEn: row.type_en,
+      notesAr: parseJSON(row.notes_ar_json),
+      notesEn: parseJSON(row.notes_en_json)
+    });
+  }
+}
+
+migrateLegacyProductNotes();
 
 export async function ensureAdminFromEnvironment() {
   const email = normalizedEmail(process.env.ORIGO_ADMIN_EMAIL);
