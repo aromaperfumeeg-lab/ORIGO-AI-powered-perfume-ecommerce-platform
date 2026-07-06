@@ -2,6 +2,7 @@
 <html lang="ar" dir="rtl">
   <head>
     <meta charset="UTF-8" />
+    <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#6d0d24" />
     <meta
@@ -15,7 +16,7 @@
       href="https://fonts.googleapis.com/css2?family=Alexandria:wght@300;400;500;600;700;800&family=DM+Serif+Display&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?v=9" />
+    <link rel="stylesheet" href="styles.css?v=11" />
   </head>
   <body>
     <div class="announcement">
@@ -129,7 +130,16 @@
       </div>
     </aside>
 
-    <main>
+    <main id="storefront-main">
+      <section class="notes-route-page" id="notes-library-page" hidden aria-labelledby="notes-page-title">
+        <div class="notes-page-shell">
+          <nav class="notes-breadcrumb" aria-label="مسار الصفحة">
+            <button data-action="notes-home" data-i18n="home">الرئيسية</button><span>/</span><b data-i18n="notesLibrary">مكتبة المكونات العطرية</b>
+          </nav>
+          <div id="notes-page-content"></div>
+        </div>
+      </section>
+
       <section class="hero" aria-labelledby="hero-title">
         <div class="hero-image" role="img" aria-label="زجاجة عطر فاخرة على خلفية نبيتي"></div>
         <div class="hero-vignette"></div>
@@ -181,6 +191,13 @@
         </article>
       </section>
 
+      <section class="brand-carousel-section" aria-label="العلامات التجارية">
+        <div class="brand-carousel-head"><div><span class="eyebrow">BRAND DIRECTORY</span><h2 data-i18n="navBrands">البراندات</h2></div>
+          <div><input id="brand-carousel-search" type="search" placeholder="ابحث عن براند" /><button data-action="brand-carousel-scroll" data-direction="-1" aria-label="السابق">→</button><button data-action="brand-carousel-scroll" data-direction="1" aria-label="التالي">←</button></div>
+        </div>
+        <div class="brand-carousel-track" id="brand-carousel-track"></div>
+      </section>
+
       <section class="section featured-section" id="featured">
         <div class="section-heading reveal">
           <div>
@@ -200,6 +217,7 @@
             </div>
           </div>
         </div>
+        <div class="dynamic-filter-bar" id="dynamic-filter-bar" aria-label="فلاتر القسم"></div>
         <div class="product-grid horizontal-scroll" id="product-grid"></div>
       </section>
 
@@ -263,7 +281,7 @@
           <span class="eyebrow light" data-i18n="olfactoryAtlas">أطلس الروائح</span>
           <h2 data-i18n="notesTitle">اقرأ العطر<br />من <em>مكوّناته.</em></h2>
           <p data-i18n="notesBody">مكتبة بصرية مبسطة تساعدك على فهم كل نوتة والعطور التي تظهر فيها.</p>
-          <a class="text-link light" href="#discover"><span data-i18n="browseNotes">تصفح كل النوتات</span> <span>←</span></a>
+          <a class="text-link light" href="#discover"><span data-i18n="scentFinder">استخدم مستكشف العطر</span> <span>←</span></a>
         </div>
         <div class="note-category-grid reveal">
           <article class="note-category category-citrus">
@@ -464,7 +482,7 @@
         <p data-i18n="footerBody">متجر ومنصة اكتشاف تساعدك على فهم العطر قبل امتلاكه.</p>
       </div>
       <div class="footer-links">
-        <div><b data-i18n="explore">اكتشف</b><a href="#featured" data-i18n="newArrivals">وصل حديثًا</a><a href="#discover" data-i18n="scentFinder">مستكشف ORIGO</a><a href="#notes" data-i18n="notesLibrary">مكتبة النوتات</a></div>
+        <div><b data-i18n="explore">اكتشف</b><a href="#featured" data-i18n="newArrivals">وصل حديثًا</a><a href="#discover" data-i18n="scentFinder">مستكشف ORIGO</a></div>
         <div><b data-i18n="service">الخدمة</b><a href="#" data-i18n="shipping">الشحن والتوصيل</a><a href="#" data-i18n="returns">الاستبدال والاسترجاع</a><a href="#" data-i18n="contact">تواصل معنا</a></div>
         <div><b data-i18n="about">عن ORIGO</b><a href="#" data-i18n="ourStory">قصتنا</a><a href="#" data-i18n="authenticity">ضمان الأصالة</a><button class="footer-admin" data-action="admin" data-i18n="adminLink">إدارة المنتجات</button></div>
       </div>
@@ -567,7 +585,53 @@
       </section>
     </div>
 
-    <div class="overlay admin-overlay" id="admin-overlay" aria-hidden="true">
+    <div class="overlay advanced-admin-overlay" id="admin-overlay" aria-hidden="true">
+      <section class="advanced-admin-panel" role="dialog" aria-modal="true" aria-labelledby="advanced-admin-title">
+        <aside class="advanced-admin-sidebar">
+          <div class="admin-sidebar-brand">
+            <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+            <div><b>ORIGO</b><small>ADMIN SUITE</small></div>
+          </div>
+          <nav id="advanced-admin-nav" aria-label="أقسام لوحة التحكم"></nav>
+          <div class="admin-sidebar-user">
+            <span>OA</span>
+            <div><b id="admin-sidebar-user-name">ORIGO Admin</b><small>OWNER</small></div>
+            <button data-action="logout" aria-label="تسجيل الخروج">↗</button>
+          </div>
+        </aside>
+
+        <div class="advanced-admin-main">
+          <header class="advanced-admin-topbar">
+            <button class="admin-sidebar-toggle" data-action="toggle-admin-sidebar" aria-label="فتح القائمة">☰</button>
+            <label class="admin-global-search">
+              <span>⌕</span>
+              <input id="admin-global-search" type="search" placeholder="ابحث في الطلبات، المنتجات، العملاء…" />
+              <kbd>⌘ K</kbd>
+            </label>
+            <div class="admin-topbar-actions">
+              <button data-action="admin-language" aria-label="تبديل اللغة">AR / EN</button>
+              <button data-action="theme" aria-label="الوضع الداكن">◐</button>
+              <button class="admin-notifications" data-action="admin-notifications" aria-label="الإشعارات">♢<i>4</i></button>
+              <button class="admin-profile-button" data-action="admin-profile"><span>OA</span><b id="admin-profile-name">ORIGO Admin</b><i>⌄</i></button>
+              <button class="close-button" data-action="close-overlay" aria-label="إغلاق">×</button>
+            </div>
+          </header>
+          <div class="advanced-admin-body">
+            <div class="admin-view-head">
+              <div>
+                <nav class="admin-breadcrumb"><span>ORIGO</span><i>/</i><b id="admin-breadcrumb-current">لوحة التحكم</b></nav>
+                <h1 id="advanced-admin-title">لوحة التحكم</h1>
+                <p id="admin-view-description">ملخص أداء المتجر والعمليات التي تحتاج انتباهك الآن.</p>
+              </div>
+              <div class="admin-view-actions" id="admin-view-actions"></div>
+            </div>
+            <main class="admin-dashboard-content" id="admin-dashboard-content"></main>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="overlay admin-overlay product-admin-overlay" id="product-admin-overlay" aria-hidden="true">
       <section class="admin-panel">
         <div class="admin-head">
           <div>
@@ -576,6 +640,8 @@
             <p data-i18n="smartImportBody">نجمع البيانات من مصادر عامة مسموحة، ثم تبقى بانتظار مراجعتك قبل الحفظ.</p>
           </div>
           <div class="admin-head-actions">
+            <button class="secondary-button compact-button" data-action="admin-notes">Fragrance Knowledge Base</button>
+            <button class="secondary-button compact-button" data-action="back-to-dashboard">لوحة التحكم</button>
             <button class="secondary-button compact-button" data-action="admin-orders" data-i18n="orders">الطلبات</button>
             <button class="close-button" data-action="close-overlay" aria-label="إغلاق">×</button>
           </div>
@@ -627,6 +693,111 @@
       </section>
     </div>
 
+    <div class="overlay notes-admin-overlay" id="notes-admin-overlay" aria-hidden="true">
+      <section class="notes-admin-panel" role="dialog" aria-modal="true" aria-labelledby="notes-admin-title">
+        <div class="admin-head">
+          <div>
+            <span class="eyebrow">FRAGRANCE NOTES LIBRARY</span>
+            <h2 id="notes-admin-title">إدارة مكتبة المكونات</h2>
+            <p>الأسماء والترجمات والمرادفات والصور والعائلات من مكان واحد.</p>
+          </div>
+          <div class="admin-head-actions">
+            <button class="secondary-button compact-button" data-action="back-to-products">لوحة المنتجات</button>
+            <button class="close-button" data-action="close-overlay" aria-label="إغلاق">×</button>
+          </div>
+        </div>
+
+        <div class="notes-admin-stats" id="notes-admin-stats"></div>
+        <div class="notes-admin-grid">
+          <aside class="notes-admin-browser">
+            <label class="notes-admin-search">
+              <span>⌕</span>
+              <input id="notes-admin-search" type="search" placeholder="ابحث بالاسم أو المرادف…" />
+            </label>
+            <div class="notes-admin-list" id="notes-admin-list"></div>
+          </aside>
+
+          <div class="notes-admin-editor">
+            <div class="notes-admin-tabs">
+              <button class="active" data-action="notes-admin-tab" data-tab="note">مكوّن</button>
+              <button data-action="notes-admin-tab" data-tab="family">عائلة رئيسية</button>
+              <button data-action="notes-admin-tab" data-tab="unclassified">غير مصنفة</button>
+            </div>
+
+            <form id="note-admin-form" class="notes-editor-form">
+              <input type="hidden" name="originalSlug" />
+              <div class="notes-editor-heading">
+                <div><small>NOTE EDITOR</small><h3>إضافة أو تعديل مكوّن</h3></div>
+                <button type="button" class="secondary-button compact-button" data-action="new-note">مكوّن جديد</button>
+              </div>
+              <div class="review-grid">
+                <label>الاسم العربي<input name="nameAr" dir="rtl" required /></label>
+                <label>English name<input name="nameEn" dir="ltr" required /></label>
+                <label>الرابط الصديق<input name="slug" dir="ltr" pattern="[a-z0-9-]+" placeholder="rose" /></label>
+                <label>العائلة<select name="familyId" id="note-family-select"></select></label>
+                <label>مكان الظهور<select name="position">
+                  <option value="top">افتتاحية</option>
+                  <option value="heart">قلب</option>
+                  <option value="base">قاعدة</option>
+                  <option value="multiple">متعدد</option>
+                </select></label>
+                <label>المرادفات<input name="aliases" placeholder="Oud, Oudh, Agarwood, عود" /></label>
+                <label>القوة الافتراضية (1–5)<input name="defaultIntensity" type="number" min="1" max="5" value="3" /></label>
+                <label>المكوّن الأب<input name="parentId" dir="ltr" placeholder="musk" /></label>
+                <label>مكونات قريبة<input name="related" dir="ltr" placeholder="white-musk, amber" /></label>
+                <label>مكونات متوافقة<input name="compatible" dir="ltr" placeholder="vanilla, rose" /></label>
+                <label>مكونات متعارضة<input name="opposite" dir="ltr" placeholder="marine-note" /></label>
+              </div>
+              <div class="review-grid description-grid">
+                <label>وصف الرائحة بالعربية<textarea name="descriptionAr" dir="rtl"></textarea></label>
+                <label>Scent description<textarea name="descriptionEn" dir="ltr"></textarea></label>
+              </div>
+              <div class="note-image-editor">
+                <img id="note-admin-image-preview" alt="" />
+                <div>
+                  <label>رابط الصورة<input name="image" dir="ltr" placeholder="https://…" /></label>
+                  <label class="gallery-upload compact-upload">
+                    <input id="note-image-upload" type="file" accept="image/jpeg,image/png,image/webp,image/avif" />
+                    <span>＋</span><div><b>رفع أو تغيير الصورة</b><small>حتى 900 KB</small></div>
+                  </label>
+                </div>
+              </div>
+              <div class="note-merge-row">
+                <label>دمج هذا المكوّن داخل<select name="mergeInto" id="note-merge-select"><option value="">— بدون دمج —</option></select></label>
+                <small>المرادفات القديمة ستشير تلقائيًا إلى المكوّن الهدف.</small>
+              </div>
+              <button class="button burgundy-button" type="submit">حفظ المكوّن <span>←</span></button>
+            </form>
+
+            <form id="family-admin-form" class="notes-editor-form" hidden>
+              <div class="notes-editor-heading">
+                <div><small>FAMILY EDITOR</small><h3>إضافة عائلة رئيسية</h3></div>
+              </div>
+              <div class="review-grid">
+                <label>اسم العائلة بالعربية<input name="nameAr" required dir="rtl" /></label>
+                <label>Family name<input name="nameEn" required dir="ltr" /></label>
+                <label>المعرّف<input name="id" dir="ltr" pattern="[a-z0-9-]+" /></label>
+                <label>اللون<input name="color" type="color" value="#6d0d24" /></label>
+                <label>الموضع الافتراضي<select name="position">
+                  <option value="top">افتتاحية</option><option value="heart">قلب</option>
+                  <option value="base">قاعدة</option><option value="multiple">متعدد</option>
+                </select></label>
+                <label>الرمز<input name="symbol" maxlength="3" value="✦" /></label>
+              </div>
+              <button class="button burgundy-button" type="submit">حفظ العائلة <span>←</span></button>
+            </form>
+
+            <section id="unclassified-admin-panel" class="notes-editor-form" hidden>
+              <div class="notes-editor-heading">
+                <div><small>REVIEW QUEUE</small><h3>مكونات غير مصنفة</h3></div>
+              </div>
+              <div id="unclassified-notes-list" class="unclassified-notes-list"></div>
+            </section>
+          </div>
+        </div>
+      </section>
+    </div>
+
     <div class="toast-region" id="toast-region" aria-live="polite"></div>
 
     <template id="product-template">
@@ -647,7 +818,9 @@
     </template>
 
     <script src="fragrance-knowledge.js?v=1"></script>
+    <script src="fragrance-notes-library.js?v=2"></script>
     <script src="catalog-providers.js?v=5"></script>
-    <script src="app.js?v=9"></script>
+    <script src="external-tracking.js?v=1"></script>
+    <script src="app.js?v=14"></script>
   </body>
 </html>

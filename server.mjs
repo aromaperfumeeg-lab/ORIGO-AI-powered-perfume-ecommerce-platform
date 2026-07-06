@@ -3,25 +3,51 @@ import { readFile, stat } from "node:fs/promises";
 import { extname, join, normalize, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
+  ROLE_PERMISSIONS,
   createOrder,
   createSession,
   createUser,
+  deleteFilterDefinition,
+  deleteProduct,
+  databaseDriver,
   databasePath,
   deleteSession,
   ensureAdminFromEnvironment,
   findUserByEmail,
+  getAdminWorkspaceState,
+  getFragranceNotesState,
   getCart,
+  getOrderById,
   hashPassword,
   listAllOrders,
+  listActivity,
+  listFilterDefinitions,
+  listFragranceNoteEntities,
   listOrdersForUser,
   listProducts,
+  listStaff,
   mergeCart,
   replaceCart,
+  saveFragranceNotesState,
+  saveAdminWorkspaceState,
+  setUserRole,
+  syncFragranceNoteEntities,
+  recordActivity,
+  updateOrderAdmin,
   updateOrderStatus,
+  upsertFilterDefinition,
   upsertProduct,
   userFromSession,
   verifyPassword
 } from "./db.mjs";
+import {
+  createBostaDelivery,
+  createPaymobIntention,
+  dispatchPurchaseEvents,
+  integrationStatus,
+  publicTrackingConfig,
+  sendWhatsAppTemplate
+} from "./external-integrations.mjs";
 
 const ROOT = resolve(fileURLToPath(new URL(".", import.meta.url)));
 const HOST = process.env.ORIGO_HOST || "0.0.0.0";
@@ -180,14 +206,26 @@ function expiredSessionCookie(request) {
   ].filter(Boolean).join("; ");
 }
 
-function requireUser(request, response, origin, role = "customer") {
+function userCan(user, permission) {
+  const permissions = user?.permissions || [];
+  if (permissions.includes("*")) return true;
+  if (permissions.includes(permission)) return true;
+  if (permission.endsWith(":view") && permissions.includes(permission.slice(0, -5))) return true;
+  return false;
+}
+
+function requireUser(request, response, origin, permission = "customer") {
   const user = requestUser(request);
   if (!user) {
     jsonResponse(response, 401, { error: "يجب تسجيل الدخول أولًا.", code: "AUTH_REQUIRED" }, origin);
     return null;
   }
-  if (role === "admin" && user.role !== "admin") {
-    jsonResponse(response, 403, { error: "هذه الصفحة متاحة لمدير المتجر فقط.", code: "ADMIN_REQUIRED" }, origin);
+  if (permission !== "customer" && permission !== "staff" && !userCan(user, permission)) {
+    jsonResponse(response, 403, { error: "ليست لديك الصلاحية المطلوبة لهذه العملية.", code: "PERMISSION_REQUIRED" }, origin);
+    return null;
+  }
+  if (permission === "staff" && user.role === "customer") {
+    jsonResponse(response, 403, { error: "هذه الصفحة متاحة لفريق المتجر فقط.", code: "STAFF_REQUIRED" }, origin);
     return null;
   }
   return user;
@@ -205,6 +243,8 @@ function validateCustomer(body) {
     address: String(body.address || "").trim(),
     governorate: String(body.governorate || "").trim(),
     notes: String(body.notes || "").trim()
+    ,
+    paymentProvider: body.paymentProvider === "paymob" ? "paymob" : "cod"
   };
   if (customer.name.length < 2 || customer.name.length > 100) return { error: "أدخل اسمًا صحيحًا." };
   if (!/^[+\d][\d\s()-]{7,24}$/.test(customer.phone)) return { error: "أدخل رقم هاتف صحيحًا." };
@@ -379,13 +419,114 @@ async function handleAPI(request, response, url, origin) {
     return jsonResponse(response, 200, {
       ok: true,
       database: true,
+      databaseDriver,
       aiConfigured: Boolean(process.env.OPENAI_API_KEY),
       model: OPENAI_MODEL
     }, origin);
   }
 
+  if (url.pathname === "/api/integrations/public" && request.method === "GET") {
+    return jsonResponse(response, 200, publicTrackingConfig(), origin);
+  }
+
+  if (url.pathname === "/api/admin/integrations" && request.method === "GET") {
+    const user = requireUser(request, response, origin, "settings");
+    if (!user) return;
+    return jsonResponse(response, 200, { integrations: integrationStatus() }, origin);
+  }
+
+  if (url.pathname === "/api/payments/paymob/intention" && request.method === "POST") {
+    const user = requireUser(request, response, origin);
+    if (!user) return;
+    try {
+      const body = await readJSONBody(request);
+      const order = getOrderById(body.orderId);
+      if (!order || Number(order.userId) !== Number(user.id)) {
+        return jsonResponse(response, 404, { error: "الطلب غير موجود." }, origin);
+      }
+      const payment = await createPaymobIntention(order, user);
+      return jsonResponse(response, 200, { payment }, origin);
+    } catch (error) {
+      return jsonResponse(response, error.message.includes("not configured") ? 503 : 502, {
+        error: "تعذر إنشاء جلسة الدفع عبر Paymob.",
+        detail: process.env.NODE_ENV === "production" ? undefined : error.message
+      }, origin);
+    }
+  }
+
+  const shipmentMatch = url.pathname.match(/^\/api\/admin\/orders\/(\d+)\/shipment$/);
+  if (shipmentMatch && request.method === "POST") {
+    const user = requireUser(request, response, origin, "shipping");
+    if (!user) return;
+    try {
+      const order = getOrderById(shipmentMatch[1]);
+      if (!order) return jsonResponse(response, 404, { error: "الطلب غير موجود." }, origin);
+      const shipment = await createBostaDelivery(order);
+      const tracking = shipment.trackingNumber || shipment.tracking_number || shipment._id || shipment.id || "";
+      const updatedOrder = updateOrderAdmin(order.id, {
+        shippingCarrier: "Bosta",
+        trackingNumber: String(tracking),
+        status: order.status
+      });
+      recordActivity(user.id, "bosta_delivery_created", "order", order.id, { tracking });
+      return jsonResponse(response, 200, { shipment, order: updatedOrder }, origin);
+    } catch (error) {
+      return jsonResponse(response, error.message.includes("not configured") ? 503 : 502, {
+        error: "تعذر إنشاء شحنة Bosta.",
+        detail: process.env.NODE_ENV === "production" ? undefined : error.message
+      }, origin);
+    }
+  }
+
+  const whatsappMatch = url.pathname.match(/^\/api\/admin\/orders\/(\d+)\/whatsapp$/);
+  if (whatsappMatch && request.method === "POST") {
+    const user = requireUser(request, response, origin, "support");
+    if (!user) return;
+    try {
+      const body = await readJSONBody(request);
+      const order = getOrderById(whatsappMatch[1]);
+      if (!order) return jsonResponse(response, 404, { error: "الطلب غير موجود." }, origin);
+      const result = await sendWhatsAppTemplate({
+        to: order.phone,
+        template: String(body.template || process.env.WHATSAPP_ORDER_TEMPLATE || "order_status_update"),
+        language: String(body.language || "ar"),
+        parameters: body.parameters || [order.customerName, order.orderNumber, order.status]
+      });
+      recordActivity(user.id, "whatsapp_sent", "order", order.id, { template: body.template || "order_status_update" });
+      return jsonResponse(response, 200, { result }, origin);
+    } catch (error) {
+      return jsonResponse(response, error.message.includes("not configured") ? 503 : 502, {
+        error: "تعذر إرسال رسالة WhatsApp.",
+        detail: process.env.NODE_ENV === "production" ? undefined : error.message
+      }, origin);
+    }
+  }
+
+  if (url.pathname === "/api/webhooks/whatsapp" && request.method === "GET") {
+    const verified = url.searchParams.get("hub.mode") === "subscribe"
+      && url.searchParams.get("hub.verify_token") === process.env.WHATSAPP_VERIFY_TOKEN;
+    response.writeHead(verified ? 200 : 403, { "Content-Type": "text/plain; charset=utf-8" });
+    response.end(verified ? url.searchParams.get("hub.challenge") || "" : "Verification failed");
+    return;
+  }
+
+  if (["/api/webhooks/whatsapp", "/api/webhooks/paymob", "/api/webhooks/bosta"].includes(url.pathname) && request.method === "POST") {
+    await readJSONBody(request).catch(() => ({}));
+    return jsonResponse(response, 202, { received: true }, origin);
+  }
+
   if (url.pathname === "/api/products" && request.method === "GET") {
     return jsonResponse(response, 200, { products: listProducts() }, origin);
+  }
+
+  if (url.pathname === "/api/filters" && request.method === "GET") {
+    return jsonResponse(response, 200, {
+      filters: listFilterDefinitions(url.searchParams.get("category") || "")
+    }, origin);
+  }
+
+  if (url.pathname === "/api/notes/state" && request.method === "GET") {
+    return jsonResponse(response, 200, { state: getFragranceNotesState() }, origin);
   }
 
   if (url.pathname === "/api/session" && request.method === "GET") {
@@ -450,7 +591,8 @@ async function handleAPI(request, response, url, origin) {
         name: userRow.name,
         email: userRow.email,
         phone: userRow.phone || "",
-        role: userRow.role,
+        role: userRow.staff_role || userRow.role,
+        permissions: ROLE_PERMISSIONS[userRow.staff_role || userRow.role] || [],
         createdAt: userRow.created_at
       };
       const cart = mergeCart(user.id, body.cart);
@@ -501,7 +643,15 @@ async function handleAPI(request, response, url, origin) {
       const validation = validateCustomer(body);
       if (validation.error) return jsonResponse(response, 400, { error: validation.error }, origin);
       const order = createOrder(user.id, validation.customer);
-      return jsonResponse(response, 201, { order, cart: [] }, origin);
+      const attribution = body.attribution && typeof body.attribution === "object" ? body.attribution : {};
+      const integrationResults = await dispatchPurchaseEvents(order, {
+        ...attribution,
+        email: user.email,
+        ip: String(request.headers["x-forwarded-for"] || request.socket.remoteAddress || "").split(",")[0].trim(),
+        userAgent: String(request.headers["user-agent"] || ""),
+        url: attribution.landingUrl || `${process.env.ORIGO_PUBLIC_URL || ""}/`
+      });
+      return jsonResponse(response, 201, { order, cart: [], integrations: integrationResults }, origin);
     } catch (error) {
       const empty = error.code === "EMPTY_CART";
       return jsonResponse(response, empty ? 409 : 400, {
@@ -511,13 +661,13 @@ async function handleAPI(request, response, url, origin) {
   }
 
   if (url.pathname === "/api/admin/products" && request.method === "GET") {
-    const user = requireUser(request, response, origin, "admin");
+    const user = requireUser(request, response, origin, "catalog:view");
     if (!user) return;
     return jsonResponse(response, 200, { products: listProducts({ includeHidden: true }) }, origin);
   }
 
   if (url.pathname === "/api/admin/products" && request.method === "POST") {
-    const user = requireUser(request, response, origin, "admin");
+    const user = requireUser(request, response, origin, "catalog");
     if (!user) return;
     try {
       const body = await readJSONBody(request);
@@ -527,26 +677,151 @@ async function handleAPI(request, response, url, origin) {
       if (!Number.isFinite(Number(body.price)) || Number(body.price) < 0) {
         return jsonResponse(response, 400, { error: "أدخل سعرًا صحيحًا." }, origin);
       }
-      return jsonResponse(response, 200, { product: upsertProduct(body) }, origin);
+      const product = upsertProduct(body);
+      recordActivity(user.id, "product_saved", "product", product.id, { status: product.status });
+      return jsonResponse(response, 200, { product }, origin);
     } catch (error) {
       console.error("[ORIGO PRODUCT]", error.message);
-      return jsonResponse(response, 400, { error: "تعذر حفظ المنتج." }, origin);
+      return jsonResponse(response, 400, { error: `تعذر حفظ المنتج: ${error.message}` }, origin);
+    }
+  }
+
+  const adminProductMatch = url.pathname.match(/^\/api\/admin\/products\/([^/]+)$/);
+  if (adminProductMatch && request.method === "DELETE") {
+    const user = requireUser(request, response, origin, "catalog");
+    if (!user) return;
+    const id = decodeURIComponent(adminProductMatch[1]);
+    const deleted = deleteProduct(id);
+    if (!deleted) return jsonResponse(response, 404, { error: "المنتج غير موجود." }, origin);
+    recordActivity(user.id, "product_deleted", "product", id);
+    return jsonResponse(response, 200, { deleted: true, id }, origin);
+  }
+
+  if (url.pathname === "/api/admin/filters" && request.method === "GET") {
+    const user = requireUser(request, response, origin, "catalog:view");
+    if (!user) return;
+    return jsonResponse(response, 200, { filters: listFilterDefinitions() }, origin);
+  }
+
+  if (url.pathname === "/api/admin/filters" && request.method === "POST") {
+    const user = requireUser(request, response, origin, "catalog");
+    if (!user) return;
+    try {
+      const body = await readJSONBody(request);
+      const filter = upsertFilterDefinition(body);
+      if (!filter) return jsonResponse(response, 400, { error: "بيانات الفلتر غير مكتملة." }, origin);
+      recordActivity(user.id, "filter_saved", "filter", filter.id, { category: filter.category, key: filter.key });
+      return jsonResponse(response, 200, { filter }, origin);
+    } catch (error) {
+      return jsonResponse(response, 400, { error: error.message || "تعذر حفظ الفلتر." }, origin);
+    }
+  }
+
+  const adminFilterMatch = url.pathname.match(/^\/api\/admin\/filters\/(\d+)$/);
+  if (adminFilterMatch && request.method === "DELETE") {
+    const user = requireUser(request, response, origin, "catalog");
+    if (!user) return;
+    const deleted = deleteFilterDefinition(adminFilterMatch[1]);
+    if (!deleted) return jsonResponse(response, 404, { error: "الفلتر غير موجود." }, origin);
+    recordActivity(user.id, "filter_deleted", "filter", adminFilterMatch[1]);
+    return jsonResponse(response, 200, { deleted: true }, origin);
+  }
+
+  if (url.pathname === "/api/admin/notes/state" && request.method === "POST") {
+    const user = requireUser(request, response, origin, "catalog");
+    if (!user) return;
+    try {
+      const body = await readJSONBody(request);
+      const state = saveFragranceNotesState(body.state);
+      const synced = body.knowledge ? syncFragranceNoteEntities(body.knowledge) : 0;
+      recordActivity(user.id, "notes_library_saved", "fragrance_notes", "library");
+      return jsonResponse(response, 200, { state, synced }, origin);
+    } catch (error) {
+      const tooLarge = error.code === "NOTES_STATE_TOO_LARGE" || error.message === "REQUEST_TOO_LARGE";
+      return jsonResponse(response, tooLarge ? 413 : 400, {
+        error: tooLarge ? "بيانات المكتبة أكبر من الحد المسموح." : "تعذر حفظ مكتبة المكونات."
+      }, origin);
+    }
+  }
+
+  if (url.pathname === "/api/admin/knowledge/notes" && request.method === "GET") {
+    const user = requireUser(request, response, origin, "catalog:view");
+    if (!user) return;
+    return jsonResponse(response, 200, { notes: listFragranceNoteEntities() }, origin);
+  }
+
+  if (url.pathname === "/api/admin/workspace" && request.method === "GET") {
+    const user = requireUser(request, response, origin, "staff");
+    if (!user) return;
+    return jsonResponse(response, 200, {
+      state: getAdminWorkspaceState(),
+      activity: listActivity(100)
+    }, origin);
+  }
+
+  if (url.pathname === "/api/admin/workspace" && request.method === "POST") {
+    const user = requireUser(request, response, origin, "staff");
+    if (!user) return;
+    try {
+      const body = await readJSONBody(request);
+      const state = saveAdminWorkspaceState(body.state);
+      recordActivity(user.id, "workspace_saved", "workspace", "admin", { section: body.section || "" });
+      return jsonResponse(response, 200, { state }, origin);
+    } catch (error) {
+      return jsonResponse(response, error.code === "ADMIN_STATE_TOO_LARGE" ? 413 : 400, {
+        error: "تعذر حفظ بيانات لوحة الإدارة."
+      }, origin);
+    }
+  }
+
+  if (url.pathname === "/api/admin/staff" && request.method === "GET") {
+    const user = requireUser(request, response, origin, "users");
+    if (!user) return;
+    return jsonResponse(response, 200, { staff: listStaff() }, origin);
+  }
+
+  if (url.pathname === "/api/admin/staff" && request.method === "POST") {
+    const user = requireUser(request, response, origin, "users");
+    if (!user) return;
+    try {
+      const body = await readJSONBody(request);
+      const role = String(body.role || "");
+      if (!ROLE_PERMISSIONS[role]) return jsonResponse(response, 400, { error: "الدور غير صالح." }, origin);
+      let staff = findUserByEmail(body.email);
+      if (staff) {
+        staff = setUserRole(staff.id, role);
+      } else {
+        if (String(body.password || "").length < 10) {
+          return jsonResponse(response, 400, { error: "كلمة المرور يجب ألا تقل عن 10 أحرف." }, origin);
+        }
+        staff = createUser({
+          name: String(body.name || "").trim(),
+          email: String(body.email || "").trim(),
+          passwordHash: await hashPassword(body.password),
+          role
+        });
+      }
+      recordActivity(user.id, "staff_saved", "user", staff.id, { role });
+      return jsonResponse(response, 200, { staff }, origin);
+    } catch {
+      return jsonResponse(response, 400, { error: "تعذر حفظ حساب الموظف." }, origin);
     }
   }
 
   if (url.pathname === "/api/admin/orders" && request.method === "GET") {
-    const user = requireUser(request, response, origin, "admin");
+    const user = requireUser(request, response, origin, "orders:view");
     if (!user) return;
     return jsonResponse(response, 200, { orders: listAllOrders() }, origin);
   }
 
   const orderStatusMatch = url.pathname.match(/^\/api\/admin\/orders\/(\d+)\/status$/);
   if (orderStatusMatch && request.method === "POST") {
-    const user = requireUser(request, response, origin, "admin");
+    const user = requireUser(request, response, origin, "orders");
     if (!user) return;
     try {
       const body = await readJSONBody(request);
       const order = updateOrderStatus(orderStatusMatch[1], String(body.status || ""));
+      if (order) recordActivity(user.id, "order_status_changed", "order", orderStatusMatch[1], { status: body.status });
       return order
         ? jsonResponse(response, 200, { order }, origin)
         : jsonResponse(response, 400, { error: "حالة الطلب غير صالحة." }, origin);
@@ -555,8 +830,26 @@ async function handleAPI(request, response, url, origin) {
     }
   }
 
+  const orderAdminMatch = url.pathname.match(/^\/api\/admin\/orders\/(\d+)$/);
+  if (orderAdminMatch && request.method === "POST") {
+    const user = requireUser(request, response, origin, "orders");
+    if (!user) return;
+    try {
+      const body = await readJSONBody(request);
+      const order = updateOrderAdmin(orderAdminMatch[1], body);
+      if (!order) return jsonResponse(response, 404, { error: "الطلب غير موجود." }, origin);
+      recordActivity(user.id, "order_updated", "order", orderAdminMatch[1], {
+        status: order.status,
+        paymentStatus: order.paymentStatus
+      });
+      return jsonResponse(response, 200, { order }, origin);
+    } catch {
+      return jsonResponse(response, 400, { error: "تعذر تحديث تفاصيل الطلب." }, origin);
+    }
+  }
+
   if (url.pathname === "/api/catalog/ai-enrich" && request.method === "POST") {
-    const user = requireUser(request, response, origin, "admin");
+    const user = requireUser(request, response, origin, "catalog");
     if (!user) return;
     try {
       const body = await readJSONBody(request);
@@ -580,7 +873,8 @@ async function handleAPI(request, response, url, origin) {
 }
 
 async function serveStatic(request, response, url) {
-  const pathname = decodeURIComponent(url.pathname === "/" ? "/index.html" : url.pathname);
+  const isNotesRoute = /^\/notes(?:\/[a-z0-9-]+)?\/?$/i.test(url.pathname);
+  const pathname = decodeURIComponent(url.pathname === "/" || isNotesRoute ? "/index.html" : url.pathname);
   const cleanPath = normalize(pathname).replace(/^([/\\])+/, "");
   const filePath = resolve(join(ROOT, cleanPath));
   if (filePath !== ROOT && !filePath.startsWith(`${ROOT}${sep}`)) {
@@ -648,7 +942,7 @@ const seededAdmin = await ensureAdminFromEnvironment();
 server.listen(PORT, HOST, () => {
   const aiState = process.env.OPENAI_API_KEY ? `enabled (${OPENAI_MODEL})` : "not configured";
   console.log(`ORIGO is running at http://${HOST}:${PORT}`);
-  console.log(`SQLite database: ${databasePath}`);
+  console.log(`Portable database (${databaseDriver}): ${databasePath}`);
   console.log(`Admin account: ${seededAdmin ? seededAdmin.email : "not configured"}`);
   console.log(`OpenAI web research: ${aiState}`);
 });

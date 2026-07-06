@@ -2,8 +2,15 @@
   "name": "origo-store",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "start": "node server.mjs",
-    "build:knowledge": "node scripts/build-fragrance-knowledge.mjs"
+    "build:knowledge": "node scripts/build-fragrance-knowledge.mjs",
+    "test": "node --test --test-isolation=none"
+  },
+  "dependencies": {
+    "sql.js": "^1.13.0"
   }
 }
