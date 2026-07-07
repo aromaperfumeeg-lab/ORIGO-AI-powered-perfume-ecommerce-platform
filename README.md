@@ -23,6 +23,7 @@ pnpm start
 - Startup file: `server.mjs`
 - Node.js: الإصدار 20 أو أحدث
 - Install command: `npm install --omit=dev`
+- Build command: `npm run build` أو اتركه فارغاً؛ الأمر لا يبني مكتبة المعرفة ولا يحتاج `build:knowledge`.
 - Start command: `npm start`
 - اجعل مجلد البيانات دائماً، واضبط `ORIGO_DB_PATH` على مسار كامل قابل للكتابة مثل `/home/USER/origo-data/origo.db`.
 - يستخدم الخادم `PORT` الذي توفره الاستضافة تلقائياً.
