@@ -1,0 +1,763 @@
+:root {
+  --shell-burgundy: #650019;
+  --shell-burgundy-deep: #39000e;
+  --shell-gold: #d7aa52;
+  --shell-bg: #fdfbf9;
+  --shell-surface: #ffffff;
+  --shell-text: #281b1d;
+  --shell-muted: #776a6d;
+  --shell-line: #eadfdb;
+  --shell-radius: 14px;
+  --shell-content: 1320px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+body {
+  min-width: 320px;
+  overflow-x: hidden;
+  background: var(--shell-bg);
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.announcement,
+body.commerce-route .announcement,
+body.account-route .announcement,
+body.finder-route .announcement {
+  position: relative;
+  z-index: 61;
+  min-height: 32px;
+  padding: 6px 16px;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  color: #fff5dd;
+  background: var(--shell-burgundy-deep);
+  font-size: 11px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.site-header,
+.site-header.compact {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 60;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  color: #fff8ef;
+  background: linear-gradient(115deg, #3d000f, #69001c 52%, #3d000f);
+  box-shadow: 0 7px 24px rgba(58, 0, 16, .16);
+}
+
+.header-main,
+.compact .header-main {
+  width: min(calc(100% - 40px), var(--shell-content));
+  height: 80px;
+  min-height: 80px;
+  margin: 0 auto;
+  padding: 0;
+  display: grid;
+  grid-template-columns: minmax(390px, 1fr) 190px minmax(190px, 1fr);
+  grid-template-areas: "commerce brand preferences";
+  align-items: center;
+  gap: 24px;
+  direction: ltr;
+}
+
+.header-commerce-zone {
+  grid-area: commerce;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  direction: ltr;
+}
+
+.header-commerce-actions {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex: 0 0 auto;
+}
+
+.header-commerce-actions > button,
+.header-preference-actions > button {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  color: #fff8ef;
+  background: transparent;
+  cursor: pointer;
+}
+
+.header-commerce-actions > button:hover,
+.header-preference-actions > button:hover {
+  border-color: rgba(218, 177, 91, .48);
+  background: rgba(255, 255, 255, .08);
+}
+
+.header-commerce-actions svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+}
+
+.header-commerce-actions .action-count {
+  position: absolute;
+  inset-block-start: -3px;
+  inset-inline-end: -3px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--shell-burgundy);
+  border-radius: 999px;
+  color: #5a0017;
+  background: #efbf62;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.header-main .header-search,
+.compact .header-main .header-search {
+  position: static;
+  width: min(340px, 100%);
+  height: 44px;
+  min-width: 0;
+  padding: 0 17px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 11px;
+  border: 1px solid rgba(231, 199, 132, .48);
+  border-radius: 999px;
+  color: #f0c86d;
+  background: rgba(255, 255, 255, .045);
+  direction: rtl;
+}
+
+.header-main .header-search:hover {
+  border-color: var(--shell-gold);
+  background: rgba(255, 255, 255, .09);
+}
+
+.header-main .header-search svg {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+}
+
+.header-main .header-search span {
+  min-width: 0;
+  display: block;
+  overflow: hidden;
+  color: #eadbd6;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.header-main .header-search b {
+  font-size: 11px;
+  font-weight: 400;
+}
+
+.header-main > .brand,
+.compact .header-main > .brand {
+  position: static;
+  grid-area: brand;
+  width: 175px;
+  min-width: 0;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: none;
+}
+
+.site-header .brand-logo-link img {
+  width: 158px;
+  height: 56px;
+  object-fit: contain;
+}
+
+.header-preference-actions {
+  grid-area: preferences;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  direction: rtl;
+}
+
+.header-preference-actions .lang-button {
+  width: auto;
+  min-width: 92px;
+  padding-inline: 13px;
+  display: flex;
+  gap: 7px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.header-preference-actions .theme-toggle {
+  border-color: rgba(218, 177, 91, .38);
+  border-radius: 50%;
+  color: #f2c76a;
+}
+
+.header-preference-actions .theme-toggle span {
+  grid-area: 1 / 1;
+}
+
+.header-preference-actions .theme-toggle .moon,
+body.dark .header-preference-actions .theme-toggle .sun {
+  display: none;
+}
+
+body.dark .header-preference-actions .theme-toggle .moon {
+  display: block;
+}
+
+.category-nav {
+  width: 100%;
+  height: 52px;
+  min-height: 52px;
+  padding: 0 max(24px, calc((100vw - var(--shell-content)) / 2));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(12px, 1.8vw, 28px);
+  border-block-start: 1px solid rgba(255, 255, 255, .16);
+  background: rgba(40, 0, 12, .22);
+  direction: rtl;
+  overflow: visible;
+}
+
+.category-nav > a,
+.brands-nav > button {
+  height: 52px;
+  min-width: 0;
+  padding: 0 3px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  color: #fff8ef;
+  background: transparent;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.category-nav .nav-icon {
+  min-width: 15px;
+  color: #e0b45b;
+  font-size: 15px;
+}
+
+.category-nav .smart-scent-nav {
+  height: 36px !important;
+  margin-inline-start: auto;
+  padding: 0 14px !important;
+  border: 1px solid rgba(224, 180, 91, .8) !important;
+  border-radius: 999px;
+  color: #f0ca72;
+}
+
+.mobile-menu-button {
+  display: none;
+}
+
+#storefront-main {
+  width: 100%;
+  max-width: none;
+  min-height: 60vh;
+  margin: 0;
+  padding: 0;
+}
+
+body.commerce-route #storefront-main > *:not(#commerce-page),
+body.account-route #storefront-main > *:not(#account-page),
+body.finder-route #storefront-main > *:not(#fragrance-finder-page),
+body.catalog-route #storefront-main > *:not(#catalog-page),
+body.notes-route #storefront-main > *:not(#notes-library-page),
+body.benefit-route #storefront-main > *:not(#benefit-detail-page) {
+  display: none !important;
+}
+
+.commerce-shell,
+.account-shell,
+.finder-shell,
+.catalog-shell,
+.notes-page-shell,
+.benefit-detail-shell {
+  width: min(100%, var(--shell-content));
+  max-width: var(--shell-content);
+  margin-inline: auto;
+}
+
+.commerce-page,
+.account-route-page,
+.fragrance-finder-page {
+  padding-inline: clamp(16px, 2.2vw, 30px);
+}
+
+.commerce-page {
+  padding-block-start: 30px;
+}
+
+.checkout-layout,
+.checkout-layout.three,
+.account-layout,
+.finder-layout {
+  gap: 18px;
+}
+
+.checkout-layout.three {
+  grid-template-columns: minmax(0, 1fr) 330px 280px;
+}
+
+.checkout-main-card,
+.checkout-summary-card,
+.checkout-why,
+.tracking-card,
+.account-sidebar,
+.account-content,
+.account-rail > section,
+.finder-main,
+.finder-summary {
+  border-radius: var(--shell-radius);
+}
+
+.checkout-summary-card {
+  top: 178px;
+}
+
+.origo-home,
+.catalog-page,
+.commerce-page,
+.account-route-page,
+.fragrance-finder-page {
+  isolation: isolate;
+}
+
+.account-mobile-back {
+  display: none;
+}
+
+body.dark {
+  --shell-bg: #100a0c;
+  --shell-surface: #1c1316;
+  --shell-text: #f4eaed;
+  --shell-muted: #baaeb1;
+  --shell-line: #3e2c32;
+}
+
+@media (max-width: 1180px) and (min-width: 901px) {
+  .header-main,
+  .compact .header-main {
+    grid-template-columns: minmax(330px, 1fr) 160px minmax(150px, 1fr);
+    gap: 14px;
+  }
+
+  .header-commerce-zone {
+    gap: 10px;
+  }
+
+  .header-main .header-search {
+    width: min(260px, 100%);
+  }
+
+  .category-nav {
+    gap: 10px;
+  }
+
+  .category-nav > a,
+  .brands-nav > button {
+    font-size: 10px;
+  }
+
+  .checkout-layout.three {
+    grid-template-columns: minmax(0, 1fr) 320px;
+  }
+
+  .checkout-layout.three .checkout-why {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 900px) {
+  .announcement,
+  body.commerce-route .announcement,
+  body.account-route .announcement,
+  body.finder-route .announcement {
+    display: none !important;
+  }
+
+  .site-header,
+  .site-header.compact {
+    min-height: 68px;
+  }
+
+  .header-main,
+  .compact .header-main {
+    width: 100%;
+    height: 68px;
+    min-height: 68px;
+    padding: 0 13px;
+    grid-template-columns: 88px 1fr 48px;
+    grid-template-areas: "commerce brand menu";
+    gap: 0;
+  }
+
+  .mobile-menu-button {
+    position: static;
+    grid-area: menu;
+    width: 42px;
+    height: 42px;
+    margin-inline-start: auto;
+    display: flex;
+  }
+
+  .header-commerce-zone {
+    grid-area: commerce;
+    gap: 0;
+  }
+
+  .header-commerce-actions {
+    gap: 3px;
+  }
+
+  .header-commerce-actions > button {
+    width: 40px;
+    min-width: 40px;
+  }
+
+  .header-commerce-actions .account-button {
+    display: none;
+  }
+
+  .header-main .header-search,
+  .header-preference-actions,
+  .category-nav {
+    display: none !important;
+  }
+
+  .header-main > .brand,
+  .compact .header-main > .brand {
+    grid-area: brand;
+    width: 128px;
+  }
+
+  .site-header .brand-logo-link img {
+    width: 122px;
+    height: 47px;
+  }
+
+  .commerce-page,
+  .account-route-page,
+  .fragrance-finder-page {
+    padding-inline: 10px;
+  }
+
+  .commerce-page {
+    padding-block-start: 18px;
+  }
+
+  .checkout-layout,
+  .checkout-layout.three {
+    width: 100%;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .checkout-main-card,
+  .checkout-summary-card,
+  .checkout-why {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .checkout-summary-card {
+    position: static;
+    order: 2;
+  }
+
+  .checkout-why,
+  .checkout-layout.three .checkout-why {
+    grid-column: auto;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    order: 3;
+  }
+
+  .checkout-why h2 {
+    grid-column: 1 / -1;
+  }
+
+  .commerce-shell,
+  .account-shell,
+  .finder-shell,
+  .catalog-shell,
+  .notes-page-shell,
+  .benefit-detail-shell {
+    width: 100%;
+  }
+
+  #account-root[data-view]:not([data-view="dashboard"]) .account-mobile-overview {
+    display: none;
+  }
+
+  #account-root[data-view]:not([data-view="dashboard"]) .account-content {
+    display: block;
+  }
+
+  #account-root[data-view]:not([data-view="dashboard"]) .account-mobile-menu {
+    display: none;
+  }
+
+  #account-root[data-view]:not([data-view="dashboard"]) .account-layout {
+    display: block;
+  }
+
+  .account-mobile-back {
+    width: 100%;
+    min-height: 46px;
+    margin: 0 0 12px;
+    padding: 0 13px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    border: 1px solid var(--account-line);
+    border-radius: 10px;
+    color: var(--account-burgundy);
+    background: var(--account-surface);
+    font: inherit;
+    font-weight: 700;
+  }
+
+  .account-mobile-back svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+@media (max-width: 390px) {
+  .header-main,
+  .compact .header-main {
+    grid-template-columns: 80px 1fr 44px;
+    padding-inline: 8px;
+  }
+
+  .header-commerce-actions > button {
+    width: 37px;
+    min-width: 37px;
+  }
+
+  .site-header .brand-logo-link img {
+    width: 112px;
+  }
+}
+
+/* Keep the homepage shell proportional at wide viewports and browser zoom-out. */
+@media (min-width: 1081px) {
+  .header-main,
+  .compact .header-main {
+    width: calc(100% - clamp(40px, 4vw, 76px));
+    max-width: none;
+  }
+
+  .home-benefits,
+  .home-gender-section,
+  .home-promo-strip,
+  .home-best-sellers,
+  .home-categories,
+  .home-ai-banner,
+  .footer-trust-bar,
+  footer.origo-footer {
+    width: calc(100% - clamp(40px, 4vw, 76px));
+    max-width: none;
+  }
+
+  .commerce-shell,
+  .account-shell,
+  .finder-shell,
+  .catalog-shell,
+  .notes-page-shell,
+  .benefit-detail-shell {
+    width: 100%;
+    max-width: none;
+  }
+
+  .finder-progress,
+  .finder-layout,
+  .pdp-breadcrumb,
+  .pdp-hero,
+  .pdp-description,
+  .pdp-performance,
+  .pdp-community,
+  .pdp-recommendations {
+    width: 100%;
+    max-width: none;
+  }
+
+  footer.origo-footer {
+    width: calc(100% - clamp(40px, 4vw, 76px)) !important;
+    max-width: none !important;
+  }
+
+  .product-admin-overlay .admin-panel,
+  .notes-admin-panel {
+    width: calc(100% - clamp(32px, 3vw, 56px));
+    max-width: none;
+  }
+}
+
+.commerce-shell > *,
+.account-shell > *,
+.finder-shell > *,
+.catalog-shell > *,
+.notes-page-shell > *,
+.benefit-detail-shell > *,
+.checkout-layout > *,
+.account-layout > *,
+.finder-layout > *,
+.pdp-hero > * {
+  min-width: 0;
+}
+
+fieldset {
+  min-inline-size: 0;
+}
+
+/* Switch to the compact header before its desktop controls start colliding. */
+@media (max-width: 1080px) {
+  .announcement,
+  body.commerce-route .announcement,
+  body.account-route .announcement,
+  body.finder-route .announcement {
+    display: none !important;
+  }
+
+  .site-header,
+  .site-header.compact {
+    min-height: 68px;
+  }
+
+  .header-main,
+  .compact .header-main {
+    width: 100%;
+    height: 68px;
+    min-height: 68px;
+    padding: 0 13px;
+    grid-template-columns: 88px minmax(0, 1fr) 48px;
+    grid-template-areas: "commerce brand menu";
+    gap: 0;
+  }
+
+  .mobile-menu-button {
+    position: static;
+    grid-area: menu;
+    width: 42px;
+    height: 42px;
+    margin-inline-start: auto;
+    display: flex;
+  }
+
+  .header-commerce-zone {
+    grid-area: commerce;
+    gap: 0;
+  }
+
+  .header-commerce-actions {
+    gap: 3px;
+  }
+
+  .header-commerce-actions > button {
+    width: 40px;
+    min-width: 40px;
+  }
+
+  .header-commerce-actions .account-button,
+  .header-main .header-search,
+  .header-preference-actions,
+  .category-nav {
+    display: none !important;
+  }
+
+  .header-main > .brand,
+  .compact .header-main > .brand {
+    grid-area: brand;
+    width: 128px;
+  }
+
+  .site-header .brand-logo-link img {
+    width: 122px;
+    height: 47px;
+  }
+}
+
+/* Equal-height product content keeps every add-to-cart button on one baseline. */
+.perfume-product-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.perfume-product-card .product-card-media {
+  flex: 0 0 auto;
+}
+
+.perfume-product-card .product-card-info,
+.home-best-sellers .perfume-product-card .product-card-info {
+  min-height: 0;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+}
+
+.perfume-product-card .product-card-commerce,
+.home-best-sellers .perfume-product-card .product-card-commerce {
+  width: 100%;
+  margin-top: auto;
+}
+
+.perfume-product-card .card-add-button,
+.home-best-sellers .perfume-product-card .card-add-button {
+  flex: 0 0 46px;
+  min-height: 46px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+@media (min-width: 641px) {
+  .home-best-sellers .perfume-product-card .product-card-title-row {
+    min-height: 64px;
+  }
+
+  .home-best-sellers .perfume-product-card .product-card-rating-price {
+    min-height: 68px;
+  }
+}

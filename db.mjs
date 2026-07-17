@@ -201,6 +201,75 @@ db.exec(`
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
   );
 
+  CREATE TABLE IF NOT EXISTS reference_perfumes (
+    id TEXT PRIMARY KEY,
+    slug TEXT NOT NULL UNIQUE,
+    name_ar TEXT NOT NULL,
+    name_en TEXT NOT NULL,
+    brand TEXT NOT NULL,
+    image TEXT NOT NULL DEFAULT '',
+    concentration TEXT NOT NULL DEFAULT '',
+    size TEXT NOT NULL DEFAULT '',
+    reference_price REAL NOT NULL DEFAULT 0 CHECK (reference_price >= 0),
+    gender TEXT NOT NULL DEFAULT 'unisex',
+    family_ar TEXT NOT NULL DEFAULT '',
+    family_en TEXT NOT NULL DEFAULT '',
+    notes_json TEXT NOT NULL DEFAULT '{}',
+    accords_json TEXT NOT NULL DEFAULT '[]',
+    performance_json TEXT NOT NULL DEFAULT '{}',
+    seasons_json TEXT NOT NULL DEFAULT '[]',
+    occasions_json TEXT NOT NULL DEFAULT '[]',
+    status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'hidden')),
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE TABLE IF NOT EXISTS alternative_matches (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    reference_id TEXT NOT NULL REFERENCES reference_perfumes(id) ON DELETE CASCADE,
+    product_id TEXT NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+    similarity INTEGER NOT NULL CHECK (similarity BETWEEN 0 AND 100),
+    confidence INTEGER NOT NULL CHECK (confidence BETWEEN 0 AND 100),
+    reason_ar TEXT NOT NULL DEFAULT '',
+    reason_en TEXT NOT NULL DEFAULT '',
+    similarities_ar_json TEXT NOT NULL DEFAULT '[]',
+    similarities_en_json TEXT NOT NULL DEFAULT '[]',
+    differences_ar_json TEXT NOT NULL DEFAULT '[]',
+    differences_en_json TEXT NOT NULL DEFAULT '[]',
+    shared_notes_ar_json TEXT NOT NULL DEFAULT '[]',
+    shared_notes_en_json TEXT NOT NULL DEFAULT '[]',
+    comparison_json TEXT NOT NULL DEFAULT '{}',
+    sort_order INTEGER NOT NULL DEFAULT 0,
+    pinned INTEGER NOT NULL DEFAULT 0,
+    status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'hidden', 'draft')),
+    last_reviewed_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (reference_id, product_id)
+  );
+
+  CREATE TABLE IF NOT EXISTS alternative_search_logs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    query TEXT NOT NULL,
+    results_count INTEGER NOT NULL DEFAULT 0,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE TABLE IF NOT EXISTS comparison_events (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    reference_id TEXT REFERENCES reference_perfumes(id) ON DELETE SET NULL,
+    product_id TEXT REFERENCES products(id) ON DELETE SET NULL,
+    event_type TEXT NOT NULL,
+    session_key TEXT NOT NULL DEFAULT '',
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE TABLE IF NOT EXISTS homepage_alternatives_settings (
+    id INTEGER PRIMARY KEY CHECK (id = 1),
+    payload_json TEXT NOT NULL DEFAULT '{}',
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  );
+
   CREATE TABLE IF NOT EXISTS order_events (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     order_id INTEGER NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
@@ -217,6 +286,10 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_sessions_expiry ON sessions(expires_at);
   CREATE INDEX IF NOT EXISTS idx_order_events_order ON order_events(order_id, created_at DESC);
   CREATE INDEX IF NOT EXISTS idx_activity_log_created ON activity_log(created_at DESC);
+  CREATE INDEX IF NOT EXISTS idx_alternative_matches_product ON alternative_matches(product_id, status, sort_order);
+  CREATE INDEX IF NOT EXISTS idx_alternative_matches_reference ON alternative_matches(reference_id, status, sort_order);
+  CREATE INDEX IF NOT EXISTS idx_comparison_events_match ON comparison_events(reference_id, product_id, event_type, created_at DESC);
+  CREATE INDEX IF NOT EXISTS idx_alternative_search_created ON alternative_search_logs(created_at DESC);
   CREATE INDEX IF NOT EXISTS idx_product_note_refs_note ON product_note_refs(note_id, position);
   CREATE INDEX IF NOT EXISTS idx_filter_definitions_category ON filter_definitions(category, sort_order);
 `);
@@ -266,7 +339,8 @@ const seedProducts = [
     oldPrice: null,
     badgeAr: "الأكثر مبيعًا",
     badgeEn: "BESTSELLER",
-    image: "assets/nocturne-01.svg"
+    image: "assets/nocturne-01.svg",
+    gender: "unisex", mainAccords: ["عود", "عنبر", "وردي", "خشبي"], seasons: ["winter", "autumn"], usageTimes: ["night"], occasions: ["formal", "romantic"]
   },
   {
     id: "velvet-iris",
@@ -285,7 +359,8 @@ const seedProducts = [
     oldPrice: 3200,
     badgeAr: "وصل حديثًا",
     badgeEn: "NEW",
-    image: "assets/velvet-iris.svg"
+    image: "assets/velvet-iris.svg",
+    gender: "women", mainAccords: ["بودري", "سوسن", "فانيليا", "مسكي"], seasons: ["spring", "autumn"], usageTimes: ["day", "evening"], occasions: ["work", "occasions", "romantic"]
   },
   {
     id: "smoked",
@@ -304,7 +379,8 @@ const seedProducts = [
     oldPrice: null,
     badgeAr: "إصدار محدود",
     badgeEn: "LIMITED",
-    image: "assets/smoked-saffron.svg"
+    image: "assets/smoked-saffron.svg",
+    gender: "men", mainAccords: ["جلدي", "زعفراني", "خشبي", "دافئ"], seasons: ["winter", "autumn"], usageTimes: ["night"], occasions: ["formal", "occasions"]
   },
   {
     id: "citrus-veil",
@@ -323,7 +399,8 @@ const seedProducts = [
     oldPrice: 2250,
     badgeAr: "اختيار الصيف",
     badgeEn: "SUMMER PICK",
-    image: "assets/citrus-veil.svg"
+    image: "assets/citrus-veil.svg",
+    gender: "unisex", mainAccords: ["حمضي", "منعش", "أخضر", "خشبي"], seasons: ["spring", "summer"], usageTimes: ["day", "daily"], occasions: ["work", "travel", "casual"]
   }
 ];
 
@@ -331,8 +408,8 @@ const insertSeedProduct = db.prepare(`
   INSERT OR IGNORE INTO products (
     id, sku, brand, name_ar, name_en, category, type_ar, type_en, concentration,
     sizes_json, notes_ar_json, notes_en_json, price, old_price, badge_ar, badge_en,
-    image, status
-  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'published')
+    image, catalog_json, status
+  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'published')
 `);
 
 db.exec("BEGIN IMMEDIATE");
@@ -355,9 +432,108 @@ try {
       product.oldPrice,
       product.badgeAr,
       product.badgeEn,
-      product.image
+      product.image,
+      JSON.stringify({ gender: product.gender, mainAccords: product.mainAccords, seasons: product.seasons, usageTimes: product.usageTimes, occasions: product.occasions })
+    );
+    db.prepare(`UPDATE products SET catalog_json=? WHERE id=? AND (catalog_json IS NULL OR catalog_json='{}')`).run(
+      JSON.stringify({ gender: product.gender, mainAccords: product.mainAccords, seasons: product.seasons, usageTimes: product.usageTimes, occasions: product.occasions }),
+      product.id
     );
   }
+  db.exec("COMMIT");
+} catch (error) {
+  db.exec("ROLLBACK");
+  throw error;
+}
+
+const seedReferencePerfumes = [
+  {
+    id: "ombre-leather", slug: "ombre-leather", nameAr: "أومبري ليذر", nameEn: "Ombre Leather",
+    brand: "Tom Ford", image: "assets/references/ombre-leather.svg", concentration: "Eau de Parfum", size: "100 ML",
+    referencePrice: 9800, gender: "unisex", familyAr: "جلدي خشبي", familyEn: "Leather Woody",
+    notes: { topAr: ["هيل"], topEn: ["Cardamom"], heartAr: ["جلد", "ياسمين"], heartEn: ["Leather", "Jasmine"], baseAr: ["عنبر", "باتشولي"], baseEn: ["Amber", "Patchouli"] },
+    accords: ["leather", "warm spicy", "amber"], performance: { longevity: 9, projection: 8 }, seasons: ["autumn", "winter"], occasions: ["evening", "formal"]
+  },
+  {
+    id: "dior-homme-intense", slug: "dior-homme-intense", nameAr: "ديور هوم إنتنس", nameEn: "Dior Homme Intense",
+    brand: "Dior", image: "assets/references/dior-homme-intense.svg", concentration: "Eau de Parfum", size: "100 ML",
+    referencePrice: 8600, gender: "men", familyAr: "زهري خشبي", familyEn: "Floral Woody",
+    notes: { topAr: ["لافندر"], topEn: ["Lavender"], heartAr: ["سوسن"], heartEn: ["Iris"], baseAr: ["أرز", "فانيليا"], baseEn: ["Cedar", "Vanilla"] },
+    accords: ["iris", "powdery", "woody"], performance: { longevity: 8, projection: 7 }, seasons: ["autumn", "winter"], occasions: ["evening", "formal"]
+  },
+  {
+    id: "oud-wood", slug: "oud-wood", nameAr: "عود وود", nameEn: "Oud Wood",
+    brand: "Tom Ford", image: "assets/references/oud-wood.svg", concentration: "Eau de Parfum", size: "100 ML",
+    referencePrice: 11200, gender: "unisex", familyAr: "خشبي شرقي", familyEn: "Woody Oriental",
+    notes: { topAr: ["ورد برازيلي", "هيل"], topEn: ["Rosewood", "Cardamom"], heartAr: ["عود", "صندل"], heartEn: ["Oud", "Sandalwood"], baseAr: ["عنبر", "فانيليا"], baseEn: ["Amber", "Vanilla"] },
+    accords: ["oud", "woody", "warm spicy"], performance: { longevity: 8, projection: 7 }, seasons: ["autumn", "winter"], occasions: ["evening", "formal"]
+  },
+  {
+    id: "neroli-portofino", slug: "neroli-portofino", nameAr: "نيرولي بورتوفينو", nameEn: "Neroli Portofino",
+    brand: "Tom Ford", image: "assets/references/neroli-portofino.svg", concentration: "Eau de Parfum", size: "100 ML",
+    referencePrice: 10500, gender: "unisex", familyAr: "حمضي عطري", familyEn: "Citrus Aromatic",
+    notes: { topAr: ["برغموت", "ليمون"], topEn: ["Bergamot", "Lemon"], heartAr: ["نيرولي", "زهر البرتقال"], heartEn: ["Neroli", "Orange Blossom"], baseAr: ["مسك", "عنبر"], baseEn: ["Musk", "Amber"] },
+    accords: ["citrus", "fresh", "white floral"], performance: { longevity: 6, projection: 6 }, seasons: ["spring", "summer"], occasions: ["day", "casual"]
+  }
+];
+
+const seedAlternativeMatches = [
+  { referenceId: "ombre-leather", productId: "smoked", similarity: 94, confidence: 91, sortOrder: 1,
+    reasonAr: "طابع جلدي دافئ مدعوم بالزعفران والأخشاب مع حضور مسائي واضح.", reasonEn: "A warm leather profile supported by saffron and woods with a confident evening presence.",
+    similaritiesAr: ["قلب جلدي واضح", "دفء متبّل", "أداء مسائي قوي"], similaritiesEn: ["Distinct leather heart", "Warm spicy character", "Strong evening performance"],
+    differencesAr: ["البديل أكثر زعفرانًا", "الأصل أكثر جفافًا"], differencesEn: ["The alternative is more saffron-forward", "The reference is drier"],
+    sharedAr: ["جلد", "عنبر", "أخشاب"], sharedEn: ["Leather", "Amber", "Woods"], comparison: { longevity: 9, projection: 8, sweetness: 5, freshness: 2, warmth: 9, woods: 8, spice: 8 } },
+  { referenceId: "dior-homme-intense", productId: "velvet-iris", similarity: 92, confidence: 90, sortOrder: 2,
+    reasonAr: "السوسن البودري والفانيليا الناعمة يقدمان طابعًا أنيقًا قريبًا مع لمسة أكثر نعومة.", reasonEn: "Powdery iris and soft vanilla create a similarly elegant profile with a gentler finish.",
+    similaritiesAr: ["سوسن بودري", "قاعدة فانيليا", "طابع أنيق"], similaritiesEn: ["Powdery iris", "Vanilla base", "Elegant character"],
+    differencesAr: ["البديل أنعم وأقل كثافة", "الأصل أكثر خشبية"], differencesEn: ["The alternative is softer and lighter", "The reference is woodier"],
+    sharedAr: ["سوسن", "فانيليا", "أخشاب"], sharedEn: ["Iris", "Vanilla", "Woods"], comparison: { longevity: 8, projection: 7, sweetness: 7, freshness: 3, warmth: 7, woods: 6, spice: 3 } },
+  { referenceId: "oud-wood", productId: "nocturne", similarity: 91, confidence: 89, sortOrder: 3,
+    reasonAr: "مزيج العود والعنبر والأخشاب يمنح تجربة شرقية عميقة بقيمة أفضل.", reasonEn: "A blend of oud, amber and woods delivers a deep oriental experience at better value.",
+    similaritiesAr: ["عود مصقول", "عنبر دافئ", "قاعدة خشبية"], similaritiesEn: ["Polished oud", "Warm amber", "Woody base"],
+    differencesAr: ["البديل أكثر وردية", "الأصل أكثر توابل جافة"], differencesEn: ["The alternative is rosier", "The reference has drier spices"],
+    sharedAr: ["عود", "عنبر", "أخشاب"], sharedEn: ["Oud", "Amber", "Woods"], comparison: { longevity: 9, projection: 8, sweetness: 6, freshness: 2, warmth: 9, woods: 9, spice: 6 } },
+  { referenceId: "neroli-portofino", productId: "citrus-veil", similarity: 89, confidence: 87, sortOrder: 4,
+    reasonAr: "افتتاحية برغموت ونيرولي منعشة بطابع نظيف مناسب للصيف والاستخدام اليومي.", reasonEn: "A fresh bergamot and neroli opening with a clean profile for summer and everyday wear.",
+    similaritiesAr: ["حمضيات مشرقة", "نيرولي نظيف", "طابع صيفي"], similaritiesEn: ["Bright citrus", "Clean neroli", "Summery profile"],
+    differencesAr: ["البديل أكثر خشبية في القاعدة", "الأصل أكثر زهرية"], differencesEn: ["The alternative has a woodier base", "The reference is more floral"],
+    sharedAr: ["برغموت", "نيرولي", "مسك"], sharedEn: ["Bergamot", "Neroli", "Musk"], comparison: { longevity: 7, projection: 6, sweetness: 3, freshness: 10, warmth: 2, woods: 5, spice: 2 } }
+];
+
+const insertReferencePerfume = db.prepare(`
+  INSERT OR IGNORE INTO reference_perfumes
+    (id, slug, name_ar, name_en, brand, image, concentration, size, reference_price, gender,
+     family_ar, family_en, notes_json, accords_json, performance_json, seasons_json, occasions_json)
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+`);
+const insertAlternativeMatch = db.prepare(`
+  INSERT OR IGNORE INTO alternative_matches
+    (reference_id, product_id, similarity, confidence, reason_ar, reason_en,
+     similarities_ar_json, similarities_en_json, differences_ar_json, differences_en_json,
+     shared_notes_ar_json, shared_notes_en_json, comparison_json, sort_order)
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+`);
+db.exec("BEGIN IMMEDIATE");
+try {
+  for (const item of seedReferencePerfumes) insertReferencePerfume.run(
+    item.id, item.slug, item.nameAr, item.nameEn, item.brand, item.image, item.concentration, item.size,
+    item.referencePrice, item.gender, item.familyAr, item.familyEn, JSON.stringify(item.notes),
+    JSON.stringify(item.accords), JSON.stringify(item.performance), JSON.stringify(item.seasons), JSON.stringify(item.occasions)
+  );
+  for (const item of seedAlternativeMatches) insertAlternativeMatch.run(
+    item.referenceId, item.productId, item.similarity, item.confidence, item.reasonAr, item.reasonEn,
+    JSON.stringify(item.similaritiesAr), JSON.stringify(item.similaritiesEn),
+    JSON.stringify(item.differencesAr), JSON.stringify(item.differencesEn),
+    JSON.stringify(item.sharedAr), JSON.stringify(item.sharedEn), JSON.stringify(item.comparison), item.sortOrder
+  );
+  db.prepare(`INSERT OR IGNORE INTO homepage_alternatives_settings (id, payload_json) VALUES (1, ?)`).run(JSON.stringify({
+    enabled: true, sectionEnabled: true, bannerEnabled: true, count: 4, mode: "manual",
+    titleAr: "بدائل تستحق التجربة", titleEn: "Alternatives Worth Trying",
+    descriptionAr: "عطور متوفرة بطابع قريب من أشهر العطور العالمية", descriptionEn: "Available fragrances inspired by renowned scents",
+    bannerTitleAr: "تحب عطرًا عالميًا؟ اكتشف بديله بسعر أفضل", bannerTitleEn: "Love an iconic fragrance? Discover a better-value alternative",
+    bannerDescriptionAr: "بدائل مختارة بعناية، بطابع قريب وأداء مميز وتوفير أكبر", bannerDescriptionEn: "Carefully selected alternatives with a familiar character, great performance and better value",
+    featuredProductIds: ["smoked", "velvet-iris", "nocturne", "citrus-veil"], position: "before-finder", startsAt: null, endsAt: null
+  }));
   db.exec("COMMIT");
 } catch (error) {
   db.exec("ROLLBACK");
@@ -493,6 +669,12 @@ function productFromRow(row, includeMetadata = false) {
     descriptionAr: row.description_ar,
     descriptionEn: row.description_en,
     status: row.status,
+    inventory: {
+      quantity: Number(row.stock_quantity ?? 25),
+      reserved: Number(row.reserved_quantity ?? 0),
+      available: Math.max(0, Number(row.stock_quantity ?? 25) - Number(row.reserved_quantity ?? 0)),
+      tracked: row.track_inventory == null ? true : Boolean(row.track_inventory)
+    },
     notes: metadata.notes && typeof metadata.notes === "object" ? metadata.notes : undefined,
     familyAr: metadata.familyAr || "",
     familyEn: metadata.familyEn || "",
@@ -505,6 +687,7 @@ function productFromRow(row, includeMetadata = false) {
     perfumer: metadata.perfumer || "",
     performance: metadata.performance || {},
     occasions: Array.isArray(metadata.occasions) ? metadata.occasions : [],
+    mainAccords: Array.isArray(metadata.mainAccords) ? metadata.mainAccords : (Array.isArray(metadata.accords) ? metadata.accords : []),
     personalities: Array.isArray(metadata.personalities) ? metadata.personalities : [],
     noteLibrary: metadata.noteLibrary || { slugs: [], unmatched: [] },
     noteRefs: noteRefsForProduct(row.id),
@@ -844,6 +1027,18 @@ export function upsertProduct(input) {
     JSON.stringify(input),
     status
   );
+
+  if (input.inventory && typeof input.inventory === "object") {
+    const columns = new Set(db.prepare("PRAGMA table_info(products)").all().map((column) => column.name));
+    if (columns.has("stock_quantity")) {
+      db.prepare(`UPDATE products SET stock_quantity = ?, reserved_quantity = ?, track_inventory = ? WHERE id = ?`).run(
+        Math.max(0, Math.floor(Number(input.inventory.quantity ?? 25))),
+        Math.max(0, Math.floor(Number(input.inventory.reserved ?? 0))),
+        input.inventory.tracked === false ? 0 : 1,
+        id
+      );
+    }
+  }
   syncProductNoteReferences(id, input);
   syncProductFilterValues(id, input);
   return productFromRow(db.prepare("SELECT * FROM products WHERE id = ?").get(id), true);
@@ -1295,6 +1490,205 @@ export function saveAdminWorkspaceState(payload) {
     ON CONFLICT(id) DO UPDATE SET payload_json = excluded.payload_json, updated_at = CURRENT_TIMESTAMP
   `).run(serialized);
   return getAdminWorkspaceState();
+}
+
+function referencePerfumeFromRow(row) {
+  if (!row) return null;
+  return {
+    id: row.id, slug: row.slug, nameAr: row.name_ar, nameEn: row.name_en, brand: row.brand,
+    image: row.image, concentration: row.concentration, size: row.size,
+    referencePrice: Number(row.reference_price || 0), gender: row.gender,
+    familyAr: row.family_ar, familyEn: row.family_en,
+    notes: parseJSON(row.notes_json, {}), accords: parseJSON(row.accords_json, []),
+    performance: parseJSON(row.performance_json, {}), seasons: parseJSON(row.seasons_json, []),
+    occasions: parseJSON(row.occasions_json, []), status: row.status,
+    createdAt: row.created_at, updatedAt: row.updated_at
+  };
+}
+
+function alternativeMatchFromRow(row, includeMetadata = false) {
+  if (!row) return null;
+  const productRow = db.prepare("SELECT * FROM products WHERE id = ?").get(row.product_id);
+  const referenceRow = db.prepare("SELECT * FROM reference_perfumes WHERE id = ?").get(row.reference_id);
+  if (!productRow || !referenceRow) return null;
+  return {
+    id: Number(row.id), similarity: Number(row.similarity), confidence: Number(row.confidence),
+    reasonAr: row.reason_ar, reasonEn: row.reason_en,
+    similaritiesAr: parseJSON(row.similarities_ar_json, []), similaritiesEn: parseJSON(row.similarities_en_json, []),
+    differencesAr: parseJSON(row.differences_ar_json, []), differencesEn: parseJSON(row.differences_en_json, []),
+    sharedNotesAr: parseJSON(row.shared_notes_ar_json, []), sharedNotesEn: parseJSON(row.shared_notes_en_json, []),
+    comparison: parseJSON(row.comparison_json, {}), sortOrder: Number(row.sort_order),
+    pinned: Boolean(row.pinned), status: row.status, lastReviewedAt: row.last_reviewed_at,
+    reference: referencePerfumeFromRow(referenceRow), product: productFromRow(productRow, includeMetadata)
+  };
+}
+
+export function getHomepageAlternativesSettings() {
+  const row = db.prepare("SELECT payload_json FROM homepage_alternatives_settings WHERE id = 1").get();
+  return parseJSON(row?.payload_json || "{}", {});
+}
+
+export function listAlternatives({ includeHidden = false, query = "", sort = "recommended" } = {}) {
+  const rows = db.prepare(`
+    SELECT * FROM alternative_matches
+    ${includeHidden ? "" : "WHERE status = 'active'"}
+    ORDER BY pinned DESC, sort_order, similarity DESC
+  `).all();
+  let items = rows.map((row) => alternativeMatchFromRow(row, includeHidden)).filter(Boolean);
+  if (!includeHidden) items = items.filter((item) => item.reference.status === "active" && item.product.status === "published");
+  const needle = clean(query, 200).toLocaleLowerCase("ar");
+  if (needle) items = items.filter((item) => [
+    item.reference.nameAr, item.reference.nameEn, item.reference.brand,
+    item.product.nameAr, item.product.nameEn, item.product.brand,
+    ...item.sharedNotesAr, ...item.sharedNotesEn
+  ].join(" ").toLocaleLowerCase("ar").includes(needle));
+  const eventCounts = Object.fromEntries(db.prepare(`
+    SELECT product_id AS productId, COUNT(*) AS count FROM comparison_events
+    WHERE created_at >= datetime('now', '-90 days') GROUP BY product_id
+  `).all().map((row) => [row.productId, Number(row.count)]));
+  items = items.map((item) => ({ ...item, activityScore: eventCounts[item.product.id] || 0 }));
+  const sorters = {
+    similarity: (a, b) => b.similarity - a.similarity,
+    savings: (a, b) => (b.reference.referencePrice - b.product.price) - (a.reference.referencePrice - a.product.price),
+    price_asc: (a, b) => a.product.price - b.product.price,
+    price_desc: (a, b) => b.product.price - a.product.price,
+    popular: (a, b) => b.activityScore - a.activityScore || b.similarity - a.similarity,
+    recommended: (a, b) => Number(b.pinned) - Number(a.pinned) || a.sortOrder - b.sortOrder
+  };
+  items.sort(sorters[sort] || sorters.recommended);
+  return items;
+}
+
+export function getAlternative(referenceOrProduct) {
+  const value = clean(referenceOrProduct, 200);
+  const row = db.prepare(`
+    SELECT m.* FROM alternative_matches m
+    JOIN reference_perfumes r ON r.id = m.reference_id
+    WHERE (r.slug = ? OR r.id = ? OR m.product_id = ? OR CAST(m.id AS TEXT) = ?) AND m.status = 'active'
+    ORDER BY m.pinned DESC, m.sort_order LIMIT 1
+  `).get(value, value, value, value);
+  return alternativeMatchFromRow(row, false);
+}
+
+export function alternativesPayload(options = {}) {
+  return { items: listAlternatives(options), settings: getHomepageAlternativesSettings(), disclaimerAr: "نسبة التشابه تقديرية مبنية على الخصائص العطرية والأداء، وقد يختلف إدراك الرائحة من شخص إلى آخر.", disclaimerEn: "Similarity is an estimate based on fragrance characteristics and performance. Scent perception may vary from person to person." };
+}
+
+export function recordAlternativeEvent({ referenceId = null, productId = null, eventType = "view", sessionKey = "", query = "", resultsCount = 0 } = {}) {
+  const allowed = new Set(["view", "comparison", "add_to_cart", "wishlist", "search", "product_view"]);
+  const safeType = allowed.has(eventType) ? eventType : "view";
+  if (safeType === "search") {
+    db.prepare("INSERT INTO alternative_search_logs (query, results_count) VALUES (?, ?)")
+      .run(clean(query, 200), Math.max(0, Number(resultsCount) || 0));
+  } else {
+    db.prepare(`INSERT INTO comparison_events (reference_id, product_id, event_type, session_key) VALUES (?, ?, ?, ?)`)
+      .run(referenceId ? clean(referenceId, 200) : null, productId ? clean(productId, 200) : null, safeType, clean(sessionKey, 120));
+  }
+  return { ok: true };
+}
+
+export function alternativesAdminPayload() {
+  const items = listAlternatives({ includeHidden: true });
+  const topSearches = db.prepare(`SELECT query, COUNT(*) AS count FROM alternative_search_logs GROUP BY query ORDER BY count DESC LIMIT 10`).all();
+  const events = db.prepare(`SELECT event_type AS eventType, COUNT(*) AS count FROM comparison_events GROUP BY event_type`).all();
+  const catalogProducts = listProducts({ includeHidden: true }).map((product) => ({
+    id: product.id, nameAr: product.nameAr, nameEn: product.nameEn, brand: product.brand,
+    image: product.image, price: product.price, status: product.status
+  }));
+  return { items, catalogProducts, settings: getHomepageAlternativesSettings(), analytics: { topSearches, events } };
+}
+
+function alternativeTokens(value) {
+  const normalize = (item) => String(item || "").trim().toLocaleLowerCase("ar");
+  return new Set((Array.isArray(value) ? value : String(value || "").split(/[,،·]/)).map(normalize).filter(Boolean));
+}
+
+export function calculateAlternativeScore(reference, product) {
+  const referenceNotes = alternativeTokens([
+    ...(reference?.notes?.topAr || []), ...(reference?.notes?.heartAr || []), ...(reference?.notes?.baseAr || []),
+    ...(reference?.notes?.topEn || []), ...(reference?.notes?.heartEn || []), ...(reference?.notes?.baseEn || [])
+  ]);
+  const productNotes = alternativeTokens([
+    ...(product?.notesAr || []), ...(product?.notesEn || []),
+    ...(product?.notes?.topAr || []), ...(product?.notes?.heartAr || []), ...(product?.notes?.baseAr || []),
+    ...(product?.notes?.topEn || []), ...(product?.notes?.heartEn || []), ...(product?.notes?.baseEn || [])
+  ]);
+  const shared = [...referenceNotes].filter((note) => productNotes.has(note));
+  const noteScore = referenceNotes.size ? (shared.length / referenceNotes.size) * 55 : 30;
+  const referenceFamily = `${reference?.familyAr || ""} ${reference?.familyEn || ""}`.toLocaleLowerCase("ar");
+  const productFamily = `${product?.familyAr || ""} ${product?.familyEn || ""}`.toLocaleLowerCase("ar");
+  const familyScore = referenceFamily && productFamily && (referenceFamily.includes(productFamily) || productFamily.includes(referenceFamily)) ? 20 : 10;
+  const concentrationScore = reference?.concentration && product?.concentration && String(reference.concentration).toLowerCase() === String(product.concentration).toLowerCase() ? 10 : 6;
+  const score = Math.round(Math.min(98, Math.max(55, noteScore + familyScore + concentrationScore + 12)));
+  return { similarity: score, confidence: Math.max(60, Math.min(96, score - 2)), shared };
+}
+
+export function saveAlternativesAdmin(input = {}) {
+  if (input.settings && typeof input.settings === "object") {
+    const current = getHomepageAlternativesSettings();
+    const next = { ...current, ...input.settings };
+    db.prepare(`
+      INSERT INTO homepage_alternatives_settings (id, payload_json, updated_at) VALUES (1, ?, CURRENT_TIMESTAMP)
+      ON CONFLICT(id) DO UPDATE SET payload_json = excluded.payload_json, updated_at = CURRENT_TIMESTAMP
+    `).run(JSON.stringify(next));
+  }
+  if (input.match && typeof input.match === "object") {
+    const match = input.match;
+    db.prepare(`UPDATE alternative_matches SET similarity = ?, confidence = ?, reason_ar = ?, reason_en = ?,
+      sort_order = ?, pinned = ?, status = ?, last_reviewed_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP WHERE id = ?`).run(
+      Math.min(100, Math.max(0, Number(match.similarity || 0))), Math.min(100, Math.max(0, Number(match.confidence || 0))),
+      clean(match.reasonAr, 2000), clean(match.reasonEn, 2000), Number(match.sortOrder || 0), match.pinned ? 1 : 0,
+      ["active", "hidden", "draft"].includes(match.status) ? match.status : "active", Number(match.id)
+    );
+  }
+  if (input.reference && typeof input.reference === "object" && input.link && typeof input.link === "object") {
+    const value = input.reference;
+    const rawSlug = clean(value.slug || value.nameEn || value.nameAr, 120).toLowerCase()
+      .replace(/[^a-z0-9\u0600-\u06ff]+/g, "-").replace(/^-+|-+$/g, "");
+    const slug = rawSlug || `reference-${Date.now().toString(36)}`;
+    const id = clean(value.id || `ref-${slug}`, 160);
+    const notes = value.notes && typeof value.notes === "object" ? value.notes : {};
+    const array = (entry) => [...new Set((Array.isArray(entry) ? entry : String(entry || "").split(/[,،]/)).map((item) => clean(item, 100)).filter(Boolean))].slice(0, 30);
+    const safeNotes = { topAr: array(notes.topAr), topEn: array(notes.topEn), heartAr: array(notes.heartAr), heartEn: array(notes.heartEn), baseAr: array(notes.baseAr), baseEn: array(notes.baseEn) };
+    if (!clean(value.nameAr, 200) || !clean(value.nameEn, 200) || !clean(value.brand, 160)) throw new Error("ALTERNATIVE_REFERENCE_REQUIRED");
+    db.prepare(`INSERT INTO reference_perfumes
+      (id, slug, name_ar, name_en, brand, image, concentration, size, reference_price, gender, family_ar, family_en, notes_json, accords_json, performance_json, seasons_json, occasions_json, status, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+      ON CONFLICT(id) DO UPDATE SET slug=excluded.slug, name_ar=excluded.name_ar, name_en=excluded.name_en,
+      brand=excluded.brand, image=excluded.image, concentration=excluded.concentration, size=excluded.size,
+      reference_price=excluded.reference_price, gender=excluded.gender, family_ar=excluded.family_ar,
+      family_en=excluded.family_en, notes_json=excluded.notes_json, accords_json=excluded.accords_json,
+      performance_json=excluded.performance_json, seasons_json=excluded.seasons_json,
+      occasions_json=excluded.occasions_json, status=excluded.status, updated_at=CURRENT_TIMESTAMP`).run(
+      id, slug, clean(value.nameAr, 200), clean(value.nameEn, 200), clean(value.brand, 160), clean(value.image || "/assets/references/ombre-leather.svg", 1000),
+      clean(value.concentration, 80), clean(value.size, 80), Math.max(0, Number(value.referencePrice || 0)),
+      ["men", "women", "unisex"].includes(value.gender) ? value.gender : "unisex", clean(value.familyAr, 160), clean(value.familyEn, 160),
+      JSON.stringify(safeNotes), JSON.stringify(array(value.accords)), JSON.stringify(value.performance || {}), JSON.stringify(array(value.seasons)),
+      JSON.stringify(array(value.occasions)), value.status === "hidden" ? "hidden" : "active"
+    );
+    const productId = clean(input.link.productId, 160);
+    const product = productFromRow(db.prepare("SELECT * FROM products WHERE id = ?").get(productId), true);
+    const reference = referencePerfumeFromRow(db.prepare("SELECT * FROM reference_perfumes WHERE id = ?").get(id));
+    if (!product) throw new Error("ALTERNATIVE_PRODUCT_NOT_FOUND");
+    const calculated = calculateAlternativeScore(reference, product);
+    const similarity = input.link.similarity === "" || input.link.similarity == null ? calculated.similarity : Math.min(100, Math.max(0, Number(input.link.similarity)));
+    const confidence = input.link.confidence === "" || input.link.confidence == null ? calculated.confidence : Math.min(100, Math.max(0, Number(input.link.confidence)));
+    const sharedAr = array(input.link.sharedNotesAr || calculated.shared);
+    const sharedEn = array(input.link.sharedNotesEn || calculated.shared);
+    db.prepare(`INSERT INTO alternative_matches
+      (reference_id, product_id, similarity, confidence, reason_ar, reason_en, similarities_ar_json, similarities_en_json,
+       differences_ar_json, differences_en_json, shared_notes_ar_json, shared_notes_en_json, comparison_json, sort_order, pinned, status, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+      ON CONFLICT(reference_id, product_id) DO UPDATE SET similarity=excluded.similarity, confidence=excluded.confidence,
+      reason_ar=excluded.reason_ar, reason_en=excluded.reason_en, shared_notes_ar_json=excluded.shared_notes_ar_json,
+      shared_notes_en_json=excluded.shared_notes_en_json, comparison_json=excluded.comparison_json,
+      sort_order=excluded.sort_order, pinned=excluded.pinned, status=excluded.status, last_reviewed_at=CURRENT_TIMESTAMP, updated_at=CURRENT_TIMESTAMP`).run(
+      id, productId, similarity, confidence, clean(input.link.reasonAr, 2000), clean(input.link.reasonEn, 2000), "[]", "[]", "[]", "[]",
+      JSON.stringify(sharedAr), JSON.stringify(sharedEn), JSON.stringify(input.link.comparison || { longevity: 8, projection: 8 }),
+      Number(input.link.sortOrder || 0), input.link.pinned ? 1 : 0, ["active", "hidden", "draft"].includes(input.link.status) ? input.link.status : "active"
+    );
+  }
+  return alternativesAdminPayload();
 }
 
 export function recordActivity(userId, action, entityType = "", entityId = "", details = {}) {

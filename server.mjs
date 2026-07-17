@@ -2,8 +2,11 @@ import { createServer } from "node:http";
 import { readFile, stat } from "node:fs/promises";
 import { extname, join, normalize, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
+import { randomBytes } from "node:crypto";
 import {
   ROLE_PERMISSIONS,
+  alternativesAdminPayload,
+  alternativesPayload,
   createOrder,
   createSession,
   createUser,
@@ -15,6 +18,7 @@ import {
   ensureAdminFromEnvironment,
   findUserByEmail,
   getAdminWorkspaceState,
+  getAlternative,
   getFragranceNotesState,
   getCart,
   getOrderById,
@@ -33,6 +37,8 @@ import {
   setUserRole,
   syncFragranceNoteEntities,
   recordActivity,
+  recordAlternativeEvent,
+  saveAlternativesAdmin,
   updateOrderAdmin,
   updateOrderStatus,
   upsertFilterDefinition,
@@ -48,6 +54,42 @@ import {
   publicTrackingConfig,
   sendWhatsAppTemplate
 } from "./external-integrations.mjs";
+import {
+  accountDashboard,
+  checkoutSettings,
+  createCommerceOrder,
+  createMarketingInsight,
+  feedbackAnalytics,
+  feedbackRequestForOrder,
+  getCommerceCart,
+  getCommerceOrder,
+  getFeedbackSurvey,
+  getFragranceFinderSession,
+  listDeliveryLocations,
+  loyaltyTiers,
+  listSavedAddresses,
+  markNotificationsRead,
+  quoteCheckout,
+  replaceCommerceCart,
+  submitFeedback,
+  syncWishlist,
+  updateCheckoutSettings,
+  updateCommerceOrder,
+  updateCustomerProfile,
+  saveLoyaltyTier,
+  saveFragranceFinderSession
+} from "./commerce-service.mjs";
+import {
+  productPerformance,
+  productPerformanceAdmin,
+  performanceProductsAdmin,
+  recalculateProductPerformance,
+  recalculateAllProductPerformance,
+  reportProductPerformanceVote,
+  saveProductPerformanceAdmin,
+  setProductPerformanceVoteStatus,
+  submitProductPerformanceVote
+} from "./performance-service.mjs";
 
 const ROOT = resolve(fileURLToPath(new URL(".", import.meta.url)));
 const HOST = process.env.ORIGO_HOST || "0.0.0.0";
@@ -56,6 +98,19 @@ const OPENAI_MODEL = process.env.OPENAI_MODEL || "gpt-5.4-mini";
 const OPENAI_API_URL = "https://api.openai.com/v1/responses";
 const MAX_BODY_BYTES = 2_500_000;
 const SESSION_COOKIE = "origo_session";
+const GUEST_CART_COOKIE = "origo_guest_cart";
+const performanceRateLimits = new Map();
+
+function allowPerformanceRequest(key, limit = 12, windowMs = 60_000) {
+  const now = Date.now();
+  const current = performanceRateLimits.get(key);
+  if (!current || current.resetAt <= now) {
+    performanceRateLimits.set(key, { count: 1, resetAt: now + windowMs });
+    return true;
+  }
+  current.count += 1;
+  return current.count <= limit;
+}
 
 const mimeTypes = {
   ".css": "text/css; charset=utf-8",
@@ -178,6 +233,27 @@ function sessionToken(request) {
 
 function requestUser(request) {
   return userFromSession(sessionToken(request));
+}
+
+function commerceContext(request) {
+  const user = requestUser(request);
+  const cookies = parseCookies(request);
+  const guestToken = cookies[GUEST_CART_COOKIE] || randomBytes(32).toString("base64url");
+  return {
+    owner: user ? { userId: user.id, guestToken } : { userId: null, guestToken },
+    user,
+    guestToken,
+    created: !cookies[GUEST_CART_COOKIE]
+  };
+}
+
+function guestCartCookie(context, request) {
+  const forwardedProto = String(request.headers["x-forwarded-proto"] || "").split(",")[0].trim();
+  const secure = process.env.NODE_ENV === "production" || forwardedProto === "https";
+  return [
+    `${GUEST_CART_COOKIE}=${encodeURIComponent(context.guestToken)}`,
+    "Path=/", "HttpOnly", "SameSite=Lax", "Max-Age=2592000", secure ? "Secure" : ""
+  ].filter(Boolean).join("; ");
 }
 
 function sessionCookie(session, request) {
@@ -429,6 +505,17 @@ async function handleAPI(request, response, url, origin) {
     return jsonResponse(response, 200, publicTrackingConfig(), origin);
   }
 
+  if (url.pathname === "/api/storefront-settings" && request.method === "GET") {
+    const workspace = getAdminWorkspaceState();
+    const commerce = checkoutSettings();
+    return jsonResponse(response, 200, {
+      settings: {
+        ...(workspace?.settings || {}),
+        freeShippingThreshold: commerce.freeShippingThreshold
+      }
+    }, origin);
+  }
+
   if (url.pathname === "/api/admin/integrations" && request.method === "GET") {
     const user = requireUser(request, response, origin, "settings");
     if (!user) return;
@@ -519,6 +606,61 @@ async function handleAPI(request, response, url, origin) {
     return jsonResponse(response, 200, { products: listProducts() }, origin);
   }
 
+  const productPerformanceMatch = url.pathname.match(/^\/api\/products\/([^/]+)\/performance$/);
+  if (productPerformanceMatch && request.method === "GET") {
+    const user = requestUser(request);
+    const performance = productPerformance(decodeURIComponent(productPerformanceMatch[1]), user?.id || null);
+    return performance
+      ? jsonResponse(response, 200, { performance }, origin)
+      : jsonResponse(response, 404, { error: "تعذر العثور على مؤشرات أداء هذا المنتج." }, origin);
+  }
+  if (productPerformanceMatch && request.method === "POST") {
+    const user = requireUser(request, response, origin);
+    if (!user) return;
+    if (!allowPerformanceRequest(`vote:${user.id}`, 10, 60_000)) return jsonResponse(response, 429, { error: "طلبات كثيرة جدًا. حاول بعد دقيقة.", code: "RATE_LIMITED" }, origin);
+    try {
+      const body = await readJSONBody(request);
+      return jsonResponse(response, 200, submitProductPerformanceVote(decodeURIComponent(productPerformanceMatch[1]), user.id, body), origin);
+    } catch (error) {
+      return jsonResponse(response, error.code === "PRODUCT_NOT_FOUND" ? 404 : 400, { error: error.message, code: error.code || "PERFORMANCE_VOTE_FAILED" }, origin);
+    }
+  }
+
+  const productPerformanceReportMatch = url.pathname.match(/^\/api\/performance-votes\/(\d+)\/report$/);
+  if (productPerformanceReportMatch && request.method === "POST") {
+    const user = requireUser(request, response, origin);
+    if (!user) return;
+    if (!allowPerformanceRequest(`report:${user.id}`, 5, 300_000)) return jsonResponse(response, 429, { error: "طلبات كثيرة جدًا. حاول لاحقًا.", code: "RATE_LIMITED" }, origin);
+    try {
+      const body = await readJSONBody(request);
+      const result = reportProductPerformanceVote(Number(productPerformanceReportMatch[1]), user.id, body.reason);
+      return result ? jsonResponse(response, 201, result, origin) : jsonResponse(response, 404, { error: "التقييم غير موجود." }, origin);
+    } catch (error) {
+      return jsonResponse(response, 400, { error: error.message, code: error.code || "REPORT_FAILED" }, origin);
+    }
+  }
+
+  if (url.pathname === "/api/alternatives" && request.method === "GET") {
+    const query = url.searchParams.get("q") || "";
+    const sort = url.searchParams.get("sort") || "recommended";
+    const payload = alternativesPayload({ query, sort });
+    if (query) recordAlternativeEvent({ eventType: "search", query, resultsCount: payload.items.length });
+    return jsonResponse(response, 200, payload, origin);
+  }
+
+  const publicAlternativeMatch = url.pathname.match(/^\/api\/alternatives\/([^/]+)$/);
+  if (publicAlternativeMatch && request.method === "GET") {
+    const item = getAlternative(decodeURIComponent(publicAlternativeMatch[1]));
+    return item
+      ? jsonResponse(response, 200, { item, settings: alternativesPayload().settings }, origin)
+      : jsonResponse(response, 404, { error: "تعذر العثور على المقارنة المطلوبة." }, origin);
+  }
+
+  if (url.pathname === "/api/alternatives/events" && request.method === "POST") {
+    const body = await readJSONBody(request).catch(() => ({}));
+    return jsonResponse(response, 202, recordAlternativeEvent(body), origin);
+  }
+
   if (url.pathname === "/api/filters" && request.method === "GET") {
     return jsonResponse(response, 200, {
       filters: listFilterDefinitions(url.searchParams.get("category") || "")
@@ -535,6 +677,164 @@ async function handleAPI(request, response, url, origin) {
       user,
       cart: user ? getCart(user.id) : []
     }, origin);
+  }
+
+  if (url.pathname === "/api/account/dashboard" && request.method === "GET") {
+    const user = requireUser(request, response, origin);
+    if (!user) return;
+    const dashboard = accountDashboard(user.id);
+    return dashboard
+      ? jsonResponse(response, 200, { dashboard }, origin)
+      : jsonResponse(response, 404, { error: "تعذر العثور على بيانات الحساب." }, origin);
+  }
+
+  if (url.pathname === "/api/account/profile" && request.method === "POST") {
+    const user = requireUser(request, response, origin);
+    if (!user) return;
+    try {
+      const body = await readJSONBody(request);
+      return jsonResponse(response, 200, { customer: updateCustomerProfile(user.id, body) }, origin);
+    } catch (error) {
+      return jsonResponse(response, 400, { error: error.message, code: error.code || "PROFILE_UPDATE_FAILED" }, origin);
+    }
+  }
+
+  if (url.pathname === "/api/account/wishlist" && request.method === "POST") {
+    const user = requireUser(request, response, origin);
+    if (!user) return;
+    const body = await readJSONBody(request).catch(() => ({}));
+    return jsonResponse(response, 200, { wishlist: syncWishlist(user.id, body.productIds) }, origin);
+  }
+
+  if (url.pathname === "/api/account/notifications/read" && request.method === "POST") {
+    const user = requireUser(request, response, origin);
+    if (!user) return;
+    return jsonResponse(response, 200, { dashboard: markNotificationsRead(user.id) }, origin);
+  }
+
+  if (url.pathname === "/api/account/fragrance-finder" && request.method === "GET") {
+    const user = requireUser(request, response, origin);
+    if (!user) return;
+    return jsonResponse(response, 200, { session: getFragranceFinderSession(user.id) }, origin);
+  }
+
+  if (url.pathname === "/api/account/fragrance-finder" && request.method === "POST") {
+    const user = requireUser(request, response, origin);
+    if (!user) return;
+    try {
+      const body = await readJSONBody(request);
+      return jsonResponse(response, 200, { session: saveFragranceFinderSession(user.id, body) }, origin);
+    } catch (error) {
+      return jsonResponse(response, 400, { error: error.message, code: error.code || "FINDER_SESSION_FAILED" }, origin);
+    }
+  }
+
+  if (url.pathname === "/api/checkout/bootstrap" && request.method === "GET") {
+    const context = commerceContext(request);
+    return jsonResponse(response, 200, {
+      user: context.user,
+      cart: getCommerceCart(context.owner),
+      settings: checkoutSettings(),
+      locations: listDeliveryLocations(),
+      savedAddresses: context.user ? listSavedAddresses(context.user.id) : []
+    }, origin, { "Set-Cookie": guestCartCookie(context, request) });
+  }
+
+  if (url.pathname === "/api/checkout/cart" && request.method === "GET") {
+    const context = commerceContext(request);
+    return jsonResponse(response, 200, { cart: getCommerceCart(context.owner) }, origin, {
+      "Set-Cookie": guestCartCookie(context, request)
+    });
+  }
+
+  if (url.pathname === "/api/checkout/cart" && request.method === "POST") {
+    const context = commerceContext(request);
+    try {
+      const body = await readJSONBody(request);
+      const cart = replaceCommerceCart(context.owner, body.cart);
+      return jsonResponse(response, 200, { cart }, origin, { "Set-Cookie": guestCartCookie(context, request) });
+    } catch (error) {
+      return jsonResponse(response, 400, { error: error.message, code: error.code || "CART_UPDATE_FAILED" }, origin, {
+        "Set-Cookie": guestCartCookie(context, request)
+      });
+    }
+  }
+
+  if (url.pathname === "/api/checkout/quote" && request.method === "POST") {
+    const context = commerceContext(request);
+    try {
+      const body = await readJSONBody(request);
+      return jsonResponse(response, 200, { quote: quoteCheckout(context.owner, body) }, origin, {
+        "Set-Cookie": guestCartCookie(context, request)
+      });
+    } catch (error) {
+      return jsonResponse(response, error.code === "EMPTY_CART" ? 409 : 400, { error: error.message, code: error.code || "QUOTE_FAILED", productId: error.productId }, origin, {
+        "Set-Cookie": guestCartCookie(context, request)
+      });
+    }
+  }
+
+  if (url.pathname === "/api/checkout/order" && request.method === "POST") {
+    const context = commerceContext(request);
+    try {
+      const body = await readJSONBody(request);
+      const result = createCommerceOrder(context.owner, body);
+      const integrationResults = await dispatchPurchaseEvents(result.order, {
+        ...(body.attribution || {}),
+        email: result.order.email,
+        ip: String(request.headers["x-forwarded-for"] || request.socket.remoteAddress || "").split(",")[0].trim(),
+        userAgent: String(request.headers["user-agent"] || "")
+      });
+      return jsonResponse(response, 201, { ...result, cart: [], integrations: integrationResults }, origin, {
+        "Set-Cookie": guestCartCookie(context, request)
+      });
+    } catch (error) {
+      const status = error.code === "EMPTY_CART" || error.code === "OUT_OF_STOCK" ? 409 : 400;
+      return jsonResponse(response, status, { error: error.message, code: error.code || "ORDER_CREATE_FAILED" }, origin, {
+        "Set-Cookie": guestCartCookie(context, request)
+      });
+    }
+  }
+
+  const publicOrderMatch = url.pathname.match(/^\/api\/checkout\/orders\/([^/]+)$/);
+  if (publicOrderMatch && request.method === "GET") {
+    const user = requestUser(request);
+    const order = getCommerceOrder(decodeURIComponent(publicOrderMatch[1]), {
+      userId: user?.id,
+      token: url.searchParams.get("accessToken") || ""
+    });
+    return order
+      ? jsonResponse(response, 200, { order }, origin)
+      : jsonResponse(response, 404, { error: "الطلب غير موجود أو رابط الوصول غير صالح." }, origin);
+  }
+
+  const feedbackRequestMatch = url.pathname.match(/^\/api\/checkout\/orders\/([^/]+)\/feedback-request$/);
+  if (feedbackRequestMatch && request.method === "POST") {
+    const user = requestUser(request);
+    const body = await readJSONBody(request).catch(() => ({}));
+    const result = feedbackRequestForOrder(decodeURIComponent(feedbackRequestMatch[1]), {
+      userId: user?.id,
+      token: body.accessToken || ""
+    });
+    return result
+      ? jsonResponse(response, 200, result, origin)
+      : jsonResponse(response, 409, { error: "التقييم يصبح متاحًا بعد تسليم الطلب." }, origin);
+  }
+
+  const feedbackMatch = url.pathname.match(/^\/api\/feedback\/([^/]+)$/);
+  if (feedbackMatch && request.method === "GET") {
+    const survey = getFeedbackSurvey(decodeURIComponent(feedbackMatch[1]));
+    return survey
+      ? jsonResponse(response, 200, survey, origin)
+      : jsonResponse(response, 404, { error: "رابط التقييم غير صالح أو منتهي." }, origin);
+  }
+  if (feedbackMatch && request.method === "POST") {
+    try {
+      const body = await readJSONBody(request);
+      return jsonResponse(response, 201, submitFeedback(decodeURIComponent(feedbackMatch[1]), body), origin);
+    } catch (error) {
+      return jsonResponse(response, error.code === "FEEDBACK_ALREADY_SUBMITTED" ? 409 : 400, { error: error.message, code: error.code || "FEEDBACK_FAILED" }, origin);
+    }
   }
 
   if (url.pathname === "/api/auth/register" && request.method === "POST") {
@@ -663,7 +963,63 @@ async function handleAPI(request, response, url, origin) {
   if (url.pathname === "/api/admin/products" && request.method === "GET") {
     const user = requireUser(request, response, origin, "catalog:view");
     if (!user) return;
-    return jsonResponse(response, 200, { products: listProducts({ includeHidden: true }) }, origin);
+    return jsonResponse(response, 200, {
+      products: listProducts({ includeHidden: true }).map((product) => ({
+        ...product,
+        performanceInsights: productPerformanceAdmin(product.id, user.role === "owner")
+      }))
+    }, origin);
+  }
+
+  if (url.pathname === "/api/admin/performance-products" && request.method === "GET") {
+    const user = requireUser(request, response, origin, "catalog:view");
+    if (!user) return;
+    return jsonResponse(response, 200, performanceProductsAdmin({
+      query: url.searchParams.get("q") || "",
+      status: url.searchParams.get("status") || "all",
+      page: url.searchParams.get("page") || 1,
+      pageSize: url.searchParams.get("pageSize") || 20
+    }), origin);
+  }
+
+  if (url.pathname === "/api/admin/performance-products/recalculate" && request.method === "POST") {
+    const user = requireUser(request, response, origin, "catalog");
+    if (!user) return;
+    const result = recalculateAllProductPerformance();
+    recordActivity(user.id, "all_product_performance_recalculated", "product_performance", "all", result);
+    return jsonResponse(response, 200, result, origin);
+  }
+
+  if (url.pathname === "/api/admin/performance-products/export.csv" && request.method === "GET") {
+    const user = requireUser(request, response, origin, "catalog:view");
+    if (!user) return;
+    const payload = performanceProductsAdmin({ query: url.searchParams.get("q") || "", status: url.searchParams.get("status") || "all", page: 1, pageSize: 100 });
+    const quote = (value) => `"${String(value ?? "").replaceAll('"', '""')}"`;
+    const lines = [["product_id","name_ar","name_en","enabled","ratings","verified","scent_average","longevity_average","sillage_average","value_average","last_calculated_at"], ...payload.items.map((item) => [item.id,item.nameAr,item.nameEn,item.performance.settings.enabled,item.performance.aggregate.counts.customers,item.performance.aggregate.counts.verifiedCustomers,item.performance.aggregate.metrics.scent.average,item.performance.aggregate.metrics.longevity.average,item.performance.aggregate.metrics.sillage.average,item.performance.aggregate.metrics.value.average,item.performance.aggregate.lastCalculatedAt])];
+    response.writeHead(200, { "Content-Type": "text/csv; charset=utf-8", "Content-Disposition": "attachment; filename=origo-performance.csv", "Cache-Control": "no-store" });
+    response.end(`\uFEFF${lines.map((line) => line.map(quote).join(",")).join("\n")}`);
+    return;
+  }
+
+  if (url.pathname === "/api/admin/alternatives" && request.method === "GET") {
+    const user = requireUser(request, response, origin, "catalog:view");
+    if (!user) return;
+    return jsonResponse(response, 200, alternativesAdminPayload(), origin);
+  }
+
+  if (url.pathname === "/api/admin/alternatives" && request.method === "POST") {
+    const user = requireUser(request, response, origin, "catalog");
+    if (!user) return;
+    try {
+      const body = await readJSONBody(request);
+      const payload = saveAlternativesAdmin(body);
+      recordActivity(user.id, "alternatives_saved", "alternatives", String(body.match?.id || "settings"), {
+        section: body.match ? "match" : "homepage"
+      });
+      return jsonResponse(response, 200, payload, origin);
+    } catch (error) {
+      return jsonResponse(response, 400, { error: error.message || "تعذر حفظ إعدادات البدائل." }, origin);
+    }
   }
 
   if (url.pathname === "/api/admin/products" && request.method === "POST") {
@@ -677,7 +1033,14 @@ async function handleAPI(request, response, url, origin) {
       if (!Number.isFinite(Number(body.price)) || Number(body.price) < 0) {
         return jsonResponse(response, 400, { error: "أدخل سعرًا صحيحًا." }, origin);
       }
-      const product = upsertProduct(body);
+      let product = upsertProduct(body);
+      if (body.performanceInsights && product.category === "perfume") {
+        saveProductPerformanceAdmin(product.id, body.performanceInsights, {
+          id: user.id,
+          allowImported: user.role === "owner"
+        });
+      }
+      product = { ...product, performanceInsights: productPerformanceAdmin(product.id, user.role === "owner") };
       recordActivity(user.id, "product_saved", "product", product.id, { status: product.status });
       return jsonResponse(response, 200, { product }, origin);
     } catch (error) {
@@ -695,6 +1058,52 @@ async function handleAPI(request, response, url, origin) {
     if (!deleted) return jsonResponse(response, 404, { error: "المنتج غير موجود." }, origin);
     recordActivity(user.id, "product_deleted", "product", id);
     return jsonResponse(response, 200, { deleted: true, id }, origin);
+  }
+
+  const adminPerformanceMatch = url.pathname.match(/^\/api\/admin\/products\/([^/]+)\/performance$/);
+  if (adminPerformanceMatch && request.method === "GET") {
+    const user = requireUser(request, response, origin, "catalog:view");
+    if (!user) return;
+    const performance = productPerformanceAdmin(decodeURIComponent(adminPerformanceMatch[1]), user.role === "owner");
+    return performance
+      ? jsonResponse(response, 200, { performance }, origin)
+      : jsonResponse(response, 404, { error: "المنتج غير موجود." }, origin);
+  }
+  if (adminPerformanceMatch && request.method === "POST") {
+    const user = requireUser(request, response, origin, "catalog");
+    if (!user) return;
+    try {
+      const body = await readJSONBody(request);
+      const performance = saveProductPerformanceAdmin(decodeURIComponent(adminPerformanceMatch[1]), body, {
+        id: user.id,
+        allowImported: user.role === "owner"
+      });
+      return jsonResponse(response, 200, { performance }, origin);
+    } catch (error) {
+      return jsonResponse(response, error.code === "IMPORTED_REVIEWS_FORBIDDEN" ? 403 : 400, { error: error.message, code: error.code || "PERFORMANCE_ADMIN_FAILED" }, origin);
+    }
+  }
+
+  const adminPerformanceRecalculateMatch = url.pathname.match(/^\/api\/admin\/products\/([^/]+)\/performance\/recalculate$/);
+  if (adminPerformanceRecalculateMatch && request.method === "POST") {
+    const user = requireUser(request, response, origin, "catalog");
+    if (!user) return;
+    const productId = decodeURIComponent(adminPerformanceRecalculateMatch[1]);
+    const aggregate = recalculateProductPerformance(productId);
+    if (!aggregate) return jsonResponse(response, 404, { error: "المنتج غير موجود." }, origin);
+    recordActivity(user.id, "product_performance_recalculated", "product", productId);
+    return jsonResponse(response, 200, { aggregate }, origin);
+  }
+
+  const adminPerformanceVoteMatch = url.pathname.match(/^\/api\/admin\/performance-votes\/(\d+)$/);
+  if (adminPerformanceVoteMatch && request.method === "POST") {
+    const user = requireUser(request, response, origin, "catalog");
+    if (!user) return;
+    const body = await readJSONBody(request).catch(() => ({}));
+    const aggregate = setProductPerformanceVoteStatus(Number(adminPerformanceVoteMatch[1]), body.status, user.id, body.reason);
+    return aggregate
+      ? jsonResponse(response, 200, { aggregate }, origin)
+      : jsonResponse(response, 404, { error: "التقييم غير موجود." }, origin);
   }
 
   if (url.pathname === "/api/admin/filters" && request.method === "GET") {
@@ -814,19 +1223,74 @@ async function handleAPI(request, response, url, origin) {
     return jsonResponse(response, 200, { orders: listAllOrders() }, origin);
   }
 
+  if (url.pathname === "/api/admin/checkout/settings" && request.method === "GET") {
+    const user = requireUser(request, response, origin, "settings");
+    if (!user) return;
+    return jsonResponse(response, 200, { settings: checkoutSettings(), locations: listDeliveryLocations() }, origin);
+  }
+
+  if (url.pathname === "/api/admin/loyalty-tiers" && request.method === "GET") {
+    const user = requireUser(request, response, origin, "settings");
+    if (!user) return;
+    return jsonResponse(response, 200, { tiers: loyaltyTiers() }, origin);
+  }
+
+  if (url.pathname === "/api/admin/loyalty-tiers" && request.method === "POST") {
+    const user = requireUser(request, response, origin, "settings");
+    if (!user) return;
+    try {
+      const body = await readJSONBody(request);
+      const tiers = saveLoyaltyTier(body);
+      recordActivity(user.id, "loyalty_tier_saved", "loyalty_tier", body.id, body);
+      return jsonResponse(response, 200, { tiers }, origin);
+    } catch (error) {
+      return jsonResponse(response, 400, { error: error.message || "تعذر حفظ مستوى العضوية." }, origin);
+    }
+  }
+
+  if (url.pathname === "/api/admin/checkout/settings" && request.method === "POST") {
+    const user = requireUser(request, response, origin, "settings");
+    if (!user) return;
+    try {
+      const body = await readJSONBody(request);
+      const settings = updateCheckoutSettings(body);
+      recordActivity(user.id, "checkout_settings_updated", "settings", "checkout", settings);
+      return jsonResponse(response, 200, { settings }, origin);
+    } catch (error) {
+      return jsonResponse(response, 400, { error: error.message || "تعذر حفظ إعدادات الشراء." }, origin);
+    }
+  }
+
+  if (url.pathname === "/api/admin/feedback/analytics" && request.method === "GET") {
+    const user = requireUser(request, response, origin, "reports:view");
+    if (!user) return;
+    return jsonResponse(response, 200, { analytics: feedbackAnalytics(url.searchParams.get("periodDays") || 90) }, origin);
+  }
+
+  if (url.pathname === "/api/admin/feedback/insights" && request.method === "POST") {
+    const user = requireUser(request, response, origin, "marketing");
+    if (!user) return;
+    try {
+      const body = await readJSONBody(request);
+      return jsonResponse(response, 201, { insight: createMarketingInsight(body, user.id) }, origin);
+    } catch (error) {
+      return jsonResponse(response, 400, { error: error.message, code: error.code || "INSIGHT_FAILED" }, origin);
+    }
+  }
+
   const orderStatusMatch = url.pathname.match(/^\/api\/admin\/orders\/(\d+)\/status$/);
   if (orderStatusMatch && request.method === "POST") {
     const user = requireUser(request, response, origin, "orders");
     if (!user) return;
     try {
       const body = await readJSONBody(request);
-      const order = updateOrderStatus(orderStatusMatch[1], String(body.status || ""));
-      if (order) recordActivity(user.id, "order_status_changed", "order", orderStatusMatch[1], { status: body.status });
-      return order
-        ? jsonResponse(response, 200, { order }, origin)
+      const result = updateCommerceOrder(orderStatusMatch[1], { status: String(body.status || "") }, user.id);
+      if (result?.order) recordActivity(user.id, "order_status_changed", "order", orderStatusMatch[1], { status: body.status });
+      return result?.order
+        ? jsonResponse(response, 200, result, origin)
         : jsonResponse(response, 400, { error: "حالة الطلب غير صالحة." }, origin);
-    } catch {
-      return jsonResponse(response, 400, { error: "تعذر تحديث حالة الطلب." }, origin);
+    } catch (error) {
+      return jsonResponse(response, 400, { error: error.message || "تعذر تحديث حالة الطلب." }, origin);
     }
   }
 
@@ -836,15 +1300,16 @@ async function handleAPI(request, response, url, origin) {
     if (!user) return;
     try {
       const body = await readJSONBody(request);
-      const order = updateOrderAdmin(orderAdminMatch[1], body);
+      const result = updateCommerceOrder(orderAdminMatch[1], body, user.id);
+      const order = result?.order;
       if (!order) return jsonResponse(response, 404, { error: "الطلب غير موجود." }, origin);
       recordActivity(user.id, "order_updated", "order", orderAdminMatch[1], {
         status: order.status,
         paymentStatus: order.paymentStatus
       });
-      return jsonResponse(response, 200, { order }, origin);
-    } catch {
-      return jsonResponse(response, 400, { error: "تعذر تحديث تفاصيل الطلب." }, origin);
+      return jsonResponse(response, 200, result, origin);
+    } catch (error) {
+      return jsonResponse(response, 400, { error: error.message || "تعذر تحديث تفاصيل الطلب." }, origin);
     }
   }
 
@@ -874,7 +1339,10 @@ async function handleAPI(request, response, url, origin) {
 
 async function serveStatic(request, response, url) {
   const isNotesRoute = /^\/notes(?:\/[a-z0-9-]+)?\/?$/i.test(url.pathname);
-  const pathname = decodeURIComponent(url.pathname === "/" || isNotesRoute ? "/index.html" : url.pathname);
+  const isBenefitRoute = /^\/benefits\/[a-z0-9-]+\/?$/i.test(url.pathname);
+  const isStorefrontRoute = /^\/(perfumes|search)\/?$/i.test(url.pathname);
+  const isCommerceRoute = /^\/(checkout|order\/[^/]+|feedback\/[^/]+|feedback-insights|account(?:\/.*)?|fragrance-finder\/[a-z-]+|alternatives(?:\/compare\/[^/]+)?)\/?$/i.test(url.pathname);
+  const pathname = decodeURIComponent(url.pathname === "/" || isNotesRoute || isBenefitRoute || isStorefrontRoute || isCommerceRoute ? "/index.html" : url.pathname);
   const cleanPath = normalize(pathname).replace(/^([/\\])+/, "");
   const filePath = resolve(join(ROOT, cleanPath));
   if (filePath !== ROOT && !filePath.startsWith(`${ROOT}${sep}`)) {

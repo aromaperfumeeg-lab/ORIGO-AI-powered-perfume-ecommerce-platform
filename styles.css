@@ -8653,3 +8653,56 @@ body.notes-route #storefront-main > section:not(#notes-library-page) {
     grid-column: 1 / -1;
   }
 }
+
+.finder-admin-groups {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.finder-admin-group {
+  margin: 0;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+}
+
+.finder-admin-group legend {
+  padding-inline: 8px;
+  color: var(--burgundy);
+  font-weight: 800;
+}
+
+.finder-admin-group > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.finder-admin-group label {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 38px;
+  padding: 7px 10px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface-strong, #fff);
+  cursor: pointer;
+}
+
+.finder-admin-group input {
+  accent-color: var(--burgundy);
+}
+
+body.dark .finder-admin-group,
+body.dark .finder-admin-group label {
+  background: #21181b;
+}
+
+@media (max-width: 760px) {
+  .finder-admin-groups {
+    grid-template-columns: 1fr;
+  }
+}

@@ -7,7 +7,9 @@
   },
   "scripts": {
     "start": "node server.mjs",
+    "build": "echo ORIGO does not require a build step.",
     "build:knowledge": "node scripts/build-fragrance-knowledge.mjs",
+    "check:i18n": "node scripts/check-i18n.mjs",
     "test": "node --test --test-isolation=none"
   },
   "dependencies": {

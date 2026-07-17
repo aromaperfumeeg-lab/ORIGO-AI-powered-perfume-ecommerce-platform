@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 150" role="img" aria-labelledby="title">
+  <title id="title">ORIGO SCENTS</title>
+  <g fill="#7b0a20" text-anchor="middle">
+    <path d="M210 8l4 11 11 4-11 4-4 11-4-11-11-4 11-4z"/>
+    <text x="210" y="93" font-family="Georgia, 'Times New Roman', serif" font-size="78" letter-spacing="8">ORIGO</text>
+    <path d="M70 119h92M258 119h92" stroke="#c7953d" stroke-width="2"/>
+    <text x="210" y="132" font-family="Arial, sans-serif" font-size="17" font-weight="700" letter-spacing="9">SCENTS</text>
+  </g>
+</svg>
