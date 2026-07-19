@@ -32,6 +32,7 @@ import {
   listFilterDefinitions,
   listFragranceNoteEntities,
   listOrdersForUser,
+  listProductOptions,
   listProducts,
   listStaff,
   mergeCart,
@@ -46,6 +47,8 @@ import {
   updateOrderAdmin,
   updateOrderStatus,
   upsertFilterDefinition,
+  upsertProductOption,
+  deleteProductOption,
   upsertProduct,
   userFromSession,
   verifyPassword
@@ -671,6 +674,37 @@ async function handleAPI(request, response, url, origin) {
     return jsonResponse(response, 200, {
       filters: listFilterDefinitions(url.searchParams.get("category") || "")
     }, origin);
+  }
+
+  if (url.pathname === "/api/admin/product-options" && request.method === "GET") {
+    const user = requireUser(request, response, origin, "catalog:view");
+    if (!user) return;
+    return jsonResponse(response, 200, { options: listProductOptions(url.searchParams.get("group") || "", true) }, origin);
+  }
+
+  if (url.pathname === "/api/admin/product-options" && request.method === "POST") {
+    const user = requireUser(request, response, origin, "catalog");
+    if (!user) return;
+    try {
+      const body = await readJSONBody(request);
+      const option = upsertProductOption(body);
+      recordActivity(user.id, "product_option_saved", "product_option", String(option.id), { group: option.group, slug: option.slug });
+      return jsonResponse(response, 200, { option }, origin);
+    } catch (error) {
+      return jsonResponse(response, 400, { error: error.message || "تعذر حفظ الخيار." }, origin);
+    }
+  }
+
+  const productOptionMatch = url.pathname.match(/^\/api\/admin\/product-options\/(\d+)$/);
+  if (productOptionMatch && request.method === "DELETE") {
+    const user = requireUser(request, response, origin, "catalog");
+    if (!user) return;
+    try {
+      const deleted = deleteProductOption(productOptionMatch[1]);
+      return jsonResponse(response, deleted ? 200 : 404, deleted ? { ok: true } : { error: "الخيار غير موجود." }, origin);
+    } catch (error) {
+      return jsonResponse(response, 409, { error: error.message }, origin);
+    }
   }
 
   if (url.pathname === "/api/notes/state" && request.method === "GET") {

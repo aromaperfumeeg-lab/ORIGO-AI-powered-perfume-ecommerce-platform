@@ -12,12 +12,28 @@ test("product editor separates workflows and fragrance data without free-form mu
   assert.match(app, /name="workflowAction" value="draft"/);
   assert.match(app, /name="workflowAction" value="review"/);
   assert.match(app, /name="workflowAction" value="published"/);
-  assert.match(app, /<select name="size">/);
+  assert.match(app, /name:"size", group:"size"/);
+  assert.match(app, /function searchableCreatableSelect/);
+  assert.match(app, /data-smart-search/);
   assert.doesNotMatch(app, /name="sizes" value=/);
-  assert.match(app, /name="mainIngredients"/);
+  assert.match(app, /name:"mainIngredients", group:"note"/);
   assert.match(app, /name="accordSelected"/);
   assert.match(app, /name="accordStrength\./);
   assert.match(app, /product\.accordProfile/);
+});
+
+test("product options are bilingual database records and the editor persists newly created options", async () => {
+  const app = await readFile(new URL("app.js", root), "utf8");
+  const db = await readFile(new URL("db.mjs", root), "utf8");
+  const server = await readFile(new URL("server.mjs", root), "utf8");
+  assert.match(db, /CREATE TABLE IF NOT EXISTS product_options/);
+  assert.match(db, /name_ar TEXT NOT NULL/);
+  assert.match(db, /name_en TEXT NOT NULL/);
+  assert.match(db, /UNIQUE \(option_group, slug\)/);
+  assert.match(server, /\/api\/admin\/product-options/);
+  assert.match(app, /smart-select-create/);
+  assert.match(app, /save-product-option/);
+  assert.match(app, /api\("\/api\/admin\/product-options"/);
 });
 
 test("product page places fingerprint beside the gallery and keeps ingredients separate", async () => {

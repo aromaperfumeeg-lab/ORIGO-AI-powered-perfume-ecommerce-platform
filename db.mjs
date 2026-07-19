@@ -198,6 +198,24 @@ db.exec(`
     PRIMARY KEY (product_id, filter_id)
   );
 
+  CREATE TABLE IF NOT EXISTS product_options (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    option_group TEXT NOT NULL,
+    slug TEXT NOT NULL,
+    name_ar TEXT NOT NULL DEFAULT '',
+    name_en TEXT NOT NULL DEFAULT '',
+    image TEXT NOT NULL DEFAULT '',
+    icon TEXT NOT NULL DEFAULT '',
+    color TEXT NOT NULL DEFAULT '',
+    metadata_json TEXT NOT NULL DEFAULT '{}',
+    sort_order INTEGER NOT NULL DEFAULT 0,
+    active INTEGER NOT NULL DEFAULT 1,
+    usage_count INTEGER NOT NULL DEFAULT 0,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (option_group, slug)
+  );
+
   CREATE TABLE IF NOT EXISTS admin_workspace_state (
     id INTEGER PRIMARY KEY CHECK (id = 1),
     payload_json TEXT NOT NULL DEFAULT '{}',
@@ -1190,6 +1208,72 @@ export function listFilterDefinitions(category = "") {
     sortOrder: Number(row.sort_order),
     visible: Boolean(row.visible)
   }));
+}
+
+function optionSlug(value = "") {
+  return clean(value, 160)
+    .normalize("NFKD")
+    .replace(/[\u064B-\u065F\u0670]/g, "")
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}]+/gu, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 120);
+}
+
+export function listProductOptions(group = "", includeInactive = false) {
+  const conditions = [];
+  const params = [];
+  if (group) {
+    conditions.push("option_group = ?");
+    params.push(clean(group, 80));
+  }
+  if (!includeInactive) conditions.push("active = 1");
+  const rows = db.prepare(`SELECT * FROM product_options${conditions.length ? ` WHERE ${conditions.join(" AND ")}` : ""} ORDER BY usage_count DESC, sort_order ASC, id ASC`).all(...params);
+  return rows.map((row) => ({
+    id: row.id,
+    group: row.option_group,
+    slug: row.slug,
+    nameAr: row.name_ar,
+    nameEn: row.name_en,
+    image: row.image,
+    icon: row.icon,
+    color: row.color,
+    metadata: parseJSON(row.metadata_json, {}),
+    sortOrder: row.sort_order,
+    active: Boolean(row.active),
+    usageCount: row.usage_count
+  }));
+}
+
+export function upsertProductOption(input = {}) {
+  const group = clean(input.group, 80);
+  const nameAr = clean(input.nameAr, 160);
+  const nameEn = clean(input.nameEn, 160);
+  const slug = optionSlug(input.slug || nameEn || nameAr);
+  if (!group || !slug || (!nameAr && !nameEn)) throw new Error("بيانات الخيار غير مكتملة.");
+  const metadata = input.metadata && typeof input.metadata === "object" ? input.metadata : {};
+  db.prepare(`
+    INSERT INTO product_options (option_group, slug, name_ar, name_en, image, icon, color, metadata_json, sort_order, active, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+    ON CONFLICT(option_group, slug) DO UPDATE SET
+      name_ar = excluded.name_ar,
+      name_en = excluded.name_en,
+      image = excluded.image,
+      icon = excluded.icon,
+      color = excluded.color,
+      metadata_json = excluded.metadata_json,
+      sort_order = excluded.sort_order,
+      active = excluded.active,
+      updated_at = CURRENT_TIMESTAMP
+  `).run(group, slug, nameAr, nameEn, clean(input.image, 5000000), clean(input.icon, 80), clean(input.color, 32), JSON.stringify(metadata), Number(input.sortOrder || 0), input.active === false ? 0 : 1);
+  return listProductOptions(group, true).find((item) => item.slug === slug) || null;
+}
+
+export function deleteProductOption(id) {
+  const row = db.prepare("SELECT * FROM product_options WHERE id = ?").get(Number(id));
+  if (!row) return false;
+  if (Number(row.usage_count || 0) > 0) throw new Error("لا يمكن حذف خيار مستخدم؛ أخفه أو استبدله أولًا.");
+  return db.prepare("DELETE FROM product_options WHERE id = ?").run(Number(id)).changes > 0;
 }
 
 export function upsertFilterDefinition(input) {
