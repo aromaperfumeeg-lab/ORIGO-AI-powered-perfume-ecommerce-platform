@@ -36,6 +36,7 @@
     gender: "",
     concentration: "",
     sizes: [],
+    size: "",
     descriptionAr: "",
     descriptionEn: "",
     notes: {
@@ -50,6 +51,14 @@
     familyEn: "",
     seasons: [],
     usageTimes: [],
+    occasions: [],
+    personalities: [],
+    mainIngredients: [],
+    mainAccords: [],
+    profileImages: {
+      fingerprint: { ar: "", en: "" }, scent: { ar: "", en: "" }, wear: { ar: "", en: "" },
+      longevity: { ar: "", en: "" }, sillage: { ar: "", en: "" }, gender: { ar: "", en: "" }, value: { ar: "", en: "" }
+    },
     images: [],
     originCountryAr: "",
     originCountryEn: "",

@@ -495,6 +495,9 @@ const baseProducts = [
     sku: "ORI-NOC-01",
     notesAr: ["عود", "ورد", "عنبر"],
     notesEn: ["Oud", "Rose", "Amber"],
+    gender: "unisex", mainIngredients: ["عود", "ورد", "عنبر"], seasons: ["winter", "autumn"], usageTimes: ["night"], occasions: ["formal", "romantic"],
+    accordProfile: [{id:"woody",nameAr:"خشبي",nameEn:"Woody",color:"#9b6b43",strength:92},{id:"amber",nameAr:"عنبري",nameEn:"Amber",color:"#c47b16",strength:84},{id:"floral",nameAr:"زهري",nameEn:"Floral",color:"#ec6d9c",strength:66},{id:"warm-spicy",nameAr:"حار دافئ",nameEn:"Warm spicy",color:"#b85032",strength:58}],
+    mainAccords: ["خشبي", "عنبري", "زهري", "حار دافئ"],
     price: 3250,
     oldPrice: null,
     badgeAr: "الأكثر مبيعًا",
@@ -523,6 +526,9 @@ const baseProducts = [
     sku: "ORI-VIR-75",
     notesAr: ["سوسن", "فانيليا", "مسك"],
     notesEn: ["Iris", "Vanilla", "Musk"],
+    gender: "women", mainIngredients: ["سوسن", "فانيليا", "مسك"], seasons: ["spring", "autumn"], usageTimes: ["day", "evening"], occasions: ["work", "occasions", "romantic"],
+    accordProfile: [{id:"powdery",nameAr:"بودري",nameEn:"Powdery",color:"#ef72a4",strength:90},{id:"floral",nameAr:"زهري",nameEn:"Floral",color:"#ec6d9c",strength:82},{id:"vanilla",nameAr:"فانيليا",nameEn:"Vanilla",color:"#f2ae2e",strength:74},{id:"musky",nameAr:"مسكي",nameEn:"Musky",color:"#aa8ac7",strength:61}],
+    mainAccords: ["بودري", "زهري", "فانيليا", "مسكي"],
     price: 2890,
     oldPrice: 3200,
     badgeAr: "وصل حديثًا",
@@ -551,6 +557,9 @@ const baseProducts = [
     sku: "ORI-SSF-75",
     notesAr: ["جلد", "زعفران", "أخشاب"],
     notesEn: ["Leather", "Saffron", "Woods"],
+    gender: "men", mainIngredients: ["جلد", "زعفران", "أخشاب"], seasons: ["winter", "autumn"], usageTimes: ["night"], occasions: ["formal", "occasions"],
+    accordProfile: [{id:"leather",nameAr:"جلدي",nameEn:"Leather",color:"#635047",strength:94},{id:"warm-spicy",nameAr:"حار دافئ",nameEn:"Warm spicy",color:"#b85032",strength:83},{id:"woody",nameAr:"خشبي",nameEn:"Woody",color:"#9b6b43",strength:76},{id:"amber",nameAr:"عنبري",nameEn:"Amber",color:"#c47b16",strength:59}],
+    mainAccords: ["جلدي", "حار دافئ", "خشبي", "عنبري"],
     price: 2450,
     oldPrice: null,
     badgeAr: "إصدار محدود",
@@ -579,6 +588,9 @@ const baseProducts = [
     sku: "ORI-CVE-75",
     notesAr: ["برغموت", "نيرولي", "أرز"],
     notesEn: ["Bergamot", "Neroli", "Cedar"],
+    gender: "unisex", mainIngredients: ["برغموت", "نيرولي", "أرز"], seasons: ["spring", "summer"], usageTimes: ["day", "daily"], occasions: ["work", "travel", "casual"],
+    accordProfile: [{id:"citrus",nameAr:"حمضي",nameEn:"Citrus",color:"#a7bd31",strength:95},{id:"fresh",nameAr:"منعش",nameEn:"Fresh",color:"#24a7a1",strength:88},{id:"aromatic",nameAr:"أروماتيك",nameEn:"Aromatic",color:"#4e9274",strength:65},{id:"woody",nameAr:"خشبي",nameEn:"Woody",color:"#9b6b43",strength:46}],
+    mainAccords: ["حمضي", "منعش", "أروماتيك", "خشبي"],
     price: 1980,
     oldPrice: 2250,
     badgeAr: "اختيار الصيف",
@@ -842,7 +854,7 @@ const state = {
   integrationStatus: {},
   filterDefinitions: [],
   activeDynamicFilters: {},
-  productEditorMode: localStorage.getItem("origoProductEditorMode") || "quick",
+  productEditorMode: localStorage.getItem("origoProductEditorMode") || "smart",
   aiProductSuggestion: null,
   globalSearchQuery: "",
   storefrontSearchQuery: "",
@@ -1682,7 +1694,7 @@ function entityCreateForm(view, item = null) {
       <div><span class="eyebrow">♟ TEAM & ROLES</span><h3>${state.lang === "ar" ? "إضافة حساب موظف" : "Add staff account"}</h3></div>
       <label>${state.lang === "ar" ? "الاسم" : "Name"}<input name="name" required minlength="2" /></label>
       <label>${state.lang === "ar" ? "البريد" : "Email"}<input name="email" type="email" required /></label>
-      <label>${state.lang === "ar" ? "كلمة المرور" : "Password"}<input name="password" type="password" minlength="10" required /></label>
+      ${passwordFieldMarkup({ autocomplete: "new-password", label: state.lang === "ar" ? "كلمة المرور" : "Password" })}
       <label>${state.lang === "ar" ? "الدور" : "Role"}<select name="role">${staffRoleDefinitions.map(([id, name]) => `<option value="${id}">${escapeHTML(name)}</option>`).join("")}</select></label>
       <div><button type="button" class="secondary-button compact-button" data-action="cancel-admin-create">${state.lang === "ar" ? "إلغاء" : "Cancel"}</button>
       <button class="button burgundy-button" type="submit">${state.lang === "ar" ? "إنشاء الحساب" : "Create account"}</button></div></form>`;
@@ -1838,9 +1850,17 @@ function exportAdminReport(report, format = "csv") {
   showToast(adminCopy("تم تجهيز ملف التقرير", "Report file prepared"));
 }
 
-function renderAuth(mode = "login") {
+function passwordFieldMarkup({ name = "password", autocomplete = "current-password", label, required = true } = {}) {
+  return `<label class="wide"><span>${label}</span><div class="password-field"><input name="${name}" type="password" autocomplete="${autocomplete}"${required ? " required" : ""} minlength="10" maxlength="200" dir="ltr"/><button type="button" data-action="toggle-password" aria-label="${state.lang === "ar" ? "إظهار كلمة المرور" : "Show password"}" aria-pressed="false">◉</button></div></label>`;
+}
+
+function renderAuth(mode = "login", requestId = "") {
   const isRegister = mode === "register";
+  const isResetRequest = mode === "reset-request";
+  const isResetConfirm = mode === "reset-confirm";
   const ar = state.lang === "ar";
+  const resetTitle = isResetRequest ? (ar ? "استعادة كلمة المرور" : "Reset your password") : (ar ? "أدخل رمز التحقق" : "Enter verification code");
+  const resetBody = isResetRequest ? (ar ? "اختر قناة الاستعادة، ثم أدخل بريدك أو رقم هاتفك المسجل." : "Choose a recovery channel, then enter your registered email or phone.") : (ar ? "أدخل الرمز المكوّن من 6 أرقام وكلمة المرور الجديدة." : "Enter the 6-digit code and your new password.");
   $("#account-content").innerHTML = `
     <div class="auth-shell">
       <div class="auth-art">
@@ -1850,24 +1870,23 @@ function renderAuth(mode = "login") {
         <p>${ar ? "احفظ حقيبتك وتابع طلباتك من أي جهاز." : "Keep your bag and follow every order from any device."}</p>
       </div>
       <div class="auth-body">
-        <div class="auth-tabs">
+        <div class="auth-tabs"${isResetRequest || isResetConfirm ? " hidden" : ""}>
           <button type="button" data-action="auth-mode" data-mode="login" class="${isRegister ? "" : "active"}">${ar ? "تسجيل الدخول" : "Sign in"}</button>
           <button type="button" data-action="auth-mode" data-mode="register" class="${isRegister ? "active" : ""}">${ar ? "حساب جديد" : "Create account"}</button>
         </div>
-        <form class="commerce-form" id="auth-form" data-mode="${isRegister ? "register" : "login"}">
-          <span class="eyebrow">${isRegister ? (ar ? "انضم إلى ORIGO" : "JOIN ORIGO") : (ar ? "مرحبًا بعودتك" : "WELCOME BACK")}</span>
-          <h2 id="account-title">${isRegister ? (ar ? "أنشئ حسابك" : "Create your account") : (ar ? "سجّل الدخول" : "Sign in")}</h2>
-          <p>${isRegister
+        <form class="commerce-form" id="${isResetRequest ? "password-reset-request-form" : isResetConfirm ? "password-reset-confirm-form" : "auth-form"}" data-mode="${isRegister ? "register" : "login"}">
+          <span class="eyebrow">${isResetRequest || isResetConfirm ? "ORIGO SECURE RECOVERY" : isRegister ? (ar ? "انضم إلى ORIGO" : "JOIN ORIGO") : (ar ? "مرحبًا بعودتك" : "WELCOME BACK")}</span>
+          <h2 id="account-title">${isResetRequest || isResetConfirm ? resetTitle : isRegister ? (ar ? "أنشئ حسابك" : "Create your account") : (ar ? "سجّل الدخول" : "Sign in")}</h2>
+          <p>${isResetRequest || isResetConfirm ? resetBody : isRegister
             ? (ar ? "بيانات قليلة، وتجربة تسوق أسهل." : "A few details for a smoother shopping experience.")
             : (ar ? "أدخل بياناتك لمتابعة حقيبتك وطلباتك." : "Sign in to continue with your bag and orders.")}</p>
           <div class="commerce-fields">
-            ${isRegister ? `<label class="wide"><span>${ar ? "الاسم" : "Name"}</span><input name="name" autocomplete="name" required minlength="2" maxlength="100" /></label>` : ""}
-            <label class="wide"><span>${ar ? "البريد الإلكتروني" : "Email address"}</span><input name="email" type="email" autocomplete="email" required maxlength="254" dir="ltr" /></label>
-            ${isRegister ? `<label class="wide"><span>${ar ? "رقم الهاتف (اختياري)" : "Phone (optional)"}</span><input name="phone" autocomplete="tel" inputmode="tel" dir="ltr" /></label>` : ""}
-            <label class="wide"><span>${ar ? "كلمة المرور" : "Password"}</span><input name="password" type="password" autocomplete="${isRegister ? "new-password" : "current-password"}" required minlength="10" maxlength="200" dir="ltr" /></label>
+            ${isResetRequest ? `<label class="wide"><span>${ar ? "البريد أو رقم الهاتف المسجل" : "Registered email or phone"}</span><input name="identifier" autocomplete="username" required maxlength="254" dir="ltr" /></label><fieldset class="reset-channels"><legend>${ar ? "طريقة إرسال الرمز" : "Send code through"}</legend><label><input type="radio" name="channel" value="email" checked/><span>✉ ${ar ? "البريد" : "Email"}</span></label><label><input type="radio" name="channel" value="whatsapp"/><span>◉ WhatsApp</span></label><label><input type="radio" name="channel" value="sms"/><span>▤ SMS</span></label></fieldset>` : isResetConfirm ? `<input type="hidden" name="requestId" value="${escapeHTML(requestId)}"/><label class="wide"><span>${ar ? "رمز التحقق" : "Verification code"}</span><input name="code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required dir="ltr"/></label>${passwordFieldMarkup({ autocomplete: "new-password", label: ar ? "كلمة المرور الجديدة" : "New password" })}` : `${isRegister ? `<label class="wide"><span>${ar ? "الاسم" : "Name"}</span><input name="name" autocomplete="name" required minlength="2" maxlength="100" /></label>` : ""}<label class="wide"><span>${ar ? "البريد الإلكتروني" : "Email address"}</span><input name="email" type="email" autocomplete="email" required maxlength="254" dir="ltr" /></label>${isRegister ? `<label class="wide"><span>${ar ? "رقم الهاتف (اختياري)" : "Phone (optional)"}</span><input name="phone" autocomplete="tel" inputmode="tel" dir="ltr" /></label>` : ""}${passwordFieldMarkup({ autocomplete: isRegister ? "new-password" : "current-password", label: ar ? "كلمة المرور" : "Password" })}`}
           </div>
           <p class="form-error" id="auth-error" role="alert"></p>
-          <button class="button burgundy-button full" type="submit">${isRegister ? (ar ? "إنشاء الحساب" : "Create account") : (ar ? "دخول" : "Sign in")}</button>
+          <button class="button burgundy-button full" type="submit">${isResetRequest ? (ar ? "إرسال رمز الاستعادة" : "Send recovery code") : isResetConfirm ? (ar ? "تعيين كلمة المرور" : "Set new password") : isRegister ? (ar ? "إنشاء الحساب" : "Create account") : (ar ? "دخول" : "Sign in")}</button>
+          ${!isRegister && !isResetRequest && !isResetConfirm ? `<button class="auth-text-action" type="button" data-action="auth-mode" data-mode="reset-request">${ar ? "نسيت كلمة المرور؟" : "Forgot password?"}</button>` : ""}
+          ${isResetRequest || isResetConfirm ? `<button class="auth-text-action" type="button" data-action="auth-mode" data-mode="login">${ar ? "العودة لتسجيل الدخول" : "Back to sign in"}</button>` : ""}
         </form>
       </div>
     </div>`;
@@ -3225,18 +3244,51 @@ function productSuitabilityMarkup(product) {
 }
 
 function productAccordMarkup(product) {
-  const values = product.mainAccords || product.accords || [];
+  const values = product.accordProfile?.length ? product.accordProfile : (product.mainAccords || product.accords || []);
   const accords = (Array.isArray(values) ? values : []).slice(0, 8).map((item) => typeof item === "object" ? item : { name: item });
   if (!accords.length) return `<div class="pdp-empty-compact">${state.lang === "ar" ? "لم تُضف البصمة العطرية بعد." : "The fragrance fingerprint is not configured yet."}</div>`;
-  return `<section class="pdp-accord-profile"><p>${state.lang === "ar" ? "الأكوردات الرئيسية التي تشكل الانطباع العام للعطر." : "The main accords that shape the fragrance impression."}</p><div>${accords.map((item, index) => { const intensity = Number(item.intensity); const hasIntensity = Number.isFinite(intensity) && intensity > 0; return `<article><span><i style="--accord-color:${escapeHTML(item.color || ["#bc173d","#d79b26","#e97198","#9b7fba","#e67656","#7aaa4d"][index % 6])}"></i><b>${escapeHTML(item[state.lang === "ar" ? "nameAr" : "nameEn"] || item.name || item.label || "")}</b>${hasIntensity ? `<em>${Math.min(100, intensity)}%</em>` : ""}</span>${hasIntensity ? `<div><i style="width:${Math.min(100, intensity)}%;--accord-color:${escapeHTML(item.color || "#8b0d2b")}"></i></div>` : ""}${item.descriptionAr || item.descriptionEn ? `<small>${escapeHTML(item[state.lang === "ar" ? "descriptionAr" : "descriptionEn"] || item.descriptionAr || item.descriptionEn)}</small>` : ""}</article>`; }).join("")}</div></section>`;
+  return `<section class="pdp-accord-profile"><p>${state.lang === "ar" ? "أبرز الروائح التي ستشعر بها في هذا العطر." : "The leading impressions you will experience in this fragrance."}</p><div>${accords.map((item, index) => { const intensity = Number(item.strength ?? item.intensity); const hasIntensity = Number.isFinite(intensity) && intensity > 0; return `<article title="${escapeHTML(item.descriptionAr || item.descriptionEn || "")}"><span><i style="--accord-color:${escapeHTML(item.color || ["#bc173d","#d79b26","#e97198","#9b7fba","#e67656","#7aaa4d"][index % 6])}"></i><b>${escapeHTML(item[state.lang === "ar" ? "nameAr" : "nameEn"] || item.name || item.label || "")}</b>${hasIntensity ? `<em>${Math.min(100, intensity)}%</em>` : ""}</span>${hasIntensity ? `<div><i style="width:${Math.min(100, intensity)}%;--accord-color:${escapeHTML(item.color || "#8b0d2b")}"></i></div>` : ""}${item.descriptionAr || item.descriptionEn ? `<small>${escapeHTML(item[state.lang === "ar" ? "descriptionAr" : "descriptionEn"] || item.descriptionAr || item.descriptionEn)}</small>` : ""}</article>`; }).join("")}</div><button type="button" class="pdp-accord-help" data-action="accord-help">${state.lang === "ar" ? "كيف نقرأ البصمة العطرية؟" : "How to read the fragrance fingerprint"}</button></section>`;
+}
+
+function productProfileImage(product, key) {
+  const entry = product.profileImages?.[key];
+  if (!entry) return "";
+  if (typeof entry === "string") return entry;
+  return String(entry[state.lang] || entry.ar || entry.en || "");
+}
+
+function productProfileArtwork(product, key, className = "") {
+  const source = productProfileImage(product, key);
+  if (!source) return "";
+  const field = PRODUCT_PROFILE_IMAGE_FIELDS.find(([fieldKey]) => fieldKey === key);
+  const label = field ? (state.lang === "ar" ? field[1] : field[2]) : key;
+  return `<figure class="pdp-profile-artwork ${className}"><img src="${escapeHTML(source)}" alt="${escapeHTML(label)}" loading="lazy"/></figure>`;
+}
+
+function productPerformanceImagesMarkup(product) {
+  const keys = ["scent", "wear", "longevity", "sillage", "gender", "value"];
+  const cards = keys.map((key) => productProfileArtwork(product, key, `is-${key}`)).filter(Boolean);
+  if (!cards.length) return `<div class="pdp-empty-compact">${state.lang === "ar" ? "لم تُرفع صور مؤشرات العطر بعد." : "Fragrance insight artwork has not been uploaded yet."}</div>`;
+  return `<div class="pdp-performance-artwork-grid">${cards.join("")}</div>`;
+}
+
+function productHeroProfileMarkup(product) {
+  const ar = state.lang === "ar";
+  const artwork = productProfileArtwork(product, "fingerprint", "is-fingerprint");
+  return `<aside class="pdp-hero-profile"><header><span>⌁</span><div><b>${ar ? "البصمة العطرية" : "Fragrance fingerprint"}</b><small>${ar ? "تحليل تحريري جاهز من ORIGO" : "Ready-made ORIGO editorial analysis"}</small></div></header>${artwork || productAccordMarkup(product)}</aside>`;
+}
+
+function productIngredientsMarkup(product) {
+  const values = Array.isArray(product.mainIngredients) ? product.mainIngredients : [];
+  if (!values.length) return "";
+  return `<section class="pdp-main-ingredients"><div class="pdp-section-heading"><span>KEY INGREDIENTS</span><h2>${state.lang === "ar" ? "المكونات الأساسية" : "Key ingredients"}</h2><p>${state.lang === "ar" ? "المواد الأبرز التي تبني شخصية العطر، منفصلة عن هرم النوتات." : "The leading materials shaping the fragrance, separate from its note pyramid."}</p></div><div>${values.map((value) => { const note = window.ORIGOFragranceNotes?.find(value); const image = note ? window.ORIGOFragranceNotes.artwork(note) : useCaseArtwork("sparkles"); const label = note ? noteLabel(note) : value; return `<article><img src="${escapeHTML(image)}" alt="${escapeHTML(label)}" loading="lazy"/><b>${escapeHTML(label)}</b></article>`; }).join("")}</div></section>`;
 }
 
 function productProfileAccordions(product) {
   const ar = state.lang === "ar";
   return `<section class="pdp-profile-accordions" aria-label="${ar ? "ملف العطر" : "Fragrance profile"}">
-    <article class="pdp-profile-section is-open" data-pdp-section="fingerprint"><button type="button" data-action="pdp-profile-section" aria-expanded="true"><span>⌁</span><div><b>${ar ? "البصمة العطرية" : "Fragrance fingerprint"}</b><small>${escapeHTML((product.mainAccords || product.accords || []).slice(0, 3).map((x) => typeof x === "object" ? (x[ar ? "nameAr" : "nameEn"] || x.name) : x).join(" · "))}</small></div><i>⌃</i></button><div class="pdp-profile-panel">${productAccordMarkup(product)}${productGenderMarkup(product)}${productSuitabilityMarkup(product)}</div></article>
-    <article class="pdp-profile-section" data-pdp-section="notes"><button type="button" data-action="pdp-profile-section" aria-expanded="false"><span>△</span><div><b>${ar ? "هرم النوتات" : "Note pyramid"}</b><small>${ar ? "افتتاحية · قلب · قاعدة" : "Top · heart · base"}</small></div><i>⌄</i></button><div class="pdp-profile-panel" hidden>${productNotePyramid(product) || `<div class="pdp-empty-compact">${ar ? "لم تُضف النوتات العطرية لهذا المنتج بعد." : "Fragrance notes are not available yet."}</div>`}</div></article>
-    <article class="pdp-profile-section" data-pdp-section="performance"><button type="button" data-action="pdp-profile-section" aria-expanded="false"><span>▥</span><div><b>${ar ? "تقييم ومؤشرات الأداء" : "Ratings & performance"}</b><small data-performance-summary="${escapeHTML(product.id)}">${ar ? "الرائحة · الثبات · الفوحان · الموسم" : "Scent · longevity · sillage · season"}</small></div><i>⌄</i></button><div class="pdp-profile-panel" hidden>${window.ORIGOPerformance?.panel(product) || productPerformanceMarkup(product)}</div></article>
+    <article class="pdp-profile-section is-open" data-pdp-section="notes"><button type="button" data-action="pdp-profile-section" aria-expanded="true"><span>△</span><div><b>${ar ? "هرم النوتات" : "Note pyramid"}</b><small>${ar ? "افتتاحية · قلب · قاعدة" : "Top · heart · base"}</small></div><i>⌃</i></button><div class="pdp-profile-panel">${productNotePyramid(product) || `<div class="pdp-empty-compact">${ar ? "لم تُضف النوتات العطرية لهذا المنتج بعد." : "Fragrance notes are not available yet."}</div>`}</div></article>
+    <article class="pdp-profile-section" data-pdp-section="performance"><button type="button" data-action="pdp-profile-section" aria-expanded="false"><span>▥</span><div><b>${ar ? "مؤشرات العطر" : "Fragrance insights"}</b><small>${ar ? "الرائحة · الثبات · الفوحان · الموسم · النوع · القيمة" : "Scent · longevity · sillage · season · gender · value"}</small></div><i>⌄</i></button><div class="pdp-profile-panel" hidden>${productPerformanceImagesMarkup(product)}</div></article>
   </section>`;
 }
 
@@ -3513,8 +3565,6 @@ function productCardMarkup(product, options = {}) {
     const note = window.ORIGOFragranceNotes?.find(value);
     return { label: note ? noteLabel(note) : value, image: note ? window.ORIGOFragranceNotes.artwork(note) : "" };
   });
-  const ratingCount = Number(product.reviewSummary?.count || 0);
-  const ratingAverage = Number(product.reviewSummary?.average || 0);
   const saved = state.wishlist.includes(product.id);
   const sizeLabel = variant?.size || (product.sizes || [])[0] || "";
   const loyaltyPoints = Number(variant?.loyaltyPoints ?? product.loyaltyPoints);
@@ -3534,7 +3584,7 @@ function productCardMarkup(product, options = {}) {
       ${notes.length ? `<div class="product-notes product-card-notes">${notes.map((note) => `<span>${note.image ? `<img src="${escapeHTML(note.image)}" alt="" loading="lazy" />` : `<i>✦</i>`}<b>${escapeHTML(note.label)}</b></span>`).join("")}</div>` : ""}
       ${options.meta ? `<p class="product-card-meta">${escapeHTML(options.meta)}</p>` : ""}
       ${richVariants.length > 1 ? `<div class="product-card-variants" aria-label="${isArabic ? "الأحجام" : "Sizes"}">${richVariants.slice(0, 4).map((item) => { const id = String(item.id || item.size); return `<button${interactive ? ` data-action="card-variant" data-product-id="${escapeHTML(product.id)}" data-variant-id="${escapeHTML(id)}"` : disabled} class="${variant && String(variant.id || variant.size) === id ? "selected" : ""}">${escapeHTML(item.size || item.label || id)}</button>`; }).join("")}</div>` : ""}
-      <div class="product-card-commerce"><div class="product-card-rating-price">${ratingCount ? `<div class="product-rating" aria-label="${escapeHTML(`${ratingAverage.toFixed(1)} / 5`)}"><strong>★ ${ratingAverage.toFixed(1)}</strong><span>★★★★★</span><small>(${ratingCount}${isArabic ? " تقييم" : ""})</small></div>` : `<div class="product-rating product-rating-new"><span>${isArabic ? "جديد" : "NEW"}</span></div>`}<div class="product-card-price-row"><b class="product-price">${formatPrice(price)}</b>${oldPrice > price ? `<span><del>${formatPrice(oldPrice)}</del><em>-${discount}%</em></span>` : ""}${Number.isFinite(loyaltyPoints) && loyaltyPoints > 0 ? `<small>◉ +${Math.round(loyaltyPoints)} ${isArabic ? "نقطة ORIGO" : "ORIGO points"}</small>` : ""}</div></div><button class="card-add-button"${interactive ? ` data-action="add-to-cart"` : disabled} aria-label="${translations[state.lang].addToBag}"${outOfStock ? " disabled" : ""}><i aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6.5 8.5h11l1 12h-13l1-12Z"/><path d="M9 9V6.5a3 3 0 0 1 6 0V9"/></svg></i><span>${outOfStock ? (isArabic ? "غير متوفر" : "Unavailable") : translations[state.lang].addToBag}</span></button></div>
+      <div class="product-card-commerce"><div class="product-card-rating-price"><div class="product-card-price-row"><b class="product-price">${formatPrice(price)}</b>${oldPrice > price ? `<span><del>${formatPrice(oldPrice)}</del><em>-${discount}%</em></span>` : ""}${Number.isFinite(loyaltyPoints) && loyaltyPoints > 0 ? `<small>◉ +${Math.round(loyaltyPoints)} ${isArabic ? "نقطة ORIGO" : "ORIGO points"}</small>` : ""}</div></div><button class="card-add-button"${interactive ? ` data-action="add-to-cart"` : disabled} aria-label="${translations[state.lang].addToBag}"${outOfStock ? " disabled" : ""}><i aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6.5 8.5h11l1 12h-13l1-12Z"/><path d="M9 9V6.5a3 3 0 0 1 6 0V9"/></svg></i><span>${outOfStock ? (isArabic ? "غير متوفر" : "Unavailable") : translations[state.lang].addToBag}</span></button></div>
     </div>
   </article>`;
 }
@@ -3574,7 +3624,6 @@ function showProductDetails(product, shouldOpen = true) {
   const maximum = hasKnownStock ? Math.max(1, Math.min(10, knownStock)) : 10;
   state.activeProductQuantity = Math.min(maximum, state.activeProductQuantity);
   const sizes = Array.isArray(product.sizes) ? product.sizes.filter(Boolean) : [];
-  const ratingCount = Number(product.reviewSummary?.count || 0);
   const related = productRelated(product);
   const recent = readStoredArray("origoRecentlyViewed").filter((id) => id !== product.id).map(getProduct).filter(Boolean).slice(0, 4);
   const description = (isArabic ? product.descriptionAr : product.descriptionEn) || product.description || "";
@@ -3591,10 +3640,10 @@ function showProductDetails(product, shouldOpen = true) {
           <div class="pdp-thumbnails" aria-label="${isArabic ? "صور المنتج" : "Product media"}">${media.map((item, index) => `<button class="${index === state.activeProductImageIndex ? "active" : ""}" data-action="product-image" data-index="${index}" aria-label="${isArabic ? `الصورة ${index + 1}` : `Image ${index + 1}`}" aria-pressed="${index === state.activeProductImageIndex}"><img src="${escapeHTML(item.url)}" alt="" loading="${index ? "lazy" : "eager"}" /></button>`).join("")}</div>
           <div class="pdp-main-image"><span>${escapeHTML(isArabic ? product.badgeAr || "" : product.badgeEn || product.badgeAr || "")}</span><button data-action="product-zoom" aria-label="${isArabic ? "تكبير صورة المنتج" : "Zoom product image"}">⌕</button><img src="${escapeHTML(activeMedia.url)}" alt="${escapeHTML(`${product.brand} ${name}`)}" /></div>
         </div>
+        ${productHeroProfileMarkup(product)}
         <aside class="pdp-purchase">
           <span class="pdp-brand">${escapeHTML(product.brand)}</span><h1 id="product-dialog-title">${escapeHTML(name)}</h1>${secondName && secondName !== name ? `<p class="pdp-english-name">${escapeHTML(secondName)}</p>` : ""}
           <div class="pdp-tags"><span>${catalogGender(product) === "women" ? "♀" : catalogGender(product) === "men" ? "♂" : "⚥"} ${escapeHTML(isArabic ? product.type || (catalogGender(product) === "women" ? "للنساء" : catalogGender(product) === "men" ? "للرجال" : "للجنسين") : product.typeEn || product.type || catalogGender(product))}</span>${product.concentration ? `<span>${escapeHTML(product.concentration)}</span>` : ""}${product.sku ? `<span>SKU ${escapeHTML(product.sku)}</span>` : ""}</div>
-          <div class="pdp-rating">${ratingCount ? `<strong>${Number(product.reviewSummary.average).toFixed(1)} ★</strong><span>(${ratingCount} ${isArabic ? "تقييم موثق" : "verified reviews"})</span>` : `<span>${isArabic ? "لا توجد تقييمات موثقة بعد" : "No verified reviews yet"}</span>`}</div>
           <div class="pdp-price"><b>${formatPrice(product.price)}</b>${product.oldPrice ? `<del>${formatPrice(product.oldPrice)}</del>` : ""}${discount ? `<em>-${discount}%</em>` : ""}<small>${taxRate ? (isArabic ? `شامل ضريبة القيمة المضافة ${taxRate}%` : `VAT ${taxRate}% included`) : ""}</small></div>
           ${sizes.length > 1 ? `<div class="pdp-sizes"><label>${isArabic ? "اختر الحجم" : "Choose size"}</label><div>${sizes.map((size, index) => `<button type="button" class="${index ? "" : "selected"}" data-action="product-size" aria-pressed="${!index}">${escapeHTML(size)}</button>`).join("")}</div></div>` : sizes[0] ? `<p class="pdp-fixed-size">${isArabic ? "الحجم" : "Size"}: <b>${escapeHTML(sizes[0])}</b></p>` : ""}
           <div class="pdp-stock ${available ? "available" : "unavailable"}"><i></i><span>${available ? (hasKnownStock ? (isArabic ? `متوفر — ${knownStock} قطع` : `${knownStock} in stock`) : (isArabic ? "متوفر للطلب" : "Available to order")) : (isArabic ? "غير متوفر حاليًا" : "Currently unavailable")}</span></div>
@@ -3604,15 +3653,14 @@ function showProductDetails(product, shouldOpen = true) {
         </aside>
       </section>
       ${productProfileAccordions(product)}
+      ${productIngredientsMarkup(product)}
       ${description ? `<section class="pdp-description"><div class="pdp-section-heading"><span>ORIGO PROFILE</span><h2>${isArabic ? "عن العطر" : "About the fragrance"}</h2></div><p>${escapeHTML(description)}</p></section>` : ""}
       ${window.ORIGOAlternatives?.productPanel?.(product.id) || ""}
-      <section class="pdp-community"><div class="pdp-section-heading"><span>COMMUNITY</span><h2>${isArabic ? "آراء مجتمع ORIGO" : "ORIGO community"}</h2><p>${isArabic ? "لا نعرض أرقامًا تقديرية أو مراجعات غير موثقة." : "We never display estimated or unverified review data."}</p></div><div class="pdp-community-empty"><span>☆</span><div><h3>${isArabic ? "كن أول من يشارك تجربة موثقة" : "Be the first verified reviewer"}</h3><p>${isArabic ? "سيظهر التقييم العام وتوزيع النجوم والتصويتات بعد تفعيل نظام المراجعات الموثق وربطه بالطلبات المكتملة." : "Ratings and community insights will appear after verified reviews are connected to completed orders."}</p></div></div></section>
       ${related.length ? `<section class="pdp-recommendations"><div class="pdp-section-heading"><span>DISCOVER</span><h2>${isArabic ? "عطور قد تعجبك" : "You may also like"}</h2><p>${isArabic ? "مرتبة حسب تشابه النوتات والعائلة والنوع والسعر — بلا نتائج عشوائية." : "Ranked by notes, family, gender and price — never random."}</p></div><div class="pdp-products-row">${related.map(({ item, shared, score }) => productCardMarkup(item, `${score}% ${isArabic ? "تشابه" : "match"}${shared.length ? ` · ${shared.slice(0, 2).join("، ")}` : ""}`)).join("")}</div></section>` : ""}
       ${recent.length ? `<section class="pdp-recommendations recently"><div class="pdp-section-heading"><span>RECENT</span><h2>${isArabic ? "شوهد مؤخرًا" : "Recently viewed"}</h2></div><div class="pdp-products-row">${recent.map((item) => productCardMarkup(item)).join("")}</div></section>` : ""}
       <div class="pdp-mobile-cart"><div><small>${sizes[0] ? escapeHTML(sizes[0]) : escapeHTML(product.concentration || "")}</small><b>${formatPrice(product.price)}</b></div><button data-action="product-detail-add" data-id="${escapeHTML(product.id)}"${available ? "" : " disabled"}>${translations[state.lang].addToBag}</button></div>
     </main>`;
   $("#product-dialog-content").querySelectorAll("img").forEach((image) => image.addEventListener("error", () => (image.src = "assets/origo-hero.png"), { once: true }));
-  window.ORIGOPerformance?.hydrate(product.id);
   rememberProduct(product.id);
   productStructuredData(product, media);
   if (shouldOpen) {
@@ -3835,6 +3883,7 @@ function confidenceLabel(level) {
 function statusLabel(status) {
   return {
     draft: adminCopy("مسودة", "Draft"),
+    review: adminCopy("قيد المراجعة", "In review"),
     published: adminCopy("منشور", "Published"),
     unavailable: adminCopy("غير متوفر", "Unavailable")
   }[status] || status;
@@ -3982,7 +4031,10 @@ function findDuplicate(product, excludeId = "") {
     if (product.barcode && item.barcode && product.barcode === item.barcode) return true;
     const itemBrand = ORIGOCatalog.normalize(item.brand);
     const sameName = (nameEn && nameEn === ORIGOCatalog.normalize(item.nameEn)) || (nameAr && nameAr === ORIGOCatalog.normalize(item.nameAr));
-    return sameName && (!brand || !itemBrand || brand === itemBrand);
+    const size = product.size || product.sizes?.[0] || "";
+    const itemSize = item.size || item.sizes?.[0] || "";
+    const sameSize = !size || !itemSize || ORIGOCatalog.normalize(size) === ORIGOCatalog.normalize(itemSize);
+    return sameName && sameSize && (!brand || !itemBrand || brand === itemBrand);
   });
 }
 
@@ -4045,9 +4097,51 @@ function performanceAdminSection(product) {
   </section>`;
 }
 
+const PRODUCT_PROFILE_IMAGE_FIELDS = [
+  ["fingerprint", "البصمة العطرية", "Fragrance fingerprint"],
+  ["scent", "تقييم الرائحة", "Scent profile"],
+  ["wear", "الموسم ووقت الاستخدام", "Season & wear time"],
+  ["longevity", "الثبات", "Longevity"],
+  ["sillage", "الفوحان", "Sillage"],
+  ["gender", "النوع المناسب", "Gender suitability"],
+  ["value", "القيمة مقابل السعر", "Value for money"]
+];
+
+function profileImageUploadMarkup(key, labelAr, labelEn, language, value = "") {
+  const isArabicArtwork = language === "ar";
+  const languageLabel = isArabicArtwork ? "العربية" : "English";
+  return `<article class="profile-image-upload${value ? " has-image" : ""}" data-profile-image-card="${key}-${language}">
+    <header><span>${key === "fingerprint" ? "⌁" : "▥"}</span><div><b>${adminCopy(labelAr,labelEn)} — ${languageLabel}</b><small>${isArabicArtwork ? "ارفع الصورة التي تحتوي على النص العربي" : "Upload the artwork containing English text"}</small></div></header>
+    <input type="hidden" name="profileImage.${key}.${language}" value="${escapeHTML(value)}"/>
+    <label><input type="file" accept="image/jpeg,image/png,image/webp,image/avif" data-profile-image-upload="${key}" data-profile-image-language="${language}"/><span>＋</span><b>${adminCopy("رفع الصورة", "Upload image")}</b><small>PNG · JPG · WEBP</small></label>
+    <figure${value ? "" : " hidden"}><img src="${escapeHTML(value)}" alt="${escapeHTML(isArabicArtwork ? labelAr : labelEn)}"/><button type="button" data-action="remove-profile-image" data-key="${key}" data-language="${language}" aria-label="${adminCopy("حذف الصورة", "Remove image")}">×</button></figure>
+  </article>`;
+}
+
+function performanceImageAdminSection(product) {
+  const images = product.profileImages || {};
+  return `<section class="review-section product-profile-images-section" data-editor-tier="smart">
+    <div class="review-section-head"><span>04</span><div><b>${adminCopy("صور البصمة ومؤشرات العطر", "Fragrance profile artwork")}</b><small>${adminCopy("لا توجد تصويتات عملاء؛ كل بطاقة تعرض الصورة النهائية التي ترفعها.", "No customer voting; every card displays your uploaded finished artwork.")}</small></div></div>
+    <div class="profile-image-language-note"><b>${adminCopy("صورتان مستقلتان لكل قسم", "Two independent images per section")}</b><span>${adminCopy("العربية تعرض الصورة العربية، والإنجليزية تعرض النسخة المترجمة تلقائيًا.", "Arabic displays the Arabic artwork; English automatically displays the translated artwork.")}</span></div>
+    <div class="profile-image-upload-grid">${PRODUCT_PROFILE_IMAGE_FIELDS.flatMap(([key,ar,en]) => [profileImageUploadMarkup(key,ar,en,"ar",images[key]?.ar || ""), profileImageUploadMarkup(key,ar,en,"en",images[key]?.en || "")]).join("")}</div>
+  </section>`;
+}
+
 let productAutosaveTimer;
 function updateProductEditorPreview(form) {
   if (!form) return;
+  const skuField = form.elements.sku;
+  if (skuField && (!skuField.value.trim() || skuField.dataset.autoGenerated === "true") && !skuField.dataset.userEdited) {
+    const parts = [form.elements.brand?.value, form.elements.nameEn?.value || form.elements.nameAr?.value, form.elements.size?.value]
+      .map((value) => ORIGOCatalog.normalize(value).replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 18)).filter(Boolean);
+    if (parts.length >= 2) { skuField.value = parts.join("-").toUpperCase(); skuField.dataset.autoGenerated = "true"; }
+  }
+  const slugField = form.elements.slug;
+  if (slugField && (!slugField.value.trim() || slugField.dataset.autoGenerated === "true") && !slugField.dataset.userEdited) {
+    const source = `${form.elements.brand?.value || ""}-${form.elements.nameEn?.value || form.elements.nameAr?.value || ""}`;
+    const slug = ORIGOCatalog.normalize(source).replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+    if (slug) { slugField.value = slug; slugField.dataset.autoGenerated = "true"; }
+  }
   const draft = collectReviewProduct(form);
   const previewProduct = toStorefrontProduct({ ...draft, id: draft.id || "admin-preview" });
   const liveCard = $("#admin-live-product-card");
@@ -4073,6 +4167,55 @@ function updateProductEditorPreview(form) {
   }, 700);
 }
 
+const ORIGO_ACCORD_LIBRARY = [
+  ["sweet", "حلو", "Sweet", "#ef4056", "🍬"], ["vanilla", "فانيليا", "Vanilla", "#f2ae2e", "✿"],
+  ["powdery", "بودري", "Powdery", "#ef72a4", "◌"], ["tropical", "استوائي", "Tropical", "#ed9700", "♨"],
+  ["musky", "مسكي", "Musky", "#aa8ac7", "≋"], ["fruity", "فاكهي", "Fruity", "#ff705e", "●"],
+  ["floral", "زهري", "Floral", "#ec6d9c", "❀"], ["citrus", "حمضي", "Citrus", "#a7bd31", "◉"],
+  ["woody", "خشبي", "Woody", "#9b6b43", "♢"], ["amber", "عنبري", "Amber", "#c47b16", "◆"],
+  ["warm-spicy", "حار دافئ", "Warm spicy", "#b85032", "✦"], ["fresh", "منعش", "Fresh", "#24a7a1", "≈"],
+  ["leather", "جلدي", "Leather", "#635047", "▰"], ["aromatic", "أروماتيك", "Aromatic", "#4e9274", "♧"],
+  ["marine", "بحري", "Marine", "#458fc5", "≋"]
+];
+
+function adminAccordEditor(product) {
+  const existing = new Map((product.accordProfile || []).map((item) => [item.id || item.nameEn || item.nameAr, item]));
+  const fallback = new Set((product.mainAccords || product.accords || []).map((item) => ORIGOCatalog.normalize(typeof item === "object" ? (item.nameAr || item.nameEn) : item)));
+  return `<div class="accord-admin-editor">
+    <div class="accord-admin-toolbar"><div><b>${adminCopy("الأكوردات الرئيسية — البصمة العطرية", "Main accords — fragrance fingerprint")}</b><small>${adminCopy("اختر الأكورد واضبط قوته؛ كل نسبة مستقلة.", "Select accords and set each independent strength.")}</small></div><button type="button" data-action="sort-admin-accords">${adminCopy("ترتيب حسب القوة", "Sort by strength")}</button></div>
+    <div class="accord-admin-list">${ORIGO_ACCORD_LIBRARY.map(([id, arName, enName, color, icon], index) => {
+      const item = existing.get(id) || [...existing.values()].find((value) => ORIGOCatalog.normalize(value.nameAr || value.nameEn) === ORIGOCatalog.normalize(arName));
+      const checked = Boolean(item) || fallback.has(ORIGOCatalog.normalize(arName)) || fallback.has(ORIGOCatalog.normalize(enName));
+      const strength = Number(item?.strength ?? (checked ? Math.max(42, 92 - index * 6) : 50));
+      return `<label class="accord-admin-item${checked ? " selected" : ""}" style="--accord:${color}"><input type="checkbox" name="accordSelected" value="${id}"${checked ? " checked" : ""}/><span class="accord-symbol">${icon}</span><span><b>${adminCopy(arName,enName)}</b><small>${adminCopy(enName,arName)}</small></span><input aria-label="${adminCopy(`قوة ${arName}`,`${enName} strength`)}" type="range" name="accordStrength.${id}" min="0" max="100" value="${strength}"/><output>${strength}%</output></label>`;
+    }).join("")}</div>
+    <div class="accord-admin-live" id="accord-admin-live"></div>
+  </div>`;
+}
+
+function updateAdminAccordEditor(form) {
+  const holder = form?.querySelector(".accord-admin-live");
+  if (!holder) return;
+  form.querySelectorAll(".accord-admin-item").forEach((item) => {
+    const enabled = item.querySelector("[name='accordSelected']")?.checked;
+    const range = item.querySelector("input[type='range']");
+    item.classList.toggle("selected", Boolean(enabled));
+    if (range) item.querySelector("output").textContent = `${range.value}%`;
+  });
+  const draft = collectReviewProduct(form);
+  holder.innerHTML = productAccordMarkup(draft);
+}
+
+function updateProductTypeFields(form) {
+  if (!form) return;
+  const category = form.elements.category?.value || "perfume";
+  form.querySelectorAll("[data-perfume-section]").forEach((section) => section.hidden = category !== "perfume");
+  form.querySelectorAll("[data-nonperfume-section]").forEach((section) => section.hidden = category === "perfume");
+  form.querySelectorAll(".dynamic-product-fields [data-kinds]").forEach((field) => {
+    field.hidden = !String(field.dataset.kinds || "").split(/\s+/).includes(category);
+  });
+}
+
 function renderImportReview(product) {
   product = {
     ...ORIGOCatalog.emptyProduct(),
@@ -4090,12 +4233,13 @@ function renderImportReview(product) {
       <div class="product-editor-modes">
         <button type="button" data-action="product-editor-mode" data-mode="quick" class="${state.productEditorMode === "quick" ? "active" : ""}">${adminCopy("إضافة سريعة", "Quick Add")}</button>
         <button type="button" data-action="product-editor-mode" data-mode="smart" class="${state.productEditorMode === "smart" ? "active" : ""}">${adminCopy("إضافة ذكية", "Smart Add")}</button>
-        <button type="button" data-action="product-editor-mode" data-mode="advanced" class="${state.productEditorMode === "advanced" ? "active" : ""}">${adminCopy("متقدم", "Advanced")}</button>
+        <button type="button" data-action="product-editor-mode" data-mode="advanced" class="${state.productEditorMode === "advanced" ? "active" : ""}">${adminCopy("إضافة متقدمة", "Advanced Add")}</button>
       </div>
       <div class="product-ai-tools">
         <span>AI</span>
         ${[
           ["description", adminCopy("اقتراح الوصف", "Suggest descriptions")],
+          ["translate", adminCopy("ترجمة جميع الحقول الناقصة", "Translate missing fields")],
           ["seo", adminCopy("اقتراح SEO", "Suggest SEO")],
           ["alternatives", adminCopy("اقتراح البدائل", "Suggest alternatives")],
           ["analysis", adminCopy("تحليل العطر", "Analyze fragrance")]
@@ -4117,8 +4261,8 @@ function renderImportReview(product) {
           <label>${adminCopy("البراند", "Brand")}<input name="brand" value="${escapeHTML(product.brand)}" /></label>
           <label>${adminCopy("نوع المنتج", "Product type")}<select name="category">${selectOptions([
             ["", adminCopy("غير محدد", "Not set")], ["perfume", adminCopy("عطر", "Perfume")], ["skincare", adminCopy("عناية بالبشرة", "Skin care")],
-            ["haircare", adminCopy("عناية بالشعر", "Hair care")], ["incense", adminCopy("بخور / مبخرة", "Incense / burner")],
-            ["deodorant", adminCopy("مزيل عرق", "Deodorant")], ["other", adminCopy("غيره", "Other")]
+            ["haircare", adminCopy("عناية بالشعر", "Hair care")], ["bodycare", adminCopy("عناية بالجسم", "Body care")], ["incense", adminCopy("بخور وعود", "Incense & oud")],
+            ["home-fragrance", adminCopy("عطور منزلية", "Home fragrance")], ["gifts", adminCopy("هدايا", "Gifts")], ["other", adminCopy("غيره", "Other")]
           ], product.category)}</select></label>
           <label>${adminCopy("الجنس المستهدف", "Target gender")}<select name="gender">${selectOptions([
             ["", adminCopy("غير محدد", "Not set")], ["men", adminCopy("رجالي", "Men")], ["women", adminCopy("نسائي", "Women")], ["unisex", adminCopy("للجنسين", "Unisex")]
@@ -4128,6 +4272,7 @@ function renderImportReview(product) {
           ], product.concentration)}</select></label>
           <label>${adminCopy("الحالة", "Status")}<select name="status">${selectOptions([
             ["draft", adminCopy("مسودة — لا يظهر في المتجر", "Draft — hidden from store")],
+            ["review", adminCopy("قيد المراجعة", "In review")],
             ["published", adminCopy("منشور — يظهر في المتجر", "Published — visible in store")],
             ["unavailable", adminCopy("غير متوفر", "Unavailable")]
           ], product.status || "draft")}</select></label>
@@ -4137,10 +4282,10 @@ function renderImportReview(product) {
         </div>
       </section>
 
-      <section class="review-section" data-editor-tier="smart">
+      <section class="review-section" data-editor-tier="core">
         <div class="review-section-head"><span>02</span><div><b>${adminCopy("التصنيف والبيانات التجارية", "Classification & commerce")}</b></div></div>
         <div class="review-grid">
-          <label>${adminCopy("الأحجام المتاحة", "Available sizes")}<input name="sizes" value="${escapeHTML(csv(product.sizes))}" placeholder="50 ML, 75 ML, 100 ML" /></label>
+          <label>${adminCopy("حجم المنتج", "Product size")}<select name="size">${selectOptions([["",adminCopy("اختر الحجم", "Select size")],["30 ML","30 ml"],["50 ML","50 ml"],["75 ML","75 ml"],["100 ML","100 ml"],["125 ML","125 ml"],["150 ML","150 ml"],["200 ML","200 ml"]], product.size || product.sizes?.[0] || "")}</select><small>${adminCopy("كل منتج له حجم ثابت واحد.", "Each product has one fixed size.")}</small></label>
           <label>${adminCopy("العائلة العطرية — عربي", "Fragrance family — Arabic")}<input name="familyAr" dir="rtl" value="${escapeHTML(product.familyAr)}" /></label>
           <label>${adminCopy("العائلة العطرية — English", "Fragrance family — English")}<input name="familyEn" dir="ltr" value="${escapeHTML(product.familyEn)}" /></label>
           <label>${adminCopy("المواسم", "Seasons")}<input name="seasons" value="${escapeHTML(csv(product.seasons))}" placeholder="${adminCopy("شتاء، خريف", "Winter, Autumn")}" /></label>
@@ -4151,33 +4296,52 @@ function renderImportReview(product) {
           <label>${adminCopy("الباركود / GTIN", "Barcode / GTIN")}<input name="barcode" dir="ltr" value="${escapeHTML(product.barcode)}" /></label>
           <label>${adminCopy("الكمية الحالية", "Current quantity")}<input name="quantity" type="number" min="0" value="${escapeHTML(product.inventory?.quantity ?? "")}" /></label>
           <label>${adminCopy("الحد الأدنى للمخزون", "Low-stock threshold")}<input name="minimumStock" type="number" min="0" value="${escapeHTML(product.inventory?.minimum ?? 8)}" /></label>
-          <label>${adminCopy("الكمية المحجوزة", "Reserved stock")}<input name="reservedStock" type="number" min="0" value="${escapeHTML(product.inventory?.reserved ?? 0)}" /></label>
+          <label>${adminCopy("الكمية المحجوزة", "Reserved stock")}<input name="reservedStock" type="number" min="0" readonly value="${escapeHTML(product.inventory?.reserved ?? 0)}" /><small>${adminCopy("تُحسب من الطلبات المفتوحة.", "Calculated from open orders.")}</small></label>
+          <label>${adminCopy("الكمية المتاحة", "Available stock")}<input name="availableStock" type="number" readonly value="${Math.max(0, Number(product.inventory?.quantity || 0) - Number(product.inventory?.reserved || 0))}" /></label>
           <label>${adminCopy("الوسوم", "Tags")}<input name="tags" value="${escapeHTML(csv(product.tags))}" placeholder="${adminCopy("فاخر، مسائي، شتوي", "luxury, evening, winter")}" /></label>
         </div>
       </section>
 
-      <section class="review-section" data-editor-tier="smart">
-        <div class="review-section-head"><span>03</span><div><b>${adminCopy("النوتات العطرية", "Fragrance notes")}</b><small>${adminCopy("كل مستوى واللغة في حقل مستقل", "Each level and language has its own field")}</small></div></div>
+      <section class="review-section" data-editor-tier="smart" data-perfume-section>
+        <div class="review-section-head"><span>03</span><div><b>${adminCopy("البنية العطرية والبصمة", "Fragrance structure & fingerprint")}</b><small>${adminCopy("هرم النوتات والمكونات الأساسية والأكوردات أقسام مستقلة.", "Notes pyramid, key ingredients, and accords stay separate.")}</small></div></div>
+        <h4 class="fragrance-editor-subtitle">${adminCopy("هرم النوتات العطرية", "Fragrance note pyramid")}</h4>
         <div class="review-grid note-review-grid">
           ${["top", "heart", "base"].map((level) => `
             <label>${level === "top" ? adminCopy("المقدمة — عربي", "Top — Arabic") : level === "heart" ? adminCopy("القلب — عربي", "Heart — Arabic") : adminCopy("القاعدة — عربي", "Base — Arabic")}<input name="${level}Ar" dir="rtl" value="${escapeHTML(csv(product.notes[`${level}Ar`]))}" /></label>
             <label>${level === "top" ? "Top — English" : level === "heart" ? "Heart — English" : "Base — English"}<input name="${level}En" dir="ltr" value="${escapeHTML(csv(product.notes[`${level}En`]))}" /></label>`).join("")}
         </div>
         <div class="note-library-match-preview" id="note-library-match-preview"></div>
+        <div class="review-grid"><label class="wide">${adminCopy("المكونات الأساسية", "Key ingredients")}<input name="mainIngredients" value="${escapeHTML(csv(product.mainIngredients))}" placeholder="${adminCopy("فانيليا، مسك، عنبر", "Vanilla, musk, amber")}"/><small>${adminCopy("قسم مستقل عن مقدمة وقلب وقاعدة العطر.", "Kept separate from the top, heart and base notes.")}</small></label></div>
+        ${adminAccordEditor(product)}
         <div class="review-grid perfume-advanced-fields">
           <label>${adminCopy("الثبات / 10", "Longevity / 10")}<input name="longevity" type="number" min="0" max="10" step=".1" value="${escapeHTML(product.performance?.longevity ?? "")}" /></label>
           <label>${adminCopy("الفوحان / 10", "Sillage / 10")}<input name="sillage" type="number" min="0" max="10" step=".1" value="${escapeHTML(product.performance?.sillage ?? "")}" /></label>
           <label>${adminCopy("سنة الإصدار", "Release year")}<input name="releaseYear" type="number" min="1900" max="2100" value="${escapeHTML(product.releaseYear ?? "")}" /></label>
           <label>${adminCopy("المصمم", "Perfumer")}<input name="perfumer" value="${escapeHTML(product.perfumer || "")}" /></label>
           <label>${adminCopy("المناسبات", "Occasions")}<input name="occasions" value="${escapeHTML(csv(product.occasions))}" /></label>
-          <label>${adminCopy("الأكوردات / البصمة العطرية", "Main accords / fingerprint")}<input name="mainAccords" value="${escapeHTML(csv(product.mainAccords || product.accords))}" placeholder="${adminCopy("حلو، فانيليا، بودري", "Sweet, vanilla, powdery")}" /></label>
           <label>${adminCopy("الشخصية المناسبة", "Style/personality")}<input name="personalities" value="${escapeHTML(csv(product.personalities))}" /></label>
           <label>${adminCopy("العطر المستوحى منه", "Inspired by")}<input name="inspiredBy" value="${escapeHTML(product.inspiredBy || "")}" /></label>
           <label>${adminCopy("نسبة التشابه %", "Similarity %")}<input name="similarity" type="number" min="0" max="100" value="${escapeHTML(product.similarity ?? "")}" /></label>
         </div>
       </section>
 
-      ${performanceAdminSection(product)}
+      <section class="review-section" data-editor-tier="smart" data-nonperfume-section hidden>
+        <div class="review-section-head"><span>03</span><div><b>${adminCopy("خصائص القسم", "Category-specific attributes")}</b><small>${adminCopy("تظهر الحقول المناسبة لنوع المنتج فقط.", "Only fields relevant to the selected product type are shown.")}</small></div></div>
+        <div class="review-grid dynamic-product-fields">
+          <label data-kinds="skincare">${adminCopy("نوع البشرة", "Skin type")}<input name="skinType" value="${escapeHTML(product.dynamicAttributes?.skinType || "")}"/></label>
+          <label data-kinds="haircare">${adminCopy("نوع الشعر", "Hair type")}<input name="hairType" value="${escapeHTML(product.dynamicAttributes?.hairType || "")}"/></label>
+          <label data-kinds="skincare haircare">${adminCopy("المشكلة المستهدفة", "Target concern")}<input name="concern" value="${escapeHTML(product.dynamicAttributes?.concern || "")}"/></label>
+          <label data-kinds="bodycare incense home-fragrance">${adminCopy("الرائحة", "Scent")}<input name="aroma" value="${escapeHTML(product.dynamicAttributes?.aroma || "")}"/></label>
+          <label data-kinds="incense">${adminCopy("الوزن", "Weight")}<input name="weight" value="${escapeHTML(product.dynamicAttributes?.weight || "")}"/></label>
+          <label data-kinds="home-fragrance">${adminCopy("مدة الانتشار", "Diffusion duration")}<input name="diffusionDuration" value="${escapeHTML(product.dynamicAttributes?.diffusionDuration || "")}"/></label>
+          <label data-kinds="gifts">${adminCopy("مناسبة الهدية", "Gift occasion")}<input name="giftOccasion" value="${escapeHTML(product.dynamicAttributes?.giftOccasion || "")}"/></label>
+          <label class="wide" data-kinds="gifts">${adminCopy("محتويات الهدية", "Gift contents")}<textarea name="giftContents">${escapeHTML(product.dynamicAttributes?.giftContents || "")}</textarea></label>
+          <label class="wide" data-kinds="skincare haircare bodycare incense home-fragrance">${adminCopy("طريقة الاستخدام — عربي", "Usage instructions — Arabic")}<textarea name="usageInstructionsAr" dir="rtl">${escapeHTML(product.dynamicAttributes?.usageInstructionsAr || "")}</textarea></label>
+          <label class="wide" data-kinds="skincare haircare bodycare incense home-fragrance">${adminCopy("طريقة الاستخدام — English", "Usage instructions — English")}<textarea name="usageInstructionsEn" dir="ltr">${escapeHTML(product.dynamicAttributes?.usageInstructionsEn || "")}</textarea></label>
+        </div>
+      </section>
+
+      ${performanceImageAdminSection(product)}
 
       <section class="review-section" data-editor-tier="core">
         <div class="review-section-head"><span>05</span><div><b>${adminCopy("الوصف والصور", "Descriptions & images")}</b></div></div>
@@ -4232,8 +4396,8 @@ function renderImportReview(product) {
       </section>
 
       <div class="review-submit">
-        <div><b>${adminCopy("لن يتم الحفظ قبل ضغطك على الزر", "Nothing is saved until you press the button")}</b><small>${adminCopy("الحالة الافتراضية مسودة وغير منشورة.", "The default status is draft and unpublished.")}</small></div>
-        <button class="button burgundy-button" type="submit">${adminCopy("إضافة المنتج للمتجر", "Add product to store")} <span>←</span></button>
+        <div><b>${adminCopy("اختر الإجراء المناسب", "Choose the correct workflow action")}</b><small id="product-autosave-footer">${adminCopy("الحفظ التلقائي يحمي المسودة محليًا.", "Autosave protects the local draft.")}</small></div>
+        <div class="review-submit-actions"><button class="button secondary-button" type="submit" name="workflowAction" value="draft">${adminCopy("حفظ كمسودة", "Save draft")}</button><button class="button secondary-button" type="submit" name="workflowAction" value="review">${adminCopy("إرسال للمراجعة", "Send for review")}</button><button class="button burgundy-button" type="submit" name="workflowAction" value="published">${adminCopy("نشر المنتج", "Publish product")} <span>←</span></button></div>
       </div>
     </form>`;
   $$(".import-steps span").forEach((step, index) => step.classList.toggle("active", index <= 1));
@@ -4241,11 +4405,19 @@ function renderImportReview(product) {
   updateDuplicateWarning($("#import-review-form"));
   renderNoteMatchPreview($("#import-review-form"));
   updateProductEditorPreview($("#import-review-form"));
+  updateAdminAccordEditor($("#import-review-form"));
+  updateProductTypeFields($("#import-review-form"));
 }
 
 function collectReviewProduct(form) {
   const data = new FormData(form);
   const base = state.activeImportDraft || ORIGOCatalog.emptyProduct();
+  const selectedAccordIds = new Set(data.getAll("accordSelected").map(String));
+  const accordProfile = ORIGO_ACCORD_LIBRARY.filter(([id]) => selectedAccordIds.has(id)).map(([id, nameAr, nameEn, color, icon]) => ({
+    id, nameAr, nameEn, color, icon,
+    strength: Math.max(0, Math.min(100, Number(data.get(`accordStrength.${id}`) || 0))),
+    source: "ORIGO editorial"
+  })).sort((a, b) => b.strength - a.strength);
   const images = [...(base.images || [])].map((image, index) => ({ ...image, selected: String(index) === String(data.get("selectedImage")) }));
   if (String(data.get("imageUrl") || "").trim()) images.unshift({ url: String(data.get("imageUrl")).trim(), provider: "Manager", selected: true });
   const product = {
@@ -4260,7 +4432,8 @@ function collectReviewProduct(form) {
     status: String(data.get("status") || "draft"),
     price: Number(data.get("price") || 0),
     oldPrice: data.get("oldPrice") === "" ? null : Number(data.get("oldPrice") || 0),
-    sizes: csvValues(data.get("sizes")),
+    size: String(data.get("size") || "").trim(),
+    sizes: String(data.get("size") || "").trim() ? [String(data.get("size")).trim()] : [],
     familyAr: String(data.get("familyAr") || "").trim(),
     familyEn: String(data.get("familyEn") || "").trim(),
     seasons: csvValues(data.get("seasons")),
@@ -4277,7 +4450,7 @@ function collectReviewProduct(form) {
     images,
     inventory: {
       quantity: Number(data.get("quantity") || 0),
-      reserved: Number(data.get("reservedStock") || 0),
+      reserved: Number(base.inventory?.reserved || 0),
       minimum: Number(data.get("minimumStock") || 0),
       cost: Number(data.get("cost") || 0)
     },
@@ -4288,7 +4461,9 @@ function collectReviewProduct(form) {
     releaseYear: data.get("releaseYear") === "" ? null : Number(data.get("releaseYear")),
     perfumer: String(data.get("perfumer") || "").trim(),
     occasions: csvValues(data.get("occasions")),
-    mainAccords: csvValues(data.get("mainAccords")),
+    mainIngredients: csvValues(data.get("mainIngredients")),
+    accordProfile,
+    mainAccords: accordProfile.map((item) => item.nameAr),
     personalities: csvValues(data.get("personalities")),
     inspiredBy: String(data.get("inspiredBy") || "").trim(),
     similarity: data.get("similarity") === "" ? null : Number(data.get("similarity")),
@@ -4309,6 +4484,10 @@ function collectReviewProduct(form) {
       heartAr: csvValues(data.get("heartAr")), heartEn: csvValues(data.get("heartEn")),
       baseAr: csvValues(data.get("baseAr")), baseEn: csvValues(data.get("baseEn"))
     },
+    profileImages: Object.fromEntries(PRODUCT_PROFILE_IMAGE_FIELDS.map(([key]) => [key, {
+      ar: String(data.get(`profileImage.${key}.ar`) || "").trim(),
+      en: String(data.get(`profileImage.${key}.en`) || "").trim()
+    }])),
     performanceInsights: {
       enabled: data.get("performanceEnabled") === "on",
       showOverallResult: data.get("performanceShowOverall") === "on",
@@ -4334,6 +4513,12 @@ function collectReviewProduct(form) {
         importDate: String(data.get("performanceImportedDate") || "").trim(),
         reason: String(data.get("performanceImportedReason") || "").trim()
       } : null
+    },
+    dynamicAttributes: {
+      skinType: String(data.get("skinType") || "").trim(), hairType: String(data.get("hairType") || "").trim(), concern: String(data.get("concern") || "").trim(),
+      aroma: String(data.get("aroma") || "").trim(), weight: String(data.get("weight") || "").trim(), diffusionDuration: String(data.get("diffusionDuration") || "").trim(),
+      giftOccasion: String(data.get("giftOccasion") || "").trim(), giftContents: String(data.get("giftContents") || "").trim(),
+      usageInstructionsAr: String(data.get("usageInstructionsAr") || "").trim(), usageInstructionsEn: String(data.get("usageInstructionsEn") || "").trim()
     }
   };
   if (product.category === "perfume") {
@@ -4419,10 +4604,13 @@ async function optimizeGalleryImage(file) {
 }
 
 async function handleGalleryUpload(input) {
-  const files = [...input.files].slice(0, 8);
-  if (!files.length) return;
   const form = input.closest("#import-review-form");
   const draft = collectReviewProduct(form);
+  const files = [...input.files].slice(0, Math.max(0, 10 - (draft.images || []).length));
+  if (!files.length) {
+    showToast(adminCopy("الحد الأقصى 10 صور للمنتج", "Maximum 10 product images"));
+    return;
+  }
   input.closest(".gallery-upload").classList.add("loading");
   try {
     const uploaded = await Promise.all(files.map(async (file) => ({
@@ -4441,6 +4629,33 @@ async function handleGalleryUpload(input) {
   }
 }
 
+async function handleProfileImageUpload(input) {
+  const file = input.files?.[0];
+  const form = input.closest("#import-review-form");
+  if (!file || !form) return;
+  const key = input.dataset.profileImageUpload;
+  const language = input.dataset.profileImageLanguage;
+  const card = input.closest("[data-profile-image-card]");
+  card?.classList.add("loading");
+  try {
+    const source = await optimizeGalleryImage(file);
+    const hidden = form.elements[`profileImage.${key}.${language}`];
+    if (hidden) hidden.value = source;
+    const figure = card?.querySelector("figure");
+    const image = figure?.querySelector("img");
+    if (image) image.src = source;
+    if (figure) figure.hidden = false;
+    card?.classList.add("has-image");
+    updateProductEditorPreview(form);
+    showToast(language === "ar" ? "تم رفع الصورة العربية" : "English artwork uploaded");
+  } catch {
+    input.value = "";
+    showToast(adminCopy("تعذر رفع الصورة؛ استخدم PNG أو JPG أو WEBP حتى 10MB", "Could not upload artwork; use PNG, JPG or WEBP up to 10MB"));
+  } finally {
+    card?.classList.remove("loading");
+  }
+}
+
 function updateDuplicateWarning(form) {
   if (!form) return null;
   const product = collectReviewProduct(form);
@@ -4451,8 +4666,9 @@ function updateDuplicateWarning(form) {
   return duplicate;
 }
 
-async function saveCatalogProduct(form) {
+async function saveCatalogProduct(form, workflowAction = "draft") {
   let product = collectReviewProduct(form);
+  product.status = ["draft", "review", "published"].includes(workflowAction) ? workflowAction : "draft";
   const duplicate = findDuplicate(product, product.id);
   if (duplicate) {
     updateDuplicateWarning(form);
@@ -4463,8 +4679,16 @@ async function saveCatalogProduct(form) {
     showToast(adminCopy("أدخل اسم المنتج بلغة واحدة على الأقل", "Enter the product name in at least one language"));
     return;
   }
-  const submit = form.querySelector("[type='submit']");
-  submit.disabled = true;
+  if (product.status === "published") {
+    const missing = [!product.nameAr && !product.nameEn, !product.brand, !product.size, !(product.images || []).length, !(Number(product.price) > 0)].some(Boolean);
+    if (missing) {
+      showToast(adminCopy("لا يمكن النشر: أكمل الاسم والعلامة والحجم والسعر والصورة الرئيسية.", "Cannot publish: complete name, brand, size, price, and main image."));
+      return;
+    }
+    if (!window.confirm(adminCopy("هل تريد نشر المنتج الآن وإظهاره للعملاء؟", "Publish this product and make it visible to customers now?"))) return;
+  }
+  const submit = form.querySelector(`[name='workflowAction'][value='${product.status}']`) || form.querySelector("[type='submit']");
+  form.querySelectorAll("[type='submit']").forEach((button) => button.disabled = true);
   const originalLabel = submit.innerHTML;
   submit.textContent = adminCopy("جارٍ الحفظ…", "Saving…");
   try {
@@ -4479,7 +4703,7 @@ async function saveCatalogProduct(form) {
       product.createdAt = product.createdAt || product.updatedAt;
     }
   } catch (error) {
-    submit.disabled = false;
+    form.querySelectorAll("[type='submit']").forEach((button) => button.disabled = false);
     submit.innerHTML = originalLabel;
     showToast(error.message);
     return;
@@ -4504,11 +4728,11 @@ async function saveCatalogProduct(form) {
   renderCatalogList();
   $$(".import-steps span").forEach((step) => step.classList.add("active"));
   $("#import-workspace").innerHTML = `
-    <div class="import-success"><span>✓</span><h3>${adminCopy("تمت إضافة المنتج إلى لوحة المنتجات", "Product added to the product panel")}</h3>
-    <p>${product.status === "published" ? adminCopy("اخترت حالة منشور، لذلك أصبح ظاهرًا في المتجر.", "You selected Published, so it is now visible in the store.") : adminCopy("حُفظ كمسودة ولن يظهر للعميل حتى تغيّر حالته إلى منشور.", "Saved as a draft and hidden until you change its status to Published.")}</p>
+    <div class="import-success"><span>✓</span><h3>${product.status === "published" ? adminCopy("تم نشر المنتج في المتجر", "Product published") : product.status === "review" ? adminCopy("تم إرسال المنتج للمراجعة", "Product sent for review") : adminCopy("تم حفظ المنتج كمسودة", "Product saved as draft")}</h3>
+    <p>${product.status === "published" ? adminCopy("أصبح المنتج ظاهرًا للعملاء.", "The product is now visible to customers.") : product.status === "review" ? adminCopy("المنتج مخفي عن العملاء حتى تتم مراجعته ونشره.", "The product stays hidden until reviewed and published.") : adminCopy("المسودة لا تظهر للعملاء ويمكنك استكمالها لاحقًا.", "The draft is hidden and can be completed later.")}</p>
     <div><button class="button secondary-button" data-action="edit-catalog-product" data-id="${escapeHTML(product.id)}">${adminCopy("مراجعة المنتج", "Review product")}</button><button class="button burgundy-button" data-action="new-product">${adminCopy("إضافة منتج آخر", "Add another product")}</button></div></div>`;
   localStorage.removeItem("origoProductAutosave");
-  showToast(adminCopy("تم حفظ المنتج بنجاح", "Product saved successfully"));
+  showToast(product.status === "published" ? adminCopy("تم نشر المنتج", "Product published") : product.status === "review" ? adminCopy("تم الإرسال للمراجعة", "Sent for review") : adminCopy("تم حفظ المسودة", "Draft saved"));
 }
 
 function renderCatalogList() {
@@ -4757,6 +4981,16 @@ document.addEventListener("click", async (event) => {
   }
   if (action === "account") openAccount();
   if (action === "auth-mode") renderAuth(actionElement.dataset.mode);
+  if (action === "toggle-password") {
+    const input = actionElement.closest(".password-field")?.querySelector("input");
+    if (input) {
+      const visible = input.type === "text";
+      input.type = visible ? "password" : "text";
+      actionElement.setAttribute("aria-pressed", String(!visible));
+      actionElement.setAttribute("aria-label", !visible ? (state.lang === "ar" ? "إخفاء كلمة المرور" : "Hide password") : (state.lang === "ar" ? "إظهار كلمة المرور" : "Show password"));
+      actionElement.textContent = visible ? "◉" : "⊘";
+    }
+  }
   if (action === "logout") {
     try {
       await api("/api/auth/logout", { method: "POST", body: "{}" });
@@ -5220,6 +5454,27 @@ document.addEventListener("click", async (event) => {
       $$(".product-editor-modes button", form).forEach((button) => button.classList.toggle("active", button === actionElement));
     }
   }
+  if (action === "remove-profile-image") {
+    const form = actionElement.closest("#import-review-form");
+    const card = actionElement.closest("[data-profile-image-card]");
+    const key = actionElement.dataset.key;
+    const language = actionElement.dataset.language;
+    const hidden = form?.elements[`profileImage.${key}.${language}`];
+    if (hidden) hidden.value = "";
+    const upload = card?.querySelector("[data-profile-image-upload]");
+    if (upload) upload.value = "";
+    const figure = card?.querySelector("figure");
+    if (figure) figure.hidden = true;
+    card?.classList.remove("has-image");
+    updateProductEditorPreview(form);
+  }
+  if (action === "sort-admin-accords") {
+    const list = actionElement.closest(".accord-admin-editor")?.querySelector(".accord-admin-list");
+    if (list) [...list.children].sort((a, b) => Number(b.querySelector("input[type='range']")?.value || 0) - Number(a.querySelector("input[type='range']")?.value || 0)).forEach((item) => list.append(item));
+  }
+  if (action === "accord-help") {
+    showToast(state.lang === "ar" ? "طول كل خط يعبّر عن قوة الأكورد بصورة مستقلة، ولا يشترط أن يكون المجموع 100%." : "Each bar independently represents accord strength; totals do not need to equal 100%. ");
+  }
   if (action === "ai-product-task") {
     const form = $("#import-review-form");
     if (!form) return;
@@ -5228,6 +5483,7 @@ document.addEventListener("click", async (event) => {
       const current = collectReviewProduct(form);
       const taskLabel = {
         description: "Generate original Arabic and English product descriptions",
+        translate: "Translate only missing bilingual fields between Arabic and English. Preserve brand names and all existing text exactly",
         seo: "Generate SEO title, meta description, slug, and keywords",
         alternatives: "Suggest similar products, alternatives, upsell, and cross-sell relationships",
         analysis: "Analyze fragrance accords, performance, season, occasion, style, and filter attributes"
@@ -5249,11 +5505,13 @@ document.addEventListener("click", async (event) => {
   }
   if (action === "apply-ai-product-suggestion" && state.aiProductSuggestion) {
     const current = collectReviewProduct($("#import-review-form"));
+    const fillMissing = (existing, suggested) => {
+      if (Array.isArray(existing)) return existing.length ? existing : (Array.isArray(suggested) ? suggested : existing);
+      if (existing && typeof existing === "object") return Object.fromEntries([...new Set([...Object.keys(existing), ...Object.keys(suggested || {})])].map((key) => [key, fillMissing(existing[key], suggested?.[key])]));
+      return existing === "" || existing == null ? (suggested ?? existing) : existing;
+    };
     state.activeImportDraft = {
-      ...current,
-      ...state.aiProductSuggestion,
-      notes: { ...current.notes, ...(state.aiProductSuggestion.notes || {}) },
-      seo: { ...current.seo, ...(state.aiProductSuggestion.seo || {}) },
+      ...fillMissing(current, state.aiProductSuggestion),
       status: current.status
     };
     state.aiProductSuggestion = null;
@@ -5558,6 +5816,40 @@ document.addEventListener("submit", async (event) => {
     }
     return;
   }
+  if (event.target.id === "password-reset-request-form") {
+    const form = event.target;
+    const values = Object.fromEntries(new FormData(form));
+    const button = form.querySelector("[type='submit']");
+    const error = $("#auth-error");
+    error.textContent = "";
+    button.disabled = true;
+    try {
+      const result = await api("/api/auth/password-reset/request", { method: "POST", body: JSON.stringify(values) });
+      renderAuth("reset-confirm", result.requestId);
+      showToast(adminCopy("إذا كانت البيانات مطابقة فسيصلك رمز صالح لمدة 10 دقائق", "If the details match, a 10-minute code will be delivered"));
+    } catch (requestError) {
+      error.textContent = requestError.message;
+      button.disabled = false;
+    }
+    return;
+  }
+  if (event.target.id === "password-reset-confirm-form") {
+    const form = event.target;
+    const values = Object.fromEntries(new FormData(form));
+    const button = form.querySelector("[type='submit']");
+    const error = $("#auth-error");
+    error.textContent = "";
+    button.disabled = true;
+    try {
+      await api("/api/auth/password-reset/confirm", { method: "POST", body: JSON.stringify(values) });
+      renderAuth("login");
+      showToast(adminCopy("تم تعيين كلمة المرور الجديدة؛ يمكنك تسجيل الدخول الآن", "Password updated; you can sign in now"));
+    } catch (requestError) {
+      error.textContent = requestError.message;
+      button.disabled = false;
+    }
+    return;
+  }
   if (event.target.id === "auth-form") {
     const form = event.target;
     const mode = form.dataset.mode;
@@ -5681,7 +5973,7 @@ document.addEventListener("submit", async (event) => {
     const query = $("#web-product-query").value.trim();
     await runAdminSuggestions(query);
   }
-  if (event.target.id === "import-review-form") await saveCatalogProduct(event.target);
+  if (event.target.id === "import-review-form") await saveCatalogProduct(event.target, event.submitter?.value || "draft");
 });
 
 $$(".note-bubble").forEach((button) => button.addEventListener("click", () => updateNoteSelection(button)));
@@ -5765,9 +6057,24 @@ document.addEventListener("input", (event) => {
     });
   }
   if (event.target.closest("#import-review-form")) {
+    const editorForm = $("#import-review-form");
+    if (event.target.name === "sku" && event.isTrusted) {
+      event.target.dataset.userEdited = "true";
+      event.target.dataset.autoGenerated = "false";
+    }
+    if (event.target.name === "slug" && event.isTrusted) {
+      event.target.dataset.userEdited = "true";
+      event.target.dataset.autoGenerated = "false";
+    }
+    if (event.target.name === "quantity") {
+      const reserved = Number(editorForm.elements.reservedStock?.value || 0);
+      if (editorForm.elements.availableStock) editorForm.elements.availableStock.value = Math.max(0, Number(event.target.value || 0) - reserved);
+    }
+    if (event.target.name === "category") updateProductTypeFields(editorForm);
     updateDuplicateWarning($("#import-review-form"));
     renderNoteMatchPreview($("#import-review-form"));
     updateProductEditorPreview($("#import-review-form"));
+    updateAdminAccordEditor(editorForm);
   }
 });
 
@@ -5811,6 +6118,7 @@ document.addEventListener("change", async (event) => {
     else delete state.activeDynamicFilters[key];
     renderProducts($(".chip.active")?.dataset.filter || "all");
   }
+  if (event.target.matches("[data-profile-image-upload]")) handleProfileImageUpload(event.target);
   if (event.target.id === "gallery-upload") handleGalleryUpload(event.target);
   if (event.target.id === "note-image-upload") {
     const file = event.target.files?.[0];

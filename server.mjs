@@ -9,7 +9,10 @@ import {
   alternativesPayload,
   createOrder,
   createSession,
+  createPasswordResetChallenge,
   createUser,
+  cancelPasswordResetChallenge,
+  consumePasswordResetChallenge,
   deleteFilterDefinition,
   deleteProduct,
   databaseDriver,
@@ -17,6 +20,7 @@ import {
   deleteSession,
   ensureAdminFromEnvironment,
   findUserByEmail,
+  findUserForPasswordReset,
   getAdminWorkspaceState,
   getAlternative,
   getFragranceNotesState,
@@ -52,7 +56,8 @@ import {
   dispatchPurchaseEvents,
   integrationStatus,
   publicTrackingConfig,
-  sendWhatsAppTemplate
+  sendWhatsAppTemplate,
+  sendPasswordResetCode
 } from "./external-integrations.mjs";
 import {
   accountDashboard,
@@ -96,7 +101,8 @@ const HOST = process.env.ORIGO_HOST || "0.0.0.0";
 const PORT = Number(process.env.PORT || process.env.ORIGO_PORT || 4173);
 const OPENAI_MODEL = process.env.OPENAI_MODEL || "gpt-5.4-mini";
 const OPENAI_API_URL = "https://api.openai.com/v1/responses";
-const MAX_BODY_BYTES = 2_500_000;
+// Product drafts may contain fourteen optimized bilingual profile artworks.
+const MAX_BODY_BYTES = 25_000_000;
 const SESSION_COOKIE = "origo_session";
 const GUEST_CART_COOKIE = "origo_guest_cart";
 const performanceRateLimits = new Map();
@@ -837,6 +843,62 @@ async function handleAPI(request, response, url, origin) {
     }
   }
 
+  if (url.pathname === "/api/auth/password-reset/channels" && request.method === "GET") {
+    const status = integrationStatus();
+    return jsonResponse(response, 200, {
+      channels: {
+        email: Boolean(status.email?.configured),
+        whatsapp: Boolean(status.whatsapp?.configured),
+        sms: Boolean(status.sms?.configured)
+      }
+    }, origin);
+  }
+
+  if (url.pathname === "/api/auth/password-reset/request" && request.method === "POST") {
+    try {
+      const body = await readJSONBody(request);
+      const channel = ["email", "whatsapp", "sms"].includes(body.channel) ? body.channel : "";
+      const status = integrationStatus();
+      if (!channel || !status[channel]?.configured) {
+        return jsonResponse(response, 503, { error: "قناة الاستعادة المحددة غير مهيأة حاليًا." }, origin);
+      }
+      const fakeRequestId = randomBytes(24).toString("base64url");
+      const user = findUserForPasswordReset(body.identifier);
+      const target = channel === "email" ? user?.email : user?.phone;
+      if (!user || !target) {
+        await hashPassword(String(randomBytes(4).readUInt32BE(0)).padStart(10, "0"));
+        return jsonResponse(response, 200, { ok: true, requestId: fakeRequestId, expiresIn: 600 }, origin);
+      }
+      const challenge = await createPasswordResetChallenge(user.id, channel);
+      if (!challenge) return jsonResponse(response, 200, { ok: true, requestId: fakeRequestId, expiresIn: 600 }, origin);
+      try {
+        await sendPasswordResetCode({ channel, to: target, code: challenge.code });
+      } catch {
+        cancelPasswordResetChallenge(challenge.publicId);
+        return jsonResponse(response, 503, { error: "تعذر إرسال رمز الاستعادة عبر القناة المحددة." }, origin);
+      }
+      return jsonResponse(response, 200, { ok: true, requestId: challenge.publicId, expiresIn: 600 }, origin);
+    } catch {
+      return jsonResponse(response, 400, { error: "تعذر بدء استعادة كلمة المرور." }, origin);
+    }
+  }
+
+  if (url.pathname === "/api/auth/password-reset/confirm" && request.method === "POST") {
+    try {
+      const body = await readJSONBody(request);
+      const password = String(body.password || "");
+      const code = String(body.code || "").replace(/\D/g, "");
+      if (password.length < 10 || password.length > 200 || code.length !== 6) {
+        return jsonResponse(response, 400, { error: "تحقق من الرمز وكلمة المرور الجديدة." }, origin);
+      }
+      const changed = await consumePasswordResetChallenge(body.requestId, code, await hashPassword(password));
+      if (!changed) return jsonResponse(response, 400, { error: "الرمز غير صحيح أو انتهت صلاحيته." }, origin);
+      return jsonResponse(response, 200, { ok: true }, origin);
+    } catch {
+      return jsonResponse(response, 400, { error: "تعذر استعادة كلمة المرور." }, origin);
+    }
+  }
+
   if (url.pathname === "/api/auth/register" && request.method === "POST") {
     try {
       const body = await readJSONBody(request);
@@ -1405,12 +1467,12 @@ const server = createServer(async (request, response) => {
   await serveStatic(request, response, url);
 });
 
-const seededAdmin = await ensureAdminFromEnvironment();
+await ensureAdminFromEnvironment();
 
 server.listen(PORT, HOST, () => {
   const aiState = process.env.OPENAI_API_KEY ? `enabled (${OPENAI_MODEL})` : "not configured";
   console.log(`ORIGO is running at http://${HOST}:${PORT}`);
   console.log(`Portable database (${databaseDriver}): ${databasePath}`);
-  console.log(`Admin account: ${seededAdmin ? seededAdmin.email : "not configured"}`);
+  console.log("Admin bootstrap: disabled");
   console.log(`OpenAI web research: ${aiState}`);
 });

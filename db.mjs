@@ -5,6 +5,7 @@ import { openPortableDatabase } from "./portable-database.mjs";
 import {
   createHash,
   randomBytes,
+  randomInt,
   scrypt as scryptCallback,
   timingSafeEqual
 } from "node:crypto";
@@ -130,6 +131,18 @@ db.exec(`
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     token_hash TEXT NOT NULL UNIQUE,
     expires_at TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE TABLE IF NOT EXISTS password_reset_challenges (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    public_id TEXT NOT NULL UNIQUE,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    channel TEXT NOT NULL CHECK (channel IN ('email', 'whatsapp', 'sms')),
+    code_hash TEXT NOT NULL,
+    attempts INTEGER NOT NULL DEFAULT 0,
+    expires_at TEXT NOT NULL,
+    consumed_at TEXT,
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
   );
 
@@ -304,6 +317,37 @@ if (!userColumns.has("staff_role")) {
   db.exec("ALTER TABLE users ADD COLUMN staff_role TEXT NOT NULL DEFAULT ''");
 }
 
+function migrateOrdersToDetachedAccounts() {
+  const userColumn = db.prepare("PRAGMA table_info(orders)").all().find((column) => column.name === "user_id");
+  const userForeignKey = db.prepare("PRAGMA foreign_key_list(orders)").all().find((key) => key.from === "user_id");
+  if (!userColumn?.notnull && userForeignKey?.on_delete === "SET NULL") return;
+  const source = db.prepare("SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'orders'").get()?.sql;
+  if (!source) return;
+  const columns = db.prepare("PRAGMA table_info(orders)").all().map((column) => column.name);
+  const indexes = db.prepare("SELECT sql FROM sqlite_master WHERE type = 'index' AND tbl_name = 'orders' AND sql IS NOT NULL").all().map((row) => row.sql);
+  const migratedSchema = source
+    .replace(/^CREATE TABLE\s+orders\s*\(/i, "CREATE TABLE orders_account_migration (")
+    .replace(/user_id\s+INTEGER\s+NOT NULL\s+REFERENCES\s+users\(id\)\s+ON DELETE\s+RESTRICT/i, "user_id INTEGER REFERENCES users(id) ON DELETE SET NULL");
+  db.exec("PRAGMA foreign_keys = OFF");
+  try {
+    db.exec("BEGIN IMMEDIATE");
+    db.exec(migratedSchema);
+    const columnList = columns.map((column) => `\"${column.replaceAll('"', '""')}\"`).join(", ");
+    db.exec(`INSERT INTO orders_account_migration (${columnList}) SELECT ${columnList} FROM orders`);
+    db.exec("DROP TABLE orders");
+    db.exec("ALTER TABLE orders_account_migration RENAME TO orders");
+    indexes.forEach((sql) => db.exec(sql));
+    db.exec("COMMIT");
+  } catch (error) {
+    try { db.exec("ROLLBACK"); } catch {}
+    throw error;
+  } finally {
+    db.exec("PRAGMA foreign_keys = ON");
+  }
+}
+
+migrateOrdersToDetachedAccounts();
+
 const orderColumns = new Set(db.prepare("PRAGMA table_info(orders)").all().map((column) => column.name));
 const orderMigrations = [
   ["workflow_status", "TEXT NOT NULL DEFAULT 'new'"],
@@ -340,7 +384,7 @@ const seedProducts = [
     badgeAr: "الأكثر مبيعًا",
     badgeEn: "BESTSELLER",
     image: "assets/nocturne-01.svg",
-    gender: "unisex", mainAccords: ["عود", "عنبر", "وردي", "خشبي"], seasons: ["winter", "autumn"], usageTimes: ["night"], occasions: ["formal", "romantic"]
+    gender: "unisex", mainIngredients: ["عود", "ورد", "عنبر"], mainAccords: ["عود", "عنبر", "وردي", "خشبي"], accordProfile: [{id:"woody",nameAr:"خشبي",nameEn:"Woody",color:"#9b6b43",icon:"♢",strength:92},{id:"amber",nameAr:"عنبري",nameEn:"Amber",color:"#c47b16",icon:"◆",strength:84},{id:"floral",nameAr:"زهري",nameEn:"Floral",color:"#ec6d9c",icon:"❀",strength:66},{id:"warm-spicy",nameAr:"حار دافئ",nameEn:"Warm spicy",color:"#b85032",icon:"✦",strength:58}], seasons: ["winter", "autumn"], usageTimes: ["night"], occasions: ["formal", "romantic"]
   },
   {
     id: "velvet-iris",
@@ -360,7 +404,7 @@ const seedProducts = [
     badgeAr: "وصل حديثًا",
     badgeEn: "NEW",
     image: "assets/velvet-iris.svg",
-    gender: "women", mainAccords: ["بودري", "سوسن", "فانيليا", "مسكي"], seasons: ["spring", "autumn"], usageTimes: ["day", "evening"], occasions: ["work", "occasions", "romantic"]
+    gender: "women", mainIngredients: ["سوسن", "فانيليا", "مسك"], mainAccords: ["بودري", "سوسن", "فانيليا", "مسكي"], accordProfile: [{id:"powdery",nameAr:"بودري",nameEn:"Powdery",color:"#ef72a4",icon:"◌",strength:90},{id:"floral",nameAr:"زهري",nameEn:"Floral",color:"#ec6d9c",icon:"❀",strength:82},{id:"vanilla",nameAr:"فانيليا",nameEn:"Vanilla",color:"#f2ae2e",icon:"✿",strength:74},{id:"musky",nameAr:"مسكي",nameEn:"Musky",color:"#aa8ac7",icon:"≋",strength:61}], seasons: ["spring", "autumn"], usageTimes: ["day", "evening"], occasions: ["work", "occasions", "romantic"]
   },
   {
     id: "smoked",
@@ -380,7 +424,7 @@ const seedProducts = [
     badgeAr: "إصدار محدود",
     badgeEn: "LIMITED",
     image: "assets/smoked-saffron.svg",
-    gender: "men", mainAccords: ["جلدي", "زعفراني", "خشبي", "دافئ"], seasons: ["winter", "autumn"], usageTimes: ["night"], occasions: ["formal", "occasions"]
+    gender: "men", mainIngredients: ["جلد", "زعفران", "أخشاب"], mainAccords: ["جلدي", "زعفراني", "خشبي", "دافئ"], accordProfile: [{id:"leather",nameAr:"جلدي",nameEn:"Leather",color:"#635047",icon:"▰",strength:94},{id:"warm-spicy",nameAr:"حار دافئ",nameEn:"Warm spicy",color:"#b85032",icon:"✦",strength:83},{id:"woody",nameAr:"خشبي",nameEn:"Woody",color:"#9b6b43",icon:"♢",strength:76},{id:"amber",nameAr:"عنبري",nameEn:"Amber",color:"#c47b16",icon:"◆",strength:59}], seasons: ["winter", "autumn"], usageTimes: ["night"], occasions: ["formal", "occasions"]
   },
   {
     id: "citrus-veil",
@@ -400,7 +444,7 @@ const seedProducts = [
     badgeAr: "اختيار الصيف",
     badgeEn: "SUMMER PICK",
     image: "assets/citrus-veil.svg",
-    gender: "unisex", mainAccords: ["حمضي", "منعش", "أخضر", "خشبي"], seasons: ["spring", "summer"], usageTimes: ["day", "daily"], occasions: ["work", "travel", "casual"]
+    gender: "unisex", mainIngredients: ["برغموت", "نيرولي", "أرز"], mainAccords: ["حمضي", "منعش", "أخضر", "خشبي"], accordProfile: [{id:"citrus",nameAr:"حمضي",nameEn:"Citrus",color:"#a7bd31",icon:"◉",strength:95},{id:"fresh",nameAr:"منعش",nameEn:"Fresh",color:"#24a7a1",icon:"≈",strength:88},{id:"aromatic",nameAr:"أروماتيك",nameEn:"Aromatic",color:"#4e9274",icon:"♧",strength:65},{id:"woody",nameAr:"خشبي",nameEn:"Woody",color:"#9b6b43",icon:"♢",strength:46}], seasons: ["spring", "summer"], usageTimes: ["day", "daily"], occasions: ["work", "travel", "casual"]
   }
 ];
 
@@ -433,12 +477,13 @@ try {
       product.badgeAr,
       product.badgeEn,
       product.image,
-      JSON.stringify({ gender: product.gender, mainAccords: product.mainAccords, seasons: product.seasons, usageTimes: product.usageTimes, occasions: product.occasions })
+      JSON.stringify({ gender: product.gender, mainIngredients: product.mainIngredients, mainAccords: product.mainAccords, accordProfile: product.accordProfile, seasons: product.seasons, usageTimes: product.usageTimes, occasions: product.occasions })
     );
-    db.prepare(`UPDATE products SET catalog_json=? WHERE id=? AND (catalog_json IS NULL OR catalog_json='{}')`).run(
-      JSON.stringify({ gender: product.gender, mainAccords: product.mainAccords, seasons: product.seasons, usageTimes: product.usageTimes, occasions: product.occasions }),
-      product.id
-    );
+    const stored = parseJSON(db.prepare("SELECT catalog_json FROM products WHERE id=?").get(product.id)?.catalog_json, {});
+    const defaults = { gender: product.gender, mainIngredients: product.mainIngredients, mainAccords: product.mainAccords, accordProfile: product.accordProfile, seasons: product.seasons, usageTimes: product.usageTimes, occasions: product.occasions };
+    const merged = { ...defaults, ...stored };
+    for (const [key, value] of Object.entries(defaults)) if (stored[key] == null || (Array.isArray(stored[key]) && !stored[key].length)) merged[key] = value;
+    db.prepare("UPDATE products SET catalog_json=? WHERE id=?").run(JSON.stringify(merged), product.id);
   }
   db.exec("COMMIT");
 } catch (error) {
@@ -659,6 +704,7 @@ function productFromRow(row, includeMetadata = false) {
     typeEn: row.type_en,
     concentration: row.concentration,
     sizes: parseJSON(row.sizes_json),
+    size: metadata.size || parseJSON(row.sizes_json)?.[0] || "",
     notesAr: parseJSON(row.notes_ar_json),
     notesEn: parseJSON(row.notes_en_json),
     price: Number(row.price),
@@ -687,6 +733,9 @@ function productFromRow(row, includeMetadata = false) {
     perfumer: metadata.perfumer || "",
     performance: metadata.performance || {},
     occasions: Array.isArray(metadata.occasions) ? metadata.occasions : [],
+    mainIngredients: Array.isArray(metadata.mainIngredients) ? metadata.mainIngredients : [],
+    accordProfile: Array.isArray(metadata.accordProfile) ? metadata.accordProfile : [],
+    profileImages: metadata.profileImages && typeof metadata.profileImages === "object" ? metadata.profileImages : {},
     mainAccords: Array.isArray(metadata.mainAccords) ? metadata.mainAccords : (Array.isArray(metadata.accords) ? metadata.accords : []),
     personalities: Array.isArray(metadata.personalities) ? metadata.personalities : [],
     noteLibrary: metadata.noteLibrary || { slugs: [], unmatched: [] },
@@ -738,6 +787,73 @@ export async function verifyPassword(password, encoded) {
 
 export function findUserByEmail(email) {
   return db.prepare("SELECT * FROM users WHERE email = ?").get(normalizedEmail(email));
+}
+
+function normalizedPhone(value) {
+  return clean(value, 30).replace(/[^\d+]/g, "");
+}
+
+export function findUserForPasswordReset(identifier) {
+  const email = normalizedEmail(identifier);
+  const phone = normalizedPhone(identifier);
+  const byEmail = email.includes("@") ? db.prepare("SELECT * FROM users WHERE email = ?").get(email) : null;
+  if (byEmail) return byEmail;
+  if (!phone) return null;
+  return db.prepare("SELECT * FROM users").all().find((user) => normalizedPhone(user.phone) === phone) || null;
+}
+
+export async function createPasswordResetChallenge(userId, channel) {
+  const id = Number(userId);
+  db.prepare("DELETE FROM password_reset_challenges WHERE consumed_at IS NOT NULL OR julianday(expires_at) <= julianday('now')").run();
+  const recent = db.prepare(`SELECT id FROM password_reset_challenges WHERE user_id = ? AND channel = ? AND created_at >= datetime('now', '-60 seconds')`).get(id, channel);
+  if (recent) return null;
+  db.prepare("UPDATE password_reset_challenges SET consumed_at = CURRENT_TIMESTAMP WHERE user_id = ? AND consumed_at IS NULL").run(id);
+  const code = String(randomInt(0, 1_000_000)).padStart(6, "0");
+  const publicId = randomBytes(24).toString("base64url");
+  const expiresAt = new Date(Date.now() + 10 * 60_000).toISOString();
+  db.prepare(`INSERT INTO password_reset_challenges (public_id, user_id, channel, code_hash, expires_at) VALUES (?, ?, ?, ?, ?)`)
+    .run(publicId, id, channel, await hashPassword(code), expiresAt);
+  return { publicId, code, expiresAt };
+}
+
+export function cancelPasswordResetChallenge(publicId) {
+  db.prepare("DELETE FROM password_reset_challenges WHERE public_id = ?").run(clean(publicId, 100));
+}
+
+export async function consumePasswordResetChallenge(publicId, code, newPasswordHash) {
+  const challenge = db.prepare(`SELECT * FROM password_reset_challenges WHERE public_id = ? AND consumed_at IS NULL AND julianday(expires_at) > julianday('now')`).get(clean(publicId, 100));
+  if (!challenge || challenge.attempts >= 5) return false;
+  const valid = await verifyPassword(String(code || ""), challenge.code_hash);
+  if (!valid) {
+    db.prepare("UPDATE password_reset_challenges SET attempts = attempts + 1 WHERE id = ?").run(challenge.id);
+    return false;
+  }
+  db.prepare("UPDATE users SET password_hash = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?").run(newPasswordHash, challenge.user_id);
+  db.prepare("DELETE FROM sessions WHERE user_id = ?").run(challenge.user_id);
+  db.prepare("UPDATE password_reset_challenges SET consumed_at = CURRENT_TIMESTAMP WHERE id = ?").run(challenge.id);
+  return true;
+}
+
+export function purgeAllUsers() {
+  const count = Number(db.prepare("SELECT COUNT(*) AS count FROM users").get().count || 0);
+  const tables = new Set(db.prepare("SELECT name FROM sqlite_master WHERE type = 'table'").all().map((row) => row.name));
+  const orderColumns = tables.has("orders") ? new Set(db.prepare("PRAGMA table_info(orders)").all().map((column) => column.name)) : new Set();
+  [
+    "password_reset_challenges", "sessions", "carts", "saved_addresses", "customer_loyalty",
+    "customer_notifications", "customer_wishlist", "customer_payment_methods", "fragrance_finder_sessions",
+    "product_performance_vote_reports", "product_performance_votes"
+  ].filter((table) => tables.has(table)).forEach((table) => db.prepare(`DELETE FROM ${table}`).run());
+  [
+    ["activity_log", "user_id"], ["feedback_requests", "customer_id"],
+    ["experience_feedback", "customer_id"], ["product_reviews", "customer_id"], ["support_cases", "customer_id"],
+    ["marketing_insights", "created_by"], ["product_editorial_performance", "updated_by"],
+    ["imported_performance_summaries", "created_by"]
+  ].filter(([table]) => tables.has(table)).forEach(([table, column]) => db.prepare(`UPDATE ${table} SET ${column} = NULL`).run());
+  if (tables.has("orders")) {
+    db.prepare(`UPDATE orders SET user_id = NULL${orderColumns.has("email") ? ", email = ''" : ""}`).run();
+  }
+  db.prepare("DELETE FROM users").run();
+  return count;
 }
 
 export function findUserById(id) {
@@ -954,7 +1070,17 @@ function syncProductFilterValues(productId, input) {
 
 export function upsertProduct(input) {
   const id = clean(input.id, 120) || `product-${Date.now().toString(36)}`;
-  const status = ["draft", "published", "unavailable"].includes(input.status) ? input.status : "draft";
+  const status = ["draft", "review", "published", "unavailable"].includes(input.status) ? input.status : "draft";
+  const requestedSku = clean(input.sku, 120);
+  const requestedBarcode = clean(input.barcode, 120);
+  const duplicateSku = requestedSku && db.prepare("SELECT id FROM products WHERE lower(sku)=lower(?) AND id<>? LIMIT 1").get(requestedSku, id);
+  if (duplicateSku) throw new Error("SKU مستخدم بالفعل لمنتج آخر.");
+  if (requestedBarcode) {
+    const rows = db.prepare("SELECT id, catalog_json FROM products WHERE id<>?").all(id);
+    if (rows.some((row) => clean(parseJSON(row.catalog_json, {}).barcode, 120) === requestedBarcode)) {
+      throw new Error("الباركود مستخدم بالفعل لمنتج آخر.");
+    }
+  }
   const price = Math.max(0, Number(input.price || 0));
   const structuredNotes = input.notes && typeof input.notes === "object" ? input.notes : {};
   const hasStructuredNotes = ["topAr", "topEn", "heartAr", "heartEn", "baseAr", "baseEn"]
@@ -1001,7 +1127,7 @@ export function upsertProduct(input) {
       updated_at = CURRENT_TIMESTAMP
   `).run(
     id,
-    clean(input.sku, 120),
+    requestedSku,
     clean(input.brand, 120) || "ORIGO",
     clean(input.nameAr, 180) || clean(input.nameEn, 180) || "منتج جديد",
     clean(input.nameEn, 180),
@@ -1741,24 +1867,8 @@ function migrateLegacyProductNotes() {
 migrateLegacyProductNotes();
 
 export async function ensureAdminFromEnvironment() {
-  const email = normalizedEmail(process.env.ORIGO_ADMIN_EMAIL);
-  const password = String(process.env.ORIGO_ADMIN_PASSWORD || "");
-  if (!email || !password) return null;
-  const existing = findUserByEmail(email);
-  if (existing) {
-    if (existing.role !== "admin") {
-      db.prepare("UPDATE users SET role = 'admin', updated_at = CURRENT_TIMESTAMP WHERE id = ?")
-        .run(existing.id);
-    }
-    return findUserById(existing.id);
-  }
-  if (password.length < 10) throw new Error("ORIGO_ADMIN_PASSWORD must contain at least 10 characters.");
-  return createUser({
-    name: clean(process.env.ORIGO_ADMIN_NAME, 100) || "ORIGO Admin",
-    email,
-    passwordHash: await hashPassword(password),
-    role: "admin"
-  });
+  // Accounts are never created or modified implicitly at process startup.
+  return null;
 }
 
 export const databasePath = DB_PATH;

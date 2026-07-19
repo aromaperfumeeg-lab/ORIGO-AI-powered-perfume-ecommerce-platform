@@ -37,6 +37,12 @@ export function integrationStatus() {
       configured: configured("WHATSAPP_ACCESS_TOKEN", "WHATSAPP_PHONE_NUMBER_ID", "WHATSAPP_VERIFY_TOKEN"),
       graphVersion: graphVersion()
     },
+    email: {
+      configured: configured("RESEND_API_KEY", "ORIGO_EMAIL_FROM")
+    },
+    sms: {
+      configured: configured("TWILIO_ACCOUNT_SID", "TWILIO_AUTH_TOKEN", "TWILIO_FROM_NUMBER")
+    },
     metaAds: {
       configured: configured("META_PIXEL_ID", "META_CAPI_ACCESS_TOKEN"),
       browserPixel: Boolean(value("META_PIXEL_ID"))
@@ -152,6 +158,57 @@ export async function sendWhatsAppTemplate({ to, template, language = "ar", para
       }
     })
   });
+}
+
+async function sendResetEmail(to, code) {
+  if (!integrationStatus().email.configured) throw new Error("Email is not configured.");
+  return requestJSON("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${value("RESEND_API_KEY")}`,
+      "Idempotency-Key": `origo-password-reset-${randomResetKey(code)}`
+    },
+    body: JSON.stringify({
+      from: value("ORIGO_EMAIL_FROM"),
+      to: [String(to)],
+      subject: "رمز استعادة كلمة مرور ORIGO",
+      html: `<div dir="rtl" style="font-family:Arial,sans-serif"><h2>استعادة كلمة المرور</h2><p>رمز التحقق الخاص بك:</p><p style="font-size:30px;font-weight:bold;letter-spacing:6px">${String(code)}</p><p>ينتهي الرمز خلال 10 دقائق. إذا لم تطلبه فتجاهل الرسالة.</p></div>`
+    })
+  });
+}
+
+function randomResetKey(code) {
+  return createHash("sha256").update(`${code}:${Date.now()}:${Math.random()}`).digest("hex").slice(0, 32);
+}
+
+async function sendResetSms(to, code) {
+  if (!integrationStatus().sms.configured) throw new Error("SMS is not configured.");
+  const accountSid = value("TWILIO_ACCOUNT_SID");
+  const body = new URLSearchParams({ To: String(to), From: value("TWILIO_FROM_NUMBER"), Body: `ORIGO password reset code: ${code}. Expires in 10 minutes.` });
+  const response = await fetch(`https://api.twilio.com/2010-04-01/Accounts/${encodeURIComponent(accountSid)}/Messages.json`, {
+    method: "POST",
+    headers: {
+      Authorization: `Basic ${Buffer.from(`${accountSid}:${value("TWILIO_AUTH_TOKEN")}`).toString("base64")}`,
+      "Content-Type": "application/x-www-form-urlencoded"
+    },
+    body,
+    signal: AbortSignal.timeout(Number(process.env.ORIGO_INTEGRATION_TIMEOUT_MS || 12_000))
+  });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(payload.message || "SMS provider rejected the request.");
+  return { id: payload.sid };
+}
+
+export async function sendPasswordResetCode({ channel, to, code }) {
+  if (channel === "email") return sendResetEmail(to, code);
+  if (channel === "sms") return sendResetSms(to, code);
+  if (channel === "whatsapp") return sendWhatsAppTemplate({
+    to,
+    template: value("WHATSAPP_PASSWORD_RESET_TEMPLATE") || "password_reset_code",
+    language: value("WHATSAPP_PASSWORD_RESET_LANGUAGE") || "ar",
+    parameters: [code]
+  });
+  throw new Error("Unsupported reset channel.");
 }
 
 export async function sendMetaPurchase(order, context = {}) {
