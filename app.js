@@ -3209,6 +3209,11 @@ function navigateNotes(slug = "") {
 function productNoteGroups(product) {
   const library = window.ORIGOFragranceNotes;
   const groups = { top: [], heart: [], base: [] };
+  const savedRefs = { top: [], heart: [], base: [] };
+  (product.noteRefs || []).forEach((ref) => {
+    if (savedRefs[ref.position]) savedRefs[ref.position].push(ref);
+  });
+  Object.values(savedRefs).forEach((refs) => refs.sort((a, b) => Number(a.sortOrder || 0) - Number(b.sortOrder || 0)));
   const structured = product.notes || {};
   const hasStructured = ["top", "heart", "base"].some((position) =>
     (structured[`${position}Ar`] || []).length || (structured[`${position}En`] || []).length
@@ -3218,7 +3223,7 @@ function productNoteGroups(product) {
       const preferred = structured[`${position}${state.lang === "ar" ? "Ar" : "En"}`] || [];
       const fallback = structured[`${position}${state.lang === "ar" ? "En" : "Ar"}`] || [];
       const values = preferred.length ? preferred : fallback;
-      groups[position] = values.map((value) => ({ value, note: library.find(value), position }));
+      groups[position] = values.map((value, index) => ({ value, note: library.find(value), ref: savedRefs[position][index] || null, position }));
     });
   } else {
     const preferred = state.lang === "ar" ? product.notesAr : product.notesEn;
@@ -3247,13 +3252,15 @@ function productNotePyramid(product) {
     if (!items.length) return "";
     return `<div class="dialog-pyramid-row ${position}">
       <span><small>${position.toUpperCase()}</small><b>${label}</b></span>
-      <div>${items.map(({ value, note }) => {
+      <div>${items.map(({ value, note, ref }) => {
         if (!note) {
           stateChanged = library.registerUnclassified(value, position) || stateChanged;
           const unknown = {
-            nameAr: value, nameEn: value, familyId: "uncategorized", symbol: "?", image: ""
+            nameAr: ref?.nameAr || value, nameEn: ref?.nameEn || value,
+            familyId: ref?.familyId || "uncategorized", symbol: "?", image: ref?.image || ""
           };
-          return `<span class="dialog-note-chip unknown"><img src="${escapeHTML(library.artwork(unknown))}" alt="" /><b>${escapeHTML(value)}</b><small>${state.lang === "ar" ? "غير مصنف" : "Unclassified"}</small></span>`;
+          const label = state.lang === "ar" ? unknown.nameAr || unknown.nameEn : unknown.nameEn || unknown.nameAr;
+          return `<span class="dialog-note-chip${ref ? " custom" : " unknown"}"><img src="${escapeHTML(ref?.image || library.artwork(unknown))}" alt="${escapeHTML(label)}" /><b>${escapeHTML(label)}</b><small>${escapeHTML(ref ? (state.lang === "ar" ? unknown.nameEn : unknown.nameAr) : (state.lang === "ar" ? "غير مصنف" : "Unclassified"))}</small></span>`;
         }
         return `<button class="dialog-note-chip" data-action="open-note" data-slug="${escapeHTML(note.slug)}">
           <img src="${escapeHTML(library.artwork(note))}" alt="" /><b>${escapeHTML(noteLabel(note))}</b><small>${escapeHTML(state.lang === "ar" ? note.nameEn : note.nameAr)}</small></button>`;
@@ -3930,7 +3937,9 @@ function runAlternativeSearch() {
 
 const adminCopy = (ar, en) => state.lang === "ar" ? ar : en;
 const csv = (values) => (values || []).join(", ");
-const csvValues = (value) => String(value || "").split(/[,،]/).map((item) => item.trim()).filter(Boolean);
+const csvValues = (value) => [...new Map(String(value || "").split(/[,،]/)
+  .map((item) => item.trim()).filter(Boolean)
+  .map((item) => [normalizeOptionSearch(item), item])).values()];
 
 function confidenceLabel(level) {
   return {
@@ -4133,7 +4142,7 @@ function searchableCreatableSelect({ name, group, labelAr, labelEn, selected = [
     <div class="smart-select" data-smart-select data-group="${escapeHTML(group)}" data-name="${escapeHTML(name)}" data-multiple="${multiple}" data-create="${allowCreate}">
       <input type="hidden" name="${escapeHTML(name)}" value="${escapeHTML(values.join(", "))}" />
       <div class="smart-select-control" data-action="smart-select-open" role="button" tabindex="0" aria-haspopup="listbox" aria-expanded="false">
-        <span class="smart-select-chips">${selectedItems.length ? selectedItems.map((item) => `<i data-smart-value="${escapeHTML(item.value)}">${item.icon ? `<em>${escapeHTML(item.icon)}</em>` : ""}${escapeHTML(state.lang === "ar" ? item.nameAr || item.nameEn : item.nameEn || item.nameAr)}${multiple ? `<button type="button" data-action="smart-select-remove" data-value="${escapeHTML(item.value)}" aria-label="${adminCopy("حذف","Remove")}">×</button>` : ""}</i>`).join("") : `<small>${adminCopy("ابحث أو اختر…","Search or select…")}</small>`}</span><strong>⌄</strong>
+        <span class="smart-select-chips">${selectedItems.length ? selectedItems.map((item) => `<i data-smart-value="${escapeHTML(item.value)}">${item.image ? `<img src="${escapeHTML(item.image)}" alt="" />` : item.icon ? `<em>${escapeHTML(item.icon)}</em>` : ""}${escapeHTML(state.lang === "ar" ? item.nameAr || item.nameEn : item.nameEn || item.nameAr)}${multiple ? `<button type="button" data-action="smart-select-remove" data-value="${escapeHTML(item.value)}" aria-label="${adminCopy("حذف","Remove")}">×</button>` : ""}</i>`).join("") : `<small>${adminCopy("ابحث أو اختر…","Search or select…")}</small>`}</span><strong>⌄</strong>
       </div>
       <div class="smart-select-menu" hidden>
         <div class="smart-select-search"><input type="search" data-smart-search placeholder="${adminCopy("ابحث بالعربية أو الإنجليزية…","Search in Arabic or English…")}" autocomplete="off"/><button type="button" data-action="smart-select-settings" title="${adminCopy("إدارة الخيارات","Manage options")}">⚙</button></div>
@@ -4549,6 +4558,16 @@ function collectReviewProduct(form) {
   const country = optionValuesForProduct("country", data.get("originCountry"))[0];
   const perfumers = optionValuesForProduct("perfumer", data.get("perfumers"));
   const noteSelections = Object.fromEntries(["top","heart","base"].map((levelName) => [levelName, optionValuesForProduct("note", data.get(`${levelName}Notes`))]));
+  const noteRefs = Object.entries(noteSelections).flatMap(([position, items]) => items.map((item, sortOrder) => ({
+    id: item.slug || normalizeOptionSearch(item.value || item.nameEn || item.nameAr).replaceAll(" ", "-"),
+    slug: item.slug || normalizeOptionSearch(item.value || item.nameEn || item.nameAr).replaceAll(" ", "-"),
+    nameAr: item.nameAr || item.nameEn || item.value,
+    nameEn: item.nameEn || item.nameAr || item.value,
+    image: item.image || "",
+    familyId: item.familyId || "uncategorized",
+    position,
+    sortOrder
+  })));
   const product = {
     ...base,
     id: base.id || `catalog-${Date.now()}`,
@@ -4614,6 +4633,11 @@ function collectReviewProduct(form) {
     crossSellIds: csvValues(data.get("crossSellIds")),
     alternativeIds: csvValues(data.get("alternativeIds")),
     noteSelections: Object.fromEntries(Object.entries(noteSelections).map(([key,items]) => [key, items.map((item) => item.value)])),
+    noteLibrary: {
+      slugs: [...new Set(noteRefs.map((item) => item.slug))],
+      refs: noteRefs,
+      unmatched: []
+    },
     notes: {
       topAr: noteSelections.top.map((item) => item.nameAr || item.nameEn), topEn: noteSelections.top.map((item) => item.nameEn || item.nameAr),
       heartAr: noteSelections.heart.map((item) => item.nameAr || item.nameEn), heartEn: noteSelections.heart.map((item) => item.nameEn || item.nameAr),
@@ -4995,7 +5019,7 @@ function setSmartSelectValues(holder, values) {
   const chips = holder.querySelector(".smart-select-chips");
   chips.innerHTML = next.length ? next.map((value) => {
     const item = items.find((candidate) => normalizeOptionSearch(candidate.value) === normalizeOptionSearch(value)) || { value, nameAr:value, nameEn:value };
-    return `<i data-smart-value="${escapeHTML(value)}">${item.icon ? `<em>${escapeHTML(item.icon)}</em>` : ""}${escapeHTML(state.lang === "ar" ? item.nameAr || item.nameEn : item.nameEn || item.nameAr)}${multiple ? `<button type="button" data-action="smart-select-remove" data-value="${escapeHTML(value)}" aria-label="${adminCopy("حذف","Remove")}">×</button>` : ""}</i>`;
+    return `<i data-smart-value="${escapeHTML(value)}">${item.image ? `<img src="${escapeHTML(item.image)}" alt="" />` : item.icon ? `<em>${escapeHTML(item.icon)}</em>` : ""}${escapeHTML(state.lang === "ar" ? item.nameAr || item.nameEn : item.nameEn || item.nameAr)}${multiple ? `<button type="button" data-action="smart-select-remove" data-value="${escapeHTML(value)}" aria-label="${adminCopy("حذف","Remove")}">×</button>` : ""}</i>`;
   }).join("") : `<small>${adminCopy("ابحث أو اختر…","Search or select…")}</small>`;
   holder.querySelectorAll("[role='option']").forEach((option) => option.setAttribute("aria-selected", String(next.some((value) => normalizeOptionSearch(value) === normalizeOptionSearch(option.dataset.value)))));
   holder.closest("form")?.dispatchEvent(new Event("input", { bubbles:true }));
@@ -5019,7 +5043,7 @@ function openProductOptionDialog(holder) {
   dialog.dataset.targetName = holder.dataset.name || "";
   dialog.dataset.group = group;
   dialog.dataset.context = holder.closest?.("#import-review-form") ? "editor" : "manager";
-  dialog.innerHTML = `<form method="dialog"><header><div><small>${adminCopy("إدارة خصائص المنتج","Product attributes")}</small><h3>${adminCopy("إضافة خيار جديد","Add a new option")}</h3></div><button type="button" data-action="close-product-option">×</button></header><div class="option-dialog-grid"><label>${adminCopy("الاسم بالعربية","Arabic name")}<input name="nameAr" dir="rtl" required maxlength="160"/></label><label>${adminCopy("الاسم بالإنجليزية","English name")}<input name="nameEn" dir="ltr" required maxlength="160"/></label><label>${adminCopy("أيقونة اختيارية","Optional icon")}<input name="icon" maxlength="12" placeholder="✦"/></label><label>${adminCopy("لون اختياري","Optional color")}<input name="color" type="color" value="#7a001d"/></label><label>${adminCopy("ترتيب الظهور","Sort order")}<input name="sortOrder" type="number" min="0" value="0"/></label><label class="option-active"><input name="active" type="checkbox" checked/><span>${adminCopy("الخيار نشط","Option is active")}</span></label></div><footer><button type="button" class="button secondary-button" data-action="close-product-option">${adminCopy("إلغاء","Cancel")}</button><button type="button" class="button burgundy-button" data-action="save-product-option">${adminCopy("حفظ وإضافة","Save & add")}</button></footer><p class="option-dialog-error" hidden></p></form>`;
+  dialog.innerHTML = `<form method="dialog"><header><div><small>${adminCopy("إدارة خصائص المنتج","Product attributes")}</small><h3>${adminCopy("إضافة خيار جديد","Add a new option")}</h3></div><button type="button" data-action="close-product-option">×</button></header><div class="option-dialog-grid"><label>${adminCopy("الاسم بالعربية","Arabic name")}<input name="nameAr" dir="rtl" required maxlength="160"/></label><label>${adminCopy("الاسم بالإنجليزية","English name")}<input name="nameEn" dir="ltr" required maxlength="160"/></label><label>${adminCopy("أيقونة اختيارية","Optional icon")}<input name="icon" maxlength="12" placeholder="✦"/></label><label>${adminCopy("رابط صورة اختيارية","Optional image URL")}<input name="image" dir="ltr" maxlength="2000000" placeholder="https://…"/></label><label>${adminCopy("لون اختياري","Optional color")}<input name="color" type="color" value="#7a001d"/></label><label>${adminCopy("ترتيب الظهور","Sort order")}<input name="sortOrder" type="number" min="0" value="0"/></label><label class="option-active"><input name="active" type="checkbox" checked/><span>${adminCopy("الخيار نشط","Option is active")}</span></label></div><footer><button type="button" class="button secondary-button" data-action="close-product-option">${adminCopy("إلغاء","Cancel")}</button><button type="button" class="button burgundy-button" data-action="save-product-option">${adminCopy("حفظ وإضافة","Save & add")}</button></footer><p class="option-dialog-error" hidden></p></form>`;
   document.body.append(dialog);
   dialog.showModal();
   dialog.querySelector("[name='nameAr']")?.focus();
@@ -5114,7 +5138,7 @@ document.addEventListener("click", async (event) => {
     const dialog = actionElement.closest("dialog");
     const form = dialog.querySelector("form");
     const data = new FormData(form);
-    const payload = { group:dialog.dataset.group, nameAr:String(data.get("nameAr") || "").trim(), nameEn:String(data.get("nameEn") || "").trim(), icon:String(data.get("icon") || "").trim(), color:String(data.get("color") || ""), sortOrder:Number(data.get("sortOrder") || 0), active:data.get("active") === "on" };
+    const payload = { group:dialog.dataset.group, nameAr:String(data.get("nameAr") || "").trim(), nameEn:String(data.get("nameEn") || "").trim(), image:String(data.get("image") || "").trim(), icon:String(data.get("icon") || "").trim(), color:String(data.get("color") || ""), sortOrder:Number(data.get("sortOrder") || 0), active:data.get("active") === "on" };
     const error = dialog.querySelector(".option-dialog-error");
     if (!payload.nameAr || !payload.nameEn) { error.hidden=false; error.textContent=adminCopy("أدخل الاسم بالعربية والإنجليزية.","Enter both Arabic and English names."); return; }
     actionElement.disabled = true;
