@@ -7,6 +7,7 @@ import {
   ROLE_PERMISSIONS,
   alternativesAdminPayload,
   alternativesPayload,
+  adminConfiguredFromEnvironment,
   createOrder,
   createSession,
   createPasswordResetChallenge,
@@ -504,6 +505,7 @@ async function handleAPI(request, response, url, origin) {
     return jsonResponse(response, 200, {
       ok: true,
       database: true,
+      adminConfigured: adminConfiguredFromEnvironment(),
       databaseDriver,
       aiConfigured: Boolean(process.env.OPENAI_API_KEY),
       model: OPENAI_MODEL
@@ -1501,12 +1503,22 @@ const server = createServer(async (request, response) => {
   await serveStatic(request, response, url);
 });
 
-await ensureAdminFromEnvironment();
+const adminEmailLoaded = Boolean(String(process.env.ORIGO_ADMIN_EMAIL || "").trim());
+const adminPasswordLoaded = Boolean(String(process.env.ORIGO_ADMIN_PASSWORD || ""));
+console.log(`ORIGO_ADMIN_EMAIL loaded: ${adminEmailLoaded}`);
+console.log(`ORIGO_ADMIN_PASSWORD loaded: ${adminPasswordLoaded}`);
+let adminBootstrapStatus = "disabled";
+try {
+  const bootstrap = await ensureAdminFromEnvironment();
+  adminBootstrapStatus = bootstrap?.status || "disabled";
+} catch {
+  adminBootstrapStatus = "failed";
+}
 
 server.listen(PORT, HOST, () => {
   const aiState = process.env.OPENAI_API_KEY ? `enabled (${OPENAI_MODEL})` : "not configured";
   console.log(`ORIGO is running at http://${HOST}:${PORT}`);
   console.log(`Portable database (${databaseDriver}): ${databasePath}`);
-  console.log("Admin bootstrap: disabled");
+  console.log(`Admin bootstrap: ${adminBootstrapStatus}`);
   console.log(`OpenAI web research: ${aiState}`);
 });

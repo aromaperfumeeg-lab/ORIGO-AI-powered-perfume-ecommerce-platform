@@ -1,6 +1,21 @@
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
+const ORIGO_PERFUME_BRANDS = [
+  "Lattafa", "Armaf", "Afnan Perfumes", "Paris Corner", "Swiss Arabian", "Rasasi Perfumes",
+  "Ajmal", "Maison Alhambra", "Amouage", "French Avenue", "Khadlaj Perfumes", "Arabiyat Prestige",
+  "Zimaya", "Gissah", "Al Majed Oud", "Ibrahim Al Qurashi", "Gulf Orchid", "Reef",
+  "Ard Al Zaafaran", "Laverne", "Matin Martin", "Dkhoon AlEmiratia", "Alezz", "Sedra",
+  "Assaf", "Volaré", "Le Bonheur Perfumes", "Le Falcone Perfumes", "Otoori", "الرونق للعطور"
+];
+
+const ORIGO_HOME_CATEGORIES = [
+  ["perfume", "العطور", "Perfumes", "♨"], ["skincare", "العناية بالبشرة", "Skincare", "♧"],
+  ["haircare", "العناية بالشعر", "Hair care", "♟"], ["bodycare", "العناية بالجسم", "Body care", "♡"],
+  ["incense", "البخور والمباخر", "Incense", "♨"], ["home", "العطور المنزلية", "Home fragrance", "⌂"],
+  ["gifts", "الهدايا", "Gifts", "🎁"]
+];
+
 const translations = {
   ar: {
     announcement: "توصيل مجاني للطلبات فوق 3,000 ج.م · عيّنة مجانية مع كل طلب",
@@ -1036,7 +1051,8 @@ function rebuildStorefrontProducts() {
     .filter((product) => product.status === "published")
     .forEach((product) => productsById.set(product.id, serverProduct(product)));
   state.products = [...productsById.values()];
-  if ($("#brand-carousel-track")) renderBrandCarousel($("#brand-carousel-search")?.value || "");
+  renderBrandCarousel($("#brand-carousel-search")?.value || "");
+  renderHomepageCommerce();
 }
 
 function persist() {
@@ -1093,10 +1109,13 @@ async function hydrateServer() {
     }
     localStorage.setItem("origoCart", JSON.stringify(state.cart));
     renderDynamicFilters();
+    renderHomeNavigation();
+    renderHomeHero();
     renderBrandCarousel();
     renderSiteFooter();
     applyStoreIdentity();
     renderProducts($(".chip.active")?.dataset.filter || "all");
+    renderHomepageCommerce();
     renderCart();
     renderWishlist();
     updateAccountIndicator();
@@ -1791,12 +1810,12 @@ function homepageRailsAdminMarkup() {
   };
   return `<form id="admin-homepage-rails" class="admin-settings-form homepage-rails-admin"><section><div class="review-section-head"><span>01</span><div><b>${ar ? "إدارة أشرطة الصفحة الرئيسية" : "Homepage rails management"}</b><small>${ar ? "الثلاثة الأولى يدوية فقط، وشريط العلامات وحده يتحرك تلقائيًا." : "The first three are manual-only; only the brand marquee autoplays."}</small></div></div>
     <div class="homepage-rail-settings">${Object.entries(settings.homepageRails).map(([key, rail]) => `<article><header><b>${escapeHTML(labels[key][ar ? 0 : 1])}</b><label class="admin-toggle-row"><span>${ar ? "ظاهر" : "Visible"}</span><input name="${key}.enabled" type="checkbox"${rail.enabled !== false ? " checked" : ""}/></label></header><div class="review-grid"><label>${ar ? "العنوان العربي" : "Arabic title"}<input name="${key}.titleAr" value="${escapeHTML(rail.titleAr || "")}"/></label><label>${ar ? "العنوان الإنجليزي" : "English title"}<input name="${key}.titleEn" value="${escapeHTML(rail.titleEn || "")}"/></label><label>${ar ? "الترتيب" : "Order"}<input name="${key}.order" type="number" min="1" max="10" value="${Number(rail.order || 1)}"/></label>${key === "brands" ? `<label>${ar ? "مدة الدورة بالثواني" : "Cycle duration (seconds)"}<input name="brands.speed" type="number" min="12" max="120" value="${Number(rail.speed || 34)}"/></label>` : ""}</div></article>`).join("")}</div></section>
-    <section><div class="review-section-head"><span>02</span><div><b>${ar ? "مكتبة وسائط الصفحة الرئيسية" : "Homepage media library"}</b><small>${ar ? "أضف ملفًا مركزيًا مع نص بديل بالعربية والإنجليزية." : "Add a central asset with Arabic and English alt text."}</small></div></div><div class="review-grid"><label>${ar ? "اسم الأصل" : "Asset name"}<input name="mediaName"/></label><label>${ar ? "النص البديل العربي" : "Arabic alt text"}<input name="mediaAltAr"/></label><label>${ar ? "النص البديل الإنجليزي" : "English alt text"}<input name="mediaAltEn"/></label><label>${ar ? "رفع صورة" : "Upload image"}<input name="mediaFile" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml"/></label></div><div class="home-media-library">${settings.homeMedia.length ? settings.homeMedia.map((item) => `<article><img src="${escapeHTML(item.url)}" alt="${escapeHTML(ar ? item.altAr : item.altEn)}"/><span><b>${escapeHTML(item.name)}</b><small>${escapeHTML(ar ? item.altAr : item.altEn)}</small></span><button type="button" data-action="delete-home-media" data-id="${escapeHTML(item.id)}" aria-label="${ar ? "حذف" : "Delete"}">×</button></article>`).join("") : `<p>${ar ? "لم تتم إضافة وسائط بعد." : "No media assets yet."}</p>`}</div></section><button class="button burgundy-button" type="submit">${ar ? "حفظ إعدادات الأشرطة" : "Save rail settings"}</button></form>`;
+    <section><div class="review-section-head"><span>02</span><div><b>${ar ? "مكتبة وسائط الصفحة الرئيسية" : "Homepage media library"}</b><small>${ar ? "ارفع بانرات الدعاية أو بانرًا مميزًا لعلامة بعينها، مع نص بديل للغتين." : "Upload campaign banners or a featured brand banner with bilingual alt text."}</small></div></div><div class="review-grid"><label>${ar ? "اسم الأصل" : "Asset name"}<input name="mediaName"/></label><label>${ar ? "مكان العرض" : "Placement"}<select name="mediaPlacement"><option value="hero">${ar ? "بانر الدعاية المتغير" : "Rotating campaign banner"}</option><option value="brand-banner">${ar ? "بانر علامة تجارية" : "Brand feature banner"}</option><option value="general">${ar ? "وسائط عامة" : "General media"}</option></select></label><label>${ar ? "العلامة (لبانر العلامة فقط)" : "Brand (brand banner only)"}<input name="mediaBrand" list="homepage-brand-list"/><datalist id="homepage-brand-list">${ORIGO_PERFUME_BRANDS.map((brand) => `<option value="${escapeHTML(brand)}"></option>`).join("")}</datalist></label><label>${ar ? "النص البديل العربي" : "Arabic alt text"}<input name="mediaAltAr"/></label><label>${ar ? "النص البديل الإنجليزي" : "English alt text"}<input name="mediaAltEn"/></label><label>${ar ? "رفع صورة" : "Upload image"}<input name="mediaFile" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml"/></label></div><div class="home-media-library">${settings.homeMedia.length ? settings.homeMedia.map((item) => `<article><img src="${escapeHTML(item.url)}" alt="${escapeHTML(ar ? item.altAr : item.altEn)}"/><span><b>${escapeHTML(item.name)}</b><small>${escapeHTML(item.placement || "general")}${item.brand ? ` · ${escapeHTML(item.brand)}` : ""}<br/>${escapeHTML(ar ? item.altAr : item.altEn)}</small></span><button type="button" data-action="delete-home-media" data-id="${escapeHTML(item.id)}" aria-label="${ar ? "حذف" : "Delete"}">×</button></article>`).join("") : `<p>${ar ? "لم تتم إضافة وسائط بعد." : "No media assets yet."}</p>`}</div></section><button class="button burgundy-button" type="submit">${ar ? "حفظ إعدادات الأشرطة" : "Save rail settings"}</button></form>`;
 }
 
 function applyHomepageRailSettings() {
   const settings = mergeStoreSettings(state.adminWorkspace.settings || {}).homepageRails;
-  const map = { benefits: ".home-benefits", gender: ".home-gender-section", categories: ".home-categories", brands: ".brand-carousel-section" };
+  const map = { benefits: ".home-benefits", gender: ".home-gender-section", categories: ".home-categories", brands: ".home-brand-directory" };
   Object.entries(map).forEach(([key, selector]) => {
     const element = $(selector);
     if (!element) return;
@@ -2111,7 +2130,11 @@ function updateLanguage() {
   const currencyLabel = $("#current-currency");
   if (currencyLabel) currencyLabel.textContent = isArabic ? "ج.م" : "EGP";
   document.title = isArabic ? "ORIGO | أصل الحكاية العطرية" : "ORIGO | The origin of scent";
+  renderHomeNavigation();
+  renderHomeHero();
+  renderBrandCarousel($("#brand-carousel-search")?.value || "");
   renderProducts($(".chip.active")?.dataset.filter || "all");
+  renderHomepageCommerce();
   renderCart();
   renderWishlist();
   renderCatalogList();
@@ -2185,22 +2208,105 @@ function renderDynamicFilters() {
 }
 
 function renderBrandCarousel(query = "") {
-  const track = $("#brand-carousel-track");
-  if (!track) return;
   const normalized = ORIGOCatalog.normalize(query);
   const counts = new Map();
   state.products.forEach((product) => {
     const brand = String(product.brand || "ORIGO").trim();
     counts.set(brand, (counts.get(brand) || 0) + 1);
   });
-  const brands = [...counts].sort((a, b) => {
-    const aPinned = /^ORIGO/i.test(a[0]) ? 1 : 0;
-    const bPinned = /^ORIGO/i.test(b[0]) ? 1 : 0;
-    return bPinned - aPinned || b[1] - a[1] || a[0].localeCompare(b[0]);
-  }).filter(([brand]) => !normalized || ORIGOCatalog.normalize(brand).includes(normalized));
+  const catalogNames = [...ORIGO_PERFUME_BRANDS, ...counts.keys()].filter((brand, index, values) =>
+    values.findIndex((candidate) => ORIGOCatalog.normalize(candidate) === ORIGOCatalog.normalize(brand)) === index
+  );
+  const brands = catalogNames.map((brand) => [brand, counts.get(brand) || 0])
+    .filter(([brand]) => !normalized || ORIGOCatalog.normalize(brand).includes(normalized));
   const items = brands.map(([brand, count]) => `<button data-action="brand-search" data-query="${escapeHTML(brand)}" aria-label="${escapeHTML(`${state.lang === "ar" ? "عرض منتجات" : "View products by"} ${brand}`)}"><span aria-hidden="true">${escapeHTML(brand.slice(0, 2).toUpperCase())}</span><b>${escapeHTML(brand)}</b><small>${count} ${state.lang === "ar" ? "منتج" : "products"}</small></button>`).join("");
   const duplicateItems = items.replaceAll("<button ", '<button tabindex="-1" ');
-  track.innerHTML = items ? `<div class="brand-marquee-content"><div class="brand-marquee-set">${items}</div><div class="brand-marquee-set" aria-hidden="true">${duplicateItems}</div></div>` : "";
+  $$("#brand-carousel-track, #home-brand-carousel-track").forEach((track) => {
+    track.innerHTML = items ? `<div class="brand-marquee-content"><div class="brand-marquee-set">${items}</div><div class="brand-marquee-set" aria-hidden="true">${duplicateItems}</div></div>` : "";
+    bindBrandMarquee(track);
+  });
+}
+
+function renderHomeNavigation() {
+  const brandMenu = $("#header-brands-dropdown");
+  if (brandMenu) brandMenu.innerHTML = `<div class="mega-dropdown-heading"><small>${state.lang === "ar" ? "دليل العلامات التجارية" : "Brand directory"}</small><b>${ORIGO_PERFUME_BRANDS.length} ${state.lang === "ar" ? "علامة" : "brands"}</b></div>${ORIGO_PERFUME_BRANDS.map((brand) => `<button data-action="brand-search" data-query="${escapeHTML(brand)}"><span>${escapeHTML(brand)}</span><i>‹</i></button>`).join("")}`;
+  const categoryMenu = $("#header-categories-dropdown");
+  if (categoryMenu) categoryMenu.innerHTML = `<div class="mega-dropdown-heading"><small>${state.lang === "ar" ? "تسوق حسب الفئة" : "Shop by category"}</small><b>${ORIGO_HOME_CATEGORIES.length} ${state.lang === "ar" ? "فئات" : "categories"}</b></div>${ORIGO_HOME_CATEGORIES.map(([key, ar, en, icon]) => `<button data-action="catalog-category" data-category="${key}"><i>${icon}</i><span>${state.lang === "ar" ? ar : en}</span><b>‹</b></button>`).join("")}`;
+  const mobile = $(".mobile-brands > div");
+  if (mobile) mobile.innerHTML = ORIGO_PERFUME_BRANDS.map((brand) => `<button data-action="brand-search" data-query="${escapeHTML(brand)}">${escapeHTML(brand)}</button>`).join("");
+}
+
+let homeHeroTimer;
+let homeHeroIndex = 0;
+function renderHomeHero() {
+  const hero = $("#home-hero");
+  const visual = hero?.querySelector(".home-hero-products");
+  const dots = hero?.querySelector(".home-hero-dots");
+  if (!hero || !visual || !dots) return;
+  const media = (state.adminWorkspace.settings?.homeMedia || []).filter((item) => item.placement === "hero" && item.url);
+  const slides = media.length ? media : [{ url: "assets/home/hero/hero-main.png", altAr: "مجموعة عطور فاخرة", altEn: "Luxury perfume collection" }];
+  homeHeroIndex = Math.min(homeHeroIndex, slides.length - 1);
+  const show = (index) => {
+    homeHeroIndex = (index + slides.length) % slides.length;
+    const item = slides[homeHeroIndex];
+    visual.style.backgroundImage = `url("${String(item.url).replace(/["\\]/g, "")}")`;
+    visual.setAttribute("aria-label", state.lang === "ar" ? item.altAr || item.name || "بانر دعائي" : item.altEn || item.name || "Campaign banner");
+    [...dots.children].forEach((dot, dotIndex) => dot.classList.toggle("active", dotIndex === homeHeroIndex));
+  };
+  dots.innerHTML = slides.map((_, index) => `<button type="button" data-home-hero-slide="${index}" aria-label="${state.lang === "ar" ? "الشريحة" : "Slide"} ${index + 1}"></button>`).join("");
+  dots.onclick = (event) => {
+    const button = event.target.closest("[data-home-hero-slide]");
+    if (button) show(Number(button.dataset.homeHeroSlide));
+  };
+  if (hero.dataset.sliderBound !== "true") {
+    hero.dataset.sliderBound = "true";
+    let startX = 0;
+    hero.addEventListener("pointerdown", (event) => { startX = event.clientX; });
+    hero.addEventListener("pointerup", (event) => {
+      const delta = event.clientX - startX;
+      if (Math.abs(delta) > 55) show(homeHeroIndex + (delta < 0 ? 1 : -1));
+    });
+  }
+  clearInterval(homeHeroTimer);
+  if (slides.length > 1 && !matchMedia("(prefers-reduced-motion: reduce)").matches) homeHeroTimer = setInterval(() => show(homeHeroIndex + 1), 6500);
+  show(homeHeroIndex);
+}
+
+function productDateScore(product, index = 0) {
+  const date = Date.parse(product.createdAt || product.updatedAt || product.releaseDate || "");
+  return Number.isFinite(date) ? date : Number(product.releaseYear || 0) * 1e8 + index;
+}
+
+function productSalesScore(product) {
+  return Number(product.salesCount || product.ordersCount || product.soldCount || product.reviewSummary?.count || product.insights?.reviews || 0) * 100 + catalogRating(product);
+}
+
+function homeBrandProducts(brand) {
+  const key = ORIGOCatalog.normalize(brand);
+  return state.products.filter((product) => ORIGOCatalog.normalize(product.brand || "") === key);
+}
+
+function renderHomepageCommerce() {
+  const newest = $("#new-product-grid");
+  if (newest) {
+    const products = state.products.map((product, index) => ({ product, score: productDateScore(product, index) })).sort((a, b) => b.score - a.score).slice(0, 12).map(({ product }) => product);
+    newest.innerHTML = products.map((product, index) => productCardMarkup(product, { context: "grid", delay: Math.min(index * 45, 180) })).join("");
+    bindHorizontalRail(newest);
+  }
+  const showcase = $("#home-brand-showcases");
+  if (showcase) {
+    const configured = state.adminWorkspace.settings?.homeMedia || [];
+    const dataBrands = [...new Set(state.products.map((product) => String(product.brand || "").trim()).filter(Boolean))];
+    const ordered = [...ORIGO_PERFUME_BRANDS, ...dataBrands].filter((brand, index, values) => values.findIndex((candidate) => ORIGOCatalog.normalize(candidate) === ORIGOCatalog.normalize(brand)) === index);
+    showcase.innerHTML = ordered.map((brand) => {
+      const products = homeBrandProducts(brand);
+      if (!products.length) return "";
+      const banner = configured.find((item) => item.placement === "brand-banner" && ORIGOCatalog.normalize(item.brand || "") === ORIGOCatalog.normalize(brand));
+      return `<section class="home-brand-showcase"><div class="home-section-head"><button data-action="brand-search" data-query="${escapeHTML(brand)}">${state.lang === "ar" ? "عرض كل المنتجات" : "View all products"} ‹</button><div><small>${state.lang === "ar" ? "مختارات العلامة" : "Brand selection"}</small><h2>${escapeHTML(brand)}</h2></div></div>${banner ? `<button class="home-brand-banner" data-action="brand-search" data-query="${escapeHTML(brand)}"><img src="${escapeHTML(banner.url)}" alt="${escapeHTML(state.lang === "ar" ? banner.altAr : banner.altEn)}" loading="lazy"/></button>` : ""}<div class="product-grid horizontal-scroll horizontal-rail" data-horizontal-rail>${products.slice(0, 12).map((product) => productCardMarkup(product, { context: "grid" })).join("")}</div></section>`;
+    }).join("");
+    $$('[data-horizontal-rail]', showcase).forEach(bindHorizontalRail);
+  }
+  observeReveals();
 }
 
 function renderFooterBrands() {
@@ -2424,7 +2530,9 @@ function renderProducts(filter = "all") {
       product.brand,
       ...(product.notesAr || []),
       ...(product.notesEn || [])
-    ].join(" ")).includes(search));
+    ].join(" ")).includes(search))
+    .sort((a, b) => productSalesScore(b) - productSalesScore(a))
+    .slice(0, 12);
   if (!visibleProducts.length) {
     grid.innerHTML = `
       <div class="product-grid-empty">
@@ -5316,8 +5424,9 @@ document.addEventListener("click", async (event) => {
     renderWishlist();
     if ($("#product-overlay").classList.contains("open") && state.activeProductId) showProductDetails(getProduct(state.activeProductId), false);
   }
-  if (action === "brands-menu") {
+  if (action === "brands-menu" || action === "categories-menu") {
     const menu = actionElement.closest(".brands-nav");
+    $$(".brands-nav.open").filter((item) => item !== menu).forEach((item) => item.classList.remove("open"));
     menu.classList.toggle("open");
     actionElement.setAttribute("aria-expanded", String(menu.classList.contains("open")));
   }
@@ -5996,12 +6105,14 @@ document.addEventListener("submit", async (event) => {
     if (file) {
       try {
         const url = await optimizeGalleryImage(file);
-        media.unshift({ id: `media-${Date.now()}`, name: String(data.get("mediaName") || file.name).trim(), altAr: String(data.get("mediaAltAr") || "").trim(), altEn: String(data.get("mediaAltEn") || "").trim(), url, createdAt: new Date().toISOString() });
+        media.unshift({ id: `media-${Date.now()}`, name: String(data.get("mediaName") || file.name).trim(), placement: String(data.get("mediaPlacement") || "hero"), brand: String(data.get("mediaBrand") || "").trim(), altAr: String(data.get("mediaAltAr") || "").trim(), altEn: String(data.get("mediaAltEn") || "").trim(), url, createdAt: new Date().toISOString() });
       } catch (error) { showToast(adminCopy("تعذر معالجة الصورة", "Could not process image")); return; }
     }
     state.adminWorkspace.settings = mergeStoreSettings({ ...current, homepageRails: nextRails, homeMedia: media });
     saveAdminWorkspace("homepage");
     applyHomepageRailSettings();
+    renderHomeHero();
+    renderHomepageCommerce();
     renderAdminDashboard("homepage");
     showToast(adminCopy("تم حفظ إعدادات الأشرطة", "Homepage rails saved"));
     return;
@@ -6619,8 +6730,9 @@ window.addEventListener("popstate", () => {
   handleProductRoute();
 });
 
-const brandTrack = $("#brand-carousel-track");
-if (brandTrack) {
+function bindBrandMarquee(brandTrack) {
+  if (!brandTrack || brandTrack.dataset.dragBound === "true") return;
+  brandTrack.dataset.dragBound = "true";
   let brandDragging = false;
   let brandStartX = 0;
   let brandStartScroll = 0;
@@ -6647,7 +6759,9 @@ if (brandTrack) {
   brandTrack.addEventListener("pointercancel", stopBrandDrag);
 }
 
-$$('[data-horizontal-rail]').forEach((rail) => {
+function bindHorizontalRail(rail) {
+  if (!rail || rail.dataset.railBound === "true") return;
+  rail.dataset.railBound = "true";
   let dragging = false;
   let moved = false;
   let startX = 0;
@@ -6676,7 +6790,10 @@ $$('[data-horizontal-rail]').forEach((rail) => {
     event.stopPropagation();
     moved = false;
   }, true);
-});
+}
+
+$$("[data-brand-marquee]").forEach(bindBrandMarquee);
+$$('[data-horizontal-rail]').forEach(bindHorizontalRail);
 
 window.ORIGOStore = {
   api,

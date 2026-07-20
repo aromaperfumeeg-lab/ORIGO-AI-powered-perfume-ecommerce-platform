@@ -70,24 +70,18 @@
 
       <nav class="category-nav" aria-label="أقسام المتجر">
         <a class="active" href="/" data-action="catalog-home"><span class="nav-icon" aria-hidden="true">⌂</span><span data-i18n="home">الرئيسية</span></a>
-        <a href="#featured" data-action="catalog-category" data-category="perfume"><span class="nav-icon" aria-hidden="true">♨</span><span data-i18n="navPerfumes">العطور</span></a>
-        <a href="#featured" data-action="catalog-category" data-category="skincare"><span class="nav-icon" aria-hidden="true">♧</span><span data-i18n="navSkincare">العناية الشخصية</span></a>
-        <a href="#featured" data-action="catalog-category" data-category="incense"><span class="nav-icon" aria-hidden="true">♨</span><span data-i18n="navIncense">البخور</span></a>
         <div class="brands-nav">
           <button data-action="brands-menu" aria-expanded="false"><span class="nav-icon" aria-hidden="true">◇</span><span data-i18n="navBrands">البراندات</span><i>⌄</i></button>
-          <div class="brands-dropdown">
-            <div><small data-i18n="featuredBrands">براندات مختارة</small><b>ORIGO EDIT</b></div>
-            <button data-action="brand-search" data-query="Dior">DIOR <span>→</span></button>
-            <button data-action="brand-search" data-query="Chanel">CHANEL <span>→</span></button>
-            <button data-action="brand-search" data-query="Tom Ford">TOM FORD <span>→</span></button>
-            <button data-action="brand-search" data-query="Guerlain">GUERLAIN <span>→</span></button>
-            <button data-action="brand-search" data-query="Creed">CREED <span>→</span></button>
-            <button data-action="brand-search" data-query="ORIGO">ORIGO <span>→</span></button>
-          </div>
+          <div class="brands-dropdown mega-dropdown" id="header-brands-dropdown"></div>
         </div>
-        <a href="#offers"><span class="nav-icon" aria-hidden="true">٪</span><span data-i18n="offers">العروض</span></a>
+        <div class="brands-nav categories-nav">
+          <button data-action="categories-menu" aria-expanded="false"><span class="nav-icon" aria-hidden="true">▦</span><span>الفئات</span><i>⌄</i></button>
+          <div class="brands-dropdown mega-dropdown" id="header-categories-dropdown"></div>
+        </div>
+        <a href="#best-sellers"><span class="nav-icon" aria-hidden="true">★</span><span data-i18n="bestSellers">الأكثر مبيعًا</span></a>
+        <a href="#new-arrivals"><span class="nav-icon" aria-hidden="true">✦</span><span data-i18n="newArrivals">المنتجات الحديثة</span></a>
+        <a href="#footer-brand-title"><span class="nav-icon" aria-hidden="true">ⓘ</span><span>من نحن</span></a>
         <a href="/alternatives" data-action="open-alternatives"><span class="nav-icon" aria-hidden="true">⇄</span><span data-i18n="alternatives">البدائل</span></a>
-        <a href="#featured"><span class="nav-icon" aria-hidden="true">✦</span><span data-i18n="newArrivals">جديدنا</span></a>
         <a class="smart-scent-nav" href="/fragrance-finder/for-whom" data-action="find-matches"><span class="nav-icon" aria-hidden="true">✧</span><span data-i18n="finderEntry">اكتشف عطرًا يناسب ذوقك</span></a>
       </nav>
     </header>
@@ -100,11 +94,11 @@
       </div>
       <button class="mobile-menu-search" data-action="search"><span>⌕</span><b data-i18n="headerSearchTitle">ابحث عن منتج أو براند</b></button>
       <nav>
+        <a href="/" data-action="catalog-home" data-i18n="home">الرئيسية</a>
         <a href="/perfumes" data-action="catalog-category" data-category="perfume" data-i18n="navPerfumes">العطور</a>
-        <a href="#featured" data-action="close-mobile-menu" data-i18n="navSkincare">العناية بالبشرة</a>
-        <a href="#featured" data-action="close-mobile-menu" data-i18n="navHaircare">العناية بالشعر</a>
-        <a href="#featured" data-action="close-mobile-menu" data-i18n="navIncense">البخور والمباخر</a>
-        <a href="#featured" data-action="close-mobile-menu" data-i18n="navDeodorants">مزيلات العرق</a>
+        <a href="#new-arrivals" data-action="close-mobile-menu" data-i18n="newArrivals">المنتجات الحديثة</a>
+        <a href="#best-sellers" data-action="close-mobile-menu" data-i18n="bestSellers">الأكثر مبيعًا</a>
+        <a href="#footer-brand-title" data-action="close-mobile-menu">من نحن</a>
         <a href="#offers" data-action="close-mobile-menu" data-i18n="offers">العروض</a>
         <a href="/alternatives" data-action="open-alternatives" data-i18n="alternatives">البدائل</a>
         <a href="/fragrance-finder/for-whom" data-action="find-matches"><span data-i18n="finderEntry">اكتشف عطرًا يناسب ذوقك</span></a>
@@ -157,18 +151,24 @@
           <div class="home-hero-copy">
             <h1 id="home-hero-title">اكتشف عالم العطور<br /><em>الفاخرة</em></h1>
             <p>نخبة مختارة من أفضل الماركات العالمية</p>
-            <a class="home-primary-button" href="#featured"><span>تسوق الآن</span><i>‹</i></a>
+            <a class="home-primary-button" href="#new-arrivals"><span>تسوق الآن</span><i>‹</i></a>
             <div class="home-hero-dots" aria-label="شرائح البانر"><button class="active" aria-label="الشريحة 1"></button><button aria-label="الشريحة 2"></button><button aria-label="الشريحة 3"></button><button aria-label="الشريحة 4"></button></div>
           </div>
           <div class="home-hero-products" role="img" aria-label="مجموعة عطور فاخرة من أمواج وزيرجوف وشانيل"></div>
         </section>
 
+        <section class="home-brand-directory" aria-labelledby="home-brands-title">
+          <div class="home-section-head"><a href="/perfumes"><span data-i18n="viewAll">عرض الكل</span> <span>‹</span></a><div class="ornament-heading"><span></span><h2 id="home-brands-title">العلامات التجارية</h2><span></span></div></div>
+          <div class="brand-carousel-track" id="home-brand-carousel-track" data-brand-marquee aria-live="off"></div>
+        </section>
+
         <section class="home-benefits horizontal-rail" data-horizontal-rail aria-label="مزايا متجر ORIGO">
           <article><span class="benefit-icon">◉</span><div><b>منتجات أصلية 100%</b><small>جودة مضمونة</small></div></article>
           <article><span class="benefit-icon">▰</span><div><b>شحن سريع</b><small>إلى جميع المدن</small></div></article>
-          <article><span class="benefit-icon">⬟</span><div><b>دفع آمن</b><small>خيارات دفع متعددة</small></div></article>
-          <article><span class="benefit-icon">🎁</span><div><b>تغليف هدايا فاخر</b><small>جاهز للإهداء</small></div></article>
-          <article><span class="benefit-icon">◇</span><div><b>أفضل الماركات العالمية</b><small>مختارة بعناية</small></div></article>
+          <article><span class="benefit-icon">↻</span><div><b>استرجاع واستبدال سهل</b><small>سياسة مرنة</small></div></article>
+          <article><span class="benefit-icon">٪</span><div><b>أسعار منافسة</b><small>قيمة أفضل</small></div></article>
+          <article><span class="benefit-icon">▣</span><div><b>دفع عند الاستلام</b><small>تسوق بثقة</small></div></article>
+          <article><span class="benefit-icon">🎁</span><div><b>تغليف فاخر</b><small>جاهز للإهداء</small></div></article>
           <article><span class="benefit-icon">♧</span><div><b>دعم العملاء 24/7</b><small>نحن دائمًا معك</small></div></article>
         </section>
 
@@ -188,13 +188,15 @@
         </section>
 
         <section class="home-promo-strip" id="offers" aria-label="عروض ومزايا ORIGO">
-          <article><span>♕</span><div><b>برنامج ولاء</b><small>اكسب نقاط ومكافآت</small></div></article>
+          <article><span>♕</span><div><b>برنامج ولاء</b><small>اكسب نقاطًا ومكافآت</small></div></article>
           <article><span>NEW</span><div><b>منتجات جديدة</b><small>كل أسبوع</small></div></article>
           <article><span>◇</span><div><b>خصومات مميزة</b><small>تصل حتى 50%</small></div></article>
           <article><span>٪</span><div><b>عروض حصرية</b><small>على نخبة المنتجات</small></div></article>
         </section>
 
-        <section class="home-best-sellers" id="featured" aria-labelledby="best-sellers-title">
+        <section class="home-best-sellers home-new-arrivals" id="new-arrivals" aria-labelledby="new-arrivals-title"><div class="home-section-head"><a href="/perfumes?sort=newest"><span data-i18n="viewAll">عرض باقي المنتجات الحديثة</span> <span>‹</span></a><div class="ornament-heading"><span></span><h2 id="new-arrivals-title">المنتجات الحديثة</h2><span></span></div></div><div class="home-products-wrap"><div class="product-grid horizontal-scroll horizontal-rail" id="new-product-grid" data-horizontal-rail></div></div></section>
+
+        <section class="home-best-sellers" id="best-sellers" aria-labelledby="best-sellers-title">
           <div class="home-section-head">
             <a href="#featured"><span data-i18n="viewAll">عرض الكل</span> <span>‹</span></a>
             <div class="ornament-heading"><span></span><h2 id="best-sellers-title" data-i18n="bestSellers">الأكثر مبيعًا</h2><span></span></div>
@@ -202,10 +204,12 @@
           <div class="dynamic-filter-bar" id="dynamic-filter-bar" aria-label="فلاتر القسم"></div>
           <div class="home-products-wrap">
             <button class="home-carousel-arrow previous" data-scroll="products" data-direction="-1" aria-label="السابق">‹</button>
-            <div class="product-grid horizontal-scroll" id="product-grid"></div>
+            <div class="product-grid horizontal-scroll horizontal-rail" id="product-grid" data-horizontal-rail></div>
             <button class="home-carousel-arrow next" data-scroll="products" data-direction="1" aria-label="التالي">›</button>
           </div>
         </section>
+
+        <section class="home-brand-showcases" id="home-brand-showcases" aria-label="منتجات العلامات التجارية"></section>
 
         <nav class="home-categories horizontal-rail" data-horizontal-rail aria-label="فئات المنتجات">
           <a href="#featured" data-action="catalog-category" data-category="perfume"><span>♨</span><b data-i18n="navPerfumes">العطور</b></a>
@@ -284,7 +288,7 @@
         <div class="brand-carousel-head"><div><span class="eyebrow">BRAND DIRECTORY</span><h2 data-i18n="navBrands">البراندات</h2></div>
           <div><input id="brand-carousel-search" type="search" placeholder="ابحث عن براند" /><button data-action="brand-carousel-scroll" data-direction="-1" aria-label="السابق">→</button><button data-action="brand-carousel-scroll" data-direction="1" aria-label="التالي">←</button></div>
         </div>
-        <div class="brand-carousel-track" id="brand-carousel-track" data-brand-marquee aria-live="off"></div>
+        <div class="brand-carousel-track" id="brand-carousel-track" aria-live="off"></div>
       </section>
 
       <section class="section featured-section" id="featured">

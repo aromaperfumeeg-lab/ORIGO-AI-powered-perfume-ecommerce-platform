@@ -1951,8 +1951,35 @@ function migrateLegacyProductNotes() {
 migrateLegacyProductNotes();
 
 export async function ensureAdminFromEnvironment() {
-  // Accounts are never created or modified implicitly at process startup.
-  return null;
+  const email = normalizedEmail(process.env.ORIGO_ADMIN_EMAIL || "");
+  const password = String(process.env.ORIGO_ADMIN_PASSWORD || "");
+  if (!email || !password) return { status: "disabled", configured: false };
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || password.length < 10 || password.length > 200) {
+    const error = new Error("INVALID_ADMIN_BOOTSTRAP_CONFIGURATION");
+    error.code = "INVALID_ADMIN_BOOTSTRAP_CONFIGURATION";
+    throw error;
+  }
+  const existing = findUserByEmail(email);
+  if (existing) {
+    const effectiveRole = existing.staff_role || existing.role;
+    if (effectiveRole !== "admin" && effectiveRole !== "owner") setUserRole(existing.id, "admin");
+    return { status: "existing", configured: true };
+  }
+  createUser({
+    name: clean(process.env.ORIGO_ADMIN_NAME || "ORIGO Admin", 100),
+    email,
+    passwordHash: await hashPassword(password),
+    role: "admin"
+  });
+  return { status: "created", configured: true };
+}
+
+export function adminConfiguredFromEnvironment() {
+  const email = normalizedEmail(process.env.ORIGO_ADMIN_EMAIL || "");
+  const passwordLoaded = Boolean(String(process.env.ORIGO_ADMIN_PASSWORD || ""));
+  if (!email || !passwordLoaded) return false;
+  const user = findUserByEmail(email);
+  return Boolean(user && ["admin", "owner"].includes(user.staff_role || user.role));
 }
 
 export const databasePath = DB_PATH;

@@ -1,0 +1,6 @@
+ORIGO_ADMIN_EMAIL loaded: true
+ORIGO_ADMIN_PASSWORD loaded: true
+ORIGO is running at http://0.0.0.0:4175
+Portable database (sql.js-wasm): C:\Users\c2d\Documents\origo ai\.admin-bootstrap-test.db
+Admin bootstrap: existing
+OpenAI web research: not configured
