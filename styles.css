@@ -4616,6 +4616,8 @@ footer {
     box-shadow: -25px 0 80px rgba(0,0,0,.25);
     transform: translateX(105%);
     transition: .4s var(--ease);
+    overflow-y: auto;
+    overscroll-behavior: contain;
   }
 
   [dir="ltr"] .mobile-menu-panel {
@@ -4657,29 +4659,15 @@ footer {
     font-weight: 600;
   }
 
-  .mobile-brands {
-    margin-top: 22px;
-  }
-
-  .mobile-brands > small {
-    color: var(--gold-dark);
-    font-size: 7px;
-    font-weight: 700;
-  }
-
-  .mobile-brands > div {
-    margin-top: 8px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-
-  .mobile-brands button {
-    padding: 7px 9px;
-    border: 1px solid var(--line);
-    background: transparent;
-    font-size: 7px;
-  }
+  .mobile-taxonomy{margin-top:14px;display:grid;gap:8px}
+  .mobile-taxonomy-group{border:1px solid var(--line);border-radius:10px;background:var(--paper)}
+  .mobile-taxonomy-group summary{min-height:44px;padding:0 13px;display:flex;align-items:center;justify-content:space-between;gap:10px;color:var(--burgundy);font-size:11px;font-weight:800;cursor:pointer;list-style:none}
+  .mobile-taxonomy-group summary::-webkit-details-marker{display:none}
+  .mobile-taxonomy-group summary i{font-style:normal;transition:transform .2s ease}
+  .mobile-taxonomy-group[open] summary i{transform:rotate(180deg)}
+  .mobile-taxonomy-list{max-height:46vh;padding:5px 8px 10px;display:grid;grid-template-columns:1fr;gap:4px;overflow-y:auto}
+  .mobile-taxonomy-list button{width:100%;min-height:38px;padding:7px 10px;display:flex;align-items:center;justify-content:space-between;gap:9px;border:1px solid var(--line);border-radius:7px;color:var(--ink);background:var(--white);font-size:9px;text-align:start}
+  .mobile-taxonomy-list button i,.mobile-taxonomy-list button b{color:var(--gold-dark);font-style:normal}
 
   .mobile-admin-link {
     width: 100%;
@@ -6422,7 +6410,7 @@ body.dark .admin-search-results > div:last-child button {
 [data-theme="dark"] .profile-image-language-note,[data-theme="dark"] .profile-image-upload>label{background:#21181a;border-color:#60434a}[data-theme="dark"] .profile-image-upload{background:#171113;border-color:#50383e}[data-theme="dark"] .profile-image-upload>header>span{background:#2a1c1f}
 @media(max-width:760px){.profile-image-upload-grid{grid-template-columns:1fr}.profile-image-language-note{align-items:flex-start;flex-direction:column}}
 
-.password-field{position:relative;display:flex;align-items:center}.password-field input{width:100%;padding-inline-end:48px}.password-field button{position:absolute;inset-inline-end:5px;width:38px;height:38px;display:grid;place-items:center;border:0;border-radius:9px;background:transparent;color:#6d1027;font-size:18px;cursor:pointer}.password-field button:hover,.password-field button:focus-visible{background:rgba(109,16,39,.08);outline:2px solid rgba(185,132,60,.35)}
+.password-field{position:relative;display:flex;align-items:center}.password-field input{width:100%}.password-field button{position:absolute;top:50%;width:38px;height:38px;display:grid;place-items:center;border:1px solid transparent;border-radius:9px;background:var(--paper);color:#6d1027;transform:translateY(-50%);cursor:pointer}.password-field button svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}.password-field button:hover,.password-field button:focus-visible{border-color:rgba(185,132,60,.35);background:rgba(109,16,39,.08);outline:2px solid rgba(185,132,60,.25)}html[dir="rtl"] .password-field input{padding-right:14px;padding-left:50px}html[dir="rtl"] .password-field button{right:auto;left:5px}html[dir="ltr"] .password-field input{padding-right:50px;padding-left:14px}html[dir="ltr"] .password-field button{right:5px;left:auto}
 .auth-text-action{align-self:center;margin-top:4px;padding:8px;border:0;background:transparent;color:#76132b;text-decoration:underline;text-underline-offset:4px;cursor:pointer}
 .reset-channels{grid-column:1/-1;margin:0;padding:0;border:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.reset-channels legend{margin-bottom:8px;color:var(--ink,#2c1a1d);font-weight:700}.reset-channels label{position:relative}.reset-channels input{position:absolute;opacity:0}.reset-channels span{min-height:48px;padding:10px;display:grid;place-items:center;border:1px solid #dfcec6;border-radius:10px;background:#fff;cursor:pointer}.reset-channels input:checked+span{border-color:#7b1129;background:#fff4f6;color:#7b1129;box-shadow:0 0 0 2px rgba(123,17,41,.08)}
 [data-theme="dark"] .reset-channels span{background:#21181a;border-color:#5b4248}[data-theme="dark"] .password-field button,[data-theme="dark"] .auth-text-action{color:#efb9c5}

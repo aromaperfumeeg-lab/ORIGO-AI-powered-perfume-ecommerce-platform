@@ -1931,7 +1931,7 @@ function exportAdminReport(report, format = "csv") {
 }
 
 function passwordFieldMarkup({ name = "password", autocomplete = "current-password", label, required = true } = {}) {
-  return `<label class="wide"><span>${label}</span><div class="password-field"><input name="${name}" type="password" autocomplete="${autocomplete}"${required ? " required" : ""} minlength="10" maxlength="200" dir="ltr"/><button type="button" data-action="toggle-password" aria-label="${state.lang === "ar" ? "إظهار كلمة المرور" : "Show password"}" aria-pressed="false">◉</button></div></label>`;
+  return `<label class="wide"><span>${label}</span><div class="password-field"><input name="${name}" type="password" autocomplete="${autocomplete}"${required ? " required" : ""} minlength="10" maxlength="200" dir="ltr"/><button type="button" data-action="toggle-password" aria-label="${state.lang === "ar" ? "إظهار كلمة المرور" : "Show password"}" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.7"/></svg></button></div></label>`;
 }
 
 function renderAuth(mode = "login", requestId = "") {
@@ -2241,6 +2241,10 @@ function renderHomeNavigation() {
   if (brandMenu) brandMenu.innerHTML = `<div class="mega-dropdown-heading"><small>${state.lang === "ar" ? "دليل العلامات التجارية" : "Brand directory"}</small><b>${ORIGO_PERFUME_BRANDS.length} ${state.lang === "ar" ? "علامة" : "brands"}</b></div>${ORIGO_PERFUME_BRANDS.map((brand) => `<button data-action="brand-search" data-query="${escapeHTML(brand)}"><span>${escapeHTML(brand)}</span><i>‹</i></button>`).join("")}`;
   const categoryMenu = $("#header-categories-dropdown");
   if (categoryMenu) categoryMenu.innerHTML = `<div class="mega-dropdown-heading"><small>${state.lang === "ar" ? "تسوق حسب الفئة" : "Shop by category"}</small><b>${ORIGO_HOME_CATEGORIES.length} ${state.lang === "ar" ? "فئات" : "categories"}</b></div>${ORIGO_HOME_CATEGORIES.map(([key, ar, en, icon]) => `<button data-action="catalog-category" data-category="${key}"><i>${icon}</i><span>${state.lang === "ar" ? ar : en}</span><b>‹</b></button>`).join("")}`;
+  const mobileBrandList = $("#mobile-brands-list");
+  if (mobileBrandList) mobileBrandList.innerHTML = ORIGO_PERFUME_BRANDS.map((brand) => `<button data-action="brand-search" data-query="${escapeHTML(brand)}"><span>${escapeHTML(brand)}</span><i>‹</i></button>`).join("");
+  const mobileCategoryList = $("#mobile-categories-list");
+  if (mobileCategoryList) mobileCategoryList.innerHTML = ORIGO_HOME_CATEGORIES.map(([key, ar, en, icon]) => `<button data-action="catalog-category" data-category="${key}"><i>${icon}</i><span>${state.lang === "ar" ? ar : en}</span><b>‹</b></button>`).join("");
   const mobile = $(".mobile-brands > div");
   if (mobile) mobile.innerHTML = ORIGO_PERFUME_BRANDS.map((brand) => `<button data-action="brand-search" data-query="${escapeHTML(brand)}">${escapeHTML(brand)}</button>`).join("");
 }
@@ -2425,6 +2429,14 @@ function renderSiteFooter() {
   const emailLink = $("#footer-support-email");
   emailLink.href = `mailto:${encodeURIComponent(email)}`;
   $("b", emailLink).textContent = email;
+  const whatsappLink = $("#footer-support-whatsapp");
+  const whatsappHref = safePublicHref(settings.socialLinks.whatsapp, { externalOnly: true });
+  if (whatsappLink) {
+    whatsappLink.hidden = !whatsappHref;
+    if (whatsappHref) whatsappLink.href = whatsappHref;
+    const label = $("b", whatsappLink);
+    if (label) label.textContent = isArabic ? "تواصل عبر واتساب" : "Contact us on WhatsApp";
+  }
   const hours = isArabic ? settings.supportHoursAr : settings.supportHoursEn;
   $("#footer-support-hours").innerHTML = escapeHTML(hours).replaceAll("\n", "<br />");
   $("#footer-support-note").textContent = isArabic ? "نجيب الرسائل خلال ساعات العمل الرسمية." : "Messages are answered during official business hours.";
@@ -3769,7 +3781,6 @@ function productCardMarkup(product, options = {}) {
       </div>
       ${notes.length ? `<div class="product-notes product-card-notes">${notes.map((note) => `<span>${note.image ? `<img src="${escapeHTML(note.image)}" alt="" loading="lazy" />` : `<i>✦</i>`}<b>${escapeHTML(note.label)}</b></span>`).join("")}</div>` : ""}
       ${options.meta ? `<p class="product-card-meta">${escapeHTML(options.meta)}</p>` : ""}
-      ${sizeLabel ? `<p class="product-card-size" dir="ltr">${escapeHTML(sizeLabel)}</p>` : ""}
       <div class="product-card-commerce"><button class="card-add-button"${interactive ? ` data-action="add-to-cart"` : disabled} aria-label="${translations[state.lang].addToBag}"${outOfStock ? " disabled" : ""}><i aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6.5 8.5h11l1 12h-13l1-12Z"/><path d="M9 9V6.5a3 3 0 0 1 6 0V9"/></svg></i><span>${outOfStock ? (isArabic ? "غير متوفر" : "Unavailable") : translations[state.lang].addToBag}</span></button></div>
     </div>
   </article>`;
@@ -5506,7 +5517,9 @@ document.addEventListener("click", async (event) => {
       input.type = visible ? "password" : "text";
       actionElement.setAttribute("aria-pressed", String(!visible));
       actionElement.setAttribute("aria-label", !visible ? (state.lang === "ar" ? "إخفاء كلمة المرور" : "Hide password") : (state.lang === "ar" ? "إظهار كلمة المرور" : "Show password"));
-      actionElement.textContent = visible ? "◉" : "⊘";
+      actionElement.innerHTML = visible
+        ? `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.7"/></svg>`
+        : `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18M10.7 6.1A10.5 10.5 0 0 1 12 6c6 0 9.5 6 9.5 6a17 17 0 0 1-2.5 3.2M7.1 7.2A17.2 17.2 0 0 0 2.5 12s3.5 6 9.5 6c1.5 0 2.8-.4 4-1"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>`;
     }
   }
   if (action === "logout") {

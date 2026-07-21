@@ -103,14 +103,15 @@
         <a href="/alternatives" data-action="open-alternatives" data-i18n="alternatives">البدائل</a>
         <a href="/fragrance-finder/for-whom" data-action="find-matches"><span data-i18n="finderEntry">اكتشف عطرًا يناسب ذوقك</span></a>
       </nav>
-      <div class="mobile-brands">
-        <small data-i18n="navBrands">البراندات</small>
-        <div>
-          <button data-action="brand-search" data-query="Dior">DIOR</button>
-          <button data-action="brand-search" data-query="Chanel">CHANEL</button>
-          <button data-action="brand-search" data-query="Tom Ford">TOM FORD</button>
-          <button data-action="brand-search" data-query="ORIGO">ORIGO</button>
-        </div>
+      <div class="mobile-taxonomy">
+        <details class="mobile-taxonomy-group">
+          <summary><span data-i18n="navCategories">الفئات</span><i>⌄</i></summary>
+          <div id="mobile-categories-list" class="mobile-taxonomy-list"></div>
+        </details>
+        <details class="mobile-taxonomy-group mobile-brands">
+          <summary><span data-i18n="navBrands">العلامات التجارية</span><i>⌄</i></summary>
+          <div id="mobile-brands-list" class="mobile-taxonomy-list"></div>
+        </details>
       </div>
       <button class="mobile-admin-link" data-action="admin"><span>◇</span><b data-i18n="adminLink">إدارة المنتجات</b><i>←</i></button>
       <div class="mobile-menu-actions">
@@ -649,7 +650,7 @@
         <section class="footer-column"><h3>تسوق</h3><a href="/perfumes?quick=men">العطور للرجال <span>♙</span></a><a href="/perfumes?quick=women">العطور للنساء <span>♙</span></a><a href="/perfumes?quick=unisex">العطور للجنسين <span>♙</span></a><a href="/alternatives" data-action="open-alternatives">البدائل <span>⇄</span></a><a href="/search?q=عطور+شرقية">العطور الشرقية <span>♙</span></a><a href="/search?q=عطور+عربية">العطور العربية <span>♙</span></a><a href="/perfumes?quick=sale">العروض <span>‹</span></a><a href="/perfumes?quick=new">الجديد <span>‹</span></a></section>
         <section class="footer-column"><h3>ماركات</h3><div class="footer-brand-list" id="footer-brand-links"><button data-action="brand-search" data-query="ORIGO">ORIGO</button></div><a class="footer-all-link" href="/perfumes">عرض جميع الماركات <span>▦</span></a></section>
         <section class="footer-column"><h3>معلومات</h3><a href="/#home-hero">عن أوريجو <span>ⓘ</span></a><a href="/benefits/customer-service">الأسئلة الشائعة <span>?</span></a><a href="/benefits/customer-service">سياسة الشحن والتوصيل <span>▱</span></a><a href="/benefits/easy-returns">سياسة الاسترجاع <span>↶</span></a><a id="footer-privacy-link" href="mailto:support@origoscents.com?subject=سياسة الخصوصية">سياسة الخصوصية <span>♢</span></a><a id="footer-terms-link" href="mailto:support@origoscents.com?subject=الشروط والأحكام">الشروط والأحكام <span>▣</span></a><button data-action="account">تتبع الطلب <span>◇</span></button></section>
-        <section class="footer-contact footer-column"><h3>خدمة العملاء</h3><a id="footer-support-email" href="mailto:support@origoscents.com"><span>✉</span><b dir="ltr">support@origoscents.com</b></a><p><span>◷</span><b id="footer-support-hours">من السبت إلى الخميس<br />9:00 صباحًا – 11:00 مساءً</b></p><small id="footer-support-note">نجيب الرسائل خلال ساعات العمل الرسمية.</small></section>
+        <section class="footer-contact footer-column"><h3>تواصل معنا</h3><a id="footer-support-email" href="mailto:support@origoscents.com"><span>✉</span><b dir="ltr">support@origoscents.com</b></a><a id="footer-support-whatsapp" class="footer-whatsapp-link" href="#" target="_blank" rel="noopener noreferrer" hidden><span>◉</span><b>واتساب</b></a><p><span>◷</span><b id="footer-support-hours">من السبت إلى الخميس<br />9:00 صباحًا – 11:00 مساءً</b></p><small id="footer-support-note">نجيب الرسائل خلال ساعات العمل الرسمية.</small></section>
         <section class="footer-app footer-column"><h3>حمل التطبيق</h3><p>تسوق أسهل وأسرع<br />مع تطبيق أوريجو</p><div class="footer-app-links" id="footer-app-links"><small>التطبيق قريبًا</small></div><h3>تابعنا</h3><div class="footer-socials" id="footer-socials" aria-label="شبكات ORIGO الاجتماعية"></div></section>
       </div>
 
