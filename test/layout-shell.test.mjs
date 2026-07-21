@@ -72,7 +72,7 @@ test("checkout and account route teardown cannot hide another active page", asyn
 
 test("homepage rails separate manual drag from brand autoplay", async () => {
   const [html, app, home] = await Promise.all([source("index.html"), source("app.js"), source("home.css")]);
-  assert.equal((html.match(/data-horizontal-rail/g) || []).length, 3);
+  assert.equal((html.match(/data-horizontal-rail/g) || []).length, 5);
   assert.equal((html.match(/data-brand-marquee/g) || []).length, 1);
   assert.match(home, /\.horizontal-rail\{[^}]*overflow-x:auto/);
   assert.match(home, /scroll-snap-type:x mandatory/);

@@ -36,6 +36,21 @@ test("product options are bilingual database records and the editor persists new
   assert.match(app, /api\("\/api\/admin\/product-options"/);
 });
 
+test("notes and brands support bilingual editing and persisted artwork from the product editor", async () => {
+  const app = await readFile(new URL("app.js", root), "utf8");
+  const db = await readFile(new URL("db.mjs", root), "utf8");
+  assert.match(app, /إضافة أو تعديل نوتة عطرية/);
+  assert.match(app, /name="descriptionAr"/);
+  assert.match(app, /name="descriptionEn"/);
+  assert.match(app, /data-product-option-image-upload/);
+  assert.match(app, /window\.ORIGOFragranceNotes\.upsertNote/);
+  assert.match(app, /await persistNotesState\(\)/);
+  assert.match(app, /شعار العلامة التجارية/);
+  assert.match(app, /option\?\.image \? `<img/);
+  assert.match(db, /metadata_json/);
+  assert.match(db, /20_000_000/);
+});
+
 test("product page places fingerprint beside the gallery and keeps ingredients separate", async () => {
   const app = await readFile(new URL("app.js", root), "utf8");
   const css = await readFile(new URL("product-detail.css", root), "utf8");

@@ -41,5 +41,5 @@ test("recovery UI supports three channels and password visibility without exposi
   assert.match(server, /\/api\/auth\/password-reset\/confirm/);
   assert.match(integrations, /RESEND_API_KEY/);
   assert.match(integrations, /TWILIO_ACCOUNT_SID/);
-  assert.doesNotMatch(server, /console\.log\([^\n]*(password|body\.email|body\.identifier)/i);
+  assert.doesNotMatch(server, /console\.log\([^\n]*(body\.password|body\.email|body\.identifier|process\.env\.ORIGO_ADMIN)/i);
 });

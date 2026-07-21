@@ -1668,7 +1668,9 @@ export function getFragranceNotesState() {
 export function saveFragranceNotesState(payload) {
   const value = payload && typeof payload === "object" ? payload : {};
   const serialized = JSON.stringify(value);
-  if (Buffer.byteLength(serialized, "utf8") > 2_000_000) {
+  // Uploaded note artwork is stored with the bilingual note record. Keep the
+  // limit below the server request ceiling while allowing a practical library.
+  if (Buffer.byteLength(serialized, "utf8") > 20_000_000) {
     const error = new Error("NOTES_STATE_TOO_LARGE");
     error.code = "NOTES_STATE_TOO_LARGE";
     throw error;

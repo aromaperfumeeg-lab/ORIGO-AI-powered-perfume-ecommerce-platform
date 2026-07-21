@@ -643,6 +643,10 @@ function readStoredObject(key) {
 }
 
 function toStorefrontProduct(product) {
+  product = {
+    ...product,
+    noteRefs: Array.isArray(product.noteRefs) ? product.noteRefs : (product.noteLibrary?.refs || [])
+  };
   if (product.notesAr && product.notesEn) return product;
   const notes = product.notes || {};
   return {
@@ -2219,7 +2223,12 @@ function renderBrandCarousel(query = "") {
   );
   const brands = catalogNames.map((brand) => [brand, counts.get(brand) || 0])
     .filter(([brand]) => !normalized || ORIGOCatalog.normalize(brand).includes(normalized));
-  const items = brands.map(([brand, count]) => `<button data-action="brand-search" data-query="${escapeHTML(brand)}" aria-label="${escapeHTML(`${state.lang === "ar" ? "عرض منتجات" : "View products by"} ${brand}`)}"><span aria-hidden="true">${escapeHTML(brand.slice(0, 2).toUpperCase())}</span><b>${escapeHTML(brand)}</b><small>${count} ${state.lang === "ar" ? "منتج" : "products"}</small></button>`).join("");
+  const brandOptions = productOptionItems("brand");
+  const items = brands.map(([brand, count]) => {
+    const option = brandOptions.find((item) => [item.value,item.nameAr,item.nameEn].some((value) => normalizeOptionSearch(value) === normalizeOptionSearch(brand)));
+    const artwork = option?.image ? `<img src="${escapeHTML(option.image)}" alt="" loading="lazy"/>` : `<span aria-hidden="true">${escapeHTML(brand.slice(0, 2).toUpperCase())}</span>`;
+    return `<button data-action="brand-search" data-query="${escapeHTML(brand)}" aria-label="${escapeHTML(`${state.lang === "ar" ? "عرض منتجات" : "View products by"} ${brand}`)}">${artwork}<b>${escapeHTML(brand)}</b><small>${count} ${state.lang === "ar" ? "منتج" : "products"}</small></button>`;
+  }).join("");
   const duplicateItems = items.replaceAll("<button ", '<button tabindex="-1" ');
   $$("#brand-carousel-track, #home-brand-carousel-track").forEach((track) => {
     track.innerHTML = items ? `<div class="brand-marquee-content"><div class="brand-marquee-set">${items}</div><div class="brand-marquee-set" aria-hidden="true">${duplicateItems}</div></div>` : "";
@@ -4226,13 +4235,17 @@ function normalizeOptionSearch(value = "") {
 function productOptionItems(group) {
   const defaults = (PRODUCT_OPTION_DEFAULTS[group] || []).map(([value,nameAr,nameEn,icon]) => ({ group, value, slug: value, nameAr, nameEn, icon, active: true, builtIn: true }));
   if (group === "brand") {
-    const brands = [...new Set([...baseProducts, ...state.catalogProducts].map((product) => product.brand).filter(Boolean))];
+    const brands = [...new Set([...ORIGO_PERFUME_BRANDS, ...baseProducts, ...state.catalogProducts].map((product) => typeof product === "string" ? product : product.brand).filter(Boolean))];
     defaults.push(...brands.map((brand) => ({ group, value: brand, slug: normalizeOptionSearch(brand).replaceAll(" ", "-"), nameAr: brand, nameEn: brand, icon: "◇", active: true, builtIn: true })));
   }
   if (group === "note") {
     defaults.push(...(window.ORIGOFragranceNotes?.notes || []).map((note) => ({ group, value: note.slug || note.nameEn || note.nameAr, slug: note.slug, nameAr: note.nameAr, nameEn: note.nameEn, image: note.image, icon: "✿", active: true, builtIn: true })));
   }
-  const saved = state.productOptions.filter((option) => option.group === group && option.active !== false).map((option) => ({ ...option, value: option.metadata?.value || option.nameEn || option.nameAr || option.slug }));
+  const saved = state.productOptions.filter((option) => option.group === group && option.active !== false).map((option) => ({
+    ...option,
+    ...(group === "note" ? (option.metadata || {}) : {}),
+    value: option.metadata?.value || option.slug || option.nameEn || option.nameAr
+  }));
   const unique = new Map();
   [...saved, ...defaults].forEach((item) => {
     const key = normalizeOptionSearch(item.value || item.slug || item.nameEn || item.nameAr);
@@ -5151,10 +5164,38 @@ function openProductOptionDialog(holder) {
   dialog.dataset.targetName = holder.dataset.name || "";
   dialog.dataset.group = group;
   dialog.dataset.context = holder.closest?.("#import-review-form") ? "editor" : "manager";
-  dialog.innerHTML = `<form method="dialog"><header><div><small>${adminCopy("إدارة خصائص المنتج","Product attributes")}</small><h3>${adminCopy("إضافة خيار جديد","Add a new option")}</h3></div><button type="button" data-action="close-product-option">×</button></header><div class="option-dialog-grid"><label>${adminCopy("الاسم بالعربية","Arabic name")}<input name="nameAr" dir="rtl" required maxlength="160"/></label><label>${adminCopy("الاسم بالإنجليزية","English name")}<input name="nameEn" dir="ltr" required maxlength="160"/></label><label>${adminCopy("أيقونة اختيارية","Optional icon")}<input name="icon" maxlength="12" placeholder="✦"/></label><label>${adminCopy("رابط صورة اختيارية","Optional image URL")}<input name="image" dir="ltr" maxlength="2000000" placeholder="https://…"/></label><label>${adminCopy("لون اختياري","Optional color")}<input name="color" type="color" value="#7a001d"/></label><label>${adminCopy("ترتيب الظهور","Sort order")}<input name="sortOrder" type="number" min="0" value="0"/></label><label class="option-active"><input name="active" type="checkbox" checked/><span>${adminCopy("الخيار نشط","Option is active")}</span></label></div><footer><button type="button" class="button secondary-button" data-action="close-product-option">${adminCopy("إلغاء","Cancel")}</button><button type="button" class="button burgundy-button" data-action="save-product-option">${adminCopy("حفظ وإضافة","Save & add")}</button></footer><p class="option-dialog-error" hidden></p></form>`;
+  const noteFields = group === "note" ? `<label class="wide">${adminCopy("تعديل نوتة موجودة (اختياري)","Edit an existing note (optional)")}<select name="existingOption"><option value="">${adminCopy("إضافة نوتة جديدة","Add a new note")}</option>${productOptionItems("note").map((item) => `<option value="${escapeHTML(item.value)}">${escapeHTML(item.nameAr)} · ${escapeHTML(item.nameEn)}</option>`).join("")}</select></label>
+    <label>${adminCopy("الوصف بالعربية","Arabic description")}<textarea name="descriptionAr" dir="rtl" maxlength="1000"></textarea></label><label>${adminCopy("الوصف بالإنجليزية","English description")}<textarea name="descriptionEn" dir="ltr" maxlength="1000"></textarea></label>
+    <label>${adminCopy("العائلة العطرية","Fragrance family")}<select name="familyId">${window.ORIGOFragranceNotes.families.map((family) => `<option value="${escapeHTML(family.id)}">${escapeHTML(family.nameAr)} · ${escapeHTML(family.nameEn)}</option>`).join("")}</select></label>
+    <label>${adminCopy("الموضع الافتراضي","Default position")}<select name="position"><option value="multiple">${adminCopy("متعدد","Multiple")}</option><option value="top">${adminCopy("المقدمة","Top")}</option><option value="heart">${adminCopy("القلب","Heart")}</option><option value="base">${adminCopy("القاعدة","Base")}</option></select></label>` : "";
+  const uploadFields = ["note", "brand"].includes(group) ? `<label class="wide option-image-upload"><span>${group === "brand" ? adminCopy("شعار العلامة التجارية","Brand logo") : adminCopy("صورة أو أيقونة النوتة","Note image or icon")}</span><input type="file" accept="image/jpeg,image/png,image/webp,image/avif,image/svg+xml" data-product-option-image-upload/><small>${adminCopy("PNG أو JPG أو WEBP — يمكن استبدال الصورة لاحقًا","PNG, JPG or WEBP — replaceable later")}</small></label><figure class="option-image-preview" hidden><img alt=""/><button type="button" data-action="remove-product-option-image">×</button></figure>` : "";
+  dialog.innerHTML = `<form method="dialog"><header><div><small>${adminCopy("إدارة خصائص المنتج","Product attributes")}</small><h3>${group === "note" ? adminCopy("إضافة أو تعديل نوتة عطرية","Add or edit a fragrance note") : group === "brand" ? adminCopy("إضافة أو تعديل علامة تجارية","Add or edit a brand") : adminCopy("إضافة خيار جديد","Add a new option")}</h3></div><button type="button" data-action="close-product-option">×</button></header><input type="hidden" name="slug"/><div class="option-dialog-grid">${noteFields}<label>${adminCopy("الاسم بالعربية","Arabic name")}<input name="nameAr" dir="rtl" required maxlength="160"/></label><label>${adminCopy("الاسم بالإنجليزية","English name")}<input name="nameEn" dir="ltr" required maxlength="160"/></label><label>${adminCopy("أيقونة اختيارية","Optional icon")}<input name="icon" maxlength="12" placeholder="✦"/></label><label>${adminCopy("رابط صورة اختيارية","Optional image URL")}<input name="image" dir="ltr" maxlength="2000000" placeholder="https://…"/></label>${uploadFields}<label>${adminCopy("لون اختياري","Optional color")}<input name="color" type="color" value="#7a001d"/></label><label>${adminCopy("ترتيب الظهور","Sort order")}<input name="sortOrder" type="number" min="0" value="0"/></label><label class="option-active"><input name="active" type="checkbox" checked/><span>${adminCopy("الخيار نشط","Option is active")}</span></label></div><footer><button type="button" class="button secondary-button" data-action="close-product-option">${adminCopy("إلغاء","Cancel")}</button><button type="button" class="button burgundy-button" data-action="save-product-option">${adminCopy("حفظ وإضافة","Save & add")}</button></footer><p class="option-dialog-error" hidden></p></form>`;
   document.body.append(dialog);
   dialog.showModal();
   dialog.querySelector("[name='nameAr']")?.focus();
+}
+
+function populateProductOptionDialog(dialog, value = "") {
+  const item = productOptionItems(dialog.dataset.group).find((option) => normalizeOptionSearch(option.value) === normalizeOptionSearch(value));
+  if (!item) return;
+  const form = dialog.querySelector("form");
+  const note = dialog.dataset.group === "note" ? window.ORIGOFragranceNotes.find(item.slug || item.value) : null;
+  const source = { ...item, ...(note || {}), ...(item.metadata || {}) };
+  form.elements.slug.value = item.slug || "";
+  form.elements.nameAr.value = source.nameAr || "";
+  form.elements.nameEn.value = source.nameEn || "";
+  form.elements.icon.value = source.icon || source.symbol || "";
+  form.elements.image.value = source.image || "";
+  form.elements.color.value = source.color || "#7a001d";
+  form.elements.sortOrder.value = Number(source.sortOrder || 0);
+  form.elements.active.checked = source.active !== false;
+  if (form.elements.existingOption) form.elements.existingOption.value = item.value;
+  if (form.elements.descriptionAr) form.elements.descriptionAr.value = source.descriptionAr || "";
+  if (form.elements.descriptionEn) form.elements.descriptionEn.value = source.descriptionEn || "";
+  if (form.elements.familyId) form.elements.familyId.value = source.familyId || "uncategorized";
+  if (form.elements.position) form.elements.position.value = source.position || "multiple";
+  const preview = dialog.querySelector(".option-image-preview");
+  if (preview && source.image) { preview.hidden = false; preview.querySelector("img").src = source.image; }
 }
 
 document.addEventListener("click", async (event) => {
@@ -5220,7 +5261,9 @@ document.addEventListener("click", async (event) => {
     return;
   }
   if (["smart-select-create","smart-select-settings"].includes(action)) {
-    openProductOptionDialog(actionElement.closest("[data-smart-select]"));
+    const holder = actionElement.closest("[data-smart-select]");
+    openProductOptionDialog(holder);
+    if (action === "smart-select-settings") populateProductOptionDialog($("#product-option-dialog"), smartSelectValues(holder)[0] || "");
     return;
   }
   if (action === "manage-product-option") {
@@ -5242,17 +5285,30 @@ document.addEventListener("click", async (event) => {
     actionElement.closest("dialog")?.remove();
     return;
   }
+  if (action === "remove-product-option-image") {
+    const dialog = actionElement.closest("dialog");
+    dialog.querySelector("[name='image']").value = "";
+    dialog.querySelector(".option-image-preview").hidden = true;
+    return;
+  }
   if (action === "save-product-option") {
     const dialog = actionElement.closest("dialog");
     const form = dialog.querySelector("form");
     const data = new FormData(form);
-    const payload = { group:dialog.dataset.group, nameAr:String(data.get("nameAr") || "").trim(), nameEn:String(data.get("nameEn") || "").trim(), image:String(data.get("image") || "").trim(), icon:String(data.get("icon") || "").trim(), color:String(data.get("color") || ""), sortOrder:Number(data.get("sortOrder") || 0), active:data.get("active") === "on" };
+    const payload = { group:dialog.dataset.group, slug:String(data.get("slug") || "").trim(), nameAr:String(data.get("nameAr") || "").trim(), nameEn:String(data.get("nameEn") || "").trim(), image:String(data.get("image") || "").trim(), icon:String(data.get("icon") || "").trim(), color:String(data.get("color") || ""), sortOrder:Number(data.get("sortOrder") || 0), active:data.get("active") === "on" };
+    if (payload.group === "note") payload.metadata = { descriptionAr:String(data.get("descriptionAr") || "").trim(), descriptionEn:String(data.get("descriptionEn") || "").trim(), familyId:String(data.get("familyId") || "uncategorized"), position:String(data.get("position") || "multiple"), value:String(data.get("existingOption") || "").trim() || payload.slug || payload.nameEn || payload.nameAr };
     const error = dialog.querySelector(".option-dialog-error");
     if (!payload.nameAr || !payload.nameEn) { error.hidden=false; error.textContent=adminCopy("أدخل الاسم بالعربية والإنجليزية.","Enter both Arabic and English names."); return; }
+    const duplicate = productOptionItems(payload.group).find((item) => item.slug !== payload.slug && [item.nameAr,item.nameEn].some((name) => [payload.nameAr,payload.nameEn].some((candidate) => normalizeOptionSearch(candidate) === normalizeOptionSearch(name))));
+    if (duplicate) { error.hidden=false; error.textContent=adminCopy("هذه النوتة أو العلامة موجودة بالفعل؛ اخترها للتعديل بدل إنشاء نسخة مكررة.","This note or brand already exists; select it for editing instead of creating a duplicate."); return; }
     actionElement.disabled = true;
     try {
       const result = state.serverAvailable ? await api("/api/admin/product-options", { method:"POST", body:JSON.stringify(payload) }) : { option:{ ...payload, id:Date.now(), value:payload.nameEn } };
       state.productOptions = [...state.productOptions.filter((item) => !(item.group === result.option.group && item.slug === result.option.slug)), result.option];
+      if (payload.group === "note") {
+        window.ORIGOFragranceNotes.upsertNote({ slug:result.option.slug, nameAr:payload.nameAr, nameEn:payload.nameEn, descriptionAr:payload.metadata.descriptionAr, descriptionEn:payload.metadata.descriptionEn, familyId:payload.metadata.familyId, position:payload.metadata.position, image:payload.image, symbol:payload.icon || "✦", aliases:[] });
+        await persistNotesState();
+      }
       if (dialog.dataset.context === "manager") {
         dialog.close(); dialog.remove();
         renderAdminDashboard("product-options");
@@ -6602,6 +6658,26 @@ document.addEventListener("input", (event) => {
 });
 
 document.addEventListener("change", async (event) => {
+  if (event.target.matches("[name='existingOption']")) {
+    populateProductOptionDialog(event.target.closest("dialog"), event.target.value);
+    return;
+  }
+  if (event.target.matches("[data-product-option-image-upload]")) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    if (file.size > 900_000) { event.target.value = ""; showToast(adminCopy("حجم الصورة أكبر من 900 KB", "Image exceeds 900 KB")); return; }
+    const dialog = event.target.closest("dialog");
+    const reader = new FileReader();
+    reader.addEventListener("load", () => {
+      const value = String(reader.result || "");
+      dialog.querySelector("[name='image']").value = value;
+      const preview = dialog.querySelector(".option-image-preview");
+      preview.hidden = false;
+      preview.querySelector("img").src = value;
+    }, { once:true });
+    reader.readAsDataURL(file);
+    return;
+  }
   if (event.target.matches("[data-logo-upload]")) {
     const file = event.target.files?.[0];
     if (!file) return;
