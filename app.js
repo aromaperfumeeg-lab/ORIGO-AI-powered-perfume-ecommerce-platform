@@ -4482,22 +4482,69 @@ const ORIGO_ACCORD_LIBRARY = [
   ["woody", "خشبي", "Woody", "#9b6b43", "♢"], ["amber", "عنبري", "Amber", "#c47b16", "◆"],
   ["warm-spicy", "حار دافئ", "Warm spicy", "#b85032", "✦"], ["fresh", "منعش", "Fresh", "#24a7a1", "≈"],
   ["leather", "جلدي", "Leather", "#635047", "▰"], ["aromatic", "أروماتيك", "Aromatic", "#4e9274", "♧"],
-  ["marine", "بحري", "Marine", "#458fc5", "≋"]
+  ["marine", "بحري", "Marine", "#458fc5", "≋"], ["soft", "ناعم", "Soft", "#efd8c4", "○"],
+  ["fresh-spicy", "توابل منعشة", "Fresh spicy", "#65bf25", "✣"], ["animalic", "حيواني", "Animalic", "#965018", "♞"],
+  ["balsamic", "بلسمي", "Balsamic", "#b28255", "◈"], ["herbal", "عشبي", "Herbal", "#118a32", "♨"],
+  ["coffee", "قهوي", "Coffee", "#5d3725", "☕"], ["earthy", "ترابي", "Earthy", "#5c503f", "◆"],
+  ["white-floral", "زهور بيضاء", "White floral", "#e8eef7", "✾"], ["rose", "ورد", "Rose", "#fa0b67", "❀"],
+  ["green", "أخضر", "Green", "#6b792f", "❧"], ["patchouli", "باتشولي", "Patchouli", "#657139", "♧"],
+  ["aldehydic", "ألدهيدي", "Aldehydic", "#dcebf6", "◇"], ["lactonic", "لاكتوني", "Lactonic", "#f7f4ec", "◯"],
+  ["aquatic", "مائي", "Aquatic", "#59c3db", "≋"], ["smoky", "مدخن", "Smoky", "#7d7287", "☁"],
+  ["soapy", "صابوني", "Soapy", "#d9f3fb", "◌"], ["violet", "بنفسجي", "Violet", "#8c22ff", "✿"],
+  ["sour", "حامض", "Sour", "#b6df2b", "◉"], ["tobacco", "تبغ", "Tobacco", "#91612e", "♨"],
+  ["oud", "عود", "Oud", "#6f3c1a", "♢"], ["spicy", "حار", "Spicy", "#d64218", "✦"],
+  ["cinnamon", "قرفة", "Cinnamon", "#a95a24", "≈"], ["honey", "عسلي", "Honey", "#d79b26", "⬡"],
+  ["caramel", "كراميل", "Caramel", "#bb7437", "●"], ["coconut", "جوز الهند", "Coconut", "#d9c8a8", "◉"],
+  ["nutty", "مكسرات", "Nutty", "#95704b", "♧"], ["metallic", "معدني", "Metallic", "#8592a0", "◇"],
+  ["ozonic", "أوزوني", "Ozonic", "#85d8e8", "⌁"], ["mineral", "معدني صخري", "Mineral", "#7d858d", "◆"],
+  ["salty", "مالح", "Salty", "#86b9d8", "≈"], ["mossy", "طحلبي", "Mossy", "#567641", "♧"],
+  ["coniferous", "صنوبري", "Coniferous", "#29704b", "♠"], ["lavender", "لافندر", "Lavender", "#8c78bd", "✿"],
+  ["iris", "سوسن", "Iris", "#a57aa6", "❀"], ["earthy-spicy", "ترابي متبل", "Earthy spicy", "#7a5435", "✣"]
 ];
 
 function adminAccordEditor(product) {
   const existing = new Map((product.accordProfile || []).map((item) => [item.id || item.nameEn || item.nameAr, item]));
   const fallback = new Set((product.mainAccords || product.accords || []).map((item) => ORIGOCatalog.normalize(typeof item === "object" ? (item.nameAr || item.nameEn) : item)));
+  const savedAccord = ([id, arName, enName]) => existing.get(id) || [...existing.values()].find((value) => [arName,enName].some((name) => ORIGOCatalog.normalize(value.nameAr || value.nameEn) === ORIGOCatalog.normalize(name)));
+  const isSelected = (accord) => Boolean(savedAccord(accord)) || fallback.has(ORIGOCatalog.normalize(accord[1])) || fallback.has(ORIGOCatalog.normalize(accord[2]));
+  const selectedCount = ORIGO_ACCORD_LIBRARY.filter(isSelected).length;
   return `<div class="accord-admin-editor">
     <div class="accord-admin-toolbar"><div><b>${adminCopy("الأكوردات الرئيسية — البصمة العطرية", "Main accords — fragrance fingerprint")}</b><small>${adminCopy("اختر الأكورد واضبط قوته؛ كل نسبة مستقلة.", "Select accords and set each independent strength.")}</small></div><button type="button" data-action="sort-admin-accords">${adminCopy("ترتيب حسب القوة", "Sort by strength")}</button></div>
+    <div class="accord-admin-search">
+      <label><span aria-hidden="true">⌕</span><input type="search" data-accord-search autocomplete="off" placeholder="${adminCopy("ابحث باسم الأكورد بالعربية أو الإنجليزية…", "Search accords in Arabic or English…")}" aria-label="${adminCopy("البحث في الأكوردات", "Search accords")}"/></label>
+      <span class="accord-search-count" aria-live="polite"><b>${selectedCount}</b> ${adminCopy("مختار من", "selected of")} ${ORIGO_ACCORD_LIBRARY.length}</span>
+      <button type="button" data-action="accord-selected-only" aria-pressed="false">${adminCopy("عرض المختار", "Selected only")}</button>
+      <button type="button" data-action="clear-admin-accords">${adminCopy("مسح الاختيارات", "Clear selection")}</button>
+    </div>
+    <p class="accord-search-empty" hidden>${adminCopy("لا توجد أكوردات مطابقة للبحث.", "No accords match your search.")}</p>
     <div class="accord-admin-list">${ORIGO_ACCORD_LIBRARY.map(([id, arName, enName, color, icon], index) => {
-      const item = existing.get(id) || [...existing.values()].find((value) => ORIGOCatalog.normalize(value.nameAr || value.nameEn) === ORIGOCatalog.normalize(arName));
-      const checked = Boolean(item) || fallback.has(ORIGOCatalog.normalize(arName)) || fallback.has(ORIGOCatalog.normalize(enName));
+      const item = savedAccord([id, arName, enName]);
+      const checked = isSelected([id, arName, enName]);
       const strength = Number(item?.strength ?? (checked ? Math.max(42, 92 - index * 6) : 50));
-      return `<label class="accord-admin-item${checked ? " selected" : ""}" style="--accord:${color}"><input type="checkbox" name="accordSelected" value="${id}"${checked ? " checked" : ""}/><span class="accord-symbol">${icon}</span><span><b>${adminCopy(arName,enName)}</b><small>${adminCopy(enName,arName)}</small></span><input aria-label="${adminCopy(`قوة ${arName}`,`${enName} strength`)}" type="range" name="accordStrength.${id}" min="0" max="100" value="${strength}"/><output>${strength}%</output></label>`;
+      const search = escapeHTML(normalizeOptionSearch(`${id} ${arName} ${enName}`));
+      return `<label class="accord-admin-item${checked ? " selected" : ""}" data-accord-search-value="${search}" style="--accord:${color}"><input type="checkbox" name="accordSelected" value="${id}"${checked ? " checked" : ""}/><span class="accord-symbol">${icon}</span><span><b>${adminCopy(arName,enName)}</b><small>${adminCopy(enName,arName)}</small></span><input aria-label="${adminCopy(`قوة ${arName}`,`${enName} strength`)}" type="range" name="accordStrength.${id}" min="0" max="100" value="${strength}"/><output>${strength}%</output></label>`;
     }).join("")}</div>
     <div class="accord-admin-live" id="accord-admin-live"></div>
   </div>`;
+}
+
+function filterAdminAccords(editor) {
+  if (!editor) return;
+  const query = normalizeOptionSearch(editor.querySelector("[data-accord-search]")?.value || "");
+  const selectedOnly = editor.dataset.selectedOnly === "true";
+  let visible = 0;
+  let selected = 0;
+  editor.querySelectorAll(".accord-admin-item").forEach((item) => {
+    const checked = Boolean(item.querySelector("[name='accordSelected']")?.checked);
+    if (checked) selected += 1;
+    const matches = (!query || String(item.dataset.accordSearchValue || "").includes(query)) && (!selectedOnly || checked);
+    item.hidden = !matches;
+    if (matches) visible += 1;
+  });
+  const count = editor.querySelector(".accord-search-count b");
+  if (count) count.textContent = selected;
+  const empty = editor.querySelector(".accord-search-empty");
+  if (empty) empty.hidden = visible > 0;
 }
 
 function updateAdminAccordEditor(form) {
@@ -4511,6 +4558,7 @@ function updateAdminAccordEditor(form) {
   });
   const draft = collectReviewProduct(form);
   holder.innerHTML = productAccordMarkup(draft);
+  filterAdminAccords(form.querySelector(".accord-admin-editor"));
 }
 
 function updateProductTypeFields(form) {
@@ -5222,8 +5270,8 @@ function openProductOptionDialog(holder) {
     <label>${adminCopy("الوصف بالعربية","Arabic description")}<textarea name="descriptionAr" dir="rtl" maxlength="1000"></textarea></label><label>${adminCopy("الوصف بالإنجليزية","English description")}<textarea name="descriptionEn" dir="ltr" maxlength="1000"></textarea></label>
     <label>${adminCopy("العائلة العطرية","Fragrance family")}<select name="familyId">${window.ORIGOFragranceNotes.families.map((family) => `<option value="${escapeHTML(family.id)}">${escapeHTML(family.nameAr)} · ${escapeHTML(family.nameEn)}</option>`).join("")}</select></label>
     <label>${adminCopy("الموضع الافتراضي","Default position")}<select name="position"><option value="multiple">${adminCopy("متعدد","Multiple")}</option><option value="top">${adminCopy("المقدمة","Top")}</option><option value="heart">${adminCopy("القلب","Heart")}</option><option value="base">${adminCopy("القاعدة","Base")}</option></select></label>` : "";
-  const uploadFields = ["note", "brand"].includes(group) ? `<label class="wide option-image-upload"><span>${group === "brand" ? adminCopy("شعار العلامة التجارية","Brand logo") : adminCopy("صورة أو أيقونة النوتة","Note image or icon")}</span><input type="file" accept="image/jpeg,image/png,image/webp,image/avif,image/svg+xml" data-product-option-image-upload/><small>${adminCopy("PNG أو JPG أو WEBP — يمكن استبدال الصورة لاحقًا","PNG, JPG or WEBP — replaceable later")}</small></label><figure class="option-image-preview" hidden><img alt=""/><button type="button" data-action="remove-product-option-image">×</button></figure>` : "";
-  dialog.innerHTML = `<form method="dialog"><header><div><small>${adminCopy("إدارة خصائص المنتج","Product attributes")}</small><h3>${group === "note" ? adminCopy("إضافة أو تعديل نوتة عطرية","Add or edit a fragrance note") : group === "brand" ? adminCopy("إضافة أو تعديل علامة تجارية","Add or edit a brand") : adminCopy("إضافة خيار جديد","Add a new option")}</h3></div><button type="button" data-action="close-product-option">×</button></header><input type="hidden" name="slug"/><div class="option-dialog-grid">${noteFields}<label>${adminCopy("الاسم بالعربية","Arabic name")}<input name="nameAr" dir="rtl" required maxlength="160"/></label><label>${adminCopy("الاسم بالإنجليزية","English name")}<input name="nameEn" dir="ltr" required maxlength="160"/></label><label>${adminCopy("أيقونة اختيارية","Optional icon")}<input name="icon" maxlength="12" placeholder="✦"/></label><label>${adminCopy("رابط صورة اختيارية","Optional image URL")}<input name="image" dir="ltr" maxlength="2000000" placeholder="https://…"/></label>${uploadFields}<label>${adminCopy("لون اختياري","Optional color")}<input name="color" type="color" value="#7a001d"/></label><label>${adminCopy("ترتيب الظهور","Sort order")}<input name="sortOrder" type="number" min="0" value="0"/></label><label class="option-active"><input name="active" type="checkbox" checked/><span>${adminCopy("الخيار نشط","Option is active")}</span></label></div><footer><button type="button" class="button secondary-button" data-action="close-product-option">${adminCopy("إلغاء","Cancel")}</button><button type="button" class="button burgundy-button" data-action="save-product-option">${adminCopy("حفظ وإضافة","Save & add")}</button></footer><p class="option-dialog-error" hidden></p></form>`;
+  const uploadFields = ["note", "brand"].includes(group) ? `<input type="hidden" name="image"/><input type="hidden" name="icon"/><label class="wide option-image-upload"><span>${group === "brand" ? adminCopy("شعار العلامة التجارية من الملفات","Brand logo from files") : adminCopy("صورة النوتة من الملفات","Note image from files")}</span><input type="file" accept="image/jpeg,image/png,image/webp,image/avif,image/svg+xml" data-product-option-image-upload/><small>${adminCopy("PNG أو JPG أو WEBP أو SVG — هذه الصورة هي التي ستظهر في المتجر","PNG, JPG, WEBP or SVG — this artwork appears in the storefront")}</small></label><figure class="option-image-preview" hidden><img alt=""/><button type="button" data-action="remove-product-option-image">×</button></figure>` : `<input type="hidden" name="image"/><input type="hidden" name="icon"/>`;
+  dialog.innerHTML = `<form method="dialog"><header><div><small>${adminCopy("إدارة خصائص المنتج","Product attributes")}</small><h3>${group === "note" ? adminCopy("إضافة أو تعديل نوتة عطرية","Add or edit a fragrance note") : group === "brand" ? adminCopy("إضافة أو تعديل علامة تجارية","Add or edit a brand") : adminCopy("إضافة خيار جديد","Add a new option")}</h3></div><button type="button" data-action="close-product-option">×</button></header><input type="hidden" name="slug"/><div class="option-dialog-grid">${noteFields}<label>${adminCopy("الاسم بالعربية","Arabic name")}<input name="nameAr" dir="rtl" required maxlength="160"/></label><label>${adminCopy("الاسم بالإنجليزية","English name")}<input name="nameEn" dir="ltr" required maxlength="160"/></label>${uploadFields}<label>${adminCopy("لون اختياري","Optional color")}<input name="color" type="color" value="#7a001d"/></label><label>${adminCopy("ترتيب الظهور","Sort order")}<input name="sortOrder" type="number" min="0" value="0"/></label><label class="option-active"><input name="active" type="checkbox" checked/><span>${adminCopy("الخيار نشط","Option is active")}</span></label></div><footer><button type="button" class="button secondary-button" data-action="close-product-option">${adminCopy("إلغاء","Cancel")}</button><button type="button" class="button burgundy-button" data-action="save-product-option">${adminCopy("حفظ وإضافة","Save & add")}</button></footer><p class="option-dialog-error" hidden></p></form>`;
   document.body.append(dialog);
   dialog.showModal();
   dialog.querySelector("[name='nameAr']")?.focus();
@@ -5238,8 +5286,8 @@ function populateProductOptionDialog(dialog, value = "") {
   form.elements.slug.value = item.slug || "";
   form.elements.nameAr.value = source.nameAr || "";
   form.elements.nameEn.value = source.nameEn || "";
-  form.elements.icon.value = source.icon || source.symbol || "";
-  form.elements.image.value = source.image || "";
+  if (form.elements.icon) form.elements.icon.value = source.icon || source.symbol || "";
+  if (form.elements.image) form.elements.image.value = source.image || "";
   form.elements.color.value = source.color || "#7a001d";
   form.elements.sortOrder.value = Number(source.sortOrder || 0);
   form.elements.active.checked = source.active !== false;
@@ -5353,6 +5401,7 @@ document.addEventListener("click", async (event) => {
     if (payload.group === "note") payload.metadata = { descriptionAr:String(data.get("descriptionAr") || "").trim(), descriptionEn:String(data.get("descriptionEn") || "").trim(), familyId:String(data.get("familyId") || "uncategorized"), position:String(data.get("position") || "multiple"), value:String(data.get("existingOption") || "").trim() || payload.slug || payload.nameEn || payload.nameAr };
     const error = dialog.querySelector(".option-dialog-error");
     if (!payload.nameAr || !payload.nameEn) { error.hidden=false; error.textContent=adminCopy("أدخل الاسم بالعربية والإنجليزية.","Enter both Arabic and English names."); return; }
+    if (["note", "brand"].includes(payload.group) && !payload.image) { error.hidden=false; error.textContent=adminCopy("ارفع الصورة من الملفات قبل الحفظ.","Upload the image file before saving."); return; }
     const duplicate = productOptionItems(payload.group).find((item) => item.slug !== payload.slug && [item.nameAr,item.nameEn].some((name) => [payload.nameAr,payload.nameEn].some((candidate) => normalizeOptionSearch(candidate) === normalizeOptionSearch(name))));
     if (duplicate) { error.hidden=false; error.textContent=adminCopy("هذه النوتة أو العلامة موجودة بالفعل؛ اخترها للتعديل بدل إنشاء نسخة مكررة.","This note or brand already exists; select it for editing instead of creating a duplicate."); return; }
     actionElement.disabled = true;
@@ -6044,6 +6093,19 @@ document.addEventListener("click", async (event) => {
     const list = actionElement.closest(".accord-admin-editor")?.querySelector(".accord-admin-list");
     if (list) [...list.children].sort((a, b) => Number(b.querySelector("input[type='range']")?.value || 0) - Number(a.querySelector("input[type='range']")?.value || 0)).forEach((item) => list.append(item));
   }
+  if (action === "accord-selected-only") {
+    const editor = actionElement.closest(".accord-admin-editor");
+    const enabled = editor?.dataset.selectedOnly !== "true";
+    if (editor) editor.dataset.selectedOnly = String(enabled);
+    actionElement.classList.toggle("active", enabled);
+    actionElement.setAttribute("aria-pressed", String(enabled));
+    filterAdminAccords(editor);
+  }
+  if (action === "clear-admin-accords") {
+    const editor = actionElement.closest(".accord-admin-editor");
+    editor?.querySelectorAll("[name='accordSelected']").forEach((input) => { input.checked = false; });
+    updateAdminAccordEditor(actionElement.closest("#import-review-form"));
+  }
   if (action === "accord-help") {
     showToast(state.lang === "ar" ? "طول كل خط يعبّر عن قوة الأكورد بصورة مستقلة، ولا يشترط أن يكون المجموع 100%." : "Each bar independently represents accord strength; totals do not need to equal 100%. ");
   }
@@ -6610,6 +6672,10 @@ $("#web-product-query").addEventListener("input", (event) => {
 
 let notesSearchTimer;
 document.addEventListener("input", (event) => {
+  if (event.target.matches("[data-accord-search]")) {
+    filterAdminAccords(event.target.closest(".accord-admin-editor"));
+    return;
+  }
   if (event.target.matches("[data-smart-search]")) {
     const menu = event.target.closest(".smart-select-menu");
     const query = normalizeOptionSearch(event.target.value);

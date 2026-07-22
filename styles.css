@@ -8463,6 +8463,16 @@ body.notes-route #storefront-main > section:not(#notes-library-page) {
 .accord-admin-toolbar div { display: grid; gap: 4px; }
 .accord-admin-toolbar small { color: var(--muted); }
 .accord-admin-toolbar button { min-height: 42px; padding: 0 14px; border: 1px solid var(--line); background: var(--surface); color: var(--burgundy); font-weight: 700; cursor: pointer; }
+.accord-admin-search { display: grid; grid-template-columns: minmax(240px, 1fr) auto auto auto; align-items: center; gap: 8px; margin-bottom: 12px; }
+.accord-admin-search label { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 12px; border: 1px solid var(--line); background: var(--surface); }
+.accord-admin-search label:focus-within { border-color: var(--burgundy); box-shadow: 0 0 0 3px color-mix(in srgb, var(--burgundy) 12%, transparent); }
+.accord-admin-search label > span { color: var(--burgundy); font-size: 1.2rem; }
+.accord-admin-search input { width: 100%; border: 0; outline: 0; background: transparent; color: var(--ink); font: inherit; }
+.accord-admin-search button { min-height: 42px; padding: 0 12px; border: 1px solid var(--line); background: var(--surface); color: var(--burgundy); font-weight: 750; cursor: pointer; }
+.accord-admin-search button.active { border-color: var(--burgundy); background: var(--burgundy); color: #fff; }
+.accord-search-count { white-space: nowrap; color: var(--muted); font-size: .82rem; }
+.accord-search-count b { color: var(--burgundy); font-size: 1rem; }
+.accord-search-empty { margin: 8px 0 12px; padding: 16px; border: 1px dashed var(--line); text-align: center; color: var(--muted); background: var(--surface); }
 .accord-admin-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 .accord-admin-item { display: grid; grid-template-columns: auto auto minmax(100px, 1fr) minmax(100px, .9fr) 48px; align-items: center; gap: 9px; min-height: 62px; padding: 8px 10px; border: 1px solid var(--line); background: var(--surface); opacity: .7; }
 .accord-admin-item.selected { border-color: var(--accord); box-shadow: inset 3px 0 var(--accord); opacity: 1; }
@@ -8481,6 +8491,9 @@ body.notes-route #storefront-main > section:not(#notes-library-page) {
 .review-submit-actions .button { min-height: 46px; }
 
 @media (max-width: 900px) {
+  .accord-admin-search { grid-template-columns: 1fr 1fr; }
+  .accord-admin-search label { grid-column: 1 / -1; }
+  .accord-search-count { justify-self: start; }
   .accord-admin-list { grid-template-columns: 1fr; }
   .accord-admin-live .pdp-accord-profile > div { grid-template-columns: 1fr; }
 }
@@ -8489,6 +8502,8 @@ body.notes-route #storefront-main > section:not(#notes-library-page) {
   .catalog-review { padding-bottom: 156px; }
   .product-editor-modes { grid-template-columns: 1fr; position: static; }
   .accord-admin-toolbar { align-items: stretch; flex-direction: column; }
+  .accord-admin-search { grid-template-columns: 1fr 1fr; }
+  .accord-admin-search .accord-search-count { grid-column: 1 / -1; }
   .accord-admin-item { grid-template-columns: auto auto minmax(0, 1fr) 46px; }
   .accord-admin-item input[type="range"] { grid-column: 1 / -1; width: 100%; }
   .review-submit { position: sticky; bottom: 0; z-index: 12; padding: 10px; }
