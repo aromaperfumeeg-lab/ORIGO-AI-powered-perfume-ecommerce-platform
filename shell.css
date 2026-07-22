@@ -757,6 +757,8 @@ fieldset {
   .store-bottom-nav span{font-size:22px;line-height:1}.store-bottom-nav b{font-size:8px;white-space:nowrap}.store-bottom-nav .active{color:var(--shell-burgundy)}
   .store-bottom-nav .store-bottom-discover span{width:40px;height:40px;margin-top:-20px;display:grid;place-items:center;border-radius:50%;color:#fff;background:linear-gradient(145deg,#7c0022,#4b0013);box-shadow:0 6px 16px #50001740}
   body.account-route .store-bottom-nav{display:none}
+  body.finder-route .fragrance-finder-page{padding-bottom:calc(170px + env(safe-area-inset-bottom))}
+  body.finder-route .finder-actions{z-index:57;bottom:calc(66px + env(safe-area-inset-bottom))}
 }
 
 @media(max-width:640px){

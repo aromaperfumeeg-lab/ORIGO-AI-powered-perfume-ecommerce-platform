@@ -157,7 +157,13 @@ body.dark .benefit-faqs summary{color:#f7efea}body.dark .benefit-faqs details{bo
 }
 @media(max-width:510px){
   .footer-brand-story{grid-template-columns:1fr}.footer-story-image{height:210px}.footer-story-copy{padding:0 5px}.footer-benefit-card{min-height:158px;padding:12px 7px}.footer-benefit-card b{font-size:13px}.footer-benefit-card small{font-size:11px}
-  .origo-footer .footer-directory{grid-template-columns:1fr!important;padding-inline:18px!important}.origo-footer .footer-column,.origo-footer .footer-column:nth-child(even),.origo-footer .footer-column:nth-child(odd){grid-column:auto;padding:0 0 22px;border-inline-end:0;border-bottom:1px solid var(--footer-line)}.origo-footer .footer-column:last-child{padding-bottom:0;border-bottom:0}
+  .origo-footer .footer-directory{grid-template-columns:repeat(2,minmax(0,1fr))!important;column-gap:0!important;row-gap:26px!important;padding:22px 8px 26px!important}
+  .origo-footer .footer-column,.origo-footer .footer-column:nth-child(even),.origo-footer .footer-column:nth-child(odd){grid-column:auto;min-width:0;padding:0 10px 8px;border-bottom:0}
+  .origo-footer .footer-column:nth-child(odd){border-inline-end:0}.origo-footer .footer-column:nth-child(even){border-inline-end:1px solid var(--footer-line)}
+  .origo-footer .footer-column:last-child{grid-column:1/-1;padding:4px 8px 0;border-inline-end:0;border-top:1px solid var(--footer-line)}
+  .origo-footer .footer-column h3{font-size:16px!important;margin-bottom:12px!important}
+  .origo-footer .footer-column>a,.origo-footer .footer-column>button,.origo-footer .footer-brand-list>button,.origo-footer .footer-brand-list>a{min-height:40px!important;padding:7px 8px!important;font-size:10px!important;gap:6px!important}
+  .origo-footer .footer-contact p{margin:18px 0!important;font-size:10px!important;gap:8px}.origo-footer .footer-contact>small{font-size:9px}
   .benefit-detail-copy h1{font-size:34px}.benefit-detail-copy>p{font-size:15px}.benefit-detail-panel,.benefit-faqs{padding:20px}
   .admin-settings-form .store-logo-settings,.admin-settings-form .footer-settings-grid,.admin-settings-form .social-settings-grid{grid-template-columns:1fr}
 }
