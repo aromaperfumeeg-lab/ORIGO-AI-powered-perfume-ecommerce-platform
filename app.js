@@ -16,6 +16,13 @@ const ORIGO_HOME_CATEGORIES = [
   ["gifts", "الهدايا", "Gifts", "🎁"]
 ];
 
+const ORIGO_HOME_BENEFITS = [
+  ["authentic", "منتجات أصلية", "Authentic products"], ["shipping", "شحن سريع", "Fast shipping"],
+  ["returns", "استرجاع سهل", "Easy returns"], ["prices", "أسعار منافسة", "Competitive prices"],
+  ["cod", "الدفع عند الاستلام", "Cash on delivery"], ["gift", "تغليف فاخر", "Luxury wrapping"],
+  ["support", "دعم العملاء", "Customer support"]
+];
+
 const translations = {
   ar: {
     announcement: "توصيل مجاني للطلبات فوق 3,000 ج.م · عيّنة مجانية مع كل طلب",
@@ -753,6 +760,8 @@ const defaultStoreSettings = {
     brands: { enabled: true, order: 4, titleAr: "العلامات التجارية", titleEn: "Brands", speed: 34 }
   },
   homeMedia: [],
+  categoryIcons: {},
+  homeBenefitIcons: {},
   fragranceFinder: {
     enabled: {
       forWhom: ["women", "men", "unisex"],
@@ -784,6 +793,8 @@ function mergeStoreSettings(saved = {}) {
     appLinks: { ...defaultStoreSettings.appLinks, ...(saved.appLinks || {}) },
     homepageRails: Object.fromEntries(Object.entries(defaultStoreSettings.homepageRails).map(([key, value]) => [key, { ...value, ...(saved.homepageRails?.[key] || {}) }])),
     homeMedia: Array.isArray(saved.homeMedia) ? saved.homeMedia : [],
+    categoryIcons: { ...defaultStoreSettings.categoryIcons, ...(saved.categoryIcons || {}) },
+    homeBenefitIcons: { ...defaultStoreSettings.homeBenefitIcons, ...(saved.homeBenefitIcons || {}) },
     fragranceFinder: {
       ...defaultStoreSettings.fragranceFinder,
       ...(saved.fragranceFinder || {}),
@@ -903,6 +914,9 @@ const state = {
   activeAdminNoteSlug: "",
   pendingNoteImage: "",
   pendingStoreLogos: {},
+  pendingBenefitIcons: {},
+  pendingCategoryIcons: {},
+  pendingHomeBenefitIcons: {},
   adminView: "overview",
   alternativesAdmin: { items: [], settings: {}, analytics: { topSearches: [], events: [] } },
   adminWorkspace
@@ -1073,6 +1087,9 @@ function updateAccountIndicator() {
     button.title = state.user
       ? (state.lang === "ar" ? `حساب ${state.user.name}` : `${state.user.name}'s account`)
       : translations[state.lang].account;
+  });
+  $$(".mobile-admin-link").forEach((button) => {
+    button.hidden = !isStaffUser();
   });
 }
 
@@ -1694,10 +1711,13 @@ function settingsMarkup() {
       <div class="review-grid"><label>${ar ? "شروط العربية — سطر لكل شرط" : "Arabic conditions"}<textarea name="${prefix}.conditionsAr">${escapeHTML((benefit.conditionsAr || []).join("\n"))}</textarea></label><label>${ar ? "الشروط الإنجليزية" : "English conditions"}<textarea name="${prefix}.conditionsEn">${escapeHTML((benefit.conditionsEn || []).join("\n"))}</textarea></label></div>
       <div class="review-grid"><label>${ar ? "الأسئلة العربية: سؤال|إجابة" : "Arabic FAQ: Question|Answer"}<textarea name="${prefix}.faqsAr">${escapeHTML(faqsAr)}</textarea></label><label>${ar ? "الأسئلة الإنجليزية: Question|Answer" : "English FAQ: Question|Answer"}<textarea name="${prefix}.faqsEn">${escapeHTML(faqsEn)}</textarea></label></div>
       <div class="review-grid"><label>${ar ? "الرسم" : "Illustration"}<select name="${prefix}.icon">${selectOptions([["support",ar?"خدمة/شحن":"Support"],["returns",ar?"استرجاع":"Returns"],["gift",ar?"هدية":"Gift"],["samples",ar?"عينة عطر":"Sample"]], benefit.icon)}</select></label><label>${ar ? "الترتيب" : "Order"}<input type="number" min="1" max="20" name="${prefix}.sort" value="${Number(benefit.sort || 1)}"/></label></div>
+      <label class="benefit-icon-upload"><span>${ar ? "صورة/أيقونة مخصصة" : "Custom image/icon"}</span><img id="benefit-icon-preview-${escapeHTML(benefit.id)}" src="${escapeHTML(benefit.image || "assets/origo-icon.svg")}" alt=""/><input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" data-benefit-icon-upload="${escapeHTML(benefit.id)}"/><small>${ar ? "PNG أو JPG أو WEBP أو SVG — بحد أقصى 350KB" : "PNG, JPG, WEBP or SVG — max 350KB"}</small></label>
       <div class="review-grid"><label>${ar ? "لون أساسي" : "Primary color"}<input type="color" name="${prefix}.color0" value="${escapeHTML(benefit.colors?.[0] || "#7b0a20")}"/></label><label>${ar ? "لون ثانوي" : "Secondary color"}<input type="color" name="${prefix}.color1" value="${escapeHTML(benefit.colors?.[1] || "#77b8ff")}"/></label><label>${ar ? "لون إبراز" : "Accent color"}<input type="color" name="${prefix}.color2" value="${escapeHTML(benefit.colors?.[2] || "#f2b844")}"/></label></div>
       <div class="review-grid"><label>${ar ? "زر الإجراء AR" : "Arabic CTA"}<input name="${prefix}.ctaLabelAr" value="${escapeHTML(benefit.ctaLabelAr)}"/></label><label>${ar ? "زر الإجراء EN" : "English CTA"}<input name="${prefix}.ctaLabelEn" value="${escapeHTML(benefit.ctaLabelEn)}"/></label><label>${ar ? "رابط الإجراء" : "CTA URL"}<input name="${prefix}.ctaUrl" value="${escapeHTML(benefit.ctaUrl)}" dir="ltr"/></label></div>
     </article>`;
   }).join("");
+  const categoryIconMarkup = [...ORIGO_HOME_CATEGORIES, ["offers", "العروض", "Offers", "٪"]].map(([key, arName, enName, fallback]) => `<label class="store-icon-upload"><span>${escapeHTML(ar ? arName : enName)}</span><span class="store-icon-preview" id="category-icon-preview-${key}">${settings.categoryIcons[key] ? `<img src="${escapeHTML(settings.categoryIcons[key])}" alt=""/>` : fallback}</span><input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" data-category-icon-upload="${key}"/></label>`).join("");
+  const homeBenefitIconMarkup = ORIGO_HOME_BENEFITS.map(([key, arName, enName]) => `<label class="store-icon-upload"><span>${escapeHTML(ar ? arName : enName)}</span><span class="store-icon-preview" id="home-benefit-icon-preview-${key}">${settings.homeBenefitIcons[key] ? `<img src="${escapeHTML(settings.homeBenefitIcons[key])}" alt=""/>` : "◇"}</span><input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" data-home-benefit-icon-upload="${key}"/></label>`).join("");
   return `<form class="admin-settings-form" id="admin-settings-form"><section><div class="review-section-head"><span>01</span><div><b>${ar ? "هوية المتجر والشعار المركزي" : "Store identity & central logo"}</b><small>${ar ? "يتغير الشعار في الهيدر والقائمة والفوتر من هنا." : "One source updates header, menu, and footer."}</small></div></div>
     <div class="review-grid"><label>${ar ? "اسم المتجر" : "Store name"}<input name="storeName" value="${escapeHTML(settings.storeName)}" /></label>
     <label>${ar ? "العملة" : "Currency"}<select name="currency">${selectOptions([["EGP","EGP"],["USD","USD"],["SAR","SAR"]], settings.currency)}</select></label>
@@ -1712,7 +1732,8 @@ function settingsMarkup() {
       <label>Google Play URL<input name="googlePlayUrl" value="${escapeHTML(settings.appLinks.googlePlay)}" dir="ltr"/></label><label>App Store URL<input name="appStoreUrl" value="${escapeHTML(settings.appLinks.appStore)}" dir="ltr"/></label>
     </div></section>
     <section><div class="review-section-head"><span>03</span><div><b>${ar ? "روابط التواصل الاجتماعي" : "Social links"}</b><small>${ar ? "الرابط الفارغ يظهر كأيقونة معطلة بدون رابط وهمي." : "Empty URLs render as disabled icons."}</small></div></div><div class="social-settings-grid">${socialNames.map(([key,label]) => `<label>${label}<input name="social.${key}" value="${escapeHTML(settings.socialLinks[key])}" dir="ltr" placeholder="https://"/></label>`).join("")}</div></section>
-    <section><div class="review-section-head"><span>04</span><div><b>${ar ? "مزايا الفوتر وصفحاتها" : "Footer benefits & detail pages"}</b><small>${ar ? "عدّل المحتوى والترتيب والرسم والألوان من مكان واحد." : "Edit content, order, illustration, and colors in one place."}</small></div></div><div class="benefits-settings-grid">${benefitMarkup}</div></section>
+    <section><div class="review-section-head"><span>04</span><div><b>${ar ? "أيقونات الصفحة الرئيسية" : "Homepage icons"}</b><small>${ar ? "ارفع أو استبدل أيقونات الأقسام والمزايا من ملفاتك." : "Upload or replace category and benefit icons."}</small></div></div><h4>${ar ? "الأقسام" : "Categories"}</h4><div class="store-icons-grid">${categoryIconMarkup}</div><h4>${ar ? "مزايا المتجر" : "Store benefits"}</h4><div class="store-icons-grid">${homeBenefitIconMarkup}</div></section>
+    <section><div class="review-section-head"><span>05</span><div><b>${ar ? "مزايا الفوتر وصفحاتها" : "Footer benefits & detail pages"}</b><small>${ar ? "عدّل المحتوى والترتيب والرسم والألوان من مكان واحد." : "Edit content, order, illustration, and colors in one place."}</small></div></div><div class="benefits-settings-grid">${benefitMarkup}</div></section>
     <section><div class="review-section-head"><span>05</span><div><b>${ar ? "خيارات مكتشف العطر" : "Fragrance Finder options"}</b><small>${ar ? "فعّل الخيارات التي تظهر للعملاء. يجب إبقاء خيار واحد على الأقل في كل مجموعة." : "Control the options customers can select. Each group must retain at least one option."}</small></div></div>
     <div class="finder-admin-groups">${finderSettingsMarkup}</div><div class="admin-integration-note"><span>✓</span><div><b>${ar ? "الترجمات مكتملة" : "Translations complete"}</b><p>${ar ? "يتحقق فحص البناء من تطابق مفاتيح العربية والإنجليزية ويمنع النصوص الصلبة داخل واجهة مكتشف العطر." : "The build check verifies Arabic/English key parity and blocks hard-coded Finder UI copy."}</p></div></div></section>
     <section><div class="review-section-head"><span>06</span><div><b>${ar ? "الإشعارات والأمان" : "Notifications & security"}</b></div></div>
@@ -2227,7 +2248,7 @@ function renderBrandCarousel(query = "") {
   const items = brands.map(([brand, count]) => {
     const option = brandOptions.find((item) => [item.value,item.nameAr,item.nameEn].some((value) => normalizeOptionSearch(value) === normalizeOptionSearch(brand)));
     const artwork = option?.image ? `<img src="${escapeHTML(option.image)}" alt="" loading="lazy"/>` : `<span aria-hidden="true">${escapeHTML(brand.slice(0, 2).toUpperCase())}</span>`;
-    return `<button data-action="brand-search" data-query="${escapeHTML(brand)}" aria-label="${escapeHTML(`${state.lang === "ar" ? "عرض منتجات" : "View products by"} ${brand}`)}">${artwork}<b>${escapeHTML(brand)}</b><small>${count} ${state.lang === "ar" ? "منتج" : "products"}</small></button>`;
+    return `<button data-action="brand-search" data-query="${escapeHTML(brand)}" aria-label="${escapeHTML(`${state.lang === "ar" ? "عرض منتجات" : "View products by"} ${brand}`)}">${artwork}<b>${escapeHTML(brand)}</b></button>`;
   }).join("");
   const duplicateItems = items.replaceAll("<button ", '<button tabindex="-1" ');
   $$("#brand-carousel-track, #home-brand-carousel-track").forEach((track) => {
@@ -2385,9 +2406,11 @@ function applyStoreIdentity() {
   if (announcement) {
     const threshold = Number(settings.freeShippingThreshold || 3000);
     const value = new Intl.NumberFormat(state.lang === "ar" ? "ar-EG" : "en-EG", { maximumFractionDigits: 0 }).format(threshold);
-    announcement.textContent = state.lang === "ar"
-      ? `🚚 شحن مجاني للطلبات المؤهلة فوق ${value} جنيه مصري`
-      : `🚚 Free shipping on eligible orders over EGP ${value}`;
+    const announcementText = state.lang === "ar"
+      ? `شحن مجاني للطلبات المؤهلة فوق ${value} جنيه مصري • منتجات أصلية 100% • استرجاع سهل • دعم عملاء 24/7`
+      : `Free shipping on eligible orders over EGP ${value} • 100% authentic products • Easy returns • 24/7 support`;
+    announcement.innerHTML = `<span dir="auto">🚚 ${escapeHTML(announcementText)}</span><span dir="auto" aria-hidden="true">🚚 ${escapeHTML(announcementText)}</span>`;
+    announcement.setAttribute("aria-label", announcementText);
     announcement.setAttribute("aria-hidden", "false");
   }
   $$('[data-store-logo]').forEach((image) => {
@@ -2396,6 +2419,15 @@ function applyStoreIdentity() {
     const src = settings.logos[variant] || settings.logos.light || defaultStoreSettings.logos.light;
     if (image.getAttribute("src") !== src) image.setAttribute("src", src);
     image.alt = `${settings.storeName || "ORIGO"} SCENTS`;
+  });
+  $$('[data-home-category-icon]').forEach((icon) => {
+    const src = settings.categoryIcons?.[icon.dataset.homeCategoryIcon];
+    if (src) icon.innerHTML = `<img src="${escapeHTML(src)}" alt=""/>`;
+  });
+  $$('[data-home-benefit]').forEach((item) => {
+    const src = settings.homeBenefitIcons?.[item.dataset.homeBenefit];
+    const icon = $(".benefit-icon", item);
+    if (src && icon) icon.innerHTML = `<img src="${escapeHTML(src)}" alt=""/>`;
   });
 }
 
@@ -2423,7 +2455,7 @@ function renderSiteFooter() {
   const storyImage = $("#footer-story-image");
   if (storyImage && settings.footerImage) storyImage.src = settings.footerImage;
   $("#footer-benefits").innerHTML = activeFooterBenefits().map((benefit) => `<a class="footer-benefit-card" href="/benefits/${escapeHTML(benefit.slug)}" data-action="benefit-link" data-slug="${escapeHTML(benefit.slug)}">
-    <span class="footer-benefit-icon">${footerBenefitIcon(benefit.icon, benefit.colors)}</span>
+    <span class="footer-benefit-icon">${benefit.image ? `<img src="${escapeHTML(benefit.image)}" alt="" loading="lazy"/>` : footerBenefitIcon(benefit.icon, benefit.colors)}</span>
     <b>${escapeHTML(isArabic ? benefit.titleAr : benefit.titleEn)}</b><small>${escapeHTML(isArabic ? benefit.shortAr : benefit.shortEn)}</small></a>`).join("");
   const email = String(settings.supportEmail || defaultStoreSettings.supportEmail).trim();
   const emailLink = $("#footer-support-email");
@@ -2498,7 +2530,7 @@ function renderBenefitDetail(benefit) {
   const faqs = Array.isArray(benefit.faqs) ? benefit.faqs : [];
   const soft = safeBenefitColor(benefit.colors?.[2], "#f7e8dc");
   $("#benefit-detail-content").innerHTML = `<nav class="benefit-breadcrumb" aria-label="${isArabic ? "مسار الصفحة" : "Breadcrumb"}"><a href="/" data-action="catalog-home">${isArabic ? "الرئيسية" : "Home"}</a><span>‹</span><a href="#site-footer">${isArabic ? "مزايا ORIGO" : "ORIGO benefits"}</a><span>‹</span><b>${escapeHTML(title)}</b></nav>
-    <article class="benefit-detail-hero" style="--benefit-soft:${escapeHTML(soft)}"><div class="benefit-detail-art">${footerBenefitIcon(benefit.icon, benefit.colors)}</div><div class="benefit-detail-copy"><span class="eyebrow">ORIGO CARE</span><h1 id="benefit-detail-title">${escapeHTML(title)}</h1><p>${escapeHTML(description)}</p><a class="benefit-detail-cta" href="${escapeHTML(ctaUrl)}">${escapeHTML(ctaLabel)} <span>←</span></a></div></article>
+    <article class="benefit-detail-hero" style="--benefit-soft:${escapeHTML(soft)}"><div class="benefit-detail-art">${benefit.image ? `<img src="${escapeHTML(benefit.image)}" alt=""/>` : footerBenefitIcon(benefit.icon, benefit.colors)}</div><div class="benefit-detail-copy"><span class="eyebrow">ORIGO CARE</span><h1 id="benefit-detail-title">${escapeHTML(title)}</h1><p>${escapeHTML(description)}</p><a class="benefit-detail-cta" href="${escapeHTML(ctaUrl)}">${escapeHTML(ctaLabel)} <span>←</span></a></div></article>
     <div class="benefit-detail-sections"><section class="benefit-detail-panel"><h2>${isArabic ? "كيف تعمل الخدمة؟" : "How it works"}</h2><ol class="benefit-step-list">${(steps || []).map((step) => `<li>${escapeHTML(step)}</li>`).join("")}</ol></section><section class="benefit-detail-panel"><h2>${isArabic ? "الشروط المهمة" : "Important conditions"}</h2><ul class="benefit-condition-list">${(conditions || []).map((condition) => `<li>${escapeHTML(condition)}</li>`).join("")}</ul></section></div>
     <section class="benefit-faqs"><h2>${isArabic ? "الأسئلة الشائعة" : "Frequently asked questions"}</h2>${faqs.map((faq) => `<details><summary>${escapeHTML(isArabic ? faq.qAr : faq.qEn)}</summary><p>${escapeHTML(isArabic ? faq.aAr : faq.aEn)}</p></details>`).join("")}</section>`;
   document.title = `${title} | ORIGO`;
@@ -6265,6 +6297,7 @@ document.addEventListener("submit", async (event) => {
         conditionsAr: textLines(`${prefix}.conditionsAr`), conditionsEn: textLines(`${prefix}.conditionsEn`),
         faqs,
         icon: String(data.get(`${prefix}.icon`) || benefit.icon),
+        image: state.pendingBenefitIcons[benefit.id] || benefit.image || "",
         sort: Number(data.get(`${prefix}.sort`) || benefit.sort || 1),
         colors: [String(data.get(`${prefix}.color0`) || benefit.colors?.[0]), String(data.get(`${prefix}.color1`) || benefit.colors?.[1]), String(data.get(`${prefix}.color2`) || benefit.colors?.[2])],
         ctaLabelAr: String(data.get(`${prefix}.ctaLabelAr`) || benefit.ctaLabelAr).trim(),
@@ -6306,10 +6339,15 @@ document.addEventListener("submit", async (event) => {
       supportHoursEn: String(data.get("supportHoursEn") || current.supportHoursEn).trim(),
       appLinks: { googlePlay: String(data.get("googlePlayUrl") || "").trim(), appStore: String(data.get("appStoreUrl") || "").trim() },
       socialLinks: Object.fromEntries(["youtube", "facebook", "tiktok", "instagram", "snapchat", "telegram", "whatsapp"].map((name) => [name, String(data.get(`social.${name}`) || "").trim()])),
+      categoryIcons: { ...current.categoryIcons, ...state.pendingCategoryIcons },
+      homeBenefitIcons: { ...current.homeBenefitIcons, ...state.pendingHomeBenefitIcons },
       fragranceFinder: { ...current.fragranceFinder, enabled: finderEnabled },
       footerBenefits
     });
     state.pendingStoreLogos = {};
+    state.pendingBenefitIcons = {};
+    state.pendingCategoryIcons = {};
+    state.pendingHomeBenefitIcons = {};
     saveAdminWorkspace("settings");
     renderSiteFooter();
     applyStoreIdentity();
@@ -6707,6 +6745,45 @@ document.addEventListener("change", async (event) => {
       state.pendingStoreLogos[key] = String(reader.result || "");
       const preview = $(`#store-logo-preview-${key}`);
       if (preview) preview.src = state.pendingStoreLogos[key];
+    }, { once: true });
+    reader.readAsDataURL(file);
+    return;
+  }
+  if (event.target.matches("[data-benefit-icon-upload]")) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    if (!/^image\/(png|jpeg|webp|svg\+xml)$/.test(file.type) || file.size > 350_000) {
+      event.target.value = "";
+      showToast(adminCopy("اختر صورة صالحة لا تتجاوز 350 KB", "Choose a valid image up to 350 KB"));
+      return;
+    }
+    const id = event.target.dataset.benefitIconUpload;
+    const reader = new FileReader();
+    reader.addEventListener("load", () => {
+      state.pendingBenefitIcons[id] = String(reader.result || "");
+      const preview = $(`#benefit-icon-preview-${CSS.escape(id)}`);
+      if (preview) preview.src = state.pendingBenefitIcons[id];
+    }, { once: true });
+    reader.readAsDataURL(file);
+    return;
+  }
+  if (event.target.matches("[data-category-icon-upload], [data-home-benefit-icon-upload]")) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    if (!/^image\/(png|jpeg|webp|svg\+xml)$/.test(file.type) || file.size > 350_000) {
+      event.target.value = "";
+      showToast(adminCopy("اختر صورة صالحة لا تتجاوز 350 KB", "Choose a valid image up to 350 KB"));
+      return;
+    }
+    const isCategory = event.target.matches("[data-category-icon-upload]");
+    const key = isCategory ? event.target.dataset.categoryIconUpload : event.target.dataset.homeBenefitIconUpload;
+    const pending = isCategory ? state.pendingCategoryIcons : state.pendingHomeBenefitIcons;
+    const previewId = `${isCategory ? "category" : "home-benefit"}-icon-preview-${key}`;
+    const reader = new FileReader();
+    reader.addEventListener("load", () => {
+      pending[key] = String(reader.result || "");
+      const preview = $(`#${CSS.escape(previewId)}`);
+      if (preview) preview.innerHTML = `<img src="${escapeHTML(pending[key])}" alt=""/>`;
     }, { once: true });
     reader.readAsDataURL(file);
     return;

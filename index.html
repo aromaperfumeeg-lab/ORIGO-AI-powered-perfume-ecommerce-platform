@@ -113,7 +113,7 @@
           <div id="mobile-brands-list" class="mobile-taxonomy-list"></div>
         </details>
       </div>
-      <button class="mobile-admin-link" data-action="admin"><span>◇</span><b data-i18n="adminLink">إدارة المنتجات</b><i>←</i></button>
+      <button class="mobile-admin-link" data-action="admin" hidden><span>◇</span><b data-i18n="adminLink">إدارة المنتجات</b><i>←</i></button>
       <div class="mobile-menu-actions">
         <button data-action="account"><span>♙</span><b data-i18n="account">الحساب</b></button>
         <button data-action="language"><span>文</span><b data-i18n="language">English</b></button>
@@ -164,13 +164,13 @@
         </section>
 
         <section class="home-benefits horizontal-rail" data-horizontal-rail aria-label="مزايا متجر ORIGO">
-          <article><span class="benefit-icon">◉</span><div><b>منتجات أصلية 100%</b><small>جودة مضمونة</small></div></article>
-          <article><span class="benefit-icon">▰</span><div><b>شحن سريع</b><small>إلى جميع المدن</small></div></article>
-          <article><span class="benefit-icon">↻</span><div><b>استرجاع واستبدال سهل</b><small>سياسة مرنة</small></div></article>
-          <article><span class="benefit-icon">٪</span><div><b>أسعار منافسة</b><small>قيمة أفضل</small></div></article>
-          <article><span class="benefit-icon">▣</span><div><b>دفع عند الاستلام</b><small>تسوق بثقة</small></div></article>
-          <article><span class="benefit-icon">🎁</span><div><b>تغليف فاخر</b><small>جاهز للإهداء</small></div></article>
-          <article><span class="benefit-icon">♧</span><div><b>دعم العملاء 24/7</b><small>نحن دائمًا معك</small></div></article>
+          <article data-home-benefit="authentic"><span class="benefit-icon">◉</span><div><b>منتجات أصلية 100%</b><small>جودة مضمونة</small></div></article>
+          <article data-home-benefit="shipping"><span class="benefit-icon">▰</span><div><b>شحن سريع</b><small>إلى جميع المدن</small></div></article>
+          <article data-home-benefit="returns"><span class="benefit-icon">↻</span><div><b>استرجاع واستبدال سهل</b><small>سياسة مرنة</small></div></article>
+          <article data-home-benefit="prices"><span class="benefit-icon">٪</span><div><b>أسعار منافسة</b><small>قيمة أفضل</small></div></article>
+          <article data-home-benefit="cod"><span class="benefit-icon">▣</span><div><b>دفع عند الاستلام</b><small>تسوق بثقة</small></div></article>
+          <article data-home-benefit="gift"><span class="benefit-icon">🎁</span><div><b>تغليف فاخر</b><small>جاهز للإهداء</small></div></article>
+          <article data-home-benefit="support"><span class="benefit-icon">♧</span><div><b>دعم العملاء 24/7</b><small>نحن دائمًا معك</small></div></article>
         </section>
 
         <section class="home-gender-section" aria-labelledby="gender-title">
@@ -213,14 +213,14 @@
         <section class="home-brand-showcases" id="home-brand-showcases" aria-label="منتجات العلامات التجارية"></section>
 
         <nav class="home-categories horizontal-rail" data-horizontal-rail aria-label="فئات المنتجات">
-          <a href="#featured" data-action="catalog-category" data-category="perfume"><span>♨</span><b data-i18n="navPerfumes">العطور</b></a>
-          <a href="#featured" data-action="catalog-category" data-category="skincare"><span>♙</span><b data-i18n="navSkincare">العناية بالبشرة</b></a>
-          <a href="#featured" data-action="catalog-category" data-category="bodycare"><span>🎁</span><b data-i18n="navBodycare">العناية بالجسم</b></a>
-          <a href="#featured" data-action="catalog-category" data-category="haircare"><span>♟</span><b data-i18n="navHaircare">العناية بالشعر</b></a>
-          <a href="#featured" data-action="catalog-category" data-category="incense"><span>♨</span><b data-i18n="navIncense">البخور</b></a>
-          <a href="#featured" data-action="catalog-category" data-category="home"><span>♜</span><b data-i18n="navHomeFragrance">المعطرات المنزلية</b></a>
-          <a href="#featured"><span>🎁</span><b data-i18n="gifts">الهدايا</b></a>
-          <a href="#offers"><span>٪</span><b data-i18n="offers">العروض</b></a>
+          <a href="#featured" data-action="catalog-category" data-category="perfume"><span data-home-category-icon="perfume">♨</span><b data-i18n="navPerfumes">العطور</b></a>
+          <a href="#featured" data-action="catalog-category" data-category="skincare"><span data-home-category-icon="skincare">♙</span><b data-i18n="navSkincare">العناية بالبشرة</b></a>
+          <a href="#featured" data-action="catalog-category" data-category="bodycare"><span data-home-category-icon="bodycare">🎁</span><b data-i18n="navBodycare">العناية بالجسم</b></a>
+          <a href="#featured" data-action="catalog-category" data-category="haircare"><span data-home-category-icon="haircare">♟</span><b data-i18n="navHaircare">العناية بالشعر</b></a>
+          <a href="#featured" data-action="catalog-category" data-category="incense"><span data-home-category-icon="incense">♨</span><b data-i18n="navIncense">البخور</b></a>
+          <a href="#featured" data-action="catalog-category" data-category="home"><span data-home-category-icon="home">♜</span><b data-i18n="navHomeFragrance">المعطرات المنزلية</b></a>
+          <a href="#featured"><span data-home-category-icon="gifts">🎁</span><b data-i18n="gifts">الهدايا</b></a>
+          <a href="#offers"><span data-home-category-icon="offers">٪</span><b data-i18n="offers">العروض</b></a>
         </nav>
 
         <section class="home-alternatives-promo" id="home-alternatives-promo" aria-live="polite"></section>
@@ -656,6 +656,14 @@
 
       <div class="footer-bottom-bar"><p>© <span id="footer-year">2026</span> ORIGO. جميع الحقوق محفوظة.</p></div>
     </footer>
+
+    <nav class="store-bottom-nav" aria-label="التنقل الرئيسي للهاتف">
+      <a class="active" href="/" data-action="catalog-home"><span>⌂</span><b>الرئيسية</b></a>
+      <a href="/perfumes"><span>▦</span><b>الفئات</b></a>
+      <a class="store-bottom-discover" href="/fragrance-finder/for-whom" data-action="find-matches"><span>✦</span><b>اكتشف</b></a>
+      <button data-action="wishlist"><span>♡</span><b>المفضلة</b></button>
+      <button data-action="account"><span>♙</span><b>الحساب</b></button>
+    </nav>
 
     <div class="overlay" id="search-overlay" aria-hidden="true">
       <div class="search-panel">

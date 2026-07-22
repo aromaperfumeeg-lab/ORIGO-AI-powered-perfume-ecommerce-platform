@@ -721,6 +721,68 @@ fieldset {
   }
 }
 
+.store-bottom-nav{display:none}
+@keyframes origoAnnouncementMarquee{to{transform:translateX(-100%)}}
+@keyframes origoAnnouncementMarqueeArabic{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
+
+@media(max-width:640px){
+  body{padding-bottom:70px}
+  body.account-route{padding-bottom:0}
+  .announcement,body.commerce-route .announcement,body.account-route .announcement,body.finder-route .announcement{width:100%;min-height:27px;height:27px;padding:0;display:flex!important;justify-content:flex-start;overflow:hidden;direction:ltr;white-space:nowrap;background:linear-gradient(90deg,#4b0013,#780020,#4b0013)}
+  .announcement>span{min-width:max-content;padding-inline:36px;display:flex;align-items:center;color:#fff3d5;font-size:9px;animation:origoAnnouncementMarquee 22s linear infinite}
+  html[dir="rtl"] .announcement{direction:rtl}
+  html[dir="rtl"] .announcement>span{direction:rtl;text-align:right;animation-name:origoAnnouncementMarqueeArabic}
+  .site-header,.site-header.compact{min-height:62px;color:var(--shell-burgundy);background:var(--shell-surface);border-bottom:1px solid var(--shell-line);box-shadow:0 5px 18px #3d00100f}
+  .header-main,.compact .header-main{width:100%;height:62px;min-height:62px;padding:0 8px;display:grid;grid-template-columns:38px minmax(74px,1fr) 72px 94px;grid-template-areas:"menu brand preferences commerce";gap:3px}
+  .mobile-menu-button{grid-area:menu;width:36px;height:36px;margin:0;padding:0;display:grid!important;place-content:center;gap:4px;border:1px solid #76002033;border-radius:9px;color:var(--shell-burgundy);background:#fff}
+  .mobile-menu-button span{width:18px;height:2px;display:block;border-radius:2px;background:currentColor}
+  .header-main>.brand,.compact .header-main>.brand{grid-area:brand;width:min(112px,100%);margin:auto}
+  .site-header .brand-logo-link img{width:104px;height:43px}
+  .header-preference-actions{grid-area:preferences;display:flex!important;justify-content:center;gap:2px;direction:ltr}
+  .header-preference-actions>button{color:var(--shell-burgundy);background:#fff}
+  .header-preference-actions .lang-button{width:39px;min-width:39px;height:34px;padding:0;overflow:hidden;justify-content:center;border:0;font-size:8px;white-space:nowrap}
+  .header-preference-actions .theme-toggle{width:32px;min-width:32px;height:32px;border-color:#76002033;color:var(--shell-burgundy)}
+  .header-commerce-zone{grid-area:commerce;min-width:0;display:block}
+  .header-commerce-actions{display:grid;grid-template-columns:repeat(3,30px);justify-content:end;gap:1px}
+  .header-commerce-actions>button{width:30px;min-width:30px;height:36px;display:grid!important;color:var(--shell-burgundy)}
+  .header-commerce-actions svg{width:20px;height:20px}
+  .header-commerce-actions .action-count{top:-1px;right:-2px;left:auto;min-width:16px;height:16px;padding:0 3px;border:2px solid #fff;font-size:7px}
+  .header-main .header-search,.category-nav{display:none!important}
+  .origo-home-hero{overflow:hidden}
+  .home-hero-copy{right:auto!important;left:50%!important;width:calc(100% - 24px)!important;max-width:410px;padding-inline:10px;text-align:center;transform:translateX(-50%)!important}
+  .home-hero-copy h1{max-width:100%;margin-inline:auto;font-size:clamp(26px,8vw,34px)!important;line-height:1.25;white-space:normal;overflow-wrap:anywhere}
+  .home-hero-copy p{max-width:100%;font-size:12px!important;line-height:1.7;white-space:normal}
+  .store-bottom-nav{position:fixed;z-index:58;right:0;bottom:0;left:0;height:66px;padding:5px 8px max(5px,env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(5,1fr);border-top:1px solid var(--shell-line);color:var(--shell-muted);background:color-mix(in srgb,var(--shell-surface) 94%,transparent);box-shadow:0 -8px 24px #39000e17;backdrop-filter:blur(14px)}
+  .store-bottom-nav>:is(a,button){min-width:0;padding:2px;display:grid;place-content:center;justify-items:center;gap:2px;border:0;color:inherit;background:transparent;text-decoration:none}
+  .store-bottom-nav span{font-size:22px;line-height:1}.store-bottom-nav b{font-size:8px;white-space:nowrap}.store-bottom-nav .active{color:var(--shell-burgundy)}
+  .store-bottom-nav .store-bottom-discover span{width:40px;height:40px;margin-top:-20px;display:grid;place-items:center;border-radius:50%;color:#fff;background:linear-gradient(145deg,#7c0022,#4b0013);box-shadow:0 6px 16px #50001740}
+  body.account-route .store-bottom-nav{display:none}
+}
+
+@media(max-width:640px){
+  .announcement>span{font-size:11px;font-weight:800}
+  .header-preference-actions .lang-button{font-size:11px;font-weight:900}
+  .store-bottom-nav b{font-size:11px;font-weight:900}
+  .home-hero-copy h1{font-size:clamp(30px,9vw,38px)!important}
+  .home-hero-copy p{font-size:14px!important}
+  .ornament-heading h2,.home-section-head h2{font-size:24px!important}
+  .home-categories.horizontal-rail a b{font-size:11px!important;line-height:1.3;font-weight:900!important}
+  .home-benefits b{font-size:11px!important;font-weight:900!important}.home-benefits small{font-size:10px!important;font-weight:700!important}
+  .brand-marquee-set b{font-size:12px!important;font-weight:900!important}
+  .perfume-product-card .product-brand{font-size:10px!important;font-weight:800!important}
+  .perfume-product-card .product-info h3,.home-best-sellers .perfume-product-card .product-info h3{font-size:15px!important;font-weight:900!important}
+  .perfume-product-card .product-price{font-size:16px!important;font-weight:900!important}
+  .perfume-product-card .product-card-type{font-size:9px!important;font-weight:700!important}
+  .perfume-product-card .card-add-button{font-size:12px!important;font-weight:900!important}
+  .footer-directory h3{font-size:17px!important}
+  .footer-directory a,.footer-directory button,.footer-contact p,.footer-app>p{font-size:12px!important}
+  .announcement>span,.header-preference-actions .lang-button,.store-bottom-nav b,.home-hero-copy,.home-categories,.home-benefits,.home-section-head,.ornament-heading,.perfume-product-card .product-card-info,.footer-directory{font-weight:600}
+  .home-hero-copy h1,.home-section-head h2,.ornament-heading h2,.home-categories b,.home-benefits b,.brand-marquee-set b,.perfume-product-card h3,.perfume-product-card .product-price,.perfume-product-card .card-add-button,.footer-directory h3,.store-bottom-nav b{font-weight:800!important}
+  .home-brand-showcase .product-grid{gap:10px!important}
+  .home-brand-showcase .perfume-product-card{flex:0 0 min(72vw,235px)!important;min-width:0!important;width:auto!important}
+  .home-brand-showcase .perfume-product-card .product-card-media{aspect-ratio:1/1.08!important}
+}
+
 /* Equal-height product content keeps every add-to-cart button on one baseline. */
 .perfume-product-card {
   height: 100%;
