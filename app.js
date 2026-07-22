@@ -43,6 +43,8 @@ const translations = {
     featuredBrands: "براندات مختارة",
     account: "الحساب",
     language: "English",
+    categories: "الفئات",
+    shopByGender: "تسوق حسب الجنس",
     appearance: "المظهر",
     shop: "المتجر",
     discover: "اكتشف عطرك",
@@ -281,6 +283,8 @@ const translations = {
     featuredBrands: "Featured brands",
     account: "Account",
     language: "العربية",
+    categories: "Categories",
+    shopByGender: "Shop by gender",
     appearance: "Appearance",
     shop: "Shop",
     discover: "Find your scent",
@@ -2151,7 +2155,11 @@ function updateLanguage() {
     const value = translations[state.lang][node.dataset.i18nPlaceholder];
     if (value) node.placeholder = value;
   });
-  $("[data-action='language']").textContent = isArabic ? "العربية ◎" : "Arabic ◎";
+  const languageButton = $(".lang-button[data-action='language']");
+  if (languageButton) {
+    languageButton.textContent = isArabic ? "English ◎" : "العربية ◎";
+    languageButton.setAttribute("aria-label", isArabic ? "Switch to English" : "التبديل إلى العربية");
+  }
   const currencyLabel = $("#current-currency");
   if (currencyLabel) currencyLabel.textContent = isArabic ? "ج.م" : "EGP";
   document.title = isArabic ? "ORIGO | أصل الحكاية العطرية" : "ORIGO | The origin of scent";
@@ -2160,6 +2168,7 @@ function updateLanguage() {
   renderBrandCarousel($("#brand-carousel-search")?.value || "");
   renderProducts($(".chip.active")?.dataset.filter || "all");
   renderHomepageCommerce();
+  renderSiteFooter();
   renderCart();
   renderWishlist();
   renderCatalogList();

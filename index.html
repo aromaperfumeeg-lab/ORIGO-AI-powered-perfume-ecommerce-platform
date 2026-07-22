@@ -63,7 +63,7 @@
           <img data-store-logo data-logo-variant="auto" src="assets/origo-logo.svg" alt="ORIGO" />
         </a>
         <div class="header-preference-actions">
-          <button class="lang-button" data-action="language" aria-label="Switch language">العربية ◎</button>
+          <button class="lang-button" data-action="language" aria-label="Switch to English">English ◎</button>
           <button class="theme-toggle" data-action="theme" aria-label="تفعيل الوضع المظلم" aria-pressed="false"><span class="sun">☀</span><span class="moon">☾</span></button>
         </div>
       </div>
@@ -75,12 +75,12 @@
           <div class="brands-dropdown mega-dropdown" id="header-brands-dropdown"></div>
         </div>
         <div class="brands-nav categories-nav">
-          <button data-action="categories-menu" aria-expanded="false"><span class="nav-icon" aria-hidden="true">▦</span><span>الفئات</span><i>⌄</i></button>
+          <button data-action="categories-menu" aria-expanded="false"><span class="nav-icon" aria-hidden="true">▦</span><span data-i18n="categories">الفئات</span><i>⌄</i></button>
           <div class="brands-dropdown mega-dropdown" id="header-categories-dropdown"></div>
         </div>
         <a href="#best-sellers"><span class="nav-icon" aria-hidden="true">★</span><span data-i18n="bestSellers">الأكثر مبيعًا</span></a>
         <a href="#new-arrivals"><span class="nav-icon" aria-hidden="true">✦</span><span data-i18n="newArrivals">المنتجات الحديثة</span></a>
-        <a href="#footer-brand-title"><span class="nav-icon" aria-hidden="true">ⓘ</span><span>من نحن</span></a>
+          <a href="#footer-brand-title"><span class="nav-icon" aria-hidden="true">ⓘ</span><span data-i18n="about">عن ORIGO</span></a>
         <a href="/alternatives" data-action="open-alternatives"><span class="nav-icon" aria-hidden="true">⇄</span><span data-i18n="alternatives">البدائل</span></a>
         <a class="smart-scent-nav" href="/fragrance-finder/for-whom" data-action="find-matches"><span class="nav-icon" aria-hidden="true">✧</span><span data-i18n="finderEntry">اكتشف عطرًا يناسب ذوقك</span></a>
       </nav>
@@ -98,7 +98,7 @@
         <a href="/perfumes" data-action="catalog-category" data-category="perfume" data-i18n="navPerfumes">العطور</a>
         <a href="#new-arrivals" data-action="close-mobile-menu" data-i18n="newArrivals">المنتجات الحديثة</a>
         <a href="#best-sellers" data-action="close-mobile-menu" data-i18n="bestSellers">الأكثر مبيعًا</a>
-        <a href="#footer-brand-title" data-action="close-mobile-menu">من نحن</a>
+          <a href="#footer-brand-title" data-action="close-mobile-menu" data-i18n="about">عن ORIGO</a>
         <a href="#offers" data-action="close-mobile-menu" data-i18n="offers">العروض</a>
         <a href="/alternatives" data-action="open-alternatives" data-i18n="alternatives">البدائل</a>
         <a href="/fragrance-finder/for-whom" data-action="find-matches"><span data-i18n="finderEntry">اكتشف عطرًا يناسب ذوقك</span></a>
@@ -159,7 +159,7 @@
         </section>
 
         <section class="home-brand-directory" aria-labelledby="home-brands-title">
-          <div class="home-section-head"><a href="/perfumes"><span data-i18n="viewAll">عرض الكل</span> <span>‹</span></a><div class="ornament-heading"><span></span><h2 id="home-brands-title">العلامات التجارية</h2><span></span></div></div>
+          <div class="home-section-head"><a href="/perfumes"><span data-i18n="viewAll">عرض الكل</span> <span>‹</span></a><div class="ornament-heading"><span></span><h2 id="home-brands-title" data-i18n="navBrands">العلامات التجارية</h2><span></span></div></div>
           <div class="brand-carousel-track" id="home-brand-carousel-track" data-brand-marquee aria-live="off"></div>
         </section>
 
@@ -174,7 +174,7 @@
         </section>
 
         <section class="home-gender-section" aria-labelledby="gender-title">
-          <div class="ornament-heading"><span></span><h2 id="gender-title">تسوق حسب الجنس</h2><span></span></div>
+          <div class="ornament-heading"><span></span><h2 id="gender-title" data-i18n="shopByGender">تسوق حسب الجنس</h2><span></span></div>
           <div class="gender-grid horizontal-rail" data-horizontal-rail>
             <article class="gender-card gender-men">
               <div class="gender-copy"><span>♙</span><h3>للرجال</h3><p>عطور تعكس القوة<br />والأناقة والثقة</p><a href="#featured" data-action="catalog-category" data-category="perfume">تسوق الآن <i>‹</i></a></div>
@@ -658,11 +658,11 @@
     </footer>
 
     <nav class="store-bottom-nav" aria-label="التنقل الرئيسي للهاتف">
-      <a class="active" href="/" data-action="catalog-home"><span>⌂</span><b>الرئيسية</b></a>
-      <a href="/perfumes"><span>▦</span><b>الفئات</b></a>
-      <a class="store-bottom-discover" href="/fragrance-finder/for-whom" data-action="find-matches"><span>✦</span><b>اكتشف</b></a>
-      <button data-action="wishlist"><span>♡</span><b>المفضلة</b></button>
-      <button data-action="account"><span>♙</span><b>الحساب</b></button>
+    <a class="active" href="/" data-action="catalog-home"><span>⌂</span><b data-i18n="home">الرئيسية</b></a>
+    <a href="/perfumes"><span>▦</span><b data-i18n="categories">الفئات</b></a>
+    <a class="store-bottom-discover" href="/fragrance-finder/for-whom" data-action="find-matches"><span>✦</span><b data-i18n="scroll">اكتشف</b></a>
+    <button data-action="wishlist"><span>♡</span><b data-i18n="favorites">المفضلة</b></button>
+    <button data-action="account"><span>♙</span><b data-i18n="account">الحساب</b></button>
     </nav>
 
     <div class="overlay" id="search-overlay" aria-hidden="true">
