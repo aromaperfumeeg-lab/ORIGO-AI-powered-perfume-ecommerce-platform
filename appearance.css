@@ -53,3 +53,94 @@ html[data-appearance-image-fit="contain"]{--origo-image-fit:contain}
   .site-header{font-size:var(--origo-base-font-size)}
 }
 
+/* ORIGO palette: white + burgundy + gold */
+body:not(.dark){
+  --white:#fff;
+  --paper:#fffaf6;
+  --paper-2:#f8eee6;
+  --card:#fff;
+  --ink:#251519;
+  --ink-soft:#6e5b60;
+  --burgundy:#720019;
+  --burgundy-2:#920428;
+  --burgundy-deep:#4b0011;
+  --gold:#d3a13c;
+  --gold-bright:#f4ce72;
+  --gold-dark:#9a6916;
+  --line:rgba(114,0,25,.16);
+}
+body:not(.dark) #storefront-main{background-color:#fff}
+body:not(.dark) #storefront-main :where(.product-card,.checkout-main-card,.checkout-summary-card,.account-subview,.recent-orders,.performance-card,.footer-benefit-card){
+  background-color:#fff;
+}
+
+/* Dark mode uses readable light-gray surfaces and white typography. */
+body.dark{
+  --white:#3b3c40;
+  --paper:#484a4f;
+  --paper-2:#55575d;
+  --card:#4b4d52;
+  --ink:#fff;
+  --ink-soft:#f0f0f2;
+  --line:rgba(255,255,255,.22);
+  --shadow:0 20px 55px rgba(0,0,0,.28);
+  color:#fff!important;
+  background:#343539!important;
+}
+body.dark #storefront-main,
+body.dark .origo-home,
+body.dark .pdp-page,
+body.dark .commerce-page,
+body.dark .account-page,
+body.dark .catalog-page,
+body.dark .fragrance-finder-page,
+body.dark .alternatives-page,
+body.dark .benefit-detail-page{
+  color:#fff!important;
+  background:#3b3c40!important;
+}
+body.dark #storefront-main :where(
+  .product-card,.checkout-main-card,.checkout-summary-card,.checkout-side-card,
+  .account-subview,.recent-orders,.profile-card,.vip-promo,.account-stat-card,
+  .performance-card,.performance-insight-card,.pdp-card,.pdp-purchase,
+  .catalog-filter-panel,.catalog-toolbar,.finder-card,.finder-option,
+  .alternative-card,.benefit-detail-hero,.benefit-content-card,
+  [class*="-panel"],[class*="-dialog"]
+){
+  color:#fff!important;
+  border-color:rgba(255,255,255,.2)!important;
+  background:#4b4d52!important;
+}
+body.dark #storefront-main :where(h1,h2,h3,h4,h5,h6,p,li,label,legend,summary,small,strong,b),
+body.dark #site-footer :where(h1,h2,h3,h4,h5,h6,p,li,label,legend,summary,small,strong,b){
+  color:#fff!important;
+}
+body.dark #storefront-main :where(input,textarea,select),
+body.dark #site-footer :where(input,textarea,select){
+  color:#fff!important;
+  caret-color:#f4ce72;
+  border-color:rgba(255,255,255,.28)!important;
+  background:#5a5c62!important;
+}
+body.dark #storefront-main :where(input,textarea)::placeholder,
+body.dark #site-footer :where(input,textarea)::placeholder{color:#dedee1!important;opacity:1}
+body.dark #storefront-main :where(a:not(.button),button:not(.burgundy-button):not(.pdp-add)){
+  color:#fff;
+}
+body.dark .origo-footer{
+  color:#fff!important;
+  background:#3f4044!important;
+}
+body.dark .origo-footer :where(.footer-top-grid,.footer-benefit-card,.footer-email-field,.footer-column a){
+  color:#fff!important;
+  border-color:rgba(255,255,255,.2)!important;
+  background:#4b4d52!important;
+}
+body.dark .site-header,
+body.dark .category-nav{color:#fff;background:#720019!important}
+body.dark .category-nav :where(a,button,span){color:#fff!important}
+body.dark .category-nav :where(.mega-dropdown,.mega-dropdown-heading){
+  color:#fff!important;
+  border-color:rgba(244,206,114,.35)!important;
+  background:#4b4d52!important;
+}

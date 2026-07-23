@@ -44,6 +44,7 @@ const translations = {
     account: "الحساب",
     language: "English",
     categories: "الفئات",
+    navCategories: "الفئات",
     shopByGender: "تسوق حسب الجنس",
     appearance: "المظهر",
     shop: "المتجر",
@@ -284,6 +285,7 @@ const translations = {
     account: "Account",
     language: "العربية",
     categories: "Categories",
+    navCategories: "Categories",
     shopByGender: "Shop by gender",
     appearance: "Appearance",
     shop: "Shop",
@@ -1083,6 +1085,17 @@ const formatPrice = (value) => {
   }).format(Number(value || 0) * config.rate);
 };
 
+function localizedProductName(product, lang = state.lang) {
+  if (!product) return lang === "ar" ? "عطر ORIGO" : "ORIGO fragrance";
+  const translated = String(lang === "ar" ? product.nameAr || "" : product.nameEn || "").trim();
+  if (translated) return translated;
+  const brand = String(product.brand || "ORIGO").trim();
+  const sku = String(product.sku || "").trim();
+  return lang === "ar"
+    ? `${brand} — عطر`
+    : `${brand} fragrance${sku ? ` ${sku}` : ""}`;
+}
+
 function rebuildStorefrontProducts() {
   const productsById = new Map(baseProducts.map((product) => [product.id, product]));
   state.catalogProducts
@@ -1201,8 +1214,6 @@ async function persistAdminProduct(product) {
 
 function printOrderDocument(order, kind = "invoice") {
   const ar = state.lang === "ar";
-  const appearance = settings.appearance;
-  const appearanceRange = (name, labelAr, labelEn, min, max, step, value, suffix = "") => `<label class="appearance-range"><span>${ar ? labelAr : labelEn}<output data-appearance-output="${name}">${escapeHTML(String(value))}${suffix}</output></span><input type="range" name="appearance.${name}" min="${min}" max="${max}" step="${step}" value="${value}"/></label>`;
   const isLabel = kind === "label";
   const popup = window.open("", "_blank", "width=850,height=900");
   if (!popup) return showToast(ar ? "اسمح بالنوافذ المنبثقة للطباعة." : "Allow popups to print.");
@@ -1705,6 +1716,8 @@ function settingsMarkup() {
     ["googleAds", "YouTube + Google Ads", "GOOGLE_ADS_* · GOOGLE_OAUTH_*"]
   ];
   const ar = state.lang === "ar";
+  const appearance = settings.appearance;
+  const appearanceRange = (name, labelAr, labelEn, min, max, step, value, suffix = "") => `<label class="appearance-range"><span>${ar ? labelAr : labelEn}<output data-appearance-output="${name}">${escapeHTML(String(value))}${suffix}</output></span><input type="range" name="appearance.${name}" min="${min}" max="${max}" step="${step}" value="${value}"/></label>`;
   const logoFields = [["light", "الشعار الفاتح", "Light logo"], ["dark", "الشعار الداكن", "Dark logo"], ["icon", "أيقونة الشعار", "Logo icon"]];
   const socialNames = [["youtube", "YouTube"], ["facebook", "Facebook"], ["tiktok", "TikTok"], ["instagram", "Instagram"], ["snapchat", "Snapchat"], ["telegram", "Telegram"], ["whatsapp", "WhatsApp"]];
   const finderTranslate = (key) => window.ORIGOFragranceFinderI18n?.translate?.(state.lang, key) || key;
@@ -2164,7 +2177,7 @@ function renderCheckout() {
   $("#checkout-items").innerHTML = items.map(({ item, product }) => `
     <article class="checkout-summary-item">
       <img src="${escapeHTML(product.image || "assets/origo-hero.png")}" alt="" />
-      <div><b>${escapeHTML(state.lang === "ar" ? product.nameAr : product.nameEn || product.nameAr)}</b><small>${item.quantity} × ${formatPrice(product.price)}</small></div>
+      <div><b>${escapeHTML(localizedProductName(product))}</b><small>${item.quantity} × ${formatPrice(product.price)}</small></div>
       <strong>${formatPrice(product.price * item.quantity)}</strong>
     </article>`).join("");
   $("#checkout-total").textContent = formatPrice(items.reduce((sum, { item, product }) => sum + item.quantity * product.price, 0));
@@ -2201,6 +2214,7 @@ function updateLanguage() {
   if (currencyLabel) currencyLabel.textContent = isArabic ? "ج.م" : "EGP";
   document.title = isArabic ? "ORIGO | أصل الحكاية العطرية" : "ORIGO | The origin of scent";
   renderHomeNavigation();
+  localizeStaticStorefront();
   renderHomeHero();
   renderBrandCarousel($("#brand-carousel-search")?.value || "");
   renderProducts($(".chip.active")?.dataset.filter || "all");
@@ -2235,10 +2249,78 @@ function setupTheme() {
   document.body.classList.toggle("dark", state.theme === "dark");
   $$("[data-action='theme']").forEach((button) => {
     button.setAttribute("aria-pressed", String(state.theme === "dark"));
-    button.setAttribute("aria-label", state.theme === "dark" ? "تفعيل الوضع الفاتح" : "تفعيل الوضع المظلم");
+    button.setAttribute("aria-label", state.theme === "dark"
+      ? (state.lang === "ar" ? "تفعيل الوضع الفاتح" : "Switch to light mode")
+      : (state.lang === "ar" ? "تفعيل الوضع الداكن" : "Switch to dark mode"));
   });
   applyStoreIdentity();
   localStorage.setItem("origoTheme", state.theme);
+}
+
+function localizeStaticStorefront() {
+  const ar = state.lang === "ar";
+  const setText = (selector, arabic, english) => {
+    const node = $(selector);
+    if (node) node.textContent = ar ? arabic : english;
+  };
+  const setHTML = (selector, arabic, english) => {
+    const node = $(selector);
+    if (node) node.innerHTML = ar ? arabic : english;
+  };
+  setHTML("#home-hero-title", "اكتشف عالم العطور<br><em>الفاخرة</em>", "Discover the world of<br><em>luxury fragrance</em>");
+  setText("#home-hero .home-hero-copy>p", "نخبة مختارة من أفضل الماركات العالمية", "A curated selection from leading global brands");
+  setText("#home-hero .home-primary-button span", "تسوق الآن", "Shop now");
+  setText("#new-arrivals-title", "المنتجات الحديثة", "New arrivals");
+  setText(".home-new-arrivals .home-section-head>a span:first-child", "عرض باقي المنتجات الحديثة", "View all new arrivals");
+  const benefits = [
+    ["منتجات أصلية 100%", "جودة مضمونة", "100% authentic products", "Guaranteed quality"],
+    ["شحن سريع", "إلى جميع المدن", "Fast shipping", "To all cities"],
+    ["استرجاع واستبدال سهل", "سياسة مرنة", "Easy returns & exchanges", "Flexible policy"],
+    ["أسعار منافسة", "قيمة أفضل", "Competitive prices", "Better value"],
+    ["دفع عند الاستلام", "تسوق بثقة", "Cash on delivery", "Shop with confidence"],
+    ["تغليف فاخر", "جاهز للإهداء", "Luxury wrapping", "Gift-ready"],
+    ["دعم العملاء 24/7", "نحن دائمًا معك", "24/7 customer support", "Always here for you"]
+  ];
+  $$(".home-benefits article").forEach((item, index) => {
+    const copy = benefits[index];
+    if (!copy) return;
+    const title = $("b", item);
+    const subtitle = $("small", item);
+    if (title) title.textContent = ar ? copy[0] : copy[2];
+    if (subtitle) subtitle.textContent = ar ? copy[1] : copy[3];
+  });
+  const genders = [
+    ["للرجال", "عطور تعكس القوة والأناقة والثقة", "Men", "Fragrances of strength, elegance, and confidence"],
+    ["للنساء", "عطور تجمع بين الأنوثة والرقي والجاذبية", "Women", "Fragrances of femininity, refinement, and allure"],
+    ["للجنسين", "عطور تناسب جميع الأذواق والمناسبات", "Unisex", "Versatile fragrances for every taste and occasion"]
+  ];
+  $$(".gender-card .gender-copy").forEach((item, index) => {
+    const copy = genders[index];
+    if (!copy) return;
+    const title = $("h3", item);
+    const description = $("p", item);
+    const link = $("a", item);
+    if (title) title.textContent = ar ? copy[0] : copy[2];
+    if (description) description.textContent = ar ? copy[1] : copy[3];
+    if (link) link.childNodes[0].textContent = `${ar ? "تسوق الآن" : "Shop now"} `;
+  });
+  const promos = [
+    ["برنامج ولاء", "اكسب نقاطًا ومكافآت", "Loyalty program", "Earn points and rewards"],
+    ["منتجات جديدة", "كل أسبوع", "New products", "Every week"],
+    ["خصومات مميزة", "تصل حتى 50%", "Special discounts", "Up to 50%"],
+    ["عروض حصرية", "على نخبة المنتجات", "Exclusive offers", "On selected products"]
+  ];
+  $$(".home-promo-strip article").forEach((item, index) => {
+    const copy = promos[index];
+    if (!copy) return;
+    const title = $("b", item);
+    const subtitle = $("small", item);
+    if (title) title.textContent = ar ? copy[0] : copy[2];
+    if (subtitle) subtitle.textContent = ar ? copy[1] : copy[3];
+  });
+  const brandSearch = $("#brand-carousel-search");
+  if (brandSearch) brandSearch.placeholder = ar ? "ابحث عن علامة تجارية" : "Search brands";
+  setupTheme();
 }
 
 function productFilterValues(product, key) {
@@ -2985,7 +3067,7 @@ function renderCatalogAutocomplete(query) {
   const brands = catalogOptionCounts("brand").filter(([brand]) => ORIGOCatalog.normalize(brand).includes(normalized)).slice(0, 4);
   const notes = catalogOptionCounts("notes").filter(([note]) => ORIGOCatalog.normalize(note).includes(normalized)).slice(0, 4);
   const groups = [];
-  if (products.length) groups.push([state.lang === "ar" ? "منتجات" : "Products", products.map((product) => `<button role="option" data-action="catalog-suggestion-product" data-id="${escapeHTML(product.id)}"><img src="${escapeHTML(product.image || "assets/origo-hero.png")}" alt=""/><span><b>${escapeHTML(state.lang === "ar" ? product.nameAr : product.nameEn || product.nameAr)}</b><small>${escapeHTML(product.brand)}</small></span></button>`).join("")]);
+  if (products.length) groups.push([state.lang === "ar" ? "منتجات" : "Products", products.map((product) => `<button role="option" data-action="catalog-suggestion-product" data-id="${escapeHTML(product.id)}"><img src="${escapeHTML(product.image || "assets/origo-hero.png")}" alt=""/><span><b>${escapeHTML(localizedProductName(product))}</b><small>${escapeHTML(product.brand)}</small></span></button>`).join("")]);
   if (brands.length) groups.push([state.lang === "ar" ? "ماركات" : "Brands", brands.map(([brand, count]) => `<button role="option" data-action="catalog-suggestion-filter" data-key="brand" data-value="${escapeHTML(brand)}"><span><b>${escapeHTML(brand)}</b><small>${count} ${state.lang === "ar" ? "منتج" : "products"}</small></span></button>`).join("")]);
   if (notes.length) groups.push([state.lang === "ar" ? "نوتات" : "Notes", notes.map(([note, count]) => `<button role="option" data-action="catalog-suggestion-filter" data-key="notes" data-value="${escapeHTML(note)}"><span><b>${escapeHTML(note)}</b><small>${count} ${state.lang === "ar" ? "منتج" : "products"}</small></span></button>`).join("")]);
   const categories = [["men", "العطور الرجالية"], ["women", "العطور النسائية"], ["unisex", "عطور للجنسين"]].filter(([, label]) => ORIGOCatalog.normalize(label).includes(normalized));
@@ -3025,7 +3107,7 @@ function addToCart(product, quantity = 1) {
   else state.cart.push({ id: product.id, quantity: Math.min(maximum, requested) });
   persist();
   renderCart();
-  showToast(state.lang === "ar" ? `تمت إضافة ${product.nameAr} إلى السلة` : `${product.nameEn || product.nameAr} added to cart`);
+  showToast(state.lang === "ar" ? `تمت إضافة ${localizedProductName(product)} إلى السلة` : `${localizedProductName(product)} added to cart`);
 }
 
 function changeCartQuantity(productId, change) {
@@ -3064,7 +3146,7 @@ function renderCart() {
     row.innerHTML = `
       <img src="${escapeHTML(product.image || "assets/origo-hero.png")}" alt="" />
       <div>
-        <h3>${escapeHTML(state.lang === "ar" ? product.nameAr : product.nameEn || product.nameAr)}</h3>
+        <h3>${escapeHTML(localizedProductName(product))}</h3>
         <p>${escapeHTML(product.brand)} · 75 ML</p>
         <div class="quantity-control" aria-label="${state.lang === "ar" ? "الكمية" : "Quantity"}">
           <button data-action="decrease-cart" data-id="${escapeHTML(product.id)}" aria-label="${translations[state.lang].decreaseQuantity}">−</button>
@@ -3270,7 +3352,7 @@ function noteCardMarkup(note, compact = false) {
 }
 
 function productMiniCard(product) {
-  const name = state.lang === "ar" ? product.nameAr : product.nameEn || product.nameAr;
+  const name = localizedProductName(product);
   return `
     <button class="note-product-card" data-action="note-product" data-id="${escapeHTML(product.id)}">
       <img src="${escapeHTML(product.image || "assets/origo-hero.png")}" alt="${escapeHTML(name)}" loading="lazy" />
@@ -3802,7 +3884,7 @@ function rememberProduct(productId) {
 }
 
 function productStructuredData(product, media) {
-  const name = state.lang === "ar" ? product.nameAr : product.nameEn || product.nameAr;
+  const name = localizedProductName(product);
   const slug = product.slug || product.id;
   const canonical = `${location.origin}/?product=${encodeURIComponent(slug)}`;
   document.title = `${name} | ORIGO`;
@@ -3873,7 +3955,7 @@ function productPerformanceMarkup(product) {
 function productCardMarkup(product, options = {}) {
   if (typeof options === "string") options = { meta: options, context: "recommendation" };
   const isArabic = state.lang === "ar";
-  const name = isArabic ? product.nameAr : product.nameEn || product.nameAr;
+  const name = localizedProductName(product, isArabic ? "ar" : "en");
   const secondaryName = isArabic ? product.nameEn : product.nameAr;
   const interactive = options.interactive !== false;
   const media = productMedia(product);
@@ -3889,7 +3971,7 @@ function productCardMarkup(product, options = {}) {
   const knownStock = knownStockValue !== undefined && knownStockValue !== null && knownStockValue !== "";
   const outOfStock = product.status === "unavailable" || (knownStock && Number(knownStockValue) <= 0);
   const discount = oldPrice > price ? Math.round((1 - price / oldPrice) * 100) : 0;
-  const explicitBadge = String(isArabic ? product.cardBadgeAr || product.badgeAr || "" : product.cardBadgeEn || product.badgeEn || product.badgeAr || "").trim();
+  const explicitBadge = String(isArabic ? product.cardBadgeAr || product.badgeAr || "" : product.cardBadgeEn || product.badgeEn || "").trim();
   const normalizedBadge = ORIGOCatalog.normalize(explicitBadge);
   const isNew = Boolean(product.isNew) || /new|جديد|وصل حديثا/.test(normalizedBadge);
   const badgeCandidates = [
@@ -3900,7 +3982,7 @@ function productCardMarkup(product, options = {}) {
   const badges = badgeCandidates.filter((item, index, list) => list.findIndex((other) => other[1] === item[1]) === index).slice(0, 2);
   const preferredNotes = Array.isArray(product.featuredNotes) && product.featuredNotes.length
     ? product.featuredNotes
-    : (isArabic ? product.notesAr : product.notesEn || product.notesAr) || [];
+    : (isArabic ? product.notesAr : product.notesEn) || [];
   const notes = preferredNotes.slice(0, 3).map((value) => {
     const note = window.ORIGOFragranceNotes?.find(value);
     return { label: note ? noteLabel(note) : value, image: note ? window.ORIGOFragranceNotes.artwork(note) : "" };
@@ -3952,7 +4034,7 @@ function showProductDetails(product, shouldOpen = true) {
     state.activeProductImageIndex = 0;
   }
   const isArabic = state.lang === "ar";
-  const name = isArabic ? product.nameAr : product.nameEn || product.nameAr;
+  const name = localizedProductName(product, isArabic ? "ar" : "en");
   const secondName = isArabic ? product.nameEn : product.nameAr;
   const media = productMedia(product);
   if (!media.length) media.push({ url: "assets/origo-hero.png", type: "image" });
@@ -3979,7 +4061,7 @@ function showProductDetails(product, shouldOpen = true) {
       <section class="pdp-hero">
         <div class="pdp-gallery">
           <div class="pdp-thumbnails" aria-label="${isArabic ? "صور المنتج" : "Product media"}">${media.map((item, index) => `<button class="${index === state.activeProductImageIndex ? "active" : ""}" data-action="product-image" data-index="${index}" aria-label="${isArabic ? `الصورة ${index + 1}` : `Image ${index + 1}`}" aria-pressed="${index === state.activeProductImageIndex}"><img src="${escapeHTML(item.url)}" alt="" loading="${index ? "lazy" : "eager"}" /></button>`).join("")}</div>
-          <div class="pdp-main-image"><span>${escapeHTML(isArabic ? product.badgeAr || "" : product.badgeEn || product.badgeAr || "")}</span><button data-action="product-zoom" aria-label="${isArabic ? "تكبير صورة المنتج" : "Zoom product image"}">⌕</button><img src="${escapeHTML(activeMedia.url)}" alt="${escapeHTML(`${product.brand} ${name}`)}" /></div>
+          <div class="pdp-main-image"><span>${escapeHTML(isArabic ? product.badgeAr || "" : product.badgeEn || "")}</span><button data-action="product-zoom" aria-label="${isArabic ? "تكبير صورة المنتج" : "Zoom product image"}">⌕</button><img src="${escapeHTML(activeMedia.url)}" alt="${escapeHTML(`${product.brand} ${name}`)}" /></div>
         </div>
         ${productHeroProfileMarkup(product)}
         <aside class="pdp-purchase">
