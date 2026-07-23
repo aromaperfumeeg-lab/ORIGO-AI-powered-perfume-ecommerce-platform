@@ -749,6 +749,21 @@ const defaultFooterBenefits = [
 const defaultStoreSettings = {
   storeName: "ORIGO", currency: "EGP", taxRate: 14, lowStockAlerts: true, orderNotifications: true,
   logos: { light: "assets/origo-logo.svg", dark: "assets/origo-logo-dark.svg", icon: "assets/origo-logo-icon.svg" },
+  appearance: {
+    bodyFont: "elegant",
+    headingFont: "classic",
+    baseFontSize: 16,
+    bodyFontWeight: 500,
+    headingScale: 1,
+    iconScale: 1,
+    imageScale: 1,
+    imageRadius: 12,
+    imageFit: "contain",
+    cardRadius: 16,
+    cardBorderWidth: 1,
+    cardShadow: "soft",
+    density: "comfortable"
+  },
   footerImage: "assets/origo-hero.png",
   footerDescriptionAr: "في أوريجو، نؤمن أن العطر ليس مجرد رائحة، بل هو توقيعك الخاص الذي يترك أثرًا لا يُنسى. اكتشف عالم العطور الفاخرة بين الأصالة والتميز.",
   footerDescriptionEn: "At ORIGO, fragrance is more than a scent. It is your signature, leaving a memorable trace of character and elegance.",
@@ -793,6 +808,7 @@ function mergeStoreSettings(saved = {}) {
     ...defaultStoreSettings,
     ...saved,
     logos: { ...defaultStoreSettings.logos, ...(saved.logos || {}) },
+    appearance: { ...defaultStoreSettings.appearance, ...(saved.appearance || {}) },
     socialLinks: { ...defaultStoreSettings.socialLinks, ...(saved.socialLinks || {}) },
     appLinks: { ...defaultStoreSettings.appLinks, ...(saved.appLinks || {}) },
     homepageRails: Object.fromEntries(Object.entries(defaultStoreSettings.homepageRails).map(([key, value]) => [key, { ...value, ...(saved.homepageRails?.[key] || {}) }])),
@@ -1185,6 +1201,8 @@ async function persistAdminProduct(product) {
 
 function printOrderDocument(order, kind = "invoice") {
   const ar = state.lang === "ar";
+  const appearance = settings.appearance;
+  const appearanceRange = (name, labelAr, labelEn, min, max, step, value, suffix = "") => `<label class="appearance-range"><span>${ar ? labelAr : labelEn}<output data-appearance-output="${name}">${escapeHTML(String(value))}${suffix}</output></span><input type="range" name="appearance.${name}" min="${min}" max="${max}" step="${step}" value="${value}"/></label>`;
   const isLabel = kind === "label";
   const popup = window.open("", "_blank", "width=850,height=900");
   if (!popup) return showToast(ar ? "اسمح بالنوافذ المنبثقة للطباعة." : "Allow popups to print.");
@@ -1727,6 +1745,25 @@ function settingsMarkup() {
     <label>${ar ? "العملة" : "Currency"}<select name="currency">${selectOptions([["EGP","EGP"],["USD","USD"],["SAR","SAR"]], settings.currency)}</select></label>
     <label>${ar ? "الضريبة %" : "Tax rate %"}<input name="taxRate" type="number" min="0" max="100" value="${settings.taxRate}" /></label></div>
     <div class="store-logo-settings">${logoFields.map(([key, arLabel, enLabel]) => `<label class="store-logo-field"><span>${ar ? arLabel : enLabel}</span><img id="store-logo-preview-${key}" src="${escapeHTML(settings.logos[key])}" alt=""/><input name="logo${key[0].toUpperCase()}${key.slice(1)}" value="${escapeHTML(settings.logos[key])}" dir="ltr"/><input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" data-logo-upload="${key}"/></label>`).join("")}</div></section>
+    <section class="appearance-settings"><div class="review-section-head"><span>02</span><div><b>${ar ? "مظهر المتجر العام" : "Global store appearance"}</b><small>${ar ? "تحكم مركزي في الخطوط والصور والأيقونات والبطاقات مع معاينة فورية." : "Central control for typography, images, icons, and cards with live preview."}</small></div></div>
+      <div class="appearance-settings-grid">
+        <label>${ar ? "شكل خط النصوص" : "Body font style"}<select name="appearance.bodyFont">${selectOptions([["elegant",ar?"أنيق":"Elegant"],["modern",ar?"عصري":"Modern"],["classic",ar?"كلاسيكي":"Classic"],["system",ar?"خط النظام":"System"]], appearance.bodyFont)}</select></label>
+        <label>${ar ? "شكل خط العناوين" : "Heading font style"}<select name="appearance.headingFont">${selectOptions([["classic",ar?"كلاسيكي فاخر":"Luxury classic"],["elegant",ar?"عربي أنيق":"Elegant Arabic"],["modern",ar?"عصري":"Modern"],["system",ar?"خط النظام":"System"]], appearance.headingFont)}</select></label>
+        <label>${ar ? "ملاءمة الصور" : "Image fit"}<select name="appearance.imageFit">${selectOptions([["contain",ar?"إظهار الصورة كاملة":"Show full image"],["cover",ar?"ملء الإطار":"Fill frame"]], appearance.imageFit)}</select></label>
+        <label>${ar ? "كثافة البطاقات" : "Card density"}<select name="appearance.density">${selectOptions([["compact",ar?"مضغوط":"Compact"],["comfortable",ar?"مريح":"Comfortable"],["spacious",ar?"واسع":"Spacious"]], appearance.density)}</select></label>
+        <label>${ar ? "ظل البطاقات" : "Card shadow"}<select name="appearance.cardShadow">${selectOptions([["none",ar?"بدون":"None"],["soft",ar?"ناعم":"Soft"],["strong",ar?"بارز":"Strong"]], appearance.cardShadow)}</select></label>
+        ${appearanceRange("baseFontSize","حجم الخط الأساسي","Base font size",13,22,1,appearance.baseFontSize,"px")}
+        ${appearanceRange("bodyFontWeight","سماكة الخط","Font weight",400,800,100,appearance.bodyFontWeight)}
+        ${appearanceRange("headingScale","حجم العناوين","Heading scale",.85,1.35,.05,appearance.headingScale,"×")}
+        ${appearanceRange("iconScale","حجم الأيقونات","Icon scale",.75,1.35,.05,appearance.iconScale,"×")}
+        ${appearanceRange("imageScale","حجم الصور","Image scale",.8,1.25,.05,appearance.imageScale,"×")}
+        ${appearanceRange("imageRadius","استدارة الصور","Image corners",0,36,1,appearance.imageRadius,"px")}
+        ${appearanceRange("cardRadius","استدارة البطاقات","Card corners",0,36,1,appearance.cardRadius,"px")}
+        ${appearanceRange("cardBorderWidth","سماكة حدود البطاقات","Card border",0,3,1,appearance.cardBorderWidth,"px")}
+      </div>
+      <div class="appearance-preview" aria-live="polite"><span>✦</span><div><h3>${ar ? "معاينة بطاقة ORIGO" : "ORIGO card preview"}</h3><p>${ar ? "تظهر تغييرات الخط والصورة والأيقونة والبطاقة فورًا قبل الحفظ." : "Font, image, icon, and card changes appear instantly before saving."}</p></div><img src="assets/origo-logo-icon.svg" alt=""/></div>
+      <button type="button" class="secondary-button compact-button" data-action="reset-appearance">${ar ? "استعادة المظهر الافتراضي" : "Restore appearance defaults"}</button>
+    </section>
     <section><div class="review-section-head"><span>02</span><div><b>${ar ? "محتوى الفوتر والتواصل" : "Footer content & contact"}</b></div></div><div class="footer-settings-grid">
       <label>${ar ? "وصف العربية" : "Arabic description"}<textarea name="footerDescriptionAr">${escapeHTML(settings.footerDescriptionAr)}</textarea></label><label>${ar ? "وصف الإنجليزية" : "English description"}<textarea name="footerDescriptionEn">${escapeHTML(settings.footerDescriptionEn)}</textarea></label>
       <label>${ar ? "صورة الفوتر" : "Footer image URL"}<input name="footerImage" value="${escapeHTML(settings.footerImage)}" dir="ltr"/></label><label>${ar ? "بريد الدعم" : "Support email"}<input name="supportEmail" type="email" value="${escapeHTML(settings.supportEmail)}" dir="ltr"/></label>
@@ -2411,6 +2448,7 @@ function footerSocialIcon(name) {
 function applyStoreIdentity() {
   const settings = mergeStoreSettings(state.adminWorkspace.settings || {});
   state.adminWorkspace.settings = settings;
+  applyAppearanceSettings(settings.appearance);
   const announcement = $(".announcement");
   if (announcement) {
     const threshold = Number(settings.freeShippingThreshold || 3000);
@@ -2438,6 +2476,71 @@ function applyStoreIdentity() {
     const icon = $(".benefit-icon", item);
     if (src && icon) icon.innerHTML = `<img src="${escapeHTML(src)}" alt=""/>`;
   });
+}
+
+function appearanceNumber(value, fallback, min, max) {
+  const number = Number(value);
+  return Math.min(max, Math.max(min, Number.isFinite(number) ? number : fallback));
+}
+
+function applyAppearanceSettings(saved = {}) {
+  const appearance = { ...defaultStoreSettings.appearance, ...(saved || {}) };
+  const root = document.documentElement;
+  const bodyFonts = {
+    elegant: '"Noto Naskh Arabic","Segoe UI",Tahoma,Arial,sans-serif',
+    modern: '"Alexandria","Segoe UI",Tahoma,Arial,sans-serif',
+    classic: 'Tahoma,Arial,sans-serif',
+    system: 'system-ui,-apple-system,"Segoe UI",sans-serif'
+  };
+  const headingFonts = {
+    classic: '"DM Serif Display",Georgia,"Times New Roman",serif',
+    elegant: '"Noto Naskh Arabic",Georgia,serif',
+    modern: '"Alexandria","Segoe UI",sans-serif',
+    system: 'system-ui,-apple-system,"Segoe UI",sans-serif'
+  };
+  const shadows = {
+    none: "none",
+    soft: "0 10px 30px rgba(61, 14, 25, .08)",
+    strong: "0 18px 46px rgba(61, 14, 25, .18)"
+  };
+  const densityPadding = { compact: 10, comfortable: 14, spacious: 19 };
+  const bodyFont = bodyFonts[appearance.bodyFont] || bodyFonts.elegant;
+  const headingFont = headingFonts[appearance.headingFont] || headingFonts.classic;
+  root.style.setProperty("--origo-font-body", bodyFont);
+  root.style.setProperty("--origo-font-heading", headingFont);
+  root.style.setProperty("--font-ar", bodyFont);
+  root.style.setProperty("--font-display", headingFont);
+  root.style.setProperty("--origo-base-font-size", `${appearanceNumber(appearance.baseFontSize, 16, 13, 22)}px`);
+  root.style.setProperty("--origo-body-font-weight", String(appearanceNumber(appearance.bodyFontWeight, 500, 400, 800)));
+  root.style.setProperty("--origo-heading-scale", String(appearanceNumber(appearance.headingScale, 1, .85, 1.35)));
+  root.style.setProperty("--origo-icon-scale", String(appearanceNumber(appearance.iconScale, 1, .75, 1.35)));
+  root.style.setProperty("--origo-image-scale", String(appearanceNumber(appearance.imageScale, 1, .8, 1.25)));
+  root.style.setProperty("--origo-image-radius", `${appearanceNumber(appearance.imageRadius, 12, 0, 36)}px`);
+  root.style.setProperty("--origo-card-radius", `${appearanceNumber(appearance.cardRadius, 16, 0, 36)}px`);
+  root.style.setProperty("--origo-card-border-width", `${appearanceNumber(appearance.cardBorderWidth, 1, 0, 3)}px`);
+  root.style.setProperty("--origo-card-shadow", shadows[appearance.cardShadow] || shadows.soft);
+  root.style.setProperty("--origo-card-padding", `${densityPadding[appearance.density] || densityPadding.comfortable}px`);
+  root.dataset.appearanceImageFit = ["contain", "cover"].includes(appearance.imageFit) ? appearance.imageFit : "contain";
+  root.dataset.appearanceDensity = ["compact", "comfortable", "spacious"].includes(appearance.density) ? appearance.density : "comfortable";
+}
+
+function appearanceFromForm(form) {
+  const data = new FormData(form);
+  return {
+    bodyFont: String(data.get("appearance.bodyFont") || defaultStoreSettings.appearance.bodyFont),
+    headingFont: String(data.get("appearance.headingFont") || defaultStoreSettings.appearance.headingFont),
+    baseFontSize: Number(data.get("appearance.baseFontSize") || defaultStoreSettings.appearance.baseFontSize),
+    bodyFontWeight: Number(data.get("appearance.bodyFontWeight") || defaultStoreSettings.appearance.bodyFontWeight),
+    headingScale: Number(data.get("appearance.headingScale") || defaultStoreSettings.appearance.headingScale),
+    iconScale: Number(data.get("appearance.iconScale") || defaultStoreSettings.appearance.iconScale),
+    imageScale: Number(data.get("appearance.imageScale") || defaultStoreSettings.appearance.imageScale),
+    imageRadius: Number(data.get("appearance.imageRadius") || defaultStoreSettings.appearance.imageRadius),
+    imageFit: String(data.get("appearance.imageFit") || defaultStoreSettings.appearance.imageFit),
+    cardRadius: Number(data.get("appearance.cardRadius") || defaultStoreSettings.appearance.cardRadius),
+    cardBorderWidth: Number(data.get("appearance.cardBorderWidth") || defaultStoreSettings.appearance.cardBorderWidth),
+    cardShadow: String(data.get("appearance.cardShadow") || defaultStoreSettings.appearance.cardShadow),
+    density: String(data.get("appearance.density") || defaultStoreSettings.appearance.density)
+  };
 }
 
 function renderSiteFooter() {
@@ -5304,6 +5407,23 @@ document.addEventListener("click", async (event) => {
   const actionElement = event.target.closest("[data-action]");
   if (!actionElement) return;
   const action = actionElement.dataset.action;
+  if (action === "reset-appearance") {
+    const form = actionElement.closest("#admin-settings-form");
+    if (!form) return;
+    Object.entries(defaultStoreSettings.appearance).forEach(([key, value]) => {
+      const field = form.elements[`appearance.${key}`];
+      if (field) field.value = value;
+    });
+    form.querySelectorAll("[data-appearance-output]").forEach((output) => {
+      const key = output.dataset.appearanceOutput;
+      const field = form.elements[`appearance.${key}`];
+      const suffix = ["baseFontSize", "imageRadius", "cardRadius", "cardBorderWidth"].includes(key) ? "px" : ["headingScale", "iconScale", "imageScale"].includes(key) ? "×" : "";
+      output.textContent = `${field?.value || ""}${suffix}`;
+    });
+    applyAppearanceSettings(defaultStoreSettings.appearance);
+    showToast(adminCopy("تمت استعادة المعاينة الافتراضية — احفظ لتثبيت التغيير", "Default preview restored — save to apply"));
+    return;
+  }
   if (action === "delete-home-media") {
     const settings = mergeStoreSettings(state.adminWorkspace.settings || {});
     settings.homeMedia = settings.homeMedia.filter((item) => String(item.id) !== String(actionElement.dataset.id));
@@ -6412,6 +6532,7 @@ document.addEventListener("submit", async (event) => {
       socialLinks: Object.fromEntries(["youtube", "facebook", "tiktok", "instagram", "snapchat", "telegram", "whatsapp"].map((name) => [name, String(data.get(`social.${name}`) || "").trim()])),
       categoryIcons: { ...current.categoryIcons, ...state.pendingCategoryIcons },
       homeBenefitIcons: { ...current.homeBenefitIcons, ...state.pendingHomeBenefitIcons },
+      appearance: appearanceFromForm(event.target),
       fragranceFinder: { ...current.fragranceFinder, enabled: finderEnabled },
       footerBenefits
     });
@@ -6754,6 +6875,14 @@ document.addEventListener("input", (event) => {
     const key = event.target.name.replace("logo", "").toLowerCase();
     const preview = $(`#store-logo-preview-${key}`);
     if (preview && event.target.value.trim()) preview.src = event.target.value.trim();
+  }
+  if (event.target.closest("#admin-settings-form") && String(event.target.name || "").startsWith("appearance.")) {
+    const form = event.target.closest("#admin-settings-form");
+    const key = event.target.name.slice("appearance.".length);
+    const output = form.querySelector(`[data-appearance-output="${key}"]`);
+    const suffix = ["baseFontSize", "imageRadius", "cardRadius", "cardBorderWidth"].includes(key) ? "px" : ["headingScale", "iconScale", "imageScale"].includes(key) ? "×" : "";
+    if (output) output.textContent = `${event.target.value}${suffix}`;
+    applyAppearanceSettings(appearanceFromForm(form));
   }
   if (event.target.closest("#note-admin-form") && event.target.name === "image") {
     $("#note-admin-image-preview").src = event.target.value || window.ORIGOFragranceNotes.artwork({

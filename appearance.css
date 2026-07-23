@@ -1,0 +1,55 @@
+/*
+ * ORIGO global appearance layer.
+ * Loaded after every page stylesheet so saved appearance settings remain authoritative.
+ */
+#storefront-main :where(h1,h2,h3,h4,h5,h6),
+#site-footer :where(h1,h2,h3,h4,h5,h6),
+.site-header :where(h1,h2,h3,h4,h5,h6){
+  font-family:var(--origo-font-heading)!important;
+  zoom:var(--origo-heading-scale);
+}
+
+#storefront-main :where(svg,[class*="icon"],[class*="Icon"]),
+#site-footer :where(svg,[class*="icon"],[class*="Icon"]),
+.site-header :where(svg,[class*="icon"],[class*="Icon"]){
+  scale:var(--origo-icon-scale);
+}
+
+#storefront-main :where(.product-card-media,.product-image,.home-gender-card,.category-card,.brand-card,.hero-media,.product-gallery,.quick-product-image),
+#site-footer :where(.footer-story-image){
+  overflow:hidden;
+  border-radius:var(--origo-image-radius)!important;
+}
+
+#storefront-main :where(.product-card-media,.product-image,.home-gender-card,.category-card,.brand-card,.hero-media,.product-gallery,.quick-product-image) img,
+#site-footer :where(.footer-story-image) img{
+  scale:var(--origo-image-scale);
+  object-fit:var(--origo-image-fit,contain)!important;
+  border-radius:var(--origo-image-radius)!important;
+  transition:scale .2s ease,border-radius .2s ease;
+}
+
+html[data-appearance-image-fit="cover"]{--origo-image-fit:cover}
+html[data-appearance-image-fit="contain"]{--origo-image-fit:contain}
+
+#storefront-main :where([class*="-card"],[class$="card"],[class*="-panel"],[class$="panel"]),
+#site-footer :where([class*="-card"],[class$="card"]){
+  border-radius:var(--origo-card-radius)!important;
+}
+
+#storefront-main :where(.product-card,.account-stat-card,.checkout-panel,.footer-benefit-card,.benefit-card,.category-card,.brand-card,.home-gender-card){
+  border-width:var(--origo-card-border-width)!important;
+  box-shadow:var(--origo-card-shadow)!important;
+}
+
+#storefront-main :where(.product-card-info,.account-stat-card,.benefit-card,.category-card),
+#site-footer :where(.footer-benefit-card){
+  padding:var(--origo-card-padding)!important;
+}
+
+@media(max-width:680px){
+  #storefront-main,
+  #site-footer,
+  .site-header{font-size:var(--origo-base-font-size)}
+}
+
