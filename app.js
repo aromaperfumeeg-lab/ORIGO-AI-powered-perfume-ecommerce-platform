@@ -23,6 +23,119 @@ const ORIGO_HOME_BENEFITS = [
   ["support", "دعم العملاء", "Customer support"]
 ];
 
+const ORIGO_LUXURY_ICONS = {
+  menu: '<path d="M4 7h16M4 12h16M4 17h16"/>',
+  bag: '<path d="M5 8h14l-1 12H6L5 8Z"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/>',
+  heart: '<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/>',
+  user: '<circle cx="12" cy="8" r="3.7"/><path d="M4.5 21a7.5 7.5 0 0 1 15 0"/>',
+  search: '<circle cx="10.8" cy="10.8" r="6.8"/><path d="m20 20-4.4-4.4"/>',
+  globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.2 3 14.8 0 18M12 3c-3 3.2-3 14.8 0 18"/>',
+  sun: '<circle cx="12" cy="12" r="3.6"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+  moon: '<path d="M20.2 15.2A8.4 8.4 0 0 1 8.8 3.8 8.5 8.5 0 1 0 20.2 15.2Z"/>',
+  home: '<path d="m3 11 9-8 9 8"/><path d="M5 10v10h14V10M9 20v-6h6v6"/>',
+  grid: '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+  diamond: '<path d="m12 3 8 8-8 10-8-10 8-8Z"/><path d="m4 11 8 3 8-3M12 3v11"/>',
+  sparkle: '<path d="m12 2 1.5 5.5L19 9l-5.5 1.5L12 16l-1.5-5.5L5 9l5.5-1.5L12 2Z"/><path d="m19 15 .7 2.3L22 18l-2.3.7L19 21l-.7-2.3L16 18l2.3-.7L19 15Z"/>',
+  star: '<path d="m12 3 2.7 5.5 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9L12 3Z"/>',
+  crown: '<path d="m3 7 4.5 4L12 4l4.5 7L21 7l-2 11H5L3 7Z"/><path d="M6 21h12"/>',
+  info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7h.01"/>',
+  arrows: '<path d="M17 3l4 4-4 4M3 7h18M7 21l-4-4 4-4M21 17H3"/>',
+  perfume: '<path d="M9 3h6v4H9zM8 7h8l2 4v9H6v-9l2-4Z"/><path d="M9 13h6v4H9z"/>',
+  skincare: '<path d="M12 3c3 4 6 7.4 6 11a6 6 0 0 1-12 0c0-3.6 3-7 6-11Z"/><path d="M9 15c.5 1.4 1.5 2 3 2"/>',
+  hair: '<path d="M5 20c7-2 11-7 14-16M8 18c-1-5 1-9 7-12M11 15c4 0 7-2 9-5"/>',
+  body: '<circle cx="12" cy="5" r="2.5"/><path d="M9 9h6l2 5-2 7M9 9l-2 5 2 7M9 14h6"/>',
+  flame: '<path d="M13 2c1 5-3 6-1 10 1-2 3-3 5-4 2 3 3 5 2 8a7 7 0 0 1-14 0c0-4 3-7 6-10 0 3 1 4 2 5"/>',
+  gift: '<rect x="3" y="9" width="18" height="12" rx="2"/><path d="M12 9v12M3 13h18M12 9H8.5A2.5 2.5 0 1 1 11 6.5L12 9Zm0 0h3.5A2.5 2.5 0 1 0 13 6.5L12 9Z"/>',
+  tag: '<path d="M20 13 13 20l-9-9V4h7l9 9Z"/><circle cx="8.5" cy="8.5" r="1.2"/>',
+  shield: '<path d="M12 3 20 6v6c0 5-3.4 8-8 10-4.6-2-8-5-8-10V6l8-3Z"/><path d="m8.5 12 2.3 2.3 4.8-5"/>',
+  truck: '<path d="M3 6h11v11H3zM14 10h4l3 4v3h-7z"/><circle cx="7" cy="19" r="2"/><circle cx="18" cy="19" r="2"/>',
+  returns: '<path d="M4 9V4l3 3a8 8 0 1 1-2 8"/><path d="M4 4h5"/>',
+  card: '<rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M3 9h18M7 15h4"/>',
+  headset: '<path d="M4 14v-2a8 8 0 0 1 16 0v2"/><path d="M4 13h3v6H5a2 2 0 0 1-2-2v-2a2 2 0 0 1 1-2Zm16 0h-3v6h2a2 2 0 0 0 2-2v-2a2 2 0 0 0-1-2ZM17 19c0 2-2 2-4 2"/>',
+  mail: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/>',
+  clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  chevron: '<path d="m9 18 6-6-6-6"/>'
+};
+
+function luxuryIcon(name, className = "") {
+  const key = ORIGO_LUXURY_ICONS[name] ? name : "sparkle";
+  return `<svg class="origo-lux-icon origo-lux-icon--${key}${className ? ` ${className}` : ""}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${ORIGO_LUXURY_ICONS[key]}</svg>`;
+}
+
+const HOME_CATEGORY_LUXURY_ICONS = {
+  perfume: "perfume", skincare: "skincare", haircare: "hair", bodycare: "body",
+  incense: "flame", home: "home", gifts: "gift", offers: "tag"
+};
+
+const HOME_BENEFIT_LUXURY_ICONS = {
+  authentic: "shield", shipping: "truck", returns: "returns", prices: "tag",
+  cod: "card", gift: "gift", support: "headset", samples: "perfume"
+};
+
+function setLuxuryIcon(element, name) {
+  if (!element || element.querySelector("img")) return;
+  element.innerHTML = luxuryIcon(name);
+  element.dataset.luxuryIcon = name;
+}
+
+function hydrateLuxuryIcons(root = document) {
+  const headerIcons = [
+    [".cart-button > svg", "bag"], [".wishlist-button > svg", "heart"],
+    [".account-button > svg", "user"], [".header-search > svg", "search"],
+    [".global-search > svg", "search"]
+  ];
+  headerIcons.forEach(([selector, name]) => $$(selector, root).forEach((icon) => icon.outerHTML = luxuryIcon(name)));
+  $$(".mobile-menu-button", root).forEach((button) => setLuxuryIcon(button, "menu"));
+  $$(".mobile-menu-search > span:first-child", root).forEach((icon) => setLuxuryIcon(icon, "search"));
+  $$(".theme-toggle .sun", root).forEach((icon) => setLuxuryIcon(icon, "sun"));
+  $$(".theme-toggle .moon", root).forEach((icon) => setLuxuryIcon(icon, "moon"));
+
+  const navigation = [
+    ['.category-nav [data-action="catalog-home"] .nav-icon', "home"],
+    ['.category-nav [data-action="brands-menu"] .nav-icon', "diamond"],
+    ['.category-nav [data-action="categories-menu"] .nav-icon', "grid"],
+    ['.category-nav a[href="#best-sellers"] .nav-icon', "crown"],
+    ['.category-nav a[href="#new-arrivals"] .nav-icon', "sparkle"],
+    ['.category-nav a[href="#footer-brand-title"] .nav-icon', "info"],
+    ['.category-nav [data-action="open-alternatives"] .nav-icon', "arrows"],
+    ['.category-nav [data-action="find-matches"] .nav-icon', "sparkle"]
+  ];
+  navigation.forEach(([selector, name]) => $$(selector, root).forEach((icon) => setLuxuryIcon(icon, name)));
+  $$(".category-nav .brands-nav > button > i", root).forEach((icon) => setLuxuryIcon(icon, "chevron"));
+
+  const bottomIcons = ["home", "grid", "sparkle", "heart", "user"];
+  $$(".store-bottom-nav > * > span:first-child", root).forEach((icon, index) => setLuxuryIcon(icon, bottomIcons[index] || "sparkle"));
+  $$(".gender-card .gender-copy > span:first-child", root).forEach((icon, index) => setLuxuryIcon(icon, index === 2 ? "heart" : "user"));
+  $$(".loyalty-strip article > span:first-child", root).forEach((icon, index) => setLuxuryIcon(icon, ["tag", "diamond", "sparkle", "crown"][index] || "sparkle"));
+  $$(".ai-banner [data-action='find-matches'] > span:last-child", root).forEach((icon) => setLuxuryIcon(icon, "sparkle"));
+  $$(".ai-banner .ai-robot", root).forEach((icon) => setLuxuryIcon(icon, "sparkle"));
+  $$(".footer-spark", root).forEach((icon) => setLuxuryIcon(icon, "sparkle"));
+  $$(".footer-email-field > span:first-child", root).forEach((icon) => setLuxuryIcon(icon, "mail"));
+  $$("#footer-support-email > span:first-child", root).forEach((icon) => setLuxuryIcon(icon, "mail"));
+  $$("#footer-support-whatsapp > span:first-child", root).forEach((icon) => setLuxuryIcon(icon, "headset"));
+  $$("#footer-support-hours", root).forEach((hours) => {
+    const icon = hours.previousElementSibling;
+    if (icon) setLuxuryIcon(icon, "clock");
+  });
+
+  const footerShopIcons = ["user", "user", "heart", "arrows", "perfume", "perfume", "tag", "sparkle"];
+  $$(".site-footer .footer-column:first-child > a > span:last-child", root).forEach((icon, index) => setLuxuryIcon(icon, footerShopIcons[index] || "chevron"));
+  $$(".site-footer .footer-column:nth-child(2) .footer-all-link > span:last-child", root).forEach((icon) => setLuxuryIcon(icon, "grid"));
+  const footerInfoIcons = ["info", "info", "truck", "returns", "shield", "info", "bag"];
+  $$(".site-footer .footer-column:nth-child(3) > a > span:last-child, .site-footer .footer-column:nth-child(3) > button > span:last-child", root)
+    .forEach((icon, index) => setLuxuryIcon(icon, footerInfoIcons[index] || "chevron"));
+  $$(".mobile-menu-panel [data-action='account'] > span:first-child", root).forEach((icon) => setLuxuryIcon(icon, "user"));
+  $$(".mobile-admin-link > span:first-child", root).forEach((icon) => setLuxuryIcon(icon, "grid"));
+
+  $$('[data-home-category-icon]', root).forEach((icon) => {
+    if (!icon.querySelector("img")) setLuxuryIcon(icon, HOME_CATEGORY_LUXURY_ICONS[icon.dataset.homeCategoryIcon] || "sparkle");
+  });
+  $$('[data-home-benefit]', root).forEach((item) => {
+    const icon = $(".benefit-icon", item);
+    if (icon && !icon.querySelector("img")) setLuxuryIcon(icon, HOME_BENEFIT_LUXURY_ICONS[item.dataset.homeBenefit] || "shield");
+  });
+}
+
 const translations = {
   ar: {
     announcement: "توصيل مجاني للطلبات فوق 3,000 ج.م · عيّنة مجانية مع كل طلب",
@@ -801,8 +914,11 @@ const defaultStoreSettings = {
 };
 
 function mergeStoreSettings(saved = {}) {
+  if (!saved || typeof saved !== "object" || Array.isArray(saved)) saved = {};
   const benefitMap = new Map(defaultFooterBenefits.map((item) => [item.id, item]));
-  const savedBenefits = Array.isArray(saved.footerBenefits) ? saved.footerBenefits : [];
+  const savedBenefits = Array.isArray(saved.footerBenefits)
+    ? saved.footerBenefits.filter((item) => item && typeof item === "object")
+    : [];
   const mergedBenefits = savedBenefits.length
     ? savedBenefits.map((item) => ({ ...(benefitMap.get(item.id) || {}), ...item }))
     : defaultFooterBenefits.map((item) => structuredClone(item));
@@ -1939,7 +2055,39 @@ function renderAdminDashboard(view = state.adminView) {
     reports: reportsMarkup,
     settings: settingsMarkup
   };
-  $("#admin-dashboard-content").innerHTML = content[view] ? content[view]() : genericEntityMarkup(view);
+  const dashboardContent = $("#admin-dashboard-content");
+  try {
+    dashboardContent.innerHTML = content[view] ? content[view]() : genericEntityMarkup(view);
+    if (view === "settings") initializeSettingsPanels();
+  } catch (error) {
+    console.error("Admin view render failed:", view, error);
+    dashboardContent.innerHTML = `<section class="admin-view-error" role="alert">
+      ${luxuryIcon("info")}
+      <div><h3>${adminCopy("تعذر فتح هذا القسم", "This section could not be opened")}</h3>
+      <p>${adminCopy("أعد المحاولة. إذا استمرت المشكلة فراجع البيانات المحفوظة لهذا القسم.", "Retry. If the issue continues, review this section's saved data.")}</p></div>
+      <button class="button burgundy-button" type="button" data-action="admin-view" data-view="${escapeHTML(view)}">${adminCopy("إعادة المحاولة", "Retry")}</button>
+    </section>`;
+  }
+}
+
+function initializeSettingsPanels() {
+  const form = $("#admin-settings-form");
+  if (!form || form.dataset.panelsReady === "true") return;
+  const sections = [...form.children].filter((element) => element.tagName === "SECTION");
+  if (!sections.length) return;
+  const labelsAr = ["الهوية", "المظهر", "الفوتر", "التواصل", "أيقونات الرئيسية", "مزايا الفوتر", "مكتشف العطر", "الإشعارات", "الاتصالات"];
+  const labelsEn = ["Identity", "Appearance", "Footer", "Social", "Homepage icons", "Footer benefits", "Scent finder", "Notifications", "Integrations"];
+  const labels = state.lang === "ar" ? labelsAr : labelsEn;
+  const nav = document.createElement("nav");
+  nav.className = "admin-settings-tabs";
+  nav.setAttribute("aria-label", state.lang === "ar" ? "أقسام الإعدادات" : "Settings sections");
+  nav.innerHTML = sections.map((section, index) => {
+    section.dataset.settingsPanel = String(index);
+    section.hidden = index !== 0;
+    return `<button type="button" data-action="settings-panel" data-panel="${index}" class="${index === 0 ? "active" : ""}" aria-selected="${index === 0}">${luxuryIcon(["diamond","sparkle","home","globe","grid","gift","perfume","shield","arrows"][index] || "sparkle")}<span>${escapeHTML(labels[index] || `${state.lang === "ar" ? "قسم" : "Section"} ${index + 1}`)}</span></button>`;
+  }).join("");
+  form.prepend(nav);
+  form.dataset.panelsReady = "true";
 }
 
 function adminSearchMarkup(query) {
@@ -2504,14 +2652,9 @@ function safeBenefitColor(value, fallback) {
 }
 
 function footerBenefitIcon(icon, colors = []) {
-  const a = safeBenefitColor(colors[0], "#7b0a20");
-  const b = safeBenefitColor(colors[1], "#77b8ff");
-  const c = safeBenefitColor(colors[2], "#f2b844");
-  const common = `viewBox="0 0 112 112" role="img" aria-hidden="true" focusable="false"`;
-  if (icon === "returns") return `<svg ${common}><circle cx="56" cy="56" r="38" fill="${escapeHTML(c)}" opacity=".2"/><path d="M27 46a31 31 0 0 1 51-14" fill="none" stroke="${escapeHTML(a)}" stroke-width="8" stroke-linecap="round"/><path d="m74 18 10 15-18 3" fill="none" stroke="${escapeHTML(a)}" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><path d="M85 66a31 31 0 0 1-51 14" fill="none" stroke="${escapeHTML(b)}" stroke-width="8" stroke-linecap="round"/><path d="m38 94-10-15 18-3" fill="none" stroke="${escapeHTML(b)}" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><path d="M49 46h20v18H49z" fill="#fff" stroke="${escapeHTML(a)}" stroke-width="3"/></svg>`;
-  if (icon === "gift") return `<svg ${common}><rect x="22" y="43" width="68" height="51" rx="7" fill="${escapeHTML(a)}"/><rect x="18" y="35" width="76" height="20" rx="6" fill="${escapeHTML(b)}"/><path d="M56 36v58" stroke="${escapeHTML(c)}" stroke-width="9"/><path d="M55 34C39 34 31 27 34 19c4-10 19 2 21 15Zm2 0c16 0 24-7 21-15-4-10-19 2-21 15Z" fill="none" stroke="${escapeHTML(c)}" stroke-width="7" stroke-linejoin="round"/><circle cx="29" cy="72" r="4" fill="#fff" opacity=".7"/><path d="m80 60 2 5 5 2-5 2-2 5-2-5-5-2 5-2Z" fill="#fff"/></svg>`;
-  if (icon === "samples") return `<svg ${common}><path d="M47 15h19v15H47z" fill="${escapeHTML(c)}" stroke="${escapeHTML(a)}" stroke-width="3"/><rect x="42" y="28" width="29" height="11" rx="4" fill="${escapeHTML(a)}"/><path d="M36 40h41l7 45c1 7-4 12-11 12H40c-7 0-12-5-11-12Z" fill="${escapeHTML(b)}" opacity=".78" stroke="${escapeHTML(a)}" stroke-width="4"/><path d="M40 49h33l3 35H36z" fill="#fff" opacity=".55"/><circle cx="80" cy="70" r="14" fill="#ffd4df"/><circle cx="80" cy="70" r="5" fill="${escapeHTML(c)}"/><path d="M80 51c6 4 7 9 0 14-7-5-6-10 0-14Zm19 19c-4 6-9 7-14 0 5-7 10-6 14 0ZM80 89c-6-4-7-9 0-14 7 5 6 10 0 14ZM61 70c4-6 9-7 14 0-5 7-10 6-14 0Z" fill="${escapeHTML(a)}" opacity=".82"/></svg>`;
-  return `<svg ${common}><rect x="17" y="49" width="67" height="35" rx="7" fill="${escapeHTML(b)}"/><path d="M22 49h48l-8-17H33z" fill="#d8edff" stroke="${escapeHTML(a)}" stroke-width="3"/><path d="M84 59h13l9 11v14H84Z" fill="${escapeHTML(a)}"/><path d="m91 62 8 9h-8Z" fill="#fff" opacity=".8"/><circle cx="36" cy="86" r="10" fill="#303b50"/><circle cx="36" cy="86" r="4" fill="${escapeHTML(c)}"/><circle cx="88" cy="86" r="10" fill="#303b50"/><circle cx="88" cy="86" r="4" fill="${escapeHTML(c)}"/><path d="M10 58h22M5 67h24M14 76h18" stroke="${escapeHTML(a)}" stroke-width="5" stroke-linecap="round"/><path d="m75 24 3 7 7 3-7 3-3 7-3-7-7-3 7-3Z" fill="${escapeHTML(c)}"/></svg>`;
+  const mapped = HOME_BENEFIT_LUXURY_ICONS[icon] || (icon === "samples" ? "perfume" : "truck");
+  const color = safeBenefitColor(colors[0], "#7b0a20");
+  return `<span class="origo-lux-icon-medallion" style="--icon-accent:${escapeHTML(color)}">${luxuryIcon(mapped)}</span>`;
 }
 
 function footerSocialIcon(name) {
@@ -2538,7 +2681,7 @@ function applyStoreIdentity() {
     const announcementText = state.lang === "ar"
       ? `شحن مجاني للطلبات المؤهلة فوق ${value} جنيه مصري • منتجات أصلية 100% • استرجاع سهل • دعم عملاء 24/7`
       : `Free shipping on eligible orders over EGP ${value} • 100% authentic products • Easy returns • 24/7 support`;
-    announcement.innerHTML = `<span dir="auto">🚚 ${escapeHTML(announcementText)}</span><span dir="auto" aria-hidden="true">🚚 ${escapeHTML(announcementText)}</span>`;
+    announcement.innerHTML = `<span dir="auto">${luxuryIcon("truck")}<b>${escapeHTML(announcementText)}</b></span><span dir="auto" aria-hidden="true">${luxuryIcon("truck")}<b>${escapeHTML(announcementText)}</b></span>`;
     announcement.setAttribute("aria-label", announcementText);
     announcement.setAttribute("aria-hidden", "false");
   }
@@ -2552,12 +2695,15 @@ function applyStoreIdentity() {
   $$('[data-home-category-icon]').forEach((icon) => {
     const src = settings.categoryIcons?.[icon.dataset.homeCategoryIcon];
     if (src) icon.innerHTML = `<img src="${escapeHTML(src)}" alt=""/>`;
+    else setLuxuryIcon(icon, HOME_CATEGORY_LUXURY_ICONS[icon.dataset.homeCategoryIcon] || "sparkle");
   });
   $$('[data-home-benefit]').forEach((item) => {
     const src = settings.homeBenefitIcons?.[item.dataset.homeBenefit];
     const icon = $(".benefit-icon", item);
     if (src && icon) icon.innerHTML = `<img src="${escapeHTML(src)}" alt=""/>`;
+    else if (icon) setLuxuryIcon(icon, HOME_BENEFIT_LUXURY_ICONS[item.dataset.homeBenefit] || "shield");
   });
+  hydrateLuxuryIcons();
 }
 
 function appearanceNumber(value, fallback, min, max) {
@@ -5857,6 +6003,19 @@ document.addEventListener("click", async (event) => {
   if (action === "admin-view") {
     renderAdminDashboard(actionElement.dataset.view);
     $(".advanced-admin-panel")?.classList.remove("sidebar-open");
+  }
+  if (action === "settings-panel") {
+    const form = actionElement.closest("#admin-settings-form");
+    const panel = String(actionElement.dataset.panel || "0");
+    $$("[data-settings-panel]", form).forEach((section) => {
+      section.hidden = section.dataset.settingsPanel !== panel;
+    });
+    $$(".admin-settings-tabs [data-action='settings-panel']", form).forEach((button) => {
+      const active = button.dataset.panel === panel;
+      button.classList.toggle("active", active);
+      button.setAttribute("aria-selected", String(active));
+    });
+    form.querySelector(`[data-settings-panel="${panel}"]`)?.scrollIntoView({ block: "start", behavior: "smooth" });
   }
   if (action === "save-alternative-match") {
     const form = actionElement.closest("[data-alternative-match]");

@@ -144,3 +144,160 @@ body.dark .category-nav :where(.mega-dropdown,.mega-dropdown-heading){
   border-color:rgba(244,206,114,.35)!important;
   background:#4b4d52!important;
 }
+/* ORIGO luxury icon system — consistent, dependency-free and theme aware */
+.origo-lux-icon {
+  width: 1.35em;
+  height: 1.35em;
+  display: block;
+  flex: 0 0 auto;
+  overflow: visible;
+  color: currentColor;
+  vector-effect: non-scaling-stroke;
+  filter: drop-shadow(0 2px 5px rgba(92, 0, 28, .12));
+  transition: color .22s ease, transform .22s ease, filter .22s ease;
+}
+
+button:hover > .origo-lux-icon,
+a:hover > .origo-lux-icon,
+button:hover .nav-icon .origo-lux-icon,
+a:hover .nav-icon .origo-lux-icon {
+  color: var(--gold, #c8943d);
+  transform: translateY(-1px) scale(1.04);
+  filter: drop-shadow(0 4px 8px rgba(200, 148, 61, .25));
+}
+
+.site-header .origo-lux-icon {
+  stroke-width: 1.75;
+}
+
+.mobile-menu-button .origo-lux-icon {
+  width: 25px;
+  height: 25px;
+  margin: auto;
+}
+
+.header-commerce-actions .origo-lux-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.header-search > .origo-lux-icon {
+  width: 21px;
+  height: 21px;
+}
+
+.theme-toggle .origo-lux-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.announcement > span {
+  display: inline-flex;
+  align-items: center;
+  gap: .65rem;
+}
+
+.announcement .origo-lux-icon {
+  width: 18px;
+  height: 18px;
+  color: var(--gold-bright, #e4b75d);
+}
+
+.announcement b {
+  font: inherit;
+  color: inherit;
+}
+
+.nav-icon {
+  display: inline-grid;
+  place-items: center;
+}
+
+.nav-icon .origo-lux-icon {
+  width: 17px;
+  height: 17px;
+  color: var(--gold, #c8943d);
+}
+
+[data-home-category-icon] .origo-lux-icon,
+.benefit-icon .origo-lux-icon {
+  width: 29px;
+  height: 29px;
+  margin: auto;
+  color: var(--burgundy, #76001f);
+  stroke-width: 1.55;
+}
+
+.origo-lux-icon-medallion {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--icon-accent, #7b0a20) 28%, transparent);
+  border-radius: 28%;
+  color: var(--icon-accent, #7b0a20);
+  background:
+    radial-gradient(circle at 32% 25%, rgba(255,255,255,.95), transparent 44%),
+    color-mix(in srgb, var(--icon-accent, #7b0a20) 8%, white);
+  box-shadow: inset 0 0 0 3px rgba(255,255,255,.55), 0 6px 16px rgba(92,0,28,.1);
+}
+
+.origo-lux-icon-medallion .origo-lux-icon {
+  width: 58%;
+  height: 58%;
+}
+
+.store-bottom-nav .origo-lux-icon {
+  width: 22px;
+  height: 22px;
+  margin: 0 auto;
+  stroke-width: 1.7;
+}
+
+.site-footer .footer-column a > span .origo-lux-icon,
+.site-footer .footer-column button > span .origo-lux-icon,
+.footer-contact > * > span .origo-lux-icon {
+  width: 17px;
+  height: 17px;
+  color: var(--burgundy, #76001f);
+}
+
+.footer-spark .origo-lux-icon,
+.footer-email-field .origo-lux-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.gender-copy > span:first-child .origo-lux-icon,
+.loyalty-strip article > span:first-child .origo-lux-icon {
+  width: 25px;
+  height: 25px;
+  color: var(--gold, #c8943d);
+}
+
+.category-nav .brands-nav > button > i .origo-lux-icon {
+  width: 13px;
+  height: 13px;
+  transition: transform .2s ease;
+}
+
+.category-nav .brands-nav > button[aria-expanded="true"] > i .origo-lux-icon {
+  transform: rotate(90deg);
+}
+
+body.dark .origo-lux-icon {
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,.3));
+}
+
+body.dark [data-home-category-icon] .origo-lux-icon,
+body.dark .benefit-icon .origo-lux-icon {
+  color: var(--gold-bright, #e4b75d);
+}
+
+@media (max-width: 720px) {
+  [data-home-category-icon] .origo-lux-icon,
+  .benefit-icon .origo-lux-icon {
+    width: 25px;
+    height: 25px;
+  }
+}
