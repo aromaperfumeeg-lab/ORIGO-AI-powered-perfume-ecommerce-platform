@@ -301,3 +301,121 @@ body.dark .benefit-icon .origo-lux-icon {
     height: 25px;
   }
 }
+
+/* Unified ORIGO themes and centrally managed dimensions */
+:root{
+  --origo-header-light:#fff;
+  --origo-header-dark:#5b5e63;
+  --origo-header-height:118px;
+  --origo-header-icon-scale:1;
+  --origo-content-max:1440px;
+  --origo-section-gap:28px;
+  --origo-product-card-height:520px;
+  --origo-admin-scale:1;
+}
+
+body:not(.dark),body:not(.dark) #storefront-main,body:not(.dark) .origo-home,
+body:not(.dark) .catalog-page,body:not(.dark) .account-page,body:not(.dark) .pdp-page{
+  background:#fff!important;
+}
+body:not(.dark) .site-header,
+body:not(.dark) .category-nav{
+  color:var(--burgundy,#720019)!important;
+  background:var(--origo-header-light,#fff)!important;
+  border-color:color-mix(in srgb,var(--gold,#c8943d) 34%,transparent)!important;
+}
+body:not(.dark) .site-header :where(button,a,.header-search b,.category-nav span){color:var(--burgundy,#720019)!important}
+body:not(.dark) .site-header :where(svg,.origo-lux-icon){stroke:currentColor}
+body:not(.dark) .site-header :where(.action-count,.burgundy-button){color:#fff!important;background:var(--burgundy,#720019)!important}
+body:not(.dark) .category-nav :where(.mega-dropdown,.brands-dropdown){background:#fff!important}
+
+body.dark,html[data-theme="dark"] body{
+  --white:#60636a;
+  --paper:#55585e;
+  --paper-2:#656970;
+  --card:#62666d;
+  --ink:#fff;
+  --ink-soft:#f1f1f2;
+  --line:rgba(255,255,255,.24);
+  background:#505359!important;
+  color:#fff!important;
+}
+body.dark .site-header,body.dark .category-nav,
+html[data-theme="dark"] .site-header,html[data-theme="dark"] .category-nav{
+  color:#fff!important;
+  background:var(--origo-header-dark,#5b5e63)!important;
+  border-color:rgba(255,255,255,.22)!important;
+}
+body.dark :where(#storefront-main,.origo-home,.pdp-page,.commerce-page,.account-page,.catalog-page,.fragrance-finder-page,.alternatives-page,.benefit-detail-page,.origo-footer),
+html[data-theme="dark"] :where(#storefront-main,.origo-home,.pdp-page,.commerce-page,.account-page,.catalog-page,.fragrance-finder-page,.alternatives-page,.benefit-detail-page,.origo-footer){background:#55585e!important;color:#fff!important}
+body.dark :where(.product-card,.checkout-main-card,.checkout-summary-card,.checkout-side-card,.account-subview,.recent-orders,.profile-card,.vip-promo,.account-stat-card,.performance-card,.performance-insight-card,.pdp-card,.pdp-purchase,.catalog-filter-panel,.catalog-toolbar,.finder-card,.finder-option,.alternative-card,.benefit-content-card,.mega-dropdown,.brands-dropdown,.advanced-admin-panel,.catalog-admin-panel,[class*="-panel"],[class*="-dialog"]),
+html[data-theme="dark"] :where(.product-card,.checkout-main-card,.checkout-summary-card,.checkout-side-card,.account-subview,.recent-orders,.profile-card,.vip-promo,.account-stat-card,.performance-card,.performance-insight-card,.pdp-card,.pdp-purchase,.catalog-filter-panel,.catalog-toolbar,.finder-card,.finder-option,.alternative-card,.benefit-content-card,.mega-dropdown,.brands-dropdown,.advanced-admin-panel,.catalog-admin-panel,[class*="-panel"],[class*="-dialog"]){background:#62666d!important;color:#fff!important;border-color:rgba(255,255,255,.22)!important}
+body.dark :where(h1,h2,h3,h4,h5,h6,p,b,strong,small,label,legend,summary,a,button,li,span),
+html[data-theme="dark"] :where(h1,h2,h3,h4,h5,h6,p,b,strong,small,label,legend,summary,a,button,li,span){color:#fff}
+body.dark :where(input,textarea,select),html[data-theme="dark"] :where(input,textarea,select){background:#70747b!important;color:#fff!important;border-color:rgba(255,255,255,.28)!important}
+body.dark :where(input,textarea)::placeholder,html[data-theme="dark"] :where(input,textarea)::placeholder{color:#ededee!important;opacity:1}
+
+.site-header{min-height:var(--origo-header-height)}
+.site-header :where(.header-commerce-actions>button,.header-preference-actions>button){transform:scale(var(--origo-header-icon-scale));transform-origin:center}
+html[data-header-icon-shape="round"] .site-header :where(.header-commerce-actions>button,.header-preference-actions>button){border-radius:999px}
+html[data-header-icon-shape="soft"] .site-header :where(.header-commerce-actions>button,.header-preference-actions>button){border-radius:12px}
+html[data-header-icon-shape="square"] .site-header :where(.header-commerce-actions>button,.header-preference-actions>button){border-radius:2px}
+html[data-header-actions-order="preferences-first"] .header-commerce-zone{order:3}
+html[data-header-actions-order="preferences-first"] .header-preference-actions{order:1}
+html[data-header-actions-order="commerce-first"] .header-commerce-zone{order:1}
+html[data-header-actions-order="commerce-first"] .header-preference-actions{order:3}
+
+#storefront-main>section,.origo-home>section{margin-block-end:var(--origo-section-gap)}
+#storefront-main :where(.section-inner,.page-shell,.home-section-inner){max-width:var(--origo-content-max);margin-inline:auto}
+.advanced-admin-panel,.catalog-admin-panel{font-size:calc(var(--origo-base-font-size) * var(--origo-admin-scale))}
+
+.home-best-sellers .origo-product-card,
+.home-brand-showcase .origo-product-card,
+.home-products-rail .origo-product-card{
+  height:var(--origo-product-card-height)!important;
+  min-height:var(--origo-product-card-height)!important;
+  display:flex!important;
+  flex-direction:column;
+}
+.home-best-sellers .origo-product-card .product-card-info,
+.home-brand-showcase .origo-product-card .product-card-info,
+.home-products-rail .origo-product-card .product-card-info{flex:1;display:flex;flex-direction:column}
+.home-best-sellers .origo-product-card .product-card-commerce,
+.home-brand-showcase .origo-product-card .product-card-commerce,
+.home-products-rail .origo-product-card .product-card-commerce{margin-top:auto}
+
+.product-editor-tabs{position:sticky;top:0;z-index:12;display:flex;gap:8px;overflow-x:auto;padding:10px;background:var(--card,#fff);border:1px solid var(--line);border-radius:14px;scrollbar-width:thin}
+.product-editor-tabs button{min-width:150px;display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:transparent;color:var(--ink);text-align:start;cursor:pointer}
+.product-editor-tabs button>span{display:grid;place-items:center;width:27px;height:27px;border-radius:50%;background:var(--paper-2);color:var(--burgundy);font-weight:800}
+.product-editor-tabs button>b{white-space:nowrap}
+.product-editor-tabs button.active{color:#fff;background:var(--burgundy);border-color:var(--burgundy)}
+.product-editor-tabs button.active :where(span,b){color:#fff}
+.product-tab-hidden{display:none!important}
+
+@media(max-width:720px){
+  .site-header{min-height:auto}
+  .home-best-sellers .origo-product-card,.home-brand-showcase .origo-product-card,.home-products-rail .origo-product-card{height:440px!important;min-height:440px!important}
+  .product-card-notes{min-height:38px;display:flex!important;justify-content:center;gap:5px!important}
+  .product-card-notes>span{width:32px!important;height:32px!important;min-width:32px!important;padding:2px!important;border-radius:9px!important;display:grid!important;place-items:center!important}
+  .product-card-notes>span>b{display:none!important}
+  .product-card-notes img{width:27px!important;height:27px!important;object-fit:cover;border-radius:7px}
+  .product-editor-tabs{position:sticky;top:0;margin-inline:-4px}
+  .product-editor-tabs button{min-width:118px;padding:8px;font-size:.85em}
+}
+
+body.brands-route #storefront-main>*:not(#brands-page){display:none!important}
+.brands-route-page{min-height:70vh;background:#fff;padding:clamp(22px,4vw,58px)}
+.brands-page-shell{max-width:var(--origo-content-max);margin:auto}
+.brands-page-breadcrumb{display:flex;gap:10px;align-items:center;color:var(--ink-soft);margin-bottom:22px}
+.brands-page-breadcrumb button{border:0;background:none;color:var(--burgundy);cursor:pointer}
+.brands-page-shell>header{text-align:center;margin-bottom:28px}
+.brands-page-shell>header>span{color:var(--gold);font-weight:800}
+.brands-page-shell>header h1{font-family:var(--origo-font-heading);color:var(--burgundy);font-size:calc(2.2rem * var(--origo-heading-scale));margin:.25em 0}
+.brands-page-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px}
+.brands-page-grid>button{min-height:150px;display:grid;place-items:center;align-content:center;gap:10px;padding:16px;border:var(--origo-card-border-width) solid var(--line);border-radius:var(--origo-card-radius);background:#fff;color:var(--burgundy);box-shadow:var(--origo-card-shadow);cursor:pointer}
+.brands-page-grid img{width:100%;height:72px;object-fit:contain}
+.brands-page-grid>button>span{display:grid;place-items:center;width:68px;height:68px;border-radius:18px;background:#fff8ef;color:var(--burgundy);font:800 1.2rem var(--origo-font-heading)}
+.brands-page-grid>button:hover{border-color:var(--gold);transform:translateY(-2px)}
+body.dark .brands-route-page,html[data-theme="dark"] .brands-route-page{background:#55585e!important}
+body.dark .brands-page-grid>button,html[data-theme="dark"] .brands-page-grid>button{background:#62666d!important;color:#fff!important}
+@media(max-width:600px){.brands-route-page{padding:18px 12px}.brands-page-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.brands-page-grid>button{min-height:118px;padding:10px}.brands-page-grid img{height:58px}}

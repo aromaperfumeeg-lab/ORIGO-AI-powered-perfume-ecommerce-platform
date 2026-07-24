@@ -877,7 +877,19 @@ const defaultStoreSettings = {
     cardRadius: 16,
     cardBorderWidth: 1,
     cardShadow: "soft",
-    density: "comfortable"
+    density: "comfortable",
+    headerHeight: 118,
+    headerIconScale: 1,
+    headerIconShape: "round",
+    headerActionsOrder: "commerce-first",
+    lightHeaderColor: "#ffffff",
+    darkHeaderColor: "#5b5e63",
+    burgundyColor: "#720019",
+    goldColor: "#c8943d",
+    contentMaxWidth: 1440,
+    sectionGap: 28,
+    productCardHeight: 520,
+    adminScale: 1
   },
   footerImage: "assets/origo-hero.png",
   footerDescriptionAr: "في أوريجو، نؤمن أن العطر ليس مجرد رائحة، بل هو توقيعك الخاص الذي يترك أثرًا لا يُنسى. اكتشف عالم العطور الفاخرة بين الأصالة والتميز.",
@@ -1200,6 +1212,14 @@ const formatPrice = (value) => {
     maximumFractionDigits: state.currency === "EGP" ? 0 : 2
   }).format(Number(value || 0) * config.rate);
 };
+
+function formatProductSize(value) {
+  const text = String(value || "").trim();
+  if (!text) return "";
+  const number = text.match(/[0-9]+(?:[.,][0-9]+)?/)?.[0];
+  if (number && /(?:\bml\b|مل)/i.test(text)) return `${number} ml`;
+  return text.replace(/\bML\b/gi, "ml");
+}
 
 function localizedProductName(product, lang = state.lang) {
   if (!product) return lang === "ar" ? "عطر ORIGO" : "ORIGO fragrance";
@@ -1889,6 +1909,18 @@ function settingsMarkup() {
         ${appearanceRange("imageRadius","استدارة الصور","Image corners",0,36,1,appearance.imageRadius,"px")}
         ${appearanceRange("cardRadius","استدارة البطاقات","Card corners",0,36,1,appearance.cardRadius,"px")}
         ${appearanceRange("cardBorderWidth","سماكة حدود البطاقات","Card border",0,3,1,appearance.cardBorderWidth,"px")}
+        ${appearanceRange("headerHeight","ارتفاع الهيدر","Header height",88,160,2,appearance.headerHeight,"px")}
+        ${appearanceRange("headerIconScale","حجم أيقونات الهيدر","Header icon scale",.8,1.4,.05,appearance.headerIconScale,"×")}
+        ${appearanceRange("contentMaxWidth","عرض محتوى المتجر","Store content width",1180,1760,20,appearance.contentMaxWidth,"px")}
+        ${appearanceRange("sectionGap","المسافة بين الأقسام","Section spacing",12,56,2,appearance.sectionGap,"px")}
+        ${appearanceRange("productCardHeight","ارتفاع بطاقة المنتج","Product card height",420,680,10,appearance.productCardHeight,"px")}
+        ${appearanceRange("adminScale","حجم واجهة لوحة التحكم","Admin interface scale",.85,1.25,.05,appearance.adminScale,"×")}
+        <label>${ar ? "شكل أزرار الهيدر" : "Header icon shape"}<select name="appearance.headerIconShape">${selectOptions([["round",ar?"دائري":"Round"],["soft",ar?"مربع ناعم":"Soft square"],["square",ar?"مربع":"Square"]], appearance.headerIconShape)}</select></label>
+        <label>${ar ? "ترتيب أدوات الهيدر" : "Header tools order"}<select name="appearance.headerActionsOrder">${selectOptions([["commerce-first",ar?"السلة والمفضلة أولًا":"Cart and wishlist first"],["preferences-first",ar?"اللغة والمظهر أولًا":"Language and theme first"]], appearance.headerActionsOrder)}</select></label>
+        <label>${ar ? "لون الهيدر الفاتح" : "Light header color"}<input type="color" name="appearance.lightHeaderColor" value="${escapeHTML(appearance.lightHeaderColor)}"/></label>
+        <label>${ar ? "لون الهيدر الداكن" : "Dark header color"}<input type="color" name="appearance.darkHeaderColor" value="${escapeHTML(appearance.darkHeaderColor)}"/></label>
+        <label>${ar ? "اللون النبيتي" : "Burgundy accent"}<input type="color" name="appearance.burgundyColor" value="${escapeHTML(appearance.burgundyColor)}"/></label>
+        <label>${ar ? "اللون الذهبي" : "Gold accent"}<input type="color" name="appearance.goldColor" value="${escapeHTML(appearance.goldColor)}"/></label>
       </div>
       <div class="appearance-preview" aria-live="polite"><span>✦</span><div><h3>${ar ? "معاينة بطاقة ORIGO" : "ORIGO card preview"}</h3><p>${ar ? "تظهر تغييرات الخط والصورة والأيقونة والبطاقة فورًا قبل الحفظ." : "Font, image, icon, and card changes appear instantly before saving."}</p></div><img src="assets/origo-logo-icon.svg" alt=""/></div>
       <button type="button" class="secondary-button compact-button" data-action="reset-appearance">${ar ? "استعادة المظهر الافتراضي" : "Restore appearance defaults"}</button>
@@ -2088,6 +2120,25 @@ function initializeSettingsPanels() {
   }).join("");
   form.prepend(nav);
   form.dataset.panelsReady = "true";
+}
+
+function initializeProductEditorTabs() {
+  const form = $("#import-review-form");
+  if (!form || form.dataset.productTabsReady === "true") return;
+  const sections = [...form.querySelectorAll(":scope > .review-section")].filter((section) => !section.hidden);
+  if (!sections.length) return;
+  const nav = document.createElement("nav");
+  nav.className = "product-editor-tabs";
+  nav.setAttribute("aria-label", adminCopy("خطوات بيانات المنتج", "Product data steps"));
+  nav.innerHTML = sections.map((section, index) => {
+    section.dataset.productPanel = String(index);
+    section.classList.toggle("product-tab-hidden", index !== 0);
+    const title = section.querySelector(".review-section-head b")?.textContent?.trim() || `${adminCopy("قسم", "Section")} ${index + 1}`;
+    return `<button type="button" data-action="product-editor-panel" data-panel="${index}" class="${index === 0 ? "active" : ""}" aria-selected="${index === 0}"><span>${String(index + 1).padStart(2,"0")}</span><b>${escapeHTML(title)}</b></button>`;
+  }).join("");
+  const anchor = form.querySelector(".review-summary") || form.firstElementChild;
+  anchor?.insertAdjacentElement("afterend", nav);
+  form.dataset.productTabsReady = "true";
 }
 
 function adminSearchMarkup(query) {
@@ -2535,7 +2586,7 @@ function renderBrandCarousel(query = "") {
 
 function renderHomeNavigation() {
   const brandMenu = $("#header-brands-dropdown");
-  if (brandMenu) brandMenu.innerHTML = `<div class="mega-dropdown-heading"><small>${state.lang === "ar" ? "دليل العلامات التجارية" : "Brand directory"}</small><b>${ORIGO_PERFUME_BRANDS.length} ${state.lang === "ar" ? "علامة" : "brands"}</b></div>${ORIGO_PERFUME_BRANDS.map((brand) => `<button data-action="brand-search" data-query="${escapeHTML(brand)}"><span>${escapeHTML(brand)}</span><i>‹</i></button>`).join("")}`;
+  if (brandMenu) brandMenu.innerHTML = `<div class="mega-dropdown-heading"><small>${state.lang === "ar" ? "دليل العلامات التجارية" : "Brand directory"}</small><a href="/brands" data-action="open-brands-page">${state.lang === "ar" ? "عرض جميع العلامات" : "View all brands"}</a></div>${ORIGO_PERFUME_BRANDS.map((brand) => `<button data-action="brand-search" data-query="${escapeHTML(brand)}"><span>${escapeHTML(brand)}</span><i>‹</i></button>`).join("")}`;
   const categoryMenu = $("#header-categories-dropdown");
   if (categoryMenu) categoryMenu.innerHTML = `<div class="mega-dropdown-heading"><small>${state.lang === "ar" ? "تسوق حسب الفئة" : "Shop by category"}</small><b>${ORIGO_HOME_CATEGORIES.length} ${state.lang === "ar" ? "فئات" : "categories"}</b></div>${ORIGO_HOME_CATEGORIES.map(([key, ar, en, icon]) => `<button data-action="catalog-category" data-category="${key}"><i>${icon}</i><span>${state.lang === "ar" ? ar : en}</span><b>‹</b></button>`).join("")}`;
   const mobileBrandList = $("#mobile-brands-list");
@@ -2748,8 +2799,21 @@ function applyAppearanceSettings(saved = {}) {
   root.style.setProperty("--origo-card-border-width", `${appearanceNumber(appearance.cardBorderWidth, 1, 0, 3)}px`);
   root.style.setProperty("--origo-card-shadow", shadows[appearance.cardShadow] || shadows.soft);
   root.style.setProperty("--origo-card-padding", `${densityPadding[appearance.density] || densityPadding.comfortable}px`);
+  root.style.setProperty("--origo-header-height", `${appearanceNumber(appearance.headerHeight, 118, 88, 160)}px`);
+  root.style.setProperty("--origo-header-icon-scale", String(appearanceNumber(appearance.headerIconScale, 1, .8, 1.4)));
+  root.style.setProperty("--origo-content-max", `${appearanceNumber(appearance.contentMaxWidth, 1440, 1180, 1760)}px`);
+  root.style.setProperty("--origo-section-gap", `${appearanceNumber(appearance.sectionGap, 28, 12, 56)}px`);
+  root.style.setProperty("--origo-product-card-height", `${appearanceNumber(appearance.productCardHeight, 520, 420, 680)}px`);
+  root.style.setProperty("--origo-admin-scale", String(appearanceNumber(appearance.adminScale, 1, .85, 1.25)));
+  const safeColor = (value, fallback) => /^#[0-9a-f]{6}$/i.test(String(value || "")) ? String(value) : fallback;
+  root.style.setProperty("--origo-header-light", safeColor(appearance.lightHeaderColor, "#ffffff"));
+  root.style.setProperty("--origo-header-dark", safeColor(appearance.darkHeaderColor, "#5b5e63"));
+  root.style.setProperty("--burgundy", safeColor(appearance.burgundyColor, "#720019"));
+  root.style.setProperty("--gold", safeColor(appearance.goldColor, "#c8943d"));
   root.dataset.appearanceImageFit = ["contain", "cover"].includes(appearance.imageFit) ? appearance.imageFit : "contain";
   root.dataset.appearanceDensity = ["compact", "comfortable", "spacious"].includes(appearance.density) ? appearance.density : "comfortable";
+  root.dataset.headerIconShape = ["round", "soft", "square"].includes(appearance.headerIconShape) ? appearance.headerIconShape : "round";
+  root.dataset.headerActionsOrder = ["commerce-first", "preferences-first"].includes(appearance.headerActionsOrder) ? appearance.headerActionsOrder : "commerce-first";
 }
 
 function appearanceFromForm(form) {
@@ -2767,7 +2831,19 @@ function appearanceFromForm(form) {
     cardRadius: Number(data.get("appearance.cardRadius") || defaultStoreSettings.appearance.cardRadius),
     cardBorderWidth: Number(data.get("appearance.cardBorderWidth") || defaultStoreSettings.appearance.cardBorderWidth),
     cardShadow: String(data.get("appearance.cardShadow") || defaultStoreSettings.appearance.cardShadow),
-    density: String(data.get("appearance.density") || defaultStoreSettings.appearance.density)
+    density: String(data.get("appearance.density") || defaultStoreSettings.appearance.density),
+    headerHeight: Number(data.get("appearance.headerHeight") || defaultStoreSettings.appearance.headerHeight),
+    headerIconScale: Number(data.get("appearance.headerIconScale") || defaultStoreSettings.appearance.headerIconScale),
+    headerIconShape: String(data.get("appearance.headerIconShape") || defaultStoreSettings.appearance.headerIconShape),
+    headerActionsOrder: String(data.get("appearance.headerActionsOrder") || defaultStoreSettings.appearance.headerActionsOrder),
+    lightHeaderColor: String(data.get("appearance.lightHeaderColor") || defaultStoreSettings.appearance.lightHeaderColor),
+    darkHeaderColor: String(data.get("appearance.darkHeaderColor") || defaultStoreSettings.appearance.darkHeaderColor),
+    burgundyColor: String(data.get("appearance.burgundyColor") || defaultStoreSettings.appearance.burgundyColor),
+    goldColor: String(data.get("appearance.goldColor") || defaultStoreSettings.appearance.goldColor),
+    contentMaxWidth: Number(data.get("appearance.contentMaxWidth") || defaultStoreSettings.appearance.contentMaxWidth),
+    sectionGap: Number(data.get("appearance.sectionGap") || defaultStoreSettings.appearance.sectionGap),
+    productCardHeight: Number(data.get("appearance.productCardHeight") || defaultStoreSettings.appearance.productCardHeight),
+    adminScale: Number(data.get("appearance.adminScale") || defaultStoreSettings.appearance.adminScale)
   };
 }
 
@@ -3183,7 +3259,7 @@ function handleCatalogRoute({ replace = false } = {}) {
     return false;
   }
   readCatalogURL();
-  document.body.classList.remove("notes-route", "benefit-route");
+  document.body.classList.remove("notes-route", "benefit-route", "brands-route");
   document.body.classList.add("catalog-route");
   page.hidden = false;
   $("#notes-library-page").hidden = true;
@@ -3193,6 +3269,43 @@ function handleCatalogRoute({ replace = false } = {}) {
   renderCatalog();
   if (!replace) window.scrollTo({ top: 0, behavior: "smooth" });
   return true;
+}
+
+function renderBrandsPage() {
+  const root = $("#brands-page-content");
+  if (!root) return;
+  const optionMap = new Map(productOptionItems("brand").map((item) => [ORIGOCatalog.normalize(item.value || item.nameEn || item.nameAr), item]));
+  const names = [...new Set([...ORIGO_PERFUME_BRANDS, ...state.products.map((product) => product.brand).filter(Boolean)])];
+  root.innerHTML = `<nav class="brands-page-breadcrumb"><button data-action="catalog-home">${state.lang === "ar" ? "الرئيسية" : "Home"}</button><span>‹</span><b>${state.lang === "ar" ? "العلامات التجارية" : "Brands"}</b></nav>
+    <header><span>${state.lang === "ar" ? "دليل ORIGO" : "ORIGO directory"}</span><h1 id="brands-page-title">${state.lang === "ar" ? "العلامات التجارية" : "Fragrance brands"}</h1><p>${state.lang === "ar" ? "اختر العلامة لعرض جميع منتجاتها." : "Choose a brand to see all its products."}</p></header>
+    <div class="brands-page-grid">${names.map((brand) => {
+      const option = optionMap.get(ORIGOCatalog.normalize(brand));
+      const fallback = state.products.find((product) => ORIGOCatalog.normalize(product.brand) === ORIGOCatalog.normalize(brand));
+      const image = option?.image || option?.logo || fallback?.brandLogo || "";
+      return `<button data-action="brand-search" data-query="${escapeHTML(brand)}">${image ? `<img src="${escapeHTML(image)}" alt="${escapeHTML(brand)}" loading="lazy"/>` : `<span>${escapeHTML(brand.split(/\s+/).map((part) => part[0]).join("").slice(0,3).toUpperCase())}</span>`}<b>${escapeHTML(brand)}</b></button>`;
+    }).join("")}</div>`;
+}
+
+function handleBrandsRoute({ replace = false } = {}) {
+  const active = /^\/brands\/?$/i.test(location.pathname);
+  const page = $("#brands-page");
+  if (!page) return false;
+  if (!active) { document.body.classList.remove("brands-route"); page.hidden = true; return false; }
+  document.body.classList.remove("catalog-route", "notes-route", "benefit-route");
+  document.body.classList.add("brands-route");
+  page.hidden = false;
+  $("#catalog-page").hidden = true;
+  $("#notes-library-page").hidden = true;
+  $("#benefit-detail-page").hidden = true;
+  renderBrandsPage();
+  closeDrawers();
+  if (!replace) window.scrollTo({ top: 0, behavior: "smooth" });
+  return true;
+}
+
+function navigateBrands() {
+  history.pushState({}, "", "/brands");
+  handleBrandsRoute();
 }
 
 function navigateCatalog(options = {}) {
@@ -3293,7 +3406,7 @@ function renderCart() {
       <img src="${escapeHTML(product.image || "assets/origo-hero.png")}" alt="" />
       <div>
         <h3>${escapeHTML(localizedProductName(product))}</h3>
-        <p>${escapeHTML(product.brand)} · 75 ML</p>
+        <p>${escapeHTML(product.brand)} · <bdi dir="ltr">${escapeHTML(formatProductSize(product.size || product.sizes?.[0] || "75 ml"))}</bdi></p>
         <div class="quantity-control" aria-label="${state.lang === "ar" ? "الكمية" : "Quantity"}">
           <button data-action="decrease-cart" data-id="${escapeHTML(product.id)}" aria-label="${translations[state.lang].decreaseQuantity}">−</button>
           <span>${item.quantity}</span>
@@ -4135,6 +4248,7 @@ function productCardMarkup(product, options = {}) {
   });
   const saved = state.wishlist.includes(product.id);
   const sizeLabel = variant?.size || (product.sizes || [])[0] || "";
+  const formattedSize = formatProductSize(sizeLabel);
   const loyaltyPoints = Number(variant?.loyaltyPoints ?? product.loyaltyPoints);
   const delayStyle = Number.isFinite(options.delay) ? ` style="transition-delay:${options.delay}ms"` : "";
   const context = escapeHTML(options.context || "grid");
@@ -4148,7 +4262,7 @@ function productCardMarkup(product, options = {}) {
     </div>
     <div class="product-info product-card-info">
       <div class="product-card-summary">
-        <div class="product-card-identity"><div class="product-brand">${escapeHTML(product.brand || "ORIGO")}</div><div class="product-card-title-row"><div><h3>${escapeHTML(name || (isArabic ? "منتج جديد" : "New product"))}</h3>${secondaryName && secondaryName !== name ? `<p class="product-card-secondary-name">${escapeHTML(secondaryName)}</p>` : ""}</div><p class="product-card-type">${escapeHTML([isArabic ? product.type : product.typeEn || product.type, sizeLabel, product.concentration].filter(Boolean).join(" | "))}</p></div></div>
+        <div class="product-card-identity"><div class="product-brand">${escapeHTML(product.brand || "ORIGO")}</div><div class="product-card-title-row"><div><h3>${escapeHTML(name || (isArabic ? "منتج جديد" : "New product"))}</h3>${secondaryName && secondaryName !== name ? `<p class="product-card-secondary-name">${escapeHTML(secondaryName)}</p>` : ""}</div><p class="product-card-type">${escapeHTML(isArabic ? product.type : product.typeEn || product.type)}${formattedSize ? ` <span aria-hidden="true">|</span> <bdi dir="ltr">${escapeHTML(formattedSize)}</bdi>` : ""}${product.concentration ? ` <span aria-hidden="true">|</span> ${escapeHTML(product.concentration)}` : ""}</p></div></div>
         <div class="product-card-price-row"><b class="product-price">${formatPrice(price)}</b>${oldPrice > price ? `<span><del>${formatPrice(oldPrice)}</del><em>-${discount}%</em></span>` : ""}${Number.isFinite(loyaltyPoints) && loyaltyPoints > 0 ? `<small>◉ +${Math.round(loyaltyPoints)} ${isArabic ? "نقطة ORIGO" : "ORIGO points"}</small>` : ""}</div>
       </div>
       ${notes.length ? `<div class="product-notes product-card-notes">${notes.map((note) => `<span>${note.image ? `<img src="${escapeHTML(note.image)}" alt="" loading="lazy" />` : `<i>✦</i>`}<b>${escapeHTML(note.label)}</b></span>`).join("")}</div>` : ""}
@@ -4214,7 +4328,7 @@ function showProductDetails(product, shouldOpen = true) {
           <span class="pdp-brand">${escapeHTML(product.brand)}</span><h1 id="product-dialog-title">${escapeHTML(name)}</h1>${secondName && secondName !== name ? `<p class="pdp-english-name">${escapeHTML(secondName)}</p>` : ""}
           <div class="pdp-tags"><span>${catalogGender(product) === "women" ? "♀" : catalogGender(product) === "men" ? "♂" : "⚥"} ${escapeHTML(isArabic ? product.type || (catalogGender(product) === "women" ? "للنساء" : catalogGender(product) === "men" ? "للرجال" : "للجنسين") : product.typeEn || product.type || catalogGender(product))}</span>${product.concentration ? `<span>${escapeHTML(product.concentration)}</span>` : ""}${product.sku ? `<span>SKU ${escapeHTML(product.sku)}</span>` : ""}</div>
           <div class="pdp-price"><b>${formatPrice(product.price)}</b>${product.oldPrice ? `<del>${formatPrice(product.oldPrice)}</del>` : ""}${discount ? `<em>-${discount}%</em>` : ""}<small>${taxRate ? (isArabic ? `شامل ضريبة القيمة المضافة ${taxRate}%` : `VAT ${taxRate}% included`) : ""}</small></div>
-          ${sizes[0] ? `<p class="pdp-fixed-size">${isArabic ? "الحجم" : "Size"}: <b>${escapeHTML(sizes[0])}</b></p>` : ""}
+          ${sizes[0] ? `<p class="pdp-fixed-size">${isArabic ? "الحجم" : "Size"}: <b><bdi dir="ltr">${escapeHTML(formatProductSize(sizes[0]))}</bdi></b></p>` : ""}
           <div class="pdp-stock ${available ? "available" : "unavailable"}"><i></i><span>${available ? (isArabic ? "متوفر للطلب" : "Available to order") : (isArabic ? "غير متوفر حاليًا" : "Currently unavailable")}</span></div>
           <div class="pdp-quantity"><span>${isArabic ? "الكمية" : "Quantity"}</span><div><button data-action="detail-quantity" data-change="-1" aria-label="${isArabic ? "تقليل الكمية" : "Decrease quantity"}">−</button><b>${state.activeProductQuantity}</b><button data-action="detail-quantity" data-change="1" aria-label="${isArabic ? "زيادة الكمية" : "Increase quantity"}">＋</button></div></div>
           <div class="pdp-actions"><button class="pdp-add" data-action="product-detail-add" data-id="${escapeHTML(product.id)}"${available ? "" : " disabled"}><span>♧</span>${translations[state.lang].addToBag}</button><button class="pdp-favorite ${isSaved ? "active" : ""}" data-action="quick-view-wishlist" data-id="${escapeHTML(product.id)}"><span>${isSaved ? "♥" : "♡"}</span>${isSaved ? (isArabic ? "محفوظ في المفضلة" : "Saved") : (isArabic ? "أضف إلى المفضلة" : "Add to wishlist")}</button></div>
@@ -5085,6 +5199,7 @@ function renderImportReview(product) {
   updateProductEditorPreview($("#import-review-form"));
   updateAdminAccordEditor($("#import-review-form"));
   updateProductTypeFields($("#import-review-form"));
+  initializeProductEditorTabs();
 }
 
 function optionValuesForProduct(group, rawValue) {
@@ -5937,6 +6052,11 @@ document.addEventListener("click", async (event) => {
     menu.classList.toggle("open");
     actionElement.setAttribute("aria-expanded", String(menu.classList.contains("open")));
   }
+  if (action === "open-brands-page") {
+    event.preventDefault();
+    closeDrawers();
+    navigateBrands();
+  }
   if (action === "brand-search") {
     const query = actionElement.dataset.query || "";
     toggleMobileMenu(false);
@@ -6016,6 +6136,17 @@ document.addEventListener("click", async (event) => {
       button.setAttribute("aria-selected", String(active));
     });
     form.querySelector(`[data-settings-panel="${panel}"]`)?.scrollIntoView({ block: "start", behavior: "smooth" });
+  }
+  if (action === "product-editor-panel") {
+    const form = actionElement.closest("#import-review-form");
+    const panel = String(actionElement.dataset.panel || "0");
+    $$('[data-product-panel]', form).forEach((section) => section.classList.toggle("product-tab-hidden", section.dataset.productPanel !== panel));
+    $$('.product-editor-tabs [data-action="product-editor-panel"]', form).forEach((button) => {
+      const active = button.dataset.panel === panel;
+      button.classList.toggle("active", active);
+      button.setAttribute("aria-selected", String(active));
+    });
+    form.querySelector(`[data-product-panel="${panel}"]`)?.scrollIntoView({ block: "start", behavior: "smooth" });
   }
   if (action === "save-alternative-match") {
     const form = actionElement.closest("[data-alternative-match]");
@@ -7121,7 +7252,7 @@ document.addEventListener("input", (event) => {
     const form = event.target.closest("#admin-settings-form");
     const key = event.target.name.slice("appearance.".length);
     const output = form.querySelector(`[data-appearance-output="${key}"]`);
-    const suffix = ["baseFontSize", "imageRadius", "cardRadius", "cardBorderWidth"].includes(key) ? "px" : ["headingScale", "iconScale", "imageScale"].includes(key) ? "×" : "";
+    const suffix = ["baseFontSize", "imageRadius", "cardRadius", "cardBorderWidth", "headerHeight", "contentMaxWidth", "sectionGap", "productCardHeight"].includes(key) ? "px" : ["headingScale", "iconScale", "imageScale", "headerIconScale", "adminScale"].includes(key) ? "×" : "";
     if (output) output.textContent = `${event.target.value}${suffix}`;
     applyAppearanceSettings(appearanceFromForm(form));
   }
@@ -7339,6 +7470,7 @@ window.addEventListener("scroll", () => {
 window.addEventListener("popstate", () => {
   handleBenefitRoute();
   handleNotesRoute();
+  handleBrandsRoute();
   handleCatalogRoute();
   handleProductRoute();
 });
@@ -7436,6 +7568,7 @@ const footerYear = $("#footer-year");
 if (footerYear) footerYear.textContent = String(new Date().getFullYear());
 handleBenefitRoute({ replace: true });
 handleNotesRoute({ replace: true });
+handleBrandsRoute({ replace: true });
 handleCatalogRoute({ replace: true });
 observeReveals();
 hydrateServer();
