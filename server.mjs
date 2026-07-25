@@ -233,6 +233,15 @@ function allowedOrigin(request) {
   return null;
 }
 
+function passwordRecoveryChannels() {
+  const status = integrationStatus();
+  const preferences = getAdminWorkspaceState()?.settings?.passwordRecoveryChannels || {};
+  return Object.fromEntries(["email", "whatsapp", "sms"].map((id) => [
+    id,
+    Boolean(status[id]?.configured) && preferences[id] !== false
+  ]));
+}
+
 function parseCookies(request) {
   return Object.fromEntries(String(request.headers.cookie || "")
     .split(";")
@@ -921,22 +930,15 @@ async function handleAPI(request, response, url, origin) {
   }
 
   if (url.pathname === "/api/auth/password-reset/channels" && request.method === "GET") {
-    const status = integrationStatus();
-    return jsonResponse(response, 200, {
-      channels: {
-        email: Boolean(status.email?.configured),
-        whatsapp: Boolean(status.whatsapp?.configured),
-        sms: Boolean(status.sms?.configured)
-      }
-    }, origin);
+    return jsonResponse(response, 200, { channels: passwordRecoveryChannels() }, origin);
   }
 
   if (url.pathname === "/api/auth/password-reset/request" && request.method === "POST") {
     try {
       const body = await readJSONBody(request);
       const channel = ["email", "whatsapp", "sms"].includes(body.channel) ? body.channel : "";
-      const status = integrationStatus();
-      if (!channel || !status[channel]?.configured) {
+      const availableChannels = passwordRecoveryChannels();
+      if (!channel || !availableChannels[channel]) {
         return jsonResponse(response, 503, { error: "قناة الاستعادة المحددة غير مهيأة حاليًا." }, origin);
       }
       const fakeRequestId = randomBytes(24).toString("base64url");

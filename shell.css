@@ -740,7 +740,7 @@ fieldset {
   .site-header .brand-logo-link img{width:104px;height:43px}
   .header-preference-actions{grid-area:preferences;display:flex!important;justify-content:center;gap:2px;direction:ltr}
   .header-preference-actions>button{color:var(--shell-burgundy);background:#fff}
-  .header-preference-actions .lang-button{width:39px;min-width:39px;height:34px;padding:0;overflow:hidden;justify-content:center;border:0;font-size:8px;white-space:nowrap}
+  .header-preference-actions .lang-button{width:62px;min-width:62px;height:34px;padding:0 6px;overflow:visible;justify-content:center;border:0;font-size:10px;white-space:nowrap}
   .header-preference-actions .theme-toggle{width:32px;min-width:32px;height:32px;border-color:#76002033;color:var(--shell-burgundy)}
   .header-commerce-zone{grid-area:commerce;min-width:0;display:block}
   .header-commerce-actions{display:grid;grid-template-columns:repeat(3,30px);justify-content:end;gap:1px}

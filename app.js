@@ -863,6 +863,7 @@ const defaultFooterBenefits = [
 
 const defaultStoreSettings = {
   storeName: "ORIGO", currency: "EGP", taxRate: 14, lowStockAlerts: true, orderNotifications: true,
+  passwordRecoveryChannels: { email: true, whatsapp: true, sms: true },
   logos: { light: "assets/origo-logo.svg", dark: "assets/origo-logo-dark.svg", icon: "assets/origo-logo-icon.svg" },
   appearance: {
     bodyFont: "elegant",
@@ -941,6 +942,7 @@ function mergeStoreSettings(saved = {}) {
     appearance: { ...defaultStoreSettings.appearance, ...(saved.appearance || {}) },
     socialLinks: { ...defaultStoreSettings.socialLinks, ...(saved.socialLinks || {}) },
     appLinks: { ...defaultStoreSettings.appLinks, ...(saved.appLinks || {}) },
+    passwordRecoveryChannels: { ...defaultStoreSettings.passwordRecoveryChannels, ...(saved.passwordRecoveryChannels || {}) },
     homepageRails: Object.fromEntries(Object.entries(defaultStoreSettings.homepageRails).map(([key, value]) => [key, { ...value, ...(saved.homepageRails?.[key] || {}) }])),
     homeMedia: Array.isArray(saved.homeMedia) ? saved.homeMedia : [],
     categoryIcons: { ...defaultStoreSettings.categoryIcons, ...(saved.categoryIcons || {}) },
@@ -1042,6 +1044,7 @@ const state = {
   pendingAction: "",
   publicIntegrations: {},
   integrationStatus: {},
+  resetChannels: { email: false, whatsapp: false, sms: false },
   filterDefinitions: [],
   productOptions: [],
   activeDynamicFilters: {},
@@ -1952,7 +1955,8 @@ function settingsMarkup() {
     <div class="finder-admin-groups">${finderSettingsMarkup}</div><div class="admin-integration-note"><span>✓</span><div><b>${ar ? "الترجمات مكتملة" : "Translations complete"}</b><p>${ar ? "يتحقق فحص البناء من تطابق مفاتيح العربية والإنجليزية ويمنع النصوص الصلبة داخل واجهة مكتشف العطر." : "The build check verifies Arabic/English key parity and blocks hard-coded Finder UI copy."}</p></div></div></section>
     <section><div class="review-section-head"><span>06</span><div><b>${ar ? "الإشعارات والأمان" : "Notifications & security"}</b></div></div>
     <label class="admin-toggle-row"><span><b>${state.lang === "ar" ? "تنبيهات المخزون" : "Low-stock alerts"}</b><small>${state.lang === "ar" ? "تنبيه عند بلوغ الحد الأدنى" : "Notify at reorder threshold"}</small></span><input name="lowStockAlerts" type="checkbox"${settings.lowStockAlerts ? " checked" : ""} /></label>
-    <label class="admin-toggle-row"><span><b>${state.lang === "ar" ? "إشعارات الطلبات" : "Order notifications"}</b><small>${state.lang === "ar" ? "إرسال تحديثات رحلة الطلب" : "Send order journey updates"}</small></span><input name="orderNotifications" type="checkbox"${settings.orderNotifications ? " checked" : ""} /></label></section>
+    <label class="admin-toggle-row"><span><b>${state.lang === "ar" ? "إشعارات الطلبات" : "Order notifications"}</b><small>${state.lang === "ar" ? "إرسال تحديثات رحلة الطلب" : "Send order journey updates"}</small></span><input name="orderNotifications" type="checkbox"${settings.orderNotifications ? " checked" : ""} /></label>
+    ${[["email", ar ? "استعادة عبر البريد" : "Email recovery"], ["whatsapp", ar ? "استعادة عبر واتساب" : "WhatsApp recovery"], ["sms", ar ? "استعادة عبر الرسائل النصية" : "SMS recovery"]].map(([id, label]) => `<label class="admin-toggle-row"><span><b>${label}</b><small>${ar ? "تظهر للعملاء فقط عند اكتمال إعداد مزود الخدمة" : "Available only when its provider is configured"}</small></span><input name="recovery.${id}" type="checkbox"${settings.passwordRecoveryChannels?.[id] !== false ? " checked" : ""}${state.integrationStatus[id]?.configured ? "" : " disabled"}/></label>`).join("")}</section>
     <section><div class="review-section-head"><span>07</span><div><b>${state.lang === "ar" ? "الاتصالات الخارجية" : "External integrations"}</b><small>${state.lang === "ar" ? "لا تظهر المفاتيح السرية في المتصفح." : "Secret keys are never exposed to the browser."}</small></div></div>
     <div class="admin-family-grid">${providers.map(([id, name, keys]) => {
       const ready = Boolean(state.integrationStatus[id]?.configured);
@@ -2226,6 +2230,16 @@ function passwordFieldMarkup({ name = "password", autocomplete = "current-passwo
   return `<label class="wide"><span>${label}</span><div class="password-field"><input name="${name}" type="password" autocomplete="${autocomplete}"${required ? " required" : ""} minlength="10" maxlength="200" dir="ltr"/><button type="button" data-action="toggle-password" aria-label="${state.lang === "ar" ? "إظهار كلمة المرور" : "Show password"}" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.7"/></svg></button></div></label>`;
 }
 
+async function loadPasswordResetChannels() {
+  try {
+    const result = await api("/api/auth/password-reset/channels");
+    state.resetChannels = { email: false, whatsapp: false, sms: false, ...(result.channels || {}) };
+  } catch {
+    state.resetChannels = { email: false, whatsapp: false, sms: false };
+  }
+  return state.resetChannels;
+}
+
 function renderAuth(mode = "login", requestId = "") {
   const isRegister = mode === "register";
   const isResetRequest = mode === "reset-request";
@@ -2233,6 +2247,12 @@ function renderAuth(mode = "login", requestId = "") {
   const ar = state.lang === "ar";
   const resetTitle = isResetRequest ? (ar ? "استعادة كلمة المرور" : "Reset your password") : (ar ? "أدخل رمز التحقق" : "Enter verification code");
   const resetBody = isResetRequest ? (ar ? "اختر قناة الاستعادة، ثم أدخل بريدك أو رقم هاتفك المسجل." : "Choose a recovery channel, then enter your registered email or phone.") : (ar ? "أدخل الرمز المكوّن من 6 أرقام وكلمة المرور الجديدة." : "Enter the 6-digit code and your new password.");
+  const recoveryLabels = { email: ar ? "البريد الإلكتروني" : "Email", whatsapp: "WhatsApp", sms: "SMS" };
+  const recoveryIcons = { email: "✉", whatsapp: "◉", sms: "▤" };
+  const activeRecoveryChannels = Object.entries(state.resetChannels || {}).filter(([, enabled]) => enabled).map(([id]) => id);
+  const recoveryChannelsMarkup = activeRecoveryChannels.length
+    ? `<fieldset class="reset-channels"><legend>${ar ? "طريقة إرسال الرمز" : "Send code through"}</legend>${activeRecoveryChannels.map((id, index) => `<label><input type="radio" name="channel" value="${id}"${index === 0 ? " checked" : ""}/><span>${recoveryIcons[id]} ${recoveryLabels[id]}</span></label>`).join("")}</fieldset>`
+    : `<p class="recovery-unavailable" role="status">${ar ? "لا توجد قناة استعادة مهيأة حاليًا. تواصل مع دعم ORIGO." : "No recovery channel is configured. Please contact ORIGO support."}</p>`;
   $("#account-content").innerHTML = `
     <div class="auth-shell">
       <div class="auth-art">
@@ -2253,10 +2273,10 @@ function renderAuth(mode = "login", requestId = "") {
             ? (ar ? "بيانات قليلة، وتجربة تسوق أسهل." : "A few details for a smoother shopping experience.")
             : (ar ? "أدخل بياناتك لمتابعة حقيبتك وطلباتك." : "Sign in to continue with your bag and orders.")}</p>
           <div class="commerce-fields">
-            ${isResetRequest ? `<label class="wide"><span>${ar ? "البريد أو رقم الهاتف المسجل" : "Registered email or phone"}</span><input name="identifier" autocomplete="username" required maxlength="254" dir="ltr" /></label><fieldset class="reset-channels"><legend>${ar ? "طريقة إرسال الرمز" : "Send code through"}</legend><label><input type="radio" name="channel" value="email" checked/><span>✉ ${ar ? "البريد" : "Email"}</span></label><label><input type="radio" name="channel" value="whatsapp"/><span>◉ WhatsApp</span></label><label><input type="radio" name="channel" value="sms"/><span>▤ SMS</span></label></fieldset>` : isResetConfirm ? `<input type="hidden" name="requestId" value="${escapeHTML(requestId)}"/><label class="wide"><span>${ar ? "رمز التحقق" : "Verification code"}</span><input name="code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required dir="ltr"/></label>${passwordFieldMarkup({ autocomplete: "new-password", label: ar ? "كلمة المرور الجديدة" : "New password" })}` : `${isRegister ? `<label class="wide"><span>${ar ? "الاسم" : "Name"}</span><input name="name" autocomplete="name" required minlength="2" maxlength="100" /></label>` : ""}<label class="wide"><span>${ar ? "البريد الإلكتروني" : "Email address"}</span><input name="email" type="email" autocomplete="email" required maxlength="254" dir="ltr" /></label>${isRegister ? `<label class="wide"><span>${ar ? "رقم الهاتف (اختياري)" : "Phone (optional)"}</span><input name="phone" autocomplete="tel" inputmode="tel" dir="ltr" /></label>` : ""}${passwordFieldMarkup({ autocomplete: isRegister ? "new-password" : "current-password", label: ar ? "كلمة المرور" : "Password" })}`}
+            ${isResetRequest ? `<label class="wide"><span>${ar ? "البريد أو رقم الهاتف المسجل" : "Registered email or phone"}</span><input name="identifier" autocomplete="username" required maxlength="254" dir="ltr" /></label>${recoveryChannelsMarkup}` : isResetConfirm ? `<input type="hidden" name="requestId" value="${escapeHTML(requestId)}"/><label class="wide"><span>${ar ? "رمز التحقق" : "Verification code"}</span><input name="code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required dir="ltr"/></label>${passwordFieldMarkup({ autocomplete: "new-password", label: ar ? "كلمة المرور الجديدة" : "New password" })}` : `${isRegister ? `<label class="wide"><span>${ar ? "الاسم" : "Name"}</span><input name="name" autocomplete="name" required minlength="2" maxlength="100" /></label>` : ""}<label class="wide"><span>${ar ? "البريد الإلكتروني" : "Email address"}</span><input name="email" type="email" autocomplete="email" required maxlength="254" dir="ltr" /></label>${isRegister ? `<label class="wide"><span>${ar ? "رقم الهاتف (اختياري)" : "Phone (optional)"}</span><input name="phone" autocomplete="tel" inputmode="tel" dir="ltr" /></label>` : ""}${passwordFieldMarkup({ autocomplete: isRegister ? "new-password" : "current-password", label: ar ? "كلمة المرور" : "Password" })}`}
           </div>
           <p class="form-error" id="auth-error" role="alert"></p>
-          <button class="button burgundy-button full" type="submit">${isResetRequest ? (ar ? "إرسال رمز الاستعادة" : "Send recovery code") : isResetConfirm ? (ar ? "تعيين كلمة المرور" : "Set new password") : isRegister ? (ar ? "إنشاء الحساب" : "Create account") : (ar ? "دخول" : "Sign in")}</button>
+          <button class="button burgundy-button full" type="submit"${isResetRequest && !activeRecoveryChannels.length ? " disabled" : ""}>${isResetRequest ? (ar ? "إرسال رمز الاستعادة" : "Send recovery code") : isResetConfirm ? (ar ? "تعيين كلمة المرور" : "Set new password") : isRegister ? (ar ? "إنشاء الحساب" : "Create account") : (ar ? "دخول" : "Sign in")}</button>
           ${!isRegister && !isResetRequest && !isResetConfirm ? `<button class="auth-text-action" type="button" data-action="auth-mode" data-mode="reset-request">${ar ? "نسيت كلمة المرور؟" : "Forgot password?"}</button>` : ""}
           ${isResetRequest || isResetConfirm ? `<button class="auth-text-action" type="button" data-action="auth-mode" data-mode="login">${ar ? "العودة لتسجيل الدخول" : "Back to sign in"}</button>` : ""}
         </form>
@@ -3703,6 +3723,9 @@ function renderNotesLibrary() {
     limit: state.notesVisibleCount
   });
   const families = library.families;
+  const familyCards = families
+    .map((family) => ({ family, notes: library.notes.filter((note) => note.familyId === family.id) }))
+    .filter((entry) => entry.notes.length);
   $("#notes-page-content").innerHTML = `
     <header class="notes-page-hero">
       <div>
@@ -3714,6 +3737,12 @@ function renderNotesLibrary() {
       </div>
       <div class="notes-page-stat"><strong>${library.notes.length.toLocaleString()}</strong><span>${state.lang === "ar" ? "مكوّنًا منظّمًا" : "organized notes"}</span></div>
     </header>
+    <section class="notes-family-showcase" aria-label="${state.lang === "ar" ? "عائلات النوتات العطرية" : "Fragrance note families"}">
+      ${familyCards.map(({ family, notes }) => `<button data-action="filter-note-family" data-family="${escapeHTML(family.id)}" style="--family-color:${escapeHTML(family.color)};--family-accent:${escapeHTML(family.accent)}">
+        <span><img src="${escapeHTML(library.artwork(notes.find((note) => note.image) || notes[0]))}" alt="" loading="lazy" /></span>
+        <i>${notes.length}</i><b>${escapeHTML(familyLabel(family))}</b><small>${notes.length} ${state.lang === "ar" ? "نوتة" : "notes"}</small>
+      </button>`).join("")}
+    </section>
     <div class="notes-library-toolbar">
       <label class="notes-library-search"><span>⌕</span><input id="notes-library-search" type="search"
         value="${escapeHTML(state.notesSearchQuery)}" placeholder="${state.lang === "ar" ? "ابحث: ورد، Oud، برغموت…" : "Search: Rose, Oud, Bergamot…"}" /></label>
@@ -3794,13 +3823,6 @@ function renderNoteDetail(note) {
 function handleNotesRoute({ replace = false } = {}) {
   const match = location.pathname.match(/^\/notes(?:\/([a-z0-9-]+))?\/?$/i);
   const page = $("#notes-library-page");
-  if (match && !isStaffUser()) {
-    document.body.classList.remove("notes-route");
-    page.hidden = true;
-    history.replaceState({}, "", "/#discover");
-    restoreStoreMeta();
-    return false;
-  }
   if (!match) {
     document.body.classList.remove("notes-route");
     page.hidden = true;
@@ -6179,7 +6201,10 @@ document.addEventListener("click", async (event) => {
     $("#brand-carousel-track")?.scrollBy({ left: Number(actionElement.dataset.direction || 1) * 420, behavior: "smooth" });
   }
   if (action === "account") openAccount();
-  if (action === "auth-mode") renderAuth(actionElement.dataset.mode);
+  if (action === "auth-mode") {
+    if (actionElement.dataset.mode === "reset-request") await loadPasswordResetChannels();
+    renderAuth(actionElement.dataset.mode);
+  }
   if (action === "toggle-password") {
     const input = actionElement.closest(".password-field")?.querySelector("input");
     if (input) {
@@ -7066,6 +7091,7 @@ document.addEventListener("submit", async (event) => {
       taxRate: Number(data.get("taxRate") || 0),
       lowStockAlerts: data.has("lowStockAlerts"),
       orderNotifications: data.has("orderNotifications"),
+      passwordRecoveryChannels: Object.fromEntries(["email", "whatsapp", "sms"].map((id) => [id, data.has(`recovery.${id}`)])),
       logos: {
         light: state.pendingStoreLogos.light || String(data.get("logoLight") || current.logos.light).trim(),
         dark: state.pendingStoreLogos.dark || String(data.get("logoDark") || current.logos.dark).trim(),

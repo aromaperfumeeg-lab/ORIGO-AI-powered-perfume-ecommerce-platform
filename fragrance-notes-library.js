@@ -2,7 +2,7 @@
   "use strict";
 
   const knowledge = global.ORIGOFragranceKnowledge?.database || { categories: [] };
-  const STORAGE_VERSION = 1;
+  const STORAGE_VERSION = 2;
   const familyBlueprints = {
     citrus: { color: "#D9A441", accent: "#FFF1B8", symbol: "◉", position: "top" },
     "fruits-vegetables-nuts": { color: "#B94D5D", accent: "#F6CCD2", symbol: "●", position: "top" },
@@ -63,9 +63,34 @@
     ["fig", "تين", "Fig", "fruits-vegetables-nuts", ["التين", "Fig leaf"], "heart", "●"],
     ["marine", "نوتات بحرية", "Marine Notes", "natural-synthetic-unusual", ["Aquatic", "Sea notes", "نوتات مائية", "بحري"], "top", "≈"],
     ["green-notes", "نوتات خضراء", "Green Notes", "greens-herbs-fougere", ["Green accord", "أخضر", "النوتات الخضراء"], "top", "⌁"],
-    ["rum", "روم", "Rum", "beverages", ["الروم", "Rhum"], "heart", "◒"]
+    ["rum", "روم", "Rum", "beverages", ["الروم", "Rhum"], "heart", "◒"],
+    ["black-pepper", "فلفل أسود", "Black Pepper", "spices", ["الفلفل الأسود", "Pepper"], "top", "✺"],
+    ["rosemary", "إكليل الجبل", "Rosemary", "greens-herbs-fougere", ["روزماري", "حصى البان"], "top", "⌁"],
+    ["geranium", "إبرة الراعي", "Geranium", "flowers", ["جيرانيوم", "Pelargonium"], "heart", "✿"],
+    ["tuberose", "مسك الروم", "Tuberose", "white-flowers", ["التيوبروز", "Polianthes tuberosa"], "heart", "❀"],
+    ["tonka-bean", "حبوب التونكا", "Tonka Bean", "sweets-gourmand", ["تونكا", "Tonka"], "base", "◇"],
+    ["myrrh", "المُرّ", "Myrrh", "resins-balsams", ["مر", "المر"], "base", "◆"],
+    ["dates", "تمر", "Dates", "fruits-vegetables-nuts", ["التمر", "Date fruit"], "heart", "●"],
+    ["praline", "برالين", "Praline", "sweets-gourmand", ["حلوى البرالين", "Praliné"], "heart", "◇"],
+    ["milk", "حليب", "Milk", "sweets-gourmand", ["الحليب", "Milk notes"], "heart", "◇"],
+    ["milk-accord", "أكورد الحليب", "Milk Accord", "sweets-gourmand", ["اتفاق الحليب", "Milky accord"], "heart", "◇"],
+    ["milk-chocolate", "شوكولاتة بالحليب", "Milk Chocolate", "sweets-gourmand", ["شوكولاتة الحليب"], "base", "◇"],
+    ["beeswax", "شمع العسل", "Beeswax", "musk-amber-animalic", ["شمع النحل"], "base", "◆"],
+    ["ambroxan", "أمبروكسان", "Ambroxan", "musk-amber-animalic", ["Ambrox", "أمبروكس"], "base", "◆"],
+    ["ambrettolide", "أمبريتوليد", "Ambrettolide", "musk-amber-animalic", ["Ambrette Musk"], "base", "◌"],
+    ["cetalox", "سيتالوكس", "Cetalox", "musk-amber-animalic", ["Cetambrox", "Ambroxide"], "base", "◆"],
+    ["black-musk", "مسك أسود", "Black Musk", "musk-amber-animalic", ["المسك الأسود"], "base", "◌"],
+    ["pink-musk", "مسك وردي", "Pink Musk", "musk-amber-animalic", ["المسك الوردي"], "base", "◌"],
+    ["animalic-notes", "نوتات حيوانية", "Animalic Notes", "musk-amber-animalic", ["Animal Notes", "نوتات حيوانية"], "base", "◌"],
+    ["carrot-seeds", "بذور الجزر", "Carrot Seeds", "fruits-vegetables-nuts", ["بذور الجزر العطرية"], "heart", "●"],
+    ["mahonial", "ماهونيال", "Mahonial", "natural-synthetic-unusual", ["Mahonia accord"], "heart", "✦"],
+    ["akigalawood", "أكيجالا وود", "Akigalawood", "woods-mosses", ["Akigala Wood"], "base", "▥"],
+    ["chinotto", "شينوتو", "Chinotto", "citrus", ["الشينوتو", "Myrtle-leaved orange"], "top", "◉"],
+    ["white-flowers", "زهور بيضاء", "White Flowers", "white-flowers", ["الأزهار البيضاء", "White Floral Notes"], "heart", "❀"],
+    ["sweet-notes", "نوتات حلوة", "Sweet Notes", "sweets-gourmand", ["حلو", "Sweet Accord"], "base", "◇"]
   ].map(([slug, nameAr, nameEn, familyId, aliases, position, symbol]) => ({
-    slug, nameAr, nameEn, familyId, aliases, position, symbol
+    slug, nameAr, nameEn, familyId, aliases, position, symbol,
+    image: `assets/notes/generated/${slug}.png`
   }));
 
   function normalize(value) {
@@ -165,10 +190,14 @@
     knowledge.categories.forEach((category) => {
       category.ingredients.forEach((ingredient) => {
         const curated = curatedIndex.get(normalize(ingredient));
-        const rawSlug = curated?.slug || slugify(ingredient);
+        // The source knowledge file contains many one-language names.  Do not
+        // publish phonetic transliterations as if they were translations.
+        // Only verified bilingual entries (or entries added by an editor) are
+        // promoted into the customer-facing note library.
+        if (!curated) return;
+        const rawSlug = curated.slug;
         const slug = result.has(rawSlug) && !curated ? `${rawSlug}-${category.id}` : rawSlug;
-        const isArabic = /[\u0600-\u06FF]/.test(ingredient);
-        const familyId = curated?.familyId || category.id;
+        const familyId = curated.familyId || category.id;
         const family = families.find((item) => item.id === familyId) || families.find((item) => item.id === "uncategorized");
         const existing = result.get(slug);
         if (existing) {
@@ -177,18 +206,18 @@
         }
         const note = {
           slug,
-          nameAr: curated?.nameAr || (isArabic ? ingredient : arabizeEnglish(ingredient)),
-          nameEn: curated?.nameEn || (isArabic ? romanizeArabic(ingredient).replaceAll("-", " ") : ingredient),
-          aliases: [...new Set([ingredient, ...(curated?.aliases || [])])],
+          nameAr: curated.nameAr,
+          nameEn: curated.nameEn,
+          aliases: [...new Set([ingredient, ...(curated.aliases || [])])],
           familyId,
           position: curated?.position || family?.position || "multiple",
-          symbol: curated?.symbol || family?.symbol || "✦",
-          image: "",
+          symbol: curated.symbol || family?.symbol || "✦",
+          image: curated.image || "",
           defaultIntensity: Number(curated?.defaultIntensity || 3),
           related: curated?.related || [],
           compatible: curated?.compatible || [],
           opposite: curated?.opposite || [],
-          generatedTranslation: !curated,
+          generatedTranslation: false,
           sourceName: ingredient
         };
         note.descriptionAr = originalDescription(note, family, "ar");
@@ -202,7 +231,7 @@
       const family = families.find((item) => item.id === curated.familyId) || families[0];
       const note = {
         defaultIntensity: 3, related: [], compatible: [], opposite: [],
-        ...curated, generatedTranslation: false, sourceName: curated.nameAr, image: ""
+        ...curated, generatedTranslation: false, sourceName: curated.nameAr, image: curated.image || ""
       };
       note.descriptionAr = originalDescription(note, family, "ar");
       note.descriptionEn = originalDescription(note, family, "en");
