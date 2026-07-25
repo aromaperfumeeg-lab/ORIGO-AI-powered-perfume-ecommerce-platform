@@ -1016,6 +1016,7 @@ const state = {
   currency: "EGP",
   cart: readStoredArray("origoCart"),
   wishlist: readStoredArray("origoWishlist"),
+  comparison: readStoredArray("origoComparison").slice(0, 4),
   productRatings: readStoredObject("origoProductRatings"),
   selectedNotes: [],
   catalogProducts: initialCatalogProducts,
@@ -1205,12 +1206,22 @@ const currencyConfig = {
 
 const formatPrice = (value) => {
   const config = currencyConfig[state.currency] || currencyConfig.EGP;
-  return new Intl.NumberFormat(state.lang === "ar" ? "ar-EG" : "en-US", {
+  const amount = Number(value || 0) * config.rate;
+  const digits = state.currency === "EGP" ? 0 : 2;
+  if (state.lang === "ar" && state.currency === "EGP") {
+    const number = new Intl.NumberFormat("ar-EG", {
+      minimumFractionDigits: digits,
+      maximumFractionDigits: digits
+    }).format(amount);
+    // Keep the Arabic number, separator, and currency abbreviation in one RTL isolate.
+    return `\u2067${number}\u00A0ج.م\u2069`;
+  }
+  return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: config.currency,
-    minimumFractionDigits: state.currency === "EGP" ? 0 : 2,
-    maximumFractionDigits: state.currency === "EGP" ? 0 : 2
-  }).format(Number(value || 0) * config.rate);
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits
+  }).format(amount);
 };
 
 function formatProductSize(value) {
@@ -1245,6 +1256,7 @@ function rebuildStorefrontProducts() {
 function persist() {
   localStorage.setItem("origoCart", JSON.stringify(state.cart));
   localStorage.setItem("origoWishlist", JSON.stringify(state.wishlist));
+  localStorage.setItem("origoComparison", JSON.stringify(state.comparison));
   if (state.user) localStorage.setItem("origoCartUserId", String(state.user.id));
   else localStorage.removeItem("origoCartUserId");
   syncCart();
@@ -4217,6 +4229,16 @@ function productPerformanceMarkup(product) {
   return `<section class="pdp-performance" aria-labelledby="pdp-performance-title"><div class="pdp-section-heading"><span>EDITORIAL</span><h2 id="pdp-performance-title">${state.lang === "ar" ? "ملخص الأداء التحريري" : "Editorial performance"}</h2><p>${state.lang === "ar" ? "بيانات يقدمها فريق المنتج وليست تصويتًا مجتمعيًا." : "Product-team data, not community voting."}</p></div><div>${values.map(([icon, ar, en, value]) => `<article><i>${icon}</i><small>${state.lang === "ar" ? ar : en}</small><b>${escapeHTML(typeof value === "number" ? `${value}/5` : value)}</b></article>`).join("")}</div></section>`;
 }
 
+function productCardGenderLabel(product, isArabic = state.lang === "ar") {
+  const value = String((Array.isArray(product.genders) && product.genders[0]) || product.gender || "unisex").toLowerCase();
+  const labels = {
+    men: ["رجالي", "Men"], male: ["رجالي", "Men"],
+    women: ["نسائي", "Women"], female: ["نسائي", "Women"],
+    unisex: ["للجنسين", "Unisex"], children: ["أطفال", "Children"]
+  };
+  return (labels[value] || [value, value])[isArabic ? 0 : 1];
+}
+
 function productCardMarkup(product, options = {}) {
   if (typeof options === "string") options = { meta: options, context: "recommendation" };
   const isArabic = state.lang === "ar";
@@ -4253,8 +4275,10 @@ function productCardMarkup(product, options = {}) {
     return { label: note ? noteLabel(note) : value, image: note ? window.ORIGOFragranceNotes.artwork(note) : "" };
   });
   const saved = state.wishlist.includes(product.id);
+  const compared = state.comparison.includes(product.id);
   const sizeLabel = variant?.size || (product.sizes || [])[0] || "";
   const formattedSize = formatProductSize(sizeLabel);
+  const genderLabel = productCardGenderLabel(product, isArabic);
   const loyaltyPoints = Number(variant?.loyaltyPoints ?? product.loyaltyPoints);
   const delayStyle = Number.isFinite(options.delay) ? ` style="transition-delay:${options.delay}ms"` : "";
   const context = escapeHTML(options.context || "grid");
@@ -4263,17 +4287,16 @@ function productCardMarkup(product, options = {}) {
     <div class="product-image product-card-media product-card-media-swipe" data-product-id="${escapeHTML(product.id)}" role="link" tabindex="${interactive ? "0" : "-1"}" aria-label="${escapeHTML(isArabic ? `عرض تفاصيل ${name}` : `View ${name}`)}">
       <img class="product-card-primary" src="${escapeHTML(mainImage)}" alt="${escapeHTML(`${product.brand} ${name}`)}" width="640" height="700" loading="lazy" decoding="async" />
       <div class="product-card-badges">${badges.map(([, label, kind]) => `<span class="product-badge badge-${kind}">${escapeHTML(label)}</span>`).join("")}</div>
-      <button class="heart-button${saved ? " active" : ""}"${interactive ? ` data-action="toggle-wishlist"` : disabled} aria-label="${escapeHTML(saved ? translations[state.lang].removeFavorite : translations[state.lang].favorites)}" aria-pressed="${saved}">${saved ? "♥" : "♡"}</button>
       ${media.length > 1 ? `<button class="card-image-arrow previous" data-action="card-image" data-id="${escapeHTML(product.id)}" data-change="-1" aria-label="${isArabic ? "الصورة السابقة" : "Previous image"}">‹</button><button class="card-image-arrow next" data-action="card-image" data-id="${escapeHTML(product.id)}" data-change="1" aria-label="${isArabic ? "الصورة التالية" : "Next image"}">›</button><div class="card-image-dots" aria-label="${isArabic ? "صور المنتج" : "Product images"}">${media.map((_, index) => `<button data-action="card-image-index" data-id="${escapeHTML(product.id)}" data-index="${index}" class="${index === imageIndex ? "active" : ""}" aria-label="${isArabic ? `الصورة ${index + 1}` : `Image ${index + 1}`}"></button>`).join("")}</div>` : ""}
     </div>
     <div class="product-info product-card-info">
       <div class="product-card-summary">
-        <div class="product-card-identity"><div class="product-brand">${escapeHTML(product.brand || "ORIGO")}</div><div class="product-card-title-row"><div><h3>${escapeHTML(name || (isArabic ? "منتج جديد" : "New product"))}</h3>${secondaryName && secondaryName !== name ? `<p class="product-card-secondary-name">${escapeHTML(secondaryName)}</p>` : ""}</div><p class="product-card-type">${escapeHTML(isArabic ? product.type : product.typeEn || product.type)}${formattedSize ? ` <span aria-hidden="true">|</span> <bdi dir="ltr">${escapeHTML(formattedSize)}</bdi>` : ""}${product.concentration ? ` <span aria-hidden="true">|</span> ${escapeHTML(product.concentration)}` : ""}</p></div></div>
+        <div class="product-card-identity"><div class="product-brand">${escapeHTML(product.brand || "ORIGO")}</div><div class="product-card-title-row"><div><h3>${escapeHTML(name || (isArabic ? "منتج جديد" : "New product"))}</h3>${secondaryName && secondaryName !== name ? `<p class="product-card-secondary-name">${escapeHTML(secondaryName)}</p>` : ""}</div><p class="product-card-type"><span>${escapeHTML(genderLabel)}</span>${formattedSize ? `<span aria-hidden="true">·</span><bdi dir="ltr">${escapeHTML(formattedSize)}</bdi>` : ""}</p></div></div>
         <div class="product-card-price-row"><b class="product-price">${formatPrice(price)}</b>${oldPrice > price ? `<span><del>${formatPrice(oldPrice)}</del><em>-${discount}%</em></span>` : ""}${Number.isFinite(loyaltyPoints) && loyaltyPoints > 0 ? `<small>◉ +${Math.round(loyaltyPoints)} ${isArabic ? "نقطة ORIGO" : "ORIGO points"}</small>` : ""}</div>
       </div>
       ${notes.length ? `<div class="product-notes product-card-notes">${notes.map((note) => `<span>${note.image ? `<img src="${escapeHTML(note.image)}" alt="" loading="lazy" />` : `<i>✦</i>`}<b>${escapeHTML(note.label)}</b></span>`).join("")}</div>` : ""}
       ${options.meta ? `<p class="product-card-meta">${escapeHTML(options.meta)}</p>` : ""}
-      <div class="product-card-commerce"><button class="card-add-button"${interactive ? ` data-action="add-to-cart"` : disabled} aria-label="${translations[state.lang].addToBag}"${outOfStock ? " disabled" : ""}><i aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6.5 8.5h11l1 12h-13l1-12Z"/><path d="M9 9V6.5a3 3 0 0 1 6 0V9"/></svg></i><span>${outOfStock ? (isArabic ? "غير متوفر" : "Unavailable") : translations[state.lang].addToBag}</span></button></div>
+      <div class="product-card-commerce"><div class="product-card-commerce-actions"><button class="card-add-button"${interactive ? ` data-action="add-to-cart"` : disabled} aria-label="${translations[state.lang].addToBag}"${outOfStock ? " disabled" : ""}><i aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6.5 8.5h11l1 12h-13l1-12Z"/><path d="M9 9V6.5a3 3 0 0 1 6 0V9"/></svg></i><span>${outOfStock ? (isArabic ? "غير متوفر" : "Unavailable") : translations[state.lang].addToBag}</span></button><button class="card-action-button card-compare-button${compared ? " active" : ""}"${interactive ? ` data-action="toggle-product-compare"` : disabled} aria-label="${isArabic ? "مقارنة المنتج" : "Compare product"}" aria-pressed="${compared}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4v16M16 4v16M4 8h8M12 16h8"/><path d="m5 6 3-3 3 3M13 18l3 3 3-3"/></svg></button><button class="card-action-button card-favorite-button${saved ? " active" : ""}"${interactive ? ` data-action="toggle-wishlist"` : disabled} aria-label="${escapeHTML(saved ? translations[state.lang].removeFavorite : translations[state.lang].favorites)}" aria-pressed="${saved}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/></svg></button></div></div>
     </div>
   </article>`;
 }
@@ -4517,6 +4540,51 @@ function toggleWishlist(productId) {
       ? index >= 0 ? "تمت إزالة العطر من المفضلة" : "تم حفظ العطر في المفضلة"
       : index >= 0 ? "Removed from favorites" : "Saved to favorites"
   );
+}
+
+function openProductComparison() {
+  const products = state.comparison.map(getProduct).filter(Boolean);
+  if (products.length < 2) {
+    showToast(state.lang === "ar" ? "اختر منتجًا آخر لبدء المقارنة" : "Choose another product to compare");
+    return;
+  }
+  let dialog = $("#product-comparison-dialog");
+  if (!dialog) {
+    dialog = document.createElement("dialog");
+    dialog.id = "product-comparison-dialog";
+    dialog.className = "product-comparison-dialog";
+    document.body.append(dialog);
+  }
+  const ar = state.lang === "ar";
+  dialog.innerHTML = `<div class="product-comparison-shell"><header><div><small>ORIGO SELECT</small><h2>${ar ? "مقارنة المنتجات" : "Product comparison"}</h2></div><button type="button" data-action="close-product-comparison" aria-label="${ar ? "إغلاق" : "Close"}">×</button></header><div class="product-comparison-grid">${products.map((product) => {
+    const localizedNotes = ar ? product.notesAr : product.notesEn;
+    const rawNotes = Array.isArray(localizedNotes)
+      ? localizedNotes
+      : (Array.isArray(product.featuredNotes) ? product.featuredNotes : []);
+    const notes = rawNotes.slice(0, 3);
+    const image = productMedia(product)[0]?.url || product.image || "assets/origo-hero.png";
+    return `<article data-comparison-product="${escapeHTML(product.id)}"><button type="button" data-action="remove-product-comparison" data-id="${escapeHTML(product.id)}" aria-label="${ar ? "إزالة من المقارنة" : "Remove from comparison"}">×</button><img src="${escapeHTML(image)}" alt="${escapeHTML(localizedProductName(product))}"/><small>${escapeHTML(product.brand || "ORIGO")}</small><h3>${escapeHTML(localizedProductName(product))}</h3><b class="comparison-price">${formatPrice(product.price)}</b><dl><div><dt>${ar ? "الجنس" : "Gender"}</dt><dd>${escapeHTML(productCardGenderLabel(product, ar))}</dd></div><div><dt>${ar ? "الحجم" : "Size"}</dt><dd dir="ltr">${escapeHTML(formatProductSize(product.size || product.sizes?.[0] || "—"))}</dd></div><div><dt>${ar ? "النوتات" : "Notes"}</dt><dd>${escapeHTML(notes.join(" · ") || "—")}</dd></div></dl><button type="button" class="burgundy-button" data-action="open-product" data-id="${escapeHTML(product.id)}">${ar ? "عرض المنتج" : "View product"}</button></article>`;
+  }).join("")}</div></div>`;
+  if (typeof dialog.showModal === "function") dialog.showModal();
+  else dialog.setAttribute("open", "");
+}
+
+function toggleProductComparison(productId) {
+  const index = state.comparison.indexOf(productId);
+  if (index >= 0) state.comparison.splice(index, 1);
+  else if (state.comparison.length < 4) state.comparison.push(productId);
+  else {
+    showToast(state.lang === "ar" ? "يمكن مقارنة أربعة منتجات كحد أقصى" : "Compare up to four products");
+    return;
+  }
+  persist();
+  $$(`.product-card[data-id="${CSS.escape(productId)}"] .card-compare-button`).forEach((button) => {
+    const active = state.comparison.includes(productId);
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-pressed", String(active));
+  });
+  if (index < 0) openProductComparison();
+  else showToast(state.lang === "ar" ? "تمت إزالة المنتج من المقارنة" : "Removed from comparison");
 }
 
 function updateNoteSelection(button) {
@@ -5022,6 +5090,35 @@ function updateProductTypeFields(form) {
   });
 }
 
+function productMediaStudioMarkup(images = []) {
+  if (!images.length) return `<div class="product-media-studio is-empty"><div class="product-media-empty"><span>▧</span><b>${adminCopy("ابدأ برفع صور المنتج", "Start by uploading product images")}</b><small>${adminCopy("ستظهر الصورة الرئيسية والمعرض هنا مباشرة.", "The main image and gallery will appear here instantly.")}</small></div></div>`;
+  const activeIndex = Math.max(0, images.findIndex((image) => image.selected));
+  const active = images[activeIndex] || images[0];
+  return `<div class="product-media-studio" data-product-media-studio data-index="${activeIndex}">
+    <div class="product-media-stage"><img src="${escapeHTML(active.url)}" alt="${adminCopy("معاينة صورة المنتج", "Product image preview")}"/><div class="product-media-stage-actions"><button type="button" data-action="admin-studio-fullscreen" aria-label="${adminCopy("عرض ملء الشاشة", "View fullscreen")}">⛶</button></div>${images.length > 1 ? `<button type="button" class="studio-arrow previous" data-action="admin-studio-step" data-change="-1" aria-label="${adminCopy("الصورة السابقة", "Previous image")}">‹</button><button type="button" class="studio-arrow next" data-action="admin-studio-step" data-change="1" aria-label="${adminCopy("الصورة التالية", "Next image")}">›</button>` : ""}<span class="studio-count"><b>${activeIndex + 1}</b> / ${images.length}</span></div>
+    <div class="product-media-thumbnails" role="list">${images.map((image, index) => `<label class="review-image${index === activeIndex ? " selected" : ""}" data-studio-thumbnail="${index}" role="listitem"><input type="radio" name="selectedImage" value="${index}"${index === activeIndex ? " checked" : ""}/><button type="button" data-action="admin-studio-image" data-index="${index}" aria-label="${adminCopy(`اختيار الصورة ${index + 1}`, `Select image ${index + 1}`)}"><img src="${escapeHTML(image.url)}" alt=""/></button><span>${escapeHTML(image.fileName || image.provider || `Image ${index + 1}`)}</span></label>`).join("")}</div>
+    <dialog class="product-media-lightbox"><button type="button" class="studio-lightbox-close" data-action="admin-studio-close" aria-label="${adminCopy("إغلاق", "Close")}">×</button><img src="${escapeHTML(active.url)}" alt="${adminCopy("صورة المنتج بالحجم الكامل", "Full-size product image")}"/><footer><button type="button" data-action="admin-studio-step" data-change="-1" aria-label="${adminCopy("السابق", "Previous")}">‹</button><span><b>${activeIndex + 1}</b> / ${images.length}</span><button type="button" data-action="admin-studio-step" data-change="1" aria-label="${adminCopy("التالي", "Next")}">›</button></footer></dialog>
+  </div>`;
+}
+
+function setAdminStudioImage(studio, nextIndex) {
+  if (!studio) return;
+  const thumbnails = $$('[data-studio-thumbnail]', studio);
+  if (!thumbnails.length) return;
+  const index = (Number(nextIndex) + thumbnails.length) % thumbnails.length;
+  const selected = thumbnails[index];
+  const source = $("img", selected)?.src;
+  studio.dataset.index = String(index);
+  thumbnails.forEach((thumbnail, itemIndex) => {
+    const active = itemIndex === index;
+    thumbnail.classList.toggle("selected", active);
+    const input = $("input", thumbnail);
+    if (input) input.checked = active;
+  });
+  $$(".product-media-stage>img,.product-media-lightbox>img", studio).forEach((image) => image.src = source || image.src);
+  $$(".studio-count b,.product-media-lightbox footer b", studio).forEach((count) => count.textContent = String(index + 1));
+}
+
 function renderImportReview(product) {
   product = {
     ...ORIGOCatalog.emptyProduct(),
@@ -5102,15 +5199,13 @@ function renderImportReview(product) {
       </section>
 
       <section class="review-section" data-editor-tier="smart" data-perfume-section>
-        <div class="review-section-head"><span>03</span><div><b>${adminCopy("البنية العطرية والبصمة", "Fragrance structure & fingerprint")}</b><small>${adminCopy("هرم النوتات والمكونات الأساسية والأكوردات أقسام مستقلة.", "Notes pyramid, key ingredients, and accords stay separate.")}</small></div></div>
-        <h4 class="fragrance-editor-subtitle">${adminCopy("هرم النوتات العطرية", "Fragrance note pyramid")}</h4>
+        <div class="review-section-head"><span>03</span><div><b>${adminCopy("هرم النوتات العطرية", "Fragrance note pyramid")}</b><small>${adminCopy("أضف نوتات المقدمة والقلب والقاعدة فقط.", "Add top, heart, and base notes only.")}</small></div></div>
         <div class="review-grid note-review-grid">
           ${searchableCreatableSelect({ name:"topNotes", group:"note", labelAr:"النوتات الافتتاحية", labelEn:"Top notes", selected:product.noteSelections?.top || product.notes.topEn || product.notes.topAr, multiple:true })}
           ${searchableCreatableSelect({ name:"heartNotes", group:"note", labelAr:"نوتات القلب", labelEn:"Heart notes", selected:product.noteSelections?.heart || product.notes.heartEn || product.notes.heartAr, multiple:true })}
           ${searchableCreatableSelect({ name:"baseNotes", group:"note", labelAr:"نوتات القاعدة", labelEn:"Base notes", selected:product.noteSelections?.base || product.notes.baseEn || product.notes.baseAr, multiple:true })}
         </div>
         <div class="note-library-match-preview" id="note-library-match-preview"></div>
-        <div class="review-grid">${searchableCreatableSelect({ name:"mainIngredients", group:"note", labelAr:"المكونات الأساسية", labelEn:"Key ingredients", selected:product.mainIngredients, multiple:true, hintAr:"اختر من 3 إلى 8 مكونات رئيسية مستقلة عن هرم النوتات.", hintEn:"Choose 3–8 key ingredients, separate from the note pyramid." })}</div>
         ${adminAccordEditor(product)}
         <div class="review-grid perfume-advanced-fields">
           <label>${adminCopy("الثبات / 10", "Longevity / 10")}<input name="longevity" type="number" min="0" max="10" step=".1" value="${escapeHTML(product.performance?.longevity ?? "")}" /></label>
@@ -5157,14 +5252,7 @@ function renderImportReview(product) {
           <span>＋</span>
           <div><b>${adminCopy("إضافة صور من المعرض", "Add images from gallery")}</b><small>${adminCopy("يمكن اختيار عدة صور · JPEG / PNG / WEBP", "Select multiple images · JPEG / PNG / WEBP")}</small></div>
         </label>
-        <div class="review-images">
-          ${images.length ? images.map((image, index) => `
-            <label class="review-image${image.selected || index === 0 ? " selected" : ""}">
-              <input type="radio" name="selectedImage" value="${index}"${image.selected || index === 0 ? " checked" : ""} />
-              <img src="${escapeHTML(image.url)}" alt="" />
-              <span>${escapeHTML(image.provider || "Source")}</span>
-            </label>`).join("") : `<div class="no-images">${adminCopy("لا توجد صور؛ أضف رابطًا يدويًا.", "No images found; add a URL manually.")}</div>`}
-        </div>
+        ${productMediaStudioMarkup(images)}
       </section>
 
       <section class="review-section" data-editor-tier="advanced">
@@ -5290,7 +5378,7 @@ function collectReviewProduct(form) {
     perfumer: perfumers.map((item) => item.nameEn || item.nameAr).join(", "),
     perfumers: perfumers.map((item) => item.value),
     occasions: csvValues(data.get("occasions")),
-    mainIngredients: csvValues(data.get("mainIngredients")),
+    mainIngredients: [],
     accordProfile,
     mainAccords: accordProfile.map((item) => item.nameAr),
     personalities: csvValues(data.get("personalities")),
@@ -6428,6 +6516,29 @@ document.addEventListener("click", async (event) => {
   if (action === "toggle-wishlist") {
     toggleWishlist(actionElement.closest(".product-card").dataset.id);
   }
+  if (action === "toggle-product-compare") {
+    toggleProductComparison(actionElement.closest(".product-card").dataset.id);
+  }
+  if (action === "close-product-comparison") {
+    const dialog = actionElement.closest("dialog");
+    if (dialog?.open && typeof dialog.close === "function") dialog.close();
+    else dialog?.removeAttribute("open");
+  }
+  if (action === "remove-product-comparison") {
+    const id = actionElement.dataset.id;
+    state.comparison = state.comparison.filter((productId) => productId !== id);
+    persist();
+    actionElement.closest("[data-comparison-product]")?.remove();
+    if (state.comparison.length < 2) {
+      const dialog = actionElement.closest("dialog");
+      if (dialog?.open && typeof dialog.close === "function") dialog.close();
+      else dialog?.removeAttribute("open");
+    }
+    $$(`.product-card[data-id="${CSS.escape(id)}"] .card-compare-button`).forEach((button) => {
+      button.classList.remove("active");
+      button.setAttribute("aria-pressed", "false");
+    });
+  }
   if (action === "add-to-cart") {
     addToCart(getProduct(actionElement.closest(".product-card").dataset.id));
     const card = actionElement.closest(".product-card");
@@ -6441,7 +6552,11 @@ document.addEventListener("click", async (event) => {
   }
   if (action === "card-image") setCardImage(actionElement.dataset.id, Number(actionElement.dataset.change || 0));
   if (action === "card-image-index") setCardImage(actionElement.dataset.id, Number(actionElement.dataset.index || 0), true);
-  if (action === "open-product") showProductDetails(getProduct(actionElement.dataset.id));
+  if (action === "open-product") {
+    const dialog = actionElement.closest("dialog");
+    if (dialog?.open && typeof dialog.close === "function") dialog.close();
+    showProductDetails(getProduct(actionElement.dataset.id));
+  }
   if (action === "product-image") {
     state.activeProductImageIndex = Math.max(0, Number(actionElement.dataset.index) || 0);
     showProductDetails(getProduct(state.activeProductId), false);
@@ -6487,6 +6602,23 @@ document.addEventListener("click", async (event) => {
   }
   if (action === "quick-view-wishlist") {
     toggleWishlist(actionElement.dataset.id);
+  }
+  if (action === "admin-studio-image") {
+    setAdminStudioImage(actionElement.closest("[data-product-media-studio]"), Number(actionElement.dataset.index || 0));
+  }
+  if (action === "admin-studio-step") {
+    const studio = actionElement.closest("[data-product-media-studio]");
+    setAdminStudioImage(studio, Number(studio?.dataset.index || 0) + Number(actionElement.dataset.change || 0));
+  }
+  if (action === "admin-studio-fullscreen") {
+    const dialog = $(".product-media-lightbox", actionElement.closest("[data-product-media-studio]"));
+    if (typeof dialog?.showModal === "function") dialog.showModal();
+    else dialog?.setAttribute("open", "");
+  }
+  if (action === "admin-studio-close") {
+    const dialog = actionElement.closest("dialog");
+    if (dialog?.open && typeof dialog.close === "function") dialog.close();
+    else dialog?.removeAttribute("open");
   }
   if (action === "admin-card-preview-mode") {
     state.adminCardPreviewMode = actionElement.dataset.mode === "mobile" ? "mobile" : "desktop";
