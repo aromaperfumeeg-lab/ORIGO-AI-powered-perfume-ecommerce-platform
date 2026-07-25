@@ -34,7 +34,10 @@
       base: "القاعدة بعد الاستقرار", disclaimer: "نسبة التشابه تقديرية مبنية على الخصائص العطرية والأداء، وقد يختلف إدراك الرائحة من شخص إلى آخر.",
       loading: "نجهز لك أفضل المقارنات…", prev: "السابق", next: "التالي", productsFound: "النتائج المتاحة",
       whyAlternative: "بدائل ذكية موثوقة", originalPrice: "السعر المرجعي", alternativePrice: "سعر البديل",
-      returnAlternatives: "العودة إلى البدائل", similarSearch: "نتائج مقترحة", quickLinks: "تصفح سريع"
+      returnAlternatives: "العودة إلى البدائل", similarSearch: "نتائج مقترحة", quickLinks: "تصفح سريع",
+      compareSelected: "قارن المختار", selectCompare: "أضف للمقارنة", inStockOnly: "المتوفر فقط", allFamilies: "كل العائلات",
+      notifyMissing: "لم تجد عطرك؟ أخبرنا لنضيفه", notify: "أبلغني عند إضافته", requestSent: "تم استلام طلبك",
+      customerSimilarity: "تشابه العملاء الموثق", calculated: "محسوب", approved: "معتمد"
     },
     en: {
       alternatives: "Alternatives", eyebrow: "SMART CHOICE · BETTER VALUE", title: "Discover Alternatives to Your Favorite Fragrances",
@@ -66,11 +69,14 @@
       base: "Dry-down", disclaimer: "Similarity is an estimate based on fragrance characteristics and performance. Scent perception may vary from person to person.",
       loading: "Preparing the best comparisons…", prev: "Previous", next: "Next", productsFound: "Available results",
       whyAlternative: "Trusted smart alternatives", originalPrice: "Reference price", alternativePrice: "Alternative price",
-      returnAlternatives: "Back to alternatives", similarSearch: "Suggested results", quickLinks: "Quick browse"
+      returnAlternatives: "Back to alternatives", similarSearch: "Suggested results", quickLinks: "Quick browse",
+      compareSelected: "Compare selected", selectCompare: "Add to compare", inStockOnly: "In stock only", allFamilies: "All families",
+      notifyMissing: "Can't find it? Ask us to add it", notify: "Notify me when added", requestSent: "Request received",
+      customerSimilarity: "Verified customer similarity", calculated: "Calculated", approved: "Approved"
     }
   };
 
-  const model = { payload: null, loading: null, query: "", sort: "recommended", quick: "all", minMatch: 0, drawer: false };
+  const model = { payload: null, loading: null, query: "", sort: "recommended", quick: "all", minMatch: 0, drawer: false, family: "", inStock: false, compare: new Set() };
   const mobileFilterMedia = matchMedia("(max-width: 800px)");
   const store = () => window.ORIGOStore;
   const lang = () => store()?.state?.lang === "en" ? "en" : "ar";
@@ -90,6 +96,10 @@
   }
   function similarityRing(item, small = false) {
     return `<div class="alt-similarity${small ? " small" : ""}" style="--match:${item.similarity * 3.6}deg"><div><b>${item.similarity}%</b><span>${t("similarity")}</span></div></div>`;
+  }
+  function relationLabel(item) {
+    const labels = { direct_alternative:["بديل مباشر","Direct alternative"], inspired_by:["مستوحى من","Inspired by"], similar_character:["طابع مشابه","Similar character"], similar_opening:["افتتاحية مشابهة","Similar opening"], similar_drydown:["قاعدة مشابهة","Similar dry-down"], custom:[item.customRelationAr,item.customRelationEn] };
+    return labels[item.relationshipType]?.[lang() === "ar" ? 0 : 1] || labels.similar_character[lang() === "ar" ? 0 : 1];
   }
   function stars(item) {
     const average = Number(item.product.reviewSummary?.average || 4.7);
@@ -139,6 +149,8 @@
     if (quick === "strongLongevity") result = result.filter((item) => Number(item.comparison.longevity || 0) >= 8);
     if (quick === "strongProjection") result = result.filter((item) => Number(item.comparison.projection || 0) >= 8);
     if (model.minMatch) result = result.filter((item) => Number(item.similarity || 0) >= model.minMatch);
+    if (model.family) result = result.filter((item) => [label(item.reference,"family"),label(item.product,"family")].includes(model.family));
+    if (model.inStock) result = result.filter(available);
     if (quick === "highestMatch") result.sort((a, b) => b.similarity - a.similarity);
     if (quick === "bestSaving") result.sort((a, b) => savings(b) - savings(a));
     if (quick === "popular") result.sort((a, b) => b.activityScore - a.activityScore || b.similarity - a.similarity);
@@ -149,6 +161,7 @@
 
   function listingCard(item) {
     return `<article class="alternative-card">
+      <label class="alt-compare-check"><input type="checkbox" data-alt="toggle-compare" data-id="${item.id}"${model.compare.has(item.id) ? " checked" : ""}/> ${t("selectCompare")}</label><span class="alt-relation-badge">${esc(relationLabel(item))}</span>
       <div class="alternative-card-visual"><span class="alt-ribbon">${t("luxuryAlternative")}</span><figure class="reference"><img src="${esc(item.reference.image)}" alt="${esc(label(item.reference, "name"))}" loading="lazy"/><figcaption><small>${t("reference")}</small><b>${esc(label(item.reference, "name"))}</b><span>${esc(item.reference.brand)}</span></figcaption></figure>${similarityRing(item, true)}<figure class="alternative"><img src="${esc(item.product.image)}" alt="${esc(label(item.product, "name"))}" loading="lazy"/><figcaption><small>${t("availableAlternative")}</small><b>${esc(label(item.product, "name"))}</b><span>${esc(item.product.brand)}</span></figcaption></figure></div>
       <div class="alternative-card-body"><div class="alt-shared-notes">${notes(item).map((note) => `<span>✦ ${esc(note)}</span>`).join("")}</div><p>${esc(label(item, "reason"))}</p><div class="alt-card-commerce">${stars(item)}<div><strong>${money(item.product.price)}</strong><small>${t("savings")} ${money(savings(item))}</small></div></div>${actionButtons(item)}</div>
     </article>`;
@@ -161,15 +174,20 @@
 
   function renderListing() {
     const items = filterItems();
+    const families = [...new Set((model.payload?.items || []).flatMap((item) => [label(item.reference,"family"), label(item.product,"family")]).filter(Boolean))];
     root.innerHTML = `<nav class="alt-breadcrumb"><a href="/" data-alt="home">${lang() === "ar" ? "الرئيسية" : "Home"}</a><span>‹</span><b>${t("alternatives")}</b></nav>
       <header class="alternatives-hero"><div><small>${t("eyebrow")}</small><h1>${t("title")}</h1><p>${t("intro")}</p><div><button data-alt="browse">${t("browse")}</button><button data-alt="how">${t("how")}</button></div></div><div class="alternatives-hero-art">${model.payload.items.slice(0,2).map((item,index)=>`<figure class="${index ? "available" : "reference"}"><img src="${esc(index ? item.product.image : item.reference.image)}" alt=""/></figure>`).join("")}<span>⇄</span></div></header>
       <section class="alternatives-search"><label for="alternatives-search">${t("searchLabel")}</label><div><span>⌕</span><input id="alternatives-search" type="search" value="${esc(model.query)}" placeholder="${t("searchHint")}" autocomplete="off"/><button data-alt="search">${lang() === "ar" ? "بحث" : "Search"}</button></div><div class="alternatives-suggestions" id="alternatives-suggestions" hidden></div></section>
       <section class="alternatives-quick"><h2>${t("quickLinks")}</h2><div>${quickFilters()}</div></section>
-      <div class="alternatives-toolbar"><div><b>${t("productsFound")}</b><span>${items.length} ${t("results")}</span></div><button class="mobile-filter-button" data-alt="drawer">☷ ${t("filters")}</button><label>${t("sort")}<select id="alternatives-sort"><option value="recommended">${t("recommended")}</option><option value="popular">${t("popular")}</option><option value="similarity">${t("highestMatch")}</option><option value="savings">${t("bestSaving")}</option><option value="price_asc">${t("priceLow")}</option><option value="price_desc">${t("priceHigh")}</option></select></label></div>
-      <div class="alternatives-content"><aside class="alternatives-filters ${model.drawer ? "open" : ""}" aria-hidden="${mobileFilterMedia.matches && !model.drawer ? "true" : "false"}"><header><h2>${t("filters")}</h2><button data-alt="drawer" aria-label="${t("clear")}">×</button></header><div class="alt-filter-group"><b>${t("similarity")}</b><label><input type="radio" name="altMatch" data-alt-filter="match" value="90"${model.minMatch === 90 ? " checked" : ""}/> 90%+</label><label><input type="radio" name="altMatch" data-alt-filter="match" value="85"${model.minMatch === 85 ? " checked" : ""}/> 85%+</label></div><div class="alt-filter-group"><b>${t("season")}</b><button data-alt="quick" data-value="summer">${t("summer")}</button><button data-alt="quick" data-value="winter">${t("winter")}</button></div><button class="alt-clear" data-alt="clear">${t("clear")}</button></aside><button class="alternatives-filter-backdrop ${model.drawer ? "open" : ""}" data-alt="drawer" aria-label="${t("filters")}"></button><main id="alternatives-results">${items.length ? `<div class="alternatives-grid">${items.map(listingCard).join("")}</div>` : `<div class="alternatives-empty"><span>⌕</span><h2>${t("noResults")}</h2><p>${t("noResultsBody")}</p><button data-alt="clear">${t("clear")}</button></div>`}</main></div>
-      <p class="alternatives-disclaimer">ⓘ ${t("disclaimer")}</p>`;
+      <div class="alternatives-toolbar"><div><b>${t("productsFound")}</b><span>${items.length} ${t("results")}</span></div><button class="mobile-filter-button" data-alt="drawer">☷ ${t("filters")}</button><label>${t("sort")}<select id="alternatives-sort"><option value="recommended">${t("recommended")}</option><option value="popular">${t("popular")}</option><option value="similarity">${t("highestMatch")}</option><option value="savings">${t("bestSaving")}</option><option value="rating">${t("rating")}</option><option value="performance">${t("performance")}</option><option value="price_asc">${t("priceLow")}</option><option value="price_desc">${t("priceHigh")}</option></select></label></div>
+      <div class="alternatives-content"><aside class="alternatives-filters ${model.drawer ? "open" : ""}" aria-hidden="${mobileFilterMedia.matches && !model.drawer ? "true" : "false"}"><header><h2>${t("filters")}</h2><button data-alt="drawer" aria-label="${t("clear")}">×</button></header><div class="alt-filter-group"><b>${t("similarity")}</b><label><input type="radio" name="altMatch" data-alt-filter="match" value="90"${model.minMatch === 90 ? " checked" : ""}/> 90%+</label><label><input type="radio" name="altMatch" data-alt-filter="match" value="85"${model.minMatch === 85 ? " checked" : ""}/> 85%+</label></div><div class="alt-filter-group"><b>${t("family")}</b><select id="alternative-family-filter"><option value="">${t("allFamilies")}</option>${families.map((family)=>`<option value="${esc(family)}"${model.family===family?" selected":""}>${esc(family)}</option>`).join("")}</select></div><div class="alt-filter-group"><label><input id="alternative-stock-filter" type="checkbox"${model.inStock?" checked":""}/> ${t("inStockOnly")}</label></div><div class="alt-filter-group"><b>${t("season")}</b><button data-alt="quick" data-value="summer">${t("summer")}</button><button data-alt="quick" data-value="winter">${t("winter")}</button></div><button class="alt-clear" data-alt="clear">${t("clear")}</button></aside><button class="alternatives-filter-backdrop ${model.drawer ? "open" : ""}" data-alt="drawer" aria-label="${t("filters")}"></button><main id="alternatives-results">${items.length ? `<div class="alternatives-grid">${items.map(listingCard).join("")}</div>` : `<div class="alternatives-empty"><span>⌕</span><h2>${t("noResults")}</h2><p>${t("noResultsBody")}</p><button data-alt="clear">${t("clear")}</button><form id="alternative-request-form"><b>${t("notifyMissing")}</b><input name="query" required value="${esc(model.query)}"/><input name="email" type="email" placeholder="email@example.com"/><button>${t("notify")}</button></form></div>`}</main></div>
+      ${model.compare.size ? `<div class="alternative-compare-tray"><b>${model.compare.size}/4</b><button data-alt="compare-selected">${t("compareSelected")}</button><button data-alt="clear-compare">×</button></div>`:""}<p class="alternatives-disclaimer">ⓘ ${t("disclaimer")}</p>`;
     const select = root.querySelector("#alternatives-sort"); if (select) select.value = model.sort;
     document.body.classList.toggle("alternatives-drawer-open", model.drawer);
+  }
+
+  function renderMultiCompare(items) {
+    root.innerHTML = `<nav class="alt-breadcrumb"><a href="/alternatives" data-alt="open">${t("returnAlternatives")}</a></nav><header class="comparison-title"><small>${t("eyebrow")}</small><h1>${t("compareSelected")}</h1></header><section class="multi-alternative-compare">${items.map((item)=>`<article><img src="${esc(item.product.image)}" alt="${esc(label(item.product,"name"))}"/><h2>${esc(label(item.product,"name"))}</h2><small>${esc(item.product.brand)}</small>${similarityRing(item,true)}<dl><div><dt>${t("reference")}</dt><dd>${esc(label(item.reference,"name"))}</dd></div><div><dt>${t("family")}</dt><dd>${esc(label(item.product,"family")||label(item.reference,"family"))}</dd></div><div><dt>${t("performance")}</dt><dd>${item.scoreBreakdown?.performance||0}%</dd></div><div><dt>${t("price")}</dt><dd>${money(item.product.price)}</dd></div><div><dt>${t("savings")}</dt><dd>${money(savings(item))}</dd></div></dl>${actionButtons(item,true)}</article>`).join("")}</section><p class="alternatives-disclaimer">ⓘ ${t("disclaimer")}</p>`;
   }
 
   function syncFilterAccessibility() {
@@ -202,7 +220,8 @@
     root.innerHTML = `<nav class="alt-breadcrumb"><a href="/" data-alt="home">${lang() === "ar" ? "الرئيسية" : "Home"}</a><span>‹</span><a href="/alternatives" data-alt="open">${t("alternatives")}</a><span>‹</span><b>${esc(label(ref, "name"))}</b></nav>
       <header class="comparison-title"><small>${t("eyebrow")}</small><h1>${t("compareTitle")}</h1><p>${t("compareSub")}</p></header>
       <section class="comparison-hero"><article class="comparison-product reference"><span>${t("reference")}</span><img src="${esc(ref.image)}" alt="${esc(label(ref,"name"))}"/><div><h2>${esc(label(ref,"name"))}</h2><b>${esc(ref.brand)}</b><p>${esc(ref.concentration)} · ${esc(ref.size)}</p><strong>${money(ref.referencePrice)}</strong><em>${t("referenceNotice")}</em></div></article><div class="comparison-center">${similarityRing(item)}<b>${t("highMatch")}</b><small>${t("confidence")}: ${item.confidence}%</small></div><article class="comparison-product alternative"><span>${t("suggested")}</span><img src="${esc(product.image)}" alt="${esc(label(product,"name"))}"/><div><h2>${esc(label(product,"name"))}</h2><b>${esc(product.brand)}</b><p>${esc(product.concentration)} · ${esc(product.sizes?.[0] || "")}</p>${stars(item)}<strong>${money(product.price)}</strong><em class="stock">● ${available(item) ? t("available") : t("unavailable")}</em>${actionButtons(item)}</div></article></section>
-      <section class="comparison-insights"><article><span>✦</span><div><h2>${t("reason")}</h2><p>${esc(label(item,"reason"))}</p></div></article><article class="saving"><span>♕</span><div><h2>${t("savings")}</h2><strong>${money(savings(item))}</strong><p>${t("originalPrice")}: ${money(ref.referencePrice)}</p></div></article><article><span>◷</span><div><h2>${t("performance")}</h2>${scoreBar(t("longevity"), ref.performance.longevity, comp.longevity)}${scoreBar(t("projection"), ref.performance.projection, comp.projection)}</div></article></section>
+      <section class="comparison-insights"><article><span>✦</span><div><h2>${t("reason")}</h2><p>${esc(label(item,"reason"))}</p><small>${esc(relationLabel(item))}</small></div></article><article class="saving"><span>♕</span><div><h2>${t("savings")}</h2><strong>${money(savings(item))}</strong><p>${t("originalPrice")}: ${money(ref.referencePrice)}</p></div></article><article><span>◷</span><div><h2>${t("performance")}</h2>${scoreBar(t("longevity"), ref.performance.longevity, comp.longevity)}${scoreBar(t("projection"), ref.performance.projection, comp.projection)}</div></article></section>
+      <section class="alternative-score-breakdown"><header><h2>${t("similarity")}</h2><p>${t("calculated")}: ${item.calculatedSimilarity}% · ${t("approved")}: ${item.approvedSimilarity}%</p></header><div>${[["opening",t("opening")],["heart",t("heart")],["drydown",t("base")],["accords",t("character")],["performance",t("performance")]].map(([key,title])=>`<article><b>${title}</b><i><em style="width:${Number(item.scoreBreakdown?.[key]||0)}%"></em></i><span>${Number(item.scoreBreakdown?.[key]||0)}%</span></article>`).join("")}</div>${item.customerReviews?.count?`<p>${t("customerSimilarity")}: <b>${Math.round(item.customerReviews.similarity)}%</b> (${item.customerReviews.count})</p>`:""}</section>
       <section class="comparison-table"><header><small>${t("eyebrow")}</small><h2>${t("fullComparison")}</h2></header><div class="comparison-row head"><b></b><span>${t("reference")}<small>${esc(label(ref,"name"))}</small></span><span>${t("availableAlternative")}<small>${esc(label(product,"name"))}</small></span></div>${comparisonRows(item)}</section>
       <section class="inspired-section"><header><span></span><h2>${t("inspiredTitle")}</h2><span></span></header><div class="inspired-pair"><article><b>${t("referenceNotice")}</b><img src="${esc(ref.image)}" alt=""/><h3>${esc(label(ref,"name"))}</h3></article><div>⇄</div><article class="available"><b>${t("availableAlternative")}</b><img src="${esc(product.image)}" alt=""/><h3>${esc(label(product,"name"))}</h3><strong>${item.similarity}%</strong>${actionButtons(item,true)}</article></div><div class="inspired-facts"><article><h3>${t("commonNotes")}</h3><div>${notes(item).map(n=>`<span>✦ ${esc(n)}</span>`).join("")}</div></article><article><h3>${t("performance")}</h3><p>${t("longevity")}: ${comp.longevity}/10</p><p>${t("projection")}: ${comp.projection}/10</p></article><article><h3>${t("priceDifference")}</h3><p>${t("originalPrice")}: ${money(ref.referencePrice)}</p><b>${t("alternativePrice")}: ${money(product.price)}</b></article><article><h3>${t("suitableSeason")}</h3><p>${ref.seasons.map(s=>`<span>${s === "summer" ? "☀" : s === "winter" ? "❄" : "❧"} ${esc(s)}</span>`).join(" ")}</p></article></div></section>
       <section class="alternative-narrative"><article><h2>${t("similarities")}</h2><ul>${(lang()==="ar"?item.similaritiesAr:item.similaritiesEn).map(v=>`<li>✓ ${esc(v)}</li>`).join("")}</ul></article><article><h2>${t("differences")}</h2><ul>${(lang()==="ar"?item.differencesAr:item.differencesEn).map(v=>`<li>◇ ${esc(v)}</li>`).join("")}</ul></article><article><h2>${t("scentJourney")}</h2><p><b>${t("opening")}:</b> ${compareValue(notes(item,"top"))}</p><p><b>${t("heart")}:</b> ${compareValue(notes(item))}</p><p><b>${t("base")}:</b> ${compareValue(notes(item,"base"))}</p></article></section>
@@ -210,9 +229,9 @@
   }
 
   function productPanel(productId) {
-    const item = model.payload?.items?.find((entry) => entry.product.id === productId);
-    if (!item) return "";
-    return `<section class="pdp-alternative-reference"><div><small>${t("availableAlternative")}</small><h2>${lang() === "ar" ? "بديل لعطر تعرفه" : "An alternative to a fragrance you know"}</h2><p>${t("referenceNotice")}</p><button data-alt="compare" data-slug="${esc(item.reference.slug)}">${t("fullComparison")} ←</button></div><img src="${esc(item.reference.image)}" alt="${esc(label(item.reference,"name"))}"/><div><b>${esc(label(item.reference,"name"))}</b><span>${esc(item.reference.brand)}</span>${similarityRing(item,true)}</div></section>`;
+    const items = (model.payload?.items || []).filter((entry) => entry.product.id === productId).slice(0,4);
+    if (!items.length) return "";
+    return `<section class="pdp-alternative-reference multiple"><div><small>${t("availableAlternative")}</small><h2>${lang() === "ar" ? "بديل لعطور قد تعرفها" : "An alternative to fragrances you may know"}</h2><p>${t("referenceNotice")}</p></div><div class="pdp-reference-list">${items.map((item)=>`<button data-alt="compare" data-slug="${esc(item.reference.slug)}"><img src="${esc(item.reference.image)}" alt="${esc(label(item.reference,"name"))}"/><span><b>${esc(label(item.reference,"name"))}</b><small>${esc(item.reference.brand)} · ${item.similarity}%</small></span></button>`).join("")}</div></section>`;
   }
 
   function setRoute(active) {
@@ -227,12 +246,18 @@
     return model.loading;
   }
   async function route() {
-    const match = location.pathname.match(/^\/alternatives(?:\/compare\/([^/]+))?\/?$/i);
+    const match = location.pathname.match(/^\/alternatives(?:\/compare(?:\/([^/]+))?)?\/?$/i);
     if (!match) { setRoute(false); return false; }
     setRoute(true); root.innerHTML = `<div class="alternatives-loading"><i></i><i></i><i></i><p>${t("loading")}</p></div>`;
     try {
       await load();
-      if (match[1]) {
+      const compareIds = new URL(location.href).searchParams.get("ids");
+      if (location.pathname.replace(/\/$/,"") === "/alternatives/compare" && compareIds) {
+        const ids = compareIds.split(",").map(Number);
+        const items = ids.map((id)=>model.payload.items.find((entry)=>entry.id===id)).filter(Boolean).slice(0,4);
+        if (items.length < 2) throw new Error(t("noResults"));
+        renderMultiCompare(items);
+      } else if (match[1]) {
         const slug = decodeURIComponent(match[1]);
         const item = model.payload.items.find((entry) => entry.reference.slug === slug || entry.product.id === slug);
         if (!item) throw new Error(t("noResults"));
@@ -267,7 +292,10 @@
     if (action === "wishlist") { const item=model.payload.items.find(i=>i.product.id===el.dataset.product); store().toggleWishlist(el.dataset.product); postEvent(item,"wishlist"); }
     if (action === "product") { const item=model.payload.items.find(i=>i.product.id===el.dataset.product); store().showProductDetails(store().getProduct(el.dataset.product)); postEvent(item,"product_view"); }
     if (action === "quick") { model.quick=el.dataset.value; model.drawer=false; renderListing(); }
-    if (action === "clear") { model.quick="all"; model.query=""; model.sort="recommended"; model.minMatch=0; model.drawer=false; history.replaceState(history.state, "", "/alternatives"); renderListing(); }
+    if (action === "clear") { model.quick="all"; model.query=""; model.sort="recommended"; model.minMatch=0; model.family=""; model.inStock=false; model.drawer=false; history.replaceState(history.state, "", "/alternatives"); renderListing(); }
+    if (action === "toggle-compare") { const id=Number(el.dataset.id); if(el.checked){if(model.compare.size>=4){el.checked=false;store().showToast("4 max");}else model.compare.add(id);}else model.compare.delete(id); renderListing(); }
+    if (action === "clear-compare") { model.compare.clear(); renderListing(); }
+    if (action === "compare-selected" && model.compare.size>1) go(`/alternatives/compare?ids=${[...model.compare].join(",")}`);
     if (action === "drawer") { model.drawer=!model.drawer; renderListing(); }
     if (action === "browse") root.querySelector("#alternatives-results")?.scrollIntoView({behavior:"smooth"});
     if (action === "how") store().showToast(t("disclaimer"));
@@ -279,12 +307,15 @@
   function toggleMobileMenuSafe(){ document.querySelector(".mobile-menu-panel")?.classList.remove("open"); document.querySelector(".mobile-menu-backdrop")?.classList.remove("open"); }
   document.addEventListener("submit", (event) => {
     if (event.target.id === "home-alternative-search") { event.preventDefault(); const q=event.target.querySelector("input").value.trim(); go(`/alternatives${q?`?q=${encodeURIComponent(q)}`:""}`); }
+    if (event.target.id === "alternative-request-form") { event.preventDefault(); const data=new FormData(event.target); store().api("/api/alternatives/requests",{method:"POST",body:JSON.stringify({query:data.get("query"),email:data.get("email"),language:lang()})}).then(()=>{event.target.innerHTML=`<b>${t("requestSent")}</b>`;}).catch((error)=>store().showToast(error.message)); }
   });
   document.addEventListener("input", (event) => { if (event.target.id === "alternatives-search") { model.query=event.target.value; suggestions(model.query); } });
   document.addEventListener("keydown", (event) => { if (event.target.id === "alternatives-search" && event.key === "Enter") { event.preventDefault(); root.querySelector('[data-alt="search"]')?.click(); } });
   document.addEventListener("change", (event) => {
     if (event.target.id === "alternatives-sort") { model.sort=event.target.value; renderListing(); }
     if (event.target.matches('[data-alt-filter="match"]')) { model.minMatch=Number(event.target.value)||0; model.drawer=false; renderListing(); }
+    if (event.target.id === "alternative-family-filter") { model.family=event.target.value; renderListing(); }
+    if (event.target.id === "alternative-stock-filter") { model.inStock=event.target.checked; renderListing(); }
   });
   window.addEventListener("popstate", route);
   window.addEventListener("resize", syncFilterAccessibility, { passive: true });

@@ -7,6 +7,7 @@ import {
   ROLE_PERMISSIONS,
   alternativesAdminPayload,
   alternativesPayload,
+  archiveReferencePerfume,
   adminConfiguredFromEnvironment,
   createOrder,
   createSession,
@@ -30,6 +31,8 @@ import {
   hashPassword,
   listAllOrders,
   listActivity,
+  listProductAlternativeReferences,
+  listReferencePerfumes,
   listFilterDefinitions,
   listFragranceNoteEntities,
   listOrdersForUser,
@@ -44,7 +47,12 @@ import {
   syncFragranceNoteEntities,
   recordActivity,
   recordAlternativeEvent,
+  createAlternativeRequest,
+  deleteAlternativeRelationship,
+  reorderAlternativeRelationships,
+  saveAlternativeRelationships,
   saveAlternativesAdmin,
+  submitAlternativeSimilarityReview,
   updateOrderAdmin,
   updateOrderStatus,
   upsertFilterDefinition,
@@ -296,6 +304,8 @@ function userCan(user, permission) {
   const permissions = user?.permissions || [];
   if (permissions.includes("*")) return true;
   if (permissions.includes(permission)) return true;
+  if (permission === "alternatives" && permissions.includes("catalog")) return true;
+  if (permission === "alternatives:view" && (permissions.includes("catalog") || permissions.includes("catalog:view"))) return true;
   if (permission.endsWith(":view") && permissions.includes(permission.slice(0, -5))) return true;
   return false;
 }
@@ -654,9 +664,40 @@ async function handleAPI(request, response, url, origin) {
   if (url.pathname === "/api/alternatives" && request.method === "GET") {
     const query = url.searchParams.get("q") || "";
     const sort = url.searchParams.get("sort") || "recommended";
-    const payload = alternativesPayload({ query, sort });
-    if (query) recordAlternativeEvent({ eventType: "search", query, resultsCount: payload.items.length });
+    const payload = alternativesPayload({ query, sort, page: url.searchParams.get("page") || 1, pageSize: url.searchParams.get("pageSize") || 24,
+      filters: { family: url.searchParams.get("family") || "", gender: url.searchParams.get("gender") || "",
+        season: url.searchParams.get("season") || "", inStock: url.searchParams.get("inStock") || "" } });
+    if (query) recordAlternativeEvent({ eventType: "search", query, resultsCount: payload.pagination.total,
+      language: url.searchParams.get("lang") || "ar", sessionKey: request.headers["x-session-key"] || "" });
     return jsonResponse(response, 200, payload, origin);
+  }
+
+  const productAlternativeReferencesMatch = url.pathname.match(/^\/api\/products\/([^/]+)\/alternative-references$/);
+  if (productAlternativeReferencesMatch && request.method === "GET") {
+    return jsonResponse(response, 200, { items: listProductAlternativeReferences(decodeURIComponent(productAlternativeReferencesMatch[1])) }, origin);
+  }
+
+  if (url.pathname === "/api/alternatives/requests" && request.method === "POST") {
+    try {
+      const body = await readJSONBody(request);
+      return jsonResponse(response, 201, { request: createAlternativeRequest(body) }, origin);
+    } catch (error) {
+      return jsonResponse(response, 400, { error: error.message, code: error.code || "ALTERNATIVE_REQUEST_FAILED" }, origin);
+    }
+  }
+
+  const alternativeReviewMatch = url.pathname.match(/^\/api\/alternatives\/(\d+)\/reviews$/);
+  if (alternativeReviewMatch && request.method === "POST") {
+    const user = requireUser(request, response, origin);
+    if (!user) return;
+    try {
+      const body = await readJSONBody(request);
+      const item = submitAlternativeSimilarityReview({ ...body, matchId: Number(alternativeReviewMatch[1]), userId: user.id });
+      recordActivity(user.id, "alternative_similarity_reviewed", "alternative_match", alternativeReviewMatch[1], {});
+      return jsonResponse(response, 201, { item }, origin);
+    } catch (error) {
+      return jsonResponse(response, error.message === "VERIFIED_PURCHASE_REQUIRED" ? 403 : 400, { error: error.message, code: error.code || error.message }, origin);
+    }
   }
 
   const publicAlternativeMatch = url.pathname.match(/^\/api\/alternatives\/([^/]+)$/);
@@ -1100,17 +1141,17 @@ async function handleAPI(request, response, url, origin) {
   }
 
   if (url.pathname === "/api/admin/alternatives" && request.method === "GET") {
-    const user = requireUser(request, response, origin, "catalog:view");
+    const user = requireUser(request, response, origin, "alternatives:view");
     if (!user) return;
     return jsonResponse(response, 200, alternativesAdminPayload(), origin);
   }
 
   if (url.pathname === "/api/admin/alternatives" && request.method === "POST") {
-    const user = requireUser(request, response, origin, "catalog");
+    const user = requireUser(request, response, origin, "alternatives");
     if (!user) return;
     try {
       const body = await readJSONBody(request);
-      const payload = saveAlternativesAdmin(body);
+      const payload = saveAlternativesAdmin({ ...body, userId: user.id });
       recordActivity(user.id, "alternatives_saved", "alternatives", String(body.match?.id || "settings"), {
         section: body.match ? "match" : "homepage"
       });
@@ -1118,6 +1159,100 @@ async function handleAPI(request, response, url, origin) {
     } catch (error) {
       return jsonResponse(response, 400, { error: error.message || "تعذر حفظ إعدادات البدائل." }, origin);
     }
+  }
+
+  if (url.pathname === "/api/admin/alternative-references" && request.method === "GET") {
+    const user = requireUser(request, response, origin, "alternatives:view");
+    if (!user) return;
+    return jsonResponse(response, 200, listReferencePerfumes({ query: url.searchParams.get("q") || "", status: url.searchParams.get("status") || "", page: url.searchParams.get("page") || 1, pageSize: url.searchParams.get("pageSize") || 50 }), origin);
+  }
+
+  if (url.pathname === "/api/admin/alternative-references" && request.method === "POST") {
+    const user = requireUser(request, response, origin, "alternatives");
+    if (!user) return;
+    try {
+      const body = await readJSONBody(request);
+      const payload = saveAlternativesAdmin({ reference: body, userId: user.id });
+      recordActivity(user.id, "alternative_reference_saved", "reference_perfume", String(body.id || body.slug || "new"), {});
+      return jsonResponse(response, 200, payload, origin);
+    } catch (error) { return jsonResponse(response, 400, { error: error.message, code: error.code || "REFERENCE_SAVE_FAILED" }, origin); }
+  }
+
+  const adminReferenceMatch = url.pathname.match(/^\/api\/admin\/alternative-references\/([^/]+)$/);
+  if (adminReferenceMatch && request.method === "DELETE") {
+    const user = requireUser(request, response, origin, "alternatives");
+    if (!user) return;
+    const id = decodeURIComponent(adminReferenceMatch[1]);
+    const archived = archiveReferencePerfume(id);
+    if (archived) recordActivity(user.id, "alternative_reference_archived", "reference_perfume", id, {});
+    return jsonResponse(response, archived ? 200 : 404, { ok: archived }, origin);
+  }
+
+  if (url.pathname === "/api/admin/alternative-relationships/bulk" && request.method === "POST") {
+    const user = requireUser(request, response, origin, "alternatives");
+    if (!user) return;
+    try {
+      const body = await readJSONBody(request);
+      const items = saveAlternativeRelationships({ ...body, userId: user.id });
+      recordActivity(user.id, "alternative_relationships_saved", "reference_perfume", String(body.referenceId || ""), { count: items.length });
+      return jsonResponse(response, 200, { items }, origin);
+    } catch (error) { return jsonResponse(response, 400, { error: error.message, code: error.code || "RELATIONSHIPS_SAVE_FAILED" }, origin); }
+  }
+
+  if (url.pathname === "/api/admin/alternative-relationships/reorder" && request.method === "POST") {
+    const user = requireUser(request, response, origin, "alternatives");
+    if (!user) return;
+    const body = await readJSONBody(request).catch(() => ({}));
+    reorderAlternativeRelationships(body.items, user.id);
+    recordActivity(user.id, "alternative_relationships_reordered", "alternative_match", "bulk", { count: body.items?.length || 0 });
+    return jsonResponse(response, 200, { ok: true }, origin);
+  }
+
+  const adminRelationshipMatch = url.pathname.match(/^\/api\/admin\/alternative-relationships\/(\d+)$/);
+  if (adminRelationshipMatch && request.method === "DELETE") {
+    const user = requireUser(request, response, origin, "alternatives");
+    if (!user) return;
+    const deleted = deleteAlternativeRelationship(Number(adminRelationshipMatch[1]));
+    if (deleted) recordActivity(user.id, "alternative_relationship_deleted", "alternative_match", adminRelationshipMatch[1], {});
+    return jsonResponse(response, deleted ? 200 : 404, { ok: deleted }, origin);
+  }
+
+  if (url.pathname === "/api/admin/alternatives/export.csv" && request.method === "GET") {
+    const user = requireUser(request, response, origin, "alternatives:view");
+    if (!user) return;
+    const quote = (value) => `"${String(value ?? "").replaceAll('"', '""')}"`;
+    const lines = [["match_id","reference_id","reference_ar","reference_en","product_id","product_ar","product_en","relationship_type","calculated_similarity","approved_similarity","status","visible"],
+      ...alternativesAdminPayload().items.map((item) => [item.id,item.referenceId,item.reference.nameAr,item.reference.nameEn,item.productId,item.product.nameAr,item.product.nameEn,item.relationshipType,item.calculatedSimilarity,item.approvedSimilarity,item.status,item.visible])];
+    response.writeHead(200, { "Content-Type": "text/csv; charset=utf-8", "Content-Disposition": "attachment; filename=origo-alternatives.csv", "Cache-Control": "no-store" });
+    response.end(`\uFEFF${lines.map((line) => line.map(quote).join(",")).join("\n")}`);
+    return;
+  }
+
+  if (url.pathname === "/api/admin/alternatives/import" && request.method === "POST") {
+    const user = requireUser(request, response, origin, "alternatives");
+    if (!user) return;
+    try {
+      const body = await readJSONBody(request);
+      const rows = Array.isArray(body.rows) ? body.rows.slice(0, 2000) : [];
+      const groups = new Map(); const errors = [];
+      rows.forEach((row, index) => {
+        const referenceId = String(row.referenceId || row.reference_id || "").trim();
+        const productId = String(row.productId || row.product_id || "").trim();
+        if (!referenceId || !productId) { errors.push({ row: index + 2, code: "MISSING_IDS" }); return; }
+        if (!groups.has(referenceId)) groups.set(referenceId, []);
+        groups.get(referenceId).push({ productId, relationshipType: row.relationshipType || row.relationship_type,
+          approvedSimilarity: row.approvedSimilarity ?? row.approved_similarity, status: row.status,
+          visible: ![false,"false","0",0].includes(row.visible), reasonAr: row.reasonAr || row.reason_ar,
+          reasonEn: row.reasonEn || row.reason_en });
+      });
+      let imported = 0;
+      for (const [referenceId, links] of groups) {
+        try { imported += saveAlternativeRelationships({ referenceId, links, userId: user.id }).length; }
+        catch (error) { errors.push({ referenceId, code: error.message }); }
+      }
+      recordActivity(user.id, "alternatives_imported", "alternative_match", "bulk", { rows: rows.length, imported, errors: errors.length });
+      return jsonResponse(response, errors.length ? 207 : 200, { imported, errors, payload: alternativesAdminPayload() }, origin);
+    } catch (error) { return jsonResponse(response, 400, { error: error.message, code: "ALTERNATIVES_IMPORT_FAILED" }, origin); }
   }
 
   if (url.pathname === "/api/admin/products" && request.method === "POST") {

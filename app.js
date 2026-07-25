@@ -1972,7 +1972,7 @@ function entityCreateForm(view, item = null) {
 
 function alternativesAdminMarkup() {
   const ar = state.lang === "ar";
-  const data = state.alternativesAdmin || { items: [], settings: {}, analytics: {} };
+  const data = state.alternativesAdmin || { items: [], references: [], settings: {}, analytics: {} };
   const settings = data.settings || {};
   const eventMap = Object.fromEntries((data.analytics?.events || []).map((item) => [item.eventType, Number(item.count)]));
   const productOptions = (data.catalogProducts || state.products || []).filter((product) => product.status !== "archived").map((product) =>
@@ -1995,22 +1995,28 @@ function alternativesAdminMarkup() {
       <label class="admin-toggle-row"><span><b>${ar ? "إظهار البانر" : "Show banner"}</b></span><input name="bannerEnabled" type="checkbox"${settings.bannerEnabled !== false ? " checked" : ""}/></label>
       <button class="button burgundy-button" type="submit">${ar ? "حفظ إعدادات الظهور" : "Save display settings"} ←</button>
     </section></form>
-    <section class="alternatives-admin-matches"><div class="review-section-head"><span>02</span><div><b>${ar ? "العطور المرجعية وربط البدائل" : "Reference fragrances & matches"}</b><small>${ar ? "المنتج البديل مرتبط مباشرة بكتالوج ORIGO؛ السعر والمخزون لا يتكرران هنا." : "Alternative products stay linked to the live ORIGO catalog."}</small></div></div>
-      <details class="alternative-create-panel"><summary>＋ ${ar ? "إضافة عطر مرجعي وربطه بمنتج" : "Add a reference fragrance and link a product"}</summary><form id="admin-alternative-create">
+    <section class="alternatives-admin-matches"><div class="review-section-head"><span>02</span><div><b>${ar ? "العطور المرجعية وربط البدائل" : "Reference fragrances & matches"}</b><small>${ar ? "المنتج البديل مرتبط مباشرة بكتالوج ORIGO؛ السعر والمخزون لا يتكرران هنا." : "Alternative products stay linked to the live ORIGO catalog."}</small></div></div><div class="alternatives-admin-tools"><a class="secondary-button" href="/api/admin/alternatives/export.csv" download>${ar?"تصدير CSV":"Export CSV"}</a><label class="secondary-button">${ar?"استيراد CSV":"Import CSV"}<input id="alternatives-import-file" type="file" accept=".csv,text/csv" hidden/></label></div>
+      <details class="alternative-create-panel" open><summary>＋ ${ar ? "مكتبة العطور المرجعية وربط عدة بدائل" : "Reference library & multiple alternatives"}</summary><form id="admin-alternative-create">
         <div class="review-grid"><label>${ar ? "اسم العطر بالعربية" : "Arabic reference name"}<input name="nameAr" required maxlength="200"/></label><label>${ar ? "اسم العطر بالإنجليزية" : "English reference name"}<input name="nameEn" required maxlength="200"/></label></div>
-        <div class="review-grid"><label>${ar ? "العلامة التجارية" : "Brand"}<input name="brand" required maxlength="160"/></label><label>${ar ? "الرابط المختصر (اختياري)" : "URL slug (optional)"}<input name="slug" dir="ltr" maxlength="120" placeholder="creed-aventus"/></label></div>
+        <div class="review-grid"><label>${ar ? "العلامة التجارية" : "Brand"}<input name="brand" required maxlength="160"/></label><label>${ar ? "الاسم المختصر/الاسم الشائع" : "Short/common name"}<input name="shortName" maxlength="120"/></label></div>
+        <div class="review-grid"><label>${ar ? "الرابط المختصر" : "URL slug"}<input name="slug" dir="ltr" maxlength="120" placeholder="creed-aventus"/></label><label>${ar ? "سنة الإصدار" : "Release year"}<input name="releaseYear" type="number" min="1800" max="2200"/></label></div>
         <div class="review-grid"><label>${ar ? "صورة العطر المرجعي" : "Reference image"}<input name="image" dir="ltr" placeholder="/assets/references/...svg"/></label><label>${ar ? "السعر المرجعي بالجنيه" : "Reference price (EGP)"}<input name="referencePrice" type="number" min="0" step="0.01"/></label></div>
         <div class="review-grid three"><label>${ar ? "التركيز" : "Concentration"}<input name="concentration" placeholder="Eau de Parfum"/></label><label>${ar ? "الحجم" : "Size"}<input name="size" placeholder="100 ml"/></label><label>${ar ? "الجنس" : "Gender"}<select name="gender"><option value="unisex">${ar ? "للجنسين" : "Unisex"}</option><option value="men">${ar ? "رجالي" : "Men"}</option><option value="women">${ar ? "نسائي" : "Women"}</option></select></label></div>
         <div class="review-grid"><label>${ar ? "العائلة العطرية AR" : "Family AR"}<input name="familyAr"/></label><label>${ar ? "العائلة العطرية EN" : "Family EN"}<input name="familyEn"/></label></div>
+        <div class="review-grid"><label>${ar ? "أسماء البحث والاختصارات" : "Search aliases"}<textarea name="searchAliases" placeholder="Aventus، افنتوس"></textarea></label><label>${ar ? "الأخطاء الإملائية الشائعة" : "Common misspellings"}<textarea name="misspellings"></textarea></label></div>
         <div class="review-grid"><label>${ar ? "النوتات العربية" : "Arabic notes"}<textarea name="notesAr" placeholder="برغموت، ورد، عود"></textarea></label><label>${ar ? "النوتات الإنجليزية" : "English notes"}<textarea name="notesEn" placeholder="Bergamot, Rose, Oud"></textarea></label></div>
-        <label>${ar ? "منتج ORIGO البديل" : "Linked ORIGO product"}<select name="productId" required><option value="">${ar ? "اختر منتجًا من الكتالوج" : "Select a catalog product"}</option>${productOptions}</select></label>
+        <div class="review-grid"><label>${ar ? "وصف عربي" : "Arabic description"}<textarea name="descriptionAr"></textarea></label><label>${ar ? "وصف إنجليزي" : "English description"}<textarea name="descriptionEn"></textarea></label></div>
+        <label>${ar ? "منتجات ORIGO البديلة (اختيار متعدد)" : "Linked ORIGO alternatives (multiple)"}<select name="productIds" multiple size="8" required>${productOptions}</select><small>${ar ? "استخدم Ctrl أو ⌘ لاختيار أكثر من منتج." : "Use Ctrl or ⌘ to choose multiple products."}</small></label>
+        <div class="review-grid"><label>${ar ? "نوع العلاقة" : "Relationship type"}<select name="relationshipType">${selectOptions([["direct_alternative",ar?"بديل مباشر":"Direct alternative"],["inspired_by",ar?"مستوحى من":"Inspired by"],["similar_character",ar?"طابع مشابه":"Similar character"],["similar_opening",ar?"افتتاحية مشابهة":"Similar opening"],["similar_drydown",ar?"قاعدة مشابهة":"Similar drydown"],["custom",ar?"مخصص":"Custom"]],"similar_character")}</select></label><label>${ar ? "شارات العرض" : "Display badges"}<input name="badges" placeholder="best-value,closest-match"/></label></div>
         <div class="review-grid three"><label>${ar ? "التشابه (اتركه للحساب الذكي)" : "Similarity (blank = calculated)"}<input name="similarity" type="number" min="0" max="100"/></label><label>${ar ? "الثقة" : "Confidence"}<input name="confidence" type="number" min="0" max="100"/></label><label>${ar ? "الترتيب" : "Order"}<input name="sortOrder" type="number" value="0"/></label></div>
         <div class="review-grid"><label>${ar ? "سبب الترشيح بالعربية" : "Arabic recommendation reason"}<textarea name="reasonAr" required></textarea></label><label>${ar ? "سبب الترشيح بالإنجليزية" : "English recommendation reason"}<textarea name="reasonEn" required></textarea></label></div>
-        <button class="button burgundy-button" type="submit">${ar ? "إنشاء العلاقة ونشرها" : "Create and publish match"} ←</button>
+        <div class="review-grid three"><label class="admin-pin"><input name="primaryAlternative" type="checkbox"/> ${ar ? "البديل الرئيسي للمرجع" : "Primary alternative"}</label><label class="admin-pin"><input name="visible" type="checkbox" checked/> ${ar ? "ظاهر للعملاء" : "Publicly visible"}</label><label>${ar ? "حالة المرجع" : "Reference status"}<select name="referenceStatus">${selectOptions([["draft",ar?"مسودة":"Draft"],["active",ar?"نشط":"Active"]],"active")}</select></label></div>
+        <button class="button burgundy-button" type="submit">${ar ? "حفظ المرجع وربط البدائل" : "Save reference & alternatives"} ←</button>
       </form></details>
-      <div class="alternatives-admin-list">${(data.items || []).map((item) => `<form class="alternative-admin-row" data-alternative-match="${item.id}"><img src="${escapeHTML(item.reference.image)}" alt=""/><div><small>${ar ? "العطر المرجعي" : "Reference"}</small><b>${escapeHTML(ar ? item.reference.nameAr : item.reference.nameEn)}</b><span>${escapeHTML(item.reference.brand)}</span></div><span class="admin-match-arrow">⇄</span><img src="${escapeHTML(item.product.image)}" alt=""/><div><small>${ar ? "منتج ORIGO" : "ORIGO product"}</small><b>${escapeHTML(ar ? item.product.nameAr : item.product.nameEn || item.product.nameAr)}</b><span>${formatPrice(item.product.price)}</span></div><label>${ar ? "التشابه" : "Similarity"}<input name="similarity" type="number" min="0" max="100" value="${item.similarity}"/></label><label>${ar ? "الثقة" : "Confidence"}<input name="confidence" type="number" min="0" max="100" value="${item.confidence}"/></label><label>${ar ? "الترتيب" : "Order"}<input name="sortOrder" type="number" value="${item.sortOrder}"/></label><label>${ar ? "الحالة" : "Status"}<select name="status">${selectOptions([["active",ar?"نشط":"Active"],["hidden",ar?"مخفي":"Hidden"],["draft",ar?"مسودة":"Draft"]],item.status)}</select></label><label class="match-reason">${ar ? "سبب الترشيح" : "Recommendation reason"}<textarea name="reason">${escapeHTML(ar ? item.reasonAr : item.reasonEn)}</textarea></label><label class="admin-pin"><input name="pinned" type="checkbox"${item.pinned ? " checked" : ""}/> ${ar ? "تثبيت" : "Pin"}</label><button type="button" class="button burgundy-button" data-action="save-alternative-match">${ar ? "حفظ" : "Save"}</button></form>`).join("")}</div>
+      <div class="alternative-reference-library">${(data.references || []).map((reference) => `<article><img src="${escapeHTML(reference.image)}" alt=""/><div><b>${escapeHTML(ar ? reference.nameAr : reference.nameEn)}</b><small>${escapeHTML(reference.brand)} · ${escapeHTML(reference.status)}</small></div><span>${(data.items || []).filter((item)=>item.referenceId===reference.id).length} ${ar?"بدائل":"matches"}</span><button type="button" data-action="archive-alternative-reference" data-id="${escapeHTML(reference.id)}" aria-label="${ar?"أرشفة":"Archive"}">⌫</button></article>`).join("")}</div>
+      <div class="alternatives-admin-list">${(data.items || []).map((item) => `<form class="alternative-admin-row" data-alternative-match="${item.id}"><img src="${escapeHTML(item.reference.image)}" alt=""/><div><small>${ar ? "العطر المرجعي" : "Reference"}</small><b>${escapeHTML(ar ? item.reference.nameAr : item.reference.nameEn)}</b><span>${escapeHTML(item.reference.brand)}</span></div><span class="admin-match-arrow">⇄</span><img src="${escapeHTML(item.product.image)}" alt=""/><div><small>${ar ? "منتج ORIGO" : "ORIGO product"}</small><b>${escapeHTML(ar ? item.product.nameAr : item.product.nameEn || item.product.nameAr)}</b><span>${formatPrice(item.product.price)}</span></div><label>${ar ? "المعتمد" : "Approved"}<input name="approvedSimilarity" type="number" min="0" max="100" value="${item.approvedSimilarity ?? item.similarity}"/><small>${ar?"المحسوب":"Calculated"}: ${item.calculatedSimilarity ?? item.similarity}%</small></label><label>${ar ? "نوع العلاقة" : "Relationship"}<select name="relationshipType">${selectOptions([["direct_alternative",ar?"بديل مباشر":"Direct alternative"],["inspired_by",ar?"مستوحى":"Inspired"],["similar_character",ar?"طابع مشابه":"Similar character"],["similar_opening",ar?"افتتاحية":"Opening"],["similar_drydown",ar?"قاعدة":"Drydown"],["custom",ar?"مخصص":"Custom"]],item.relationshipType)}</select></label><label>${ar ? "الترتيب" : "Order"}<input name="sortOrder" type="number" value="${item.sortOrder}"/></label><label>${ar ? "الحالة" : "Status"}<select name="status">${selectOptions([["active",ar?"نشط":"Active"],["hidden",ar?"مخفي":"Hidden"],["draft",ar?"مسودة":"Draft"]],item.status)}</select></label><label class="match-reason">${ar ? "سبب الترشيح" : "Recommendation reason"}<textarea name="reason">${escapeHTML(ar ? item.reasonAr : item.reasonEn)}</textarea></label><label class="admin-pin"><input name="pinned" type="checkbox"${item.pinned ? " checked" : ""}/> ${ar ? "تثبيت" : "Pin"}</label><label class="admin-pin"><input name="primaryReference" type="checkbox"${item.primaryReference ? " checked" : ""}/> ${ar ? "مرجع المنتج الرئيسي" : "Primary reference"}</label><label class="admin-pin"><input name="primaryAlternative" type="checkbox"${item.primaryAlternative ? " checked" : ""}/> ${ar ? "بديل المرجع الرئيسي" : "Primary alternative"}</label><label class="admin-pin"><input name="visible" type="checkbox"${item.visible ? " checked" : ""}/> ${ar ? "ظاهر" : "Visible"}</label><button type="button" class="button burgundy-button" data-action="save-alternative-match">${ar ? "حفظ" : "Save"}</button><button type="button" class="secondary-button" data-action="delete-alternative-match">${ar?"حذف العلاقة":"Delete"}</button></form>`).join("")}</div>
     </section>
-    <section><div class="review-section-head"><span>03</span><div><b>${ar ? "أكثر عمليات البحث" : "Top searches"}</b></div></div><div class="admin-family-grid">${(data.analytics?.topSearches || []).map((item)=>`<article><span>⌕</span><div><b>${escapeHTML(item.query || (ar ? "بحث فارغ" : "Empty query"))}</b><small>${Number(item.count)} ${ar ? "مرة" : "searches"}</small></div></article>`).join("") || `<p>${ar ? "لا توجد بيانات بحث بعد." : "No search data yet."}</p>`}</div></section>
+    <section><div class="review-section-head"><span>03</span><div><b>${ar ? "تحليلات البحث والطلبات الناقصة" : "Search analytics & missing requests"}</b></div></div><div class="admin-family-grid">${(data.analytics?.topSearches || []).map((item)=>`<article><span>⌕</span><div><b>${escapeHTML(item.query || (ar ? "بحث فارغ" : "Empty query"))}</b><small>${Number(item.count)} ${ar ? "مرة" : "searches"}</small></div></article>`).join("") || `<p>${ar ? "لا توجد بيانات بحث بعد." : "No search data yet."}</p>`}</div><h3>${ar?"عمليات بحث بلا نتائج":"Zero-result searches"}</h3><div class="admin-family-grid">${(data.analytics?.unmatchedSearches||[]).map((item)=>`<article><span>!</span><div><b>${escapeHTML(item.query)}</b><small>${Number(item.count)}×</small></div></article>`).join("")||`<p>${ar?"لا توجد":"None"}</p>`}</div><h3>${ar?"طلبات إضافة عطر":"Fragrance requests"}</h3><div class="admin-family-grid">${(data.requests||[]).map((item)=>`<article><span>＋</span><div><b>${escapeHTML(item.query)}</b><small>${escapeHTML(item.channel)} · ${escapeHTML(item.status)}</small></div></article>`).join("")||`<p>${ar?"لا توجد طلبات":"No requests"}</p>`}</div></section>
   </div>`;
 }
 
@@ -5028,6 +5034,8 @@ function renderImportReview(product) {
   const level = product.confidence?.level || "incomplete";
   const missing = product.confidence?.missing || [];
   const images = product.images || [];
+  const linkedReferenceIds = new Set((state.alternativesAdmin?.items || []).filter((item) => item.productId === product.id).map((item) => item.referenceId));
+  const alternativeReferenceOptions = (state.alternativesAdmin?.references || []).filter((reference) => reference.status !== "archived").map((reference) => `<label class="product-reference-choice"><input type="checkbox" name="alternativeReferenceIds" value="${escapeHTML(reference.id)}"${linkedReferenceIds.has(reference.id) ? " checked" : ""}/><img src="${escapeHTML(reference.image)}" alt=""/><span><b>${escapeHTML(adminCopy(reference.nameAr, reference.nameEn))}</b><small>${escapeHTML(reference.brand)}</small></span></label>`).join("");
   $("#import-workspace").innerHTML = `
     <form class="catalog-review" id="import-review-form" data-editor-mode="${escapeHTML(state.productEditorMode)}">
       <div class="product-editor-modes">
@@ -5171,7 +5179,7 @@ function renderImportReview(product) {
           <label>${adminCopy("شارة البطاقة", "Card badge")}<input name="cardBadgeAr" value="${escapeHTML(product.cardBadgeAr || "")}" placeholder="${adminCopy("حصري", "Exclusive")}" /></label>
           <label>${adminCopy("منتجات مشابهة", "Similar product IDs")}<input name="similarProductIds" value="${escapeHTML(csv(product.similarProductIds))}" /></label>
           <label>${adminCopy("اشترِ معه", "Cross-sell product IDs")}<input name="crossSellIds" value="${escapeHTML(csv(product.crossSellIds))}" /></label>
-          <label>${adminCopy("بدائل العطر", "Alternative product IDs")}<input name="alternativeIds" value="${escapeHTML(csv(product.alternativeIds))}" /></label>
+          <fieldset class="product-reference-links wide"><legend>${adminCopy("العطور العالمية المرجعية المرتبطة بهذا المنتج", "Global reference fragrances linked to this product")}</legend><p>${adminCopy("يمكن ربط المنتج بأكثر من عطر مرجعي. تُحفظ العلاقة في نظام البدائل وليست كنص داخل المنتج.", "A product can link to multiple references. Relationships are saved in the alternatives system, not as product text.")}</p><div>${alternativeReferenceOptions || `<small>${adminCopy("أضف عطرًا مرجعيًا أولًا من قسم البدائل.", "Add a reference fragrance from Alternatives first.")}</small>`}</div></fieldset>
         </div>
       </section>
 
@@ -5496,6 +5504,8 @@ function updateDuplicateWarning(form) {
 
 async function saveCatalogProduct(form, workflowAction = "draft") {
   let product = collectReviewProduct(form);
+  const selectedReferenceIds = [...form.querySelectorAll("[name='alternativeReferenceIds']:checked")].map((input) => input.value);
+  const previousAlternativeMatches = (state.alternativesAdmin?.items || []).filter((item) => item.productId === product.id);
   product.status = ["draft", "review", "published"].includes(workflowAction) ? workflowAction : "draft";
   const duplicate = findDuplicate(product, product.id);
   if (duplicate) {
@@ -5532,6 +5542,20 @@ async function saveCatalogProduct(form, workflowAction = "draft") {
         body: JSON.stringify(product)
       });
       product = result.product;
+      for (const referenceId of selectedReferenceIds) {
+        const existing = previousAlternativeMatches.find((item) => item.referenceId === referenceId);
+        await api("/api/admin/alternative-relationships/bulk", { method: "POST", body: JSON.stringify({ referenceId, links: [{
+          productId: product.id, approvedSimilarity: existing?.approvedSimilarity ?? null,
+          relationshipType: existing?.relationshipType || "similar_character", reasonAr: existing?.reasonAr || "",
+          reasonEn: existing?.reasonEn || "", visible: existing?.visible !== false, status: existing?.status || "active",
+          reviewStatus: existing?.reviewStatus || "approved", sortOrder: existing?.sortOrder || 0,
+          primaryReference: existing?.primaryReference || false, primaryAlternative: existing?.primaryAlternative || false
+        }] }) });
+      }
+      for (const match of previousAlternativeMatches.filter((item) => !selectedReferenceIds.includes(item.referenceId))) {
+        await api(`/api/admin/alternative-relationships/${encodeURIComponent(match.id)}`, { method: "DELETE" });
+      }
+      if (selectedReferenceIds.length || previousAlternativeMatches.length) state.alternativesAdmin = await api("/api/admin/alternatives");
     } else {
       product.updatedAt = new Date().toISOString();
       product.createdAt = product.createdAt || product.updatedAt;
@@ -6155,9 +6179,11 @@ document.addEventListener("click", async (event) => {
     if (!item) return;
     const match = {
       id: item.id,
-      similarity: Number(data.get("similarity")), confidence: Number(data.get("confidence")),
+      approvedSimilarity: Number(data.get("approvedSimilarity")), confidence: item.confidence,
       sortOrder: Number(data.get("sortOrder")), status: String(data.get("status") || "active"),
-      pinned: data.get("pinned") === "on",
+      pinned: data.get("pinned") === "on", visible: data.get("visible") === "on",
+      primaryReference: data.get("primaryReference") === "on", primaryAlternative: data.get("primaryAlternative") === "on",
+      relationshipType: String(data.get("relationshipType") || "similar_character"),
       reasonAr: state.lang === "ar" ? String(data.get("reason") || "") : item.reasonAr,
       reasonEn: state.lang === "en" ? String(data.get("reason") || "") : item.reasonEn
     };
@@ -6166,6 +6192,24 @@ document.addEventListener("click", async (event) => {
       renderAdminDashboard("alternatives");
       window.ORIGOAlternatives?.refresh?.();
       showToast(adminCopy("تم حفظ علاقة البديل وتسجيل التعديل", "Alternative match saved and audited"));
+    } catch (error) { showToast(error.message); }
+  }
+  if (action === "delete-alternative-match") {
+    const form = actionElement.closest("[data-alternative-match]");
+    if (!form || !confirm(adminCopy("حذف هذه العلاقة فقط؟", "Delete this relationship only?"))) return;
+    try {
+      await api(`/api/admin/alternative-relationships/${encodeURIComponent(form.dataset.alternativeMatch)}`, { method: "DELETE" });
+      state.alternativesAdmin = await api("/api/admin/alternatives");
+      renderAdminDashboard("alternatives");
+      window.ORIGOAlternatives?.refresh?.();
+    } catch (error) { showToast(error.message); }
+  }
+  if (action === "archive-alternative-reference") {
+    if (!confirm(adminCopy("أرشفة العطر المرجعي وإخفاء علاقاته؟", "Archive this reference and hide its matches?"))) return;
+    try {
+      await api(`/api/admin/alternative-references/${encodeURIComponent(actionElement.dataset.id)}`, { method: "DELETE" });
+      state.alternativesAdmin = await api("/api/admin/alternatives");
+      renderAdminDashboard("alternatives");
     } catch (error) { showToast(error.message); }
   }
   if (action === "toggle-admin-sidebar") $(".advanced-admin-panel")?.classList.toggle("sidebar-open");
@@ -6808,21 +6852,26 @@ document.addEventListener("submit", async (event) => {
     const split = (name) => String(data.get(name) || "").split(/[,،]/).map((item) => item.trim()).filter(Boolean);
     const reference = {
       slug: String(data.get("slug") || "").trim(), nameAr: String(data.get("nameAr") || "").trim(),
-      nameEn: String(data.get("nameEn") || "").trim(), brand: String(data.get("brand") || "").trim(),
+      nameEn: String(data.get("nameEn") || "").trim(), shortName: String(data.get("shortName") || "").trim(), brand: String(data.get("brand") || "").trim(),
       image: String(data.get("image") || "").trim(), referencePrice: Number(data.get("referencePrice") || 0),
       concentration: String(data.get("concentration") || "").trim(), size: String(data.get("size") || "").trim(),
       gender: String(data.get("gender") || "unisex"), familyAr: String(data.get("familyAr") || "").trim(),
-      familyEn: String(data.get("familyEn") || "").trim(),
+      familyEn: String(data.get("familyEn") || "").trim(), releaseYear: Number(data.get("releaseYear") || 0) || null,
+      descriptionAr: String(data.get("descriptionAr") || "").trim(), descriptionEn: String(data.get("descriptionEn") || "").trim(),
+      searchAliases: split("searchAliases"), misspellings: split("misspellings"),
       notes: { topAr: split("notesAr"), topEn: split("notesEn"), heartAr: [], heartEn: [], baseAr: [], baseEn: [] },
-      status: "active"
+      status: String(data.get("referenceStatus") || "active")
     };
-    const link = {
-      productId: String(data.get("productId") || ""), similarity: data.get("similarity") === "" ? null : Number(data.get("similarity")),
+    const linkTemplate = {
+      similarity: data.get("similarity") === "" ? null : Number(data.get("similarity")),
       confidence: data.get("confidence") === "" ? null : Number(data.get("confidence")), sortOrder: Number(data.get("sortOrder") || 0),
-      reasonAr: String(data.get("reasonAr") || "").trim(), reasonEn: String(data.get("reasonEn") || "").trim(), status: "active"
+      reasonAr: String(data.get("reasonAr") || "").trim(), reasonEn: String(data.get("reasonEn") || "").trim(),
+      relationshipType: String(data.get("relationshipType") || "similar_character"), badges: split("badges"),
+      primaryAlternative: data.get("primaryAlternative") === "on", visible: data.get("visible") === "on", status: "active", reviewStatus: "approved"
     };
+    const links = data.getAll("productIds").filter(Boolean).map((productId, index) => ({ ...linkTemplate, productId: String(productId), sortOrder: Number(linkTemplate.sortOrder) + index, primaryAlternative: linkTemplate.primaryAlternative && index === 0 }));
     try {
-      state.alternativesAdmin = await api("/api/admin/alternatives", { method: "POST", body: JSON.stringify({ reference, link }) });
+      state.alternativesAdmin = await api("/api/admin/alternatives", { method: "POST", body: JSON.stringify({ reference, links }) });
       renderAdminDashboard("alternatives");
       window.ORIGOAlternatives?.refresh?.();
       showToast(adminCopy("تم إنشاء العطر المرجعي وربطه بالمنتج", "Reference fragrance and match created"));
@@ -7287,6 +7336,22 @@ document.addEventListener("input", (event) => {
 });
 
 document.addEventListener("change", async (event) => {
+  if (event.target.id === "alternatives-import-file") {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    try {
+      const text = await file.text();
+      const parseLine = (line) => { const cells=[]; let value="", quoted=false; for(let i=0;i<line.length;i+=1){const char=line[i];if(char==='"'&&quoted&&line[i+1]==='"'){value+='"';i+=1;}else if(char==='"'){quoted=!quoted;}else if(char===','&&!quoted){cells.push(value);value="";}else value+=char;}cells.push(value);return cells; };
+      const lines = text.replace(/^\uFEFF/,"").split(/\r?\n/).filter((line)=>line.trim());
+      const headers = parseLine(lines.shift() || "").map((value)=>value.trim());
+      const rows = lines.map((line)=>Object.fromEntries(parseLine(line).map((value,index)=>[headers[index],value])));
+      const result = await api("/api/admin/alternatives/import", { method:"POST", body:JSON.stringify({ rows }) });
+      state.alternativesAdmin = result.payload || await api("/api/admin/alternatives");
+      renderAdminDashboard("alternatives");
+      showToast(adminCopy(`تم استيراد ${result.imported} علاقة`, `Imported ${result.imported} relationships`));
+    } catch (error) { showToast(error.message); }
+    return;
+  }
   if (event.target.matches("[name='existingOption']")) {
     populateProductOptionDialog(event.target.closest("dialog"), event.target.value);
     return;

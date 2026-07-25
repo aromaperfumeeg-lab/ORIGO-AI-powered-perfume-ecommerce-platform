@@ -286,6 +286,37 @@ db.exec(`
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
   );
 
+  CREATE TABLE IF NOT EXISTS alternative_similarity_reviews (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    match_id INTEGER NOT NULL REFERENCES alternative_matches(id) ON DELETE CASCADE,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    order_id INTEGER REFERENCES orders(id) ON DELETE SET NULL,
+    perceived_similarity INTEGER NOT NULL CHECK (perceived_similarity BETWEEN 0 AND 100),
+    longevity_winner TEXT NOT NULL DEFAULT 'similar' CHECK (longevity_winner IN ('reference', 'alternative', 'similar')),
+    sillage_winner TEXT NOT NULL DEFAULT 'similar' CHECK (sillage_winner IN ('reference', 'alternative', 'similar')),
+    recommends INTEGER NOT NULL DEFAULT 1,
+    value_rating INTEGER NOT NULL DEFAULT 5 CHECK (value_rating BETWEEN 1 AND 5),
+    comment TEXT NOT NULL DEFAULT '',
+    verified_purchase INTEGER NOT NULL DEFAULT 0,
+    status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected')),
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (match_id, user_id)
+  );
+
+  CREATE TABLE IF NOT EXISTS alternative_requests (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    query TEXT NOT NULL,
+    normalized_query TEXT NOT NULL DEFAULT '',
+    email TEXT NOT NULL DEFAULT '',
+    phone TEXT NOT NULL DEFAULT '',
+    channel TEXT NOT NULL DEFAULT 'email' CHECK (channel IN ('email', 'sms', 'whatsapp')),
+    language TEXT NOT NULL DEFAULT 'ar',
+    status TEXT NOT NULL DEFAULT 'new' CHECK (status IN ('new', 'reviewing', 'notified', 'closed')),
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  );
+
   CREATE TABLE IF NOT EXISTS comparison_events (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     reference_id TEXT REFERENCES reference_perfumes(id) ON DELETE SET NULL,
@@ -321,6 +352,8 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_alternative_matches_reference ON alternative_matches(reference_id, status, sort_order);
   CREATE INDEX IF NOT EXISTS idx_comparison_events_match ON comparison_events(reference_id, product_id, event_type, created_at DESC);
   CREATE INDEX IF NOT EXISTS idx_alternative_search_created ON alternative_search_logs(created_at DESC);
+  CREATE INDEX IF NOT EXISTS idx_alternative_reviews_match ON alternative_similarity_reviews(match_id, status, created_at DESC);
+  CREATE INDEX IF NOT EXISTS idx_alternative_requests_status ON alternative_requests(status, created_at DESC);
   CREATE INDEX IF NOT EXISTS idx_product_note_refs_note ON product_note_refs(note_id, position);
   CREATE INDEX IF NOT EXISTS idx_filter_definitions_category ON filter_definitions(category, sort_order);
 `);
@@ -334,6 +367,61 @@ const userColumns = new Set(db.prepare("PRAGMA table_info(users)").all().map((co
 if (!userColumns.has("staff_role")) {
   db.exec("ALTER TABLE users ADD COLUMN staff_role TEXT NOT NULL DEFAULT ''");
 }
+
+function ensureColumns(table, definitions) {
+  const existing = new Set(db.prepare(`PRAGMA table_info(${table})`).all().map((column) => column.name));
+  for (const [name, definition] of Object.entries(definitions)) {
+    if (!existing.has(name)) db.exec(`ALTER TABLE ${table} ADD COLUMN ${name} ${definition}`);
+  }
+}
+
+ensureColumns("reference_perfumes", {
+  short_name: "TEXT NOT NULL DEFAULT ''",
+  description_ar: "TEXT NOT NULL DEFAULT ''",
+  description_en: "TEXT NOT NULL DEFAULT ''",
+  release_year: "INTEGER",
+  times_json: "TEXT NOT NULL DEFAULT '[]'",
+  search_aliases_json: "TEXT NOT NULL DEFAULT '[]'",
+  misspellings_json: "TEXT NOT NULL DEFAULT '[]'",
+  record_status: "TEXT NOT NULL DEFAULT 'active'"
+});
+
+ensureColumns("alternative_matches", {
+  relationship_type: "TEXT NOT NULL DEFAULT 'similar_character'",
+  custom_relation_ar: "TEXT NOT NULL DEFAULT ''",
+  custom_relation_en: "TEXT NOT NULL DEFAULT ''",
+  calculated_similarity: "INTEGER NOT NULL DEFAULT 0",
+  approved_similarity: "INTEGER NOT NULL DEFAULT 0",
+  opening_similarity: "INTEGER NOT NULL DEFAULT 0",
+  heart_similarity: "INTEGER NOT NULL DEFAULT 0",
+  drydown_similarity: "INTEGER NOT NULL DEFAULT 0",
+  accords_similarity: "INTEGER NOT NULL DEFAULT 0",
+  performance_similarity: "INTEGER NOT NULL DEFAULT 0",
+  is_primary_reference: "INTEGER NOT NULL DEFAULT 0",
+  is_primary_alternative: "INTEGER NOT NULL DEFAULT 0",
+  badge_flags_json: "TEXT NOT NULL DEFAULT '[]'",
+  visible: "INTEGER NOT NULL DEFAULT 1",
+  review_status: "TEXT NOT NULL DEFAULT 'approved'",
+  created_by: "INTEGER",
+  updated_by: "INTEGER"
+});
+
+ensureColumns("alternative_search_logs", {
+  normalized_query: "TEXT NOT NULL DEFAULT ''",
+  language: "TEXT NOT NULL DEFAULT 'ar'",
+  matched_reference_id: "TEXT",
+  session_key: "TEXT NOT NULL DEFAULT ''"
+});
+
+db.exec(`
+  UPDATE reference_perfumes SET record_status = CASE WHEN status = 'hidden' THEN 'archived' ELSE 'active' END
+    WHERE record_status = '' OR record_status IS NULL;
+  UPDATE alternative_matches SET calculated_similarity = similarity WHERE calculated_similarity = 0;
+  UPDATE alternative_matches SET approved_similarity = similarity WHERE approved_similarity = 0;
+  UPDATE alternative_matches SET visible = CASE WHEN status = 'active' THEN 1 ELSE 0 END
+    WHERE status <> 'active' AND visible = 1;
+  UPDATE alternative_matches SET is_primary_reference = 1 WHERE pinned = 1 AND is_primary_reference = 0;
+`);
 
 function migrateOrdersToDetachedAccounts() {
   const userColumn = db.prepare("PRAGMA table_info(orders)").all().find((column) => column.name === "user_id");
@@ -1707,13 +1795,17 @@ export function saveAdminWorkspaceState(payload) {
 function referencePerfumeFromRow(row) {
   if (!row) return null;
   return {
-    id: row.id, slug: row.slug, nameAr: row.name_ar, nameEn: row.name_en, brand: row.brand,
+    id: row.id, slug: row.slug, nameAr: row.name_ar, nameEn: row.name_en, shortName: row.short_name || "", brand: row.brand,
     image: row.image, concentration: row.concentration, size: row.size,
     referencePrice: Number(row.reference_price || 0), gender: row.gender,
     familyAr: row.family_ar, familyEn: row.family_en,
+    descriptionAr: row.description_ar || "", descriptionEn: row.description_en || "",
+    releaseYear: row.release_year == null ? null : Number(row.release_year),
     notes: parseJSON(row.notes_json, {}), accords: parseJSON(row.accords_json, []),
     performance: parseJSON(row.performance_json, {}), seasons: parseJSON(row.seasons_json, []),
-    occasions: parseJSON(row.occasions_json, []), status: row.status,
+    occasions: parseJSON(row.occasions_json, []), times: parseJSON(row.times_json, []),
+    searchAliases: parseJSON(row.search_aliases_json, []), misspellings: parseJSON(row.misspellings_json, []),
+    status: row.record_status || (row.status === "hidden" ? "archived" : "active"), legacyStatus: row.status,
     createdAt: row.created_at, updatedAt: row.updated_at
   };
 }
@@ -1723,14 +1815,30 @@ function alternativeMatchFromRow(row, includeMetadata = false) {
   const productRow = db.prepare("SELECT * FROM products WHERE id = ?").get(row.product_id);
   const referenceRow = db.prepare("SELECT * FROM reference_perfumes WHERE id = ?").get(row.reference_id);
   if (!productRow || !referenceRow) return null;
+  const approvedSimilarity = Number(row.approved_similarity || row.similarity || 0);
+  const calculatedSimilarity = Number(row.calculated_similarity || row.similarity || 0);
+  const reviews = db.prepare(`SELECT COUNT(*) AS count, AVG(perceived_similarity) AS similarity,
+    AVG(value_rating) AS valueRating FROM alternative_similarity_reviews WHERE match_id = ? AND status = 'approved'`).get(row.id);
   return {
-    id: Number(row.id), similarity: Number(row.similarity), confidence: Number(row.confidence),
+    id: Number(row.id), referenceId: row.reference_id, productId: row.product_id,
+    similarity: approvedSimilarity, approvedSimilarity, calculatedSimilarity,
+    confidence: Number(row.confidence), relationshipType: row.relationship_type || "similar_character",
+    customRelationAr: row.custom_relation_ar || "", customRelationEn: row.custom_relation_en || "",
+    scoreBreakdown: {
+      opening: Number(row.opening_similarity || 0), heart: Number(row.heart_similarity || 0),
+      drydown: Number(row.drydown_similarity || 0), accords: Number(row.accords_similarity || 0),
+      performance: Number(row.performance_similarity || 0)
+    },
     reasonAr: row.reason_ar, reasonEn: row.reason_en,
     similaritiesAr: parseJSON(row.similarities_ar_json, []), similaritiesEn: parseJSON(row.similarities_en_json, []),
     differencesAr: parseJSON(row.differences_ar_json, []), differencesEn: parseJSON(row.differences_en_json, []),
     sharedNotesAr: parseJSON(row.shared_notes_ar_json, []), sharedNotesEn: parseJSON(row.shared_notes_en_json, []),
     comparison: parseJSON(row.comparison_json, {}), sortOrder: Number(row.sort_order),
-    pinned: Boolean(row.pinned), status: row.status, lastReviewedAt: row.last_reviewed_at,
+    pinned: Boolean(row.pinned), primaryReference: Boolean(row.is_primary_reference),
+    primaryAlternative: Boolean(row.is_primary_alternative), badges: parseJSON(row.badge_flags_json, []),
+    visible: Boolean(row.visible), reviewStatus: row.review_status || "approved",
+    status: row.status, lastReviewedAt: row.last_reviewed_at,
+    customerReviews: { count: Number(reviews?.count || 0), similarity: Number(reviews?.similarity || 0), valueRating: Number(reviews?.valueRating || 0) },
     reference: referencePerfumeFromRow(referenceRow), product: productFromRow(productRow, includeMetadata)
   };
 }
@@ -1740,20 +1848,56 @@ export function getHomepageAlternativesSettings() {
   return parseJSON(row?.payload_json || "{}", {});
 }
 
-export function listAlternatives({ includeHidden = false, query = "", sort = "recommended" } = {}) {
+function normalizedAlternativeText(value) {
+  return String(value || "").normalize("NFKD").replace(/[\u064B-\u065F\u0670]/g, "")
+    .replace(/[أإآ]/g, "ا").replace(/ى/g, "ي").replace(/ة/g, "ه")
+    .toLocaleLowerCase("ar").replace(/[^\p{L}\p{N}]+/gu, " ").trim();
+}
+
+function editDistance(a, b) {
+  if (!a) return b.length;
+  if (!b) return a.length;
+  const row = Array.from({ length: b.length + 1 }, (_, index) => index);
+  for (let i = 1; i <= a.length; i += 1) {
+    let previous = row[0]; row[0] = i;
+    for (let j = 1; j <= b.length; j += 1) {
+      const current = row[j];
+      row[j] = Math.min(row[j] + 1, row[j - 1] + 1, previous + (a[i - 1] === b[j - 1] ? 0 : 1));
+      previous = current;
+    }
+  }
+  return row[b.length];
+}
+
+function matchesAlternativeQuery(item, query) {
+  const needle = normalizedAlternativeText(query);
+  if (!needle) return true;
+  const values = [item.reference.nameAr, item.reference.nameEn, item.reference.shortName, item.reference.brand,
+    ...item.reference.searchAliases, ...item.reference.misspellings, item.product.nameAr, item.product.nameEn,
+    item.product.brand, ...item.sharedNotesAr, ...item.sharedNotesEn].map(normalizedAlternativeText).filter(Boolean);
+  if (values.some((value) => value.includes(needle) || needle.includes(value))) return true;
+  const queryTokens = needle.split(" ");
+  return queryTokens.every((token) => values.some((value) => value.split(" ").some((word) =>
+    token.length >= 4 && editDistance(token, word) <= Math.max(1, Math.floor(token.length / 4)))));
+}
+
+export function listAlternatives({ includeHidden = false, query = "", sort = "recommended", filters = {} } = {}) {
   const rows = db.prepare(`
     SELECT * FROM alternative_matches
-    ${includeHidden ? "" : "WHERE status = 'active'"}
-    ORDER BY pinned DESC, sort_order, similarity DESC
+    ${includeHidden ? "" : "WHERE status = 'active' AND visible = 1 AND review_status = 'approved'"}
+    ORDER BY pinned DESC, is_primary_alternative DESC, sort_order, approved_similarity DESC, similarity DESC
   `).all();
   let items = rows.map((row) => alternativeMatchFromRow(row, includeHidden)).filter(Boolean);
   if (!includeHidden) items = items.filter((item) => item.reference.status === "active" && item.product.status === "published");
-  const needle = clean(query, 200).toLocaleLowerCase("ar");
-  if (needle) items = items.filter((item) => [
-    item.reference.nameAr, item.reference.nameEn, item.reference.brand,
-    item.product.nameAr, item.product.nameEn, item.product.brand,
-    ...item.sharedNotesAr, ...item.sharedNotesEn
-  ].join(" ").toLocaleLowerCase("ar").includes(needle));
+  if (query) items = items.filter((item) => matchesAlternativeQuery(item, clean(query, 200)));
+  const family = normalizedAlternativeText(filters.family);
+  const gender = clean(filters.gender, 40);
+  const season = clean(filters.season, 40);
+  const inStock = filters.inStock === true || filters.inStock === "true";
+  if (family) items = items.filter((item) => normalizedAlternativeText(`${item.reference.familyAr} ${item.reference.familyEn} ${item.product.familyAr} ${item.product.familyEn}`).includes(family));
+  if (gender) items = items.filter((item) => item.reference.gender === gender || item.product.gender === gender);
+  if (season) items = items.filter((item) => item.reference.seasons.includes(season) || item.product.seasons.includes(season));
+  if (inStock) items = items.filter((item) => item.product.inventory.available > 0);
   const eventCounts = Object.fromEntries(db.prepare(`
     SELECT product_id AS productId, COUNT(*) AS count FROM comparison_events
     WHERE created_at >= datetime('now', '-90 days') GROUP BY product_id
@@ -1765,7 +1909,11 @@ export function listAlternatives({ includeHidden = false, query = "", sort = "re
     price_asc: (a, b) => a.product.price - b.product.price,
     price_desc: (a, b) => b.product.price - a.product.price,
     popular: (a, b) => b.activityScore - a.activityScore || b.similarity - a.similarity,
-    recommended: (a, b) => Number(b.pinned) - Number(a.pinned) || a.sortOrder - b.sortOrder
+    rating: (a, b) => (b.customerReviews.valueRating || 0) - (a.customerReviews.valueRating || 0),
+    performance: (a, b) => (b.scoreBreakdown.performance || 0) - (a.scoreBreakdown.performance || 0),
+    recommended: (a, b) => Number(b.product.inventory.available > 0) - Number(a.product.inventory.available > 0)
+      || Number(b.primaryAlternative) - Number(a.primaryAlternative) || Number(b.pinned) - Number(a.pinned)
+      || a.sortOrder - b.sortOrder || b.similarity - a.similarity
   };
   items.sort(sorters[sort] || sorters.recommended);
   return items;
@@ -1776,22 +1924,28 @@ export function getAlternative(referenceOrProduct) {
   const row = db.prepare(`
     SELECT m.* FROM alternative_matches m
     JOIN reference_perfumes r ON r.id = m.reference_id
-    WHERE (r.slug = ? OR r.id = ? OR m.product_id = ? OR CAST(m.id AS TEXT) = ?) AND m.status = 'active'
-    ORDER BY m.pinned DESC, m.sort_order LIMIT 1
+    WHERE (r.slug = ? OR r.id = ? OR m.product_id = ? OR CAST(m.id AS TEXT) = ?)
+      AND m.status = 'active' AND m.visible = 1 AND m.review_status = 'approved'
+    ORDER BY m.is_primary_alternative DESC, m.pinned DESC, m.sort_order LIMIT 1
   `).get(value, value, value, value);
   return alternativeMatchFromRow(row, false);
 }
 
 export function alternativesPayload(options = {}) {
-  return { items: listAlternatives(options), settings: getHomepageAlternativesSettings(), disclaimerAr: "نسبة التشابه تقديرية مبنية على الخصائص العطرية والأداء، وقد يختلف إدراك الرائحة من شخص إلى آخر.", disclaimerEn: "Similarity is an estimate based on fragrance characteristics and performance. Scent perception may vary from person to person." };
+  const allItems = listAlternatives(options);
+  const pageSize = Math.min(60, Math.max(1, Number(options.pageSize || 24)));
+  const page = Math.max(1, Number(options.page || 1));
+  const start = (page - 1) * pageSize;
+  return { items: allItems.slice(start, start + pageSize), pagination: { page, pageSize, total: allItems.length, pages: Math.max(1, Math.ceil(allItems.length / pageSize)) }, settings: getHomepageAlternativesSettings(), disclaimerAr: "نسبة التشابه تقديرية مبنية على الخصائص العطرية والأداء، وقد يختلف إدراك الرائحة من شخص إلى آخر.", disclaimerEn: "Similarity is an estimate based on fragrance characteristics and performance. Scent perception may vary from person to person." };
 }
 
-export function recordAlternativeEvent({ referenceId = null, productId = null, eventType = "view", sessionKey = "", query = "", resultsCount = 0 } = {}) {
+export function recordAlternativeEvent({ referenceId = null, productId = null, eventType = "view", sessionKey = "", query = "", resultsCount = 0, language = "ar" } = {}) {
   const allowed = new Set(["view", "comparison", "add_to_cart", "wishlist", "search", "product_view"]);
   const safeType = allowed.has(eventType) ? eventType : "view";
   if (safeType === "search") {
-    db.prepare("INSERT INTO alternative_search_logs (query, results_count) VALUES (?, ?)")
-      .run(clean(query, 200), Math.max(0, Number(resultsCount) || 0));
+    const safeQuery = clean(query, 200);
+    db.prepare("INSERT INTO alternative_search_logs (query, normalized_query, language, matched_reference_id, session_key, results_count) VALUES (?, ?, ?, ?, ?, ?)")
+      .run(safeQuery, normalizedAlternativeText(safeQuery), language === "en" ? "en" : "ar", referenceId ? clean(referenceId, 200) : null, clean(sessionKey, 120), Math.max(0, Number(resultsCount) || 0));
   } else {
     db.prepare(`INSERT INTO comparison_events (reference_id, product_id, event_type, session_key) VALUES (?, ?, ?, ?)`)
       .run(referenceId ? clean(referenceId, 200) : null, productId ? clean(productId, 200) : null, safeType, clean(sessionKey, 120));
@@ -1807,7 +1961,12 @@ export function alternativesAdminPayload() {
     id: product.id, nameAr: product.nameAr, nameEn: product.nameEn, brand: product.brand,
     image: product.image, price: product.price, status: product.status
   }));
-  return { items, catalogProducts, settings: getHomepageAlternativesSettings(), analytics: { topSearches, events } };
+  const references = db.prepare("SELECT * FROM reference_perfumes ORDER BY updated_at DESC").all().map(referencePerfumeFromRow);
+  const requests = db.prepare("SELECT * FROM alternative_requests ORDER BY created_at DESC LIMIT 100").all().map((row) => ({
+    id: Number(row.id), query: row.query, channel: row.channel, language: row.language, status: row.status, createdAt: row.created_at
+  }));
+  const unmatchedSearches = db.prepare(`SELECT query, COUNT(*) AS count FROM alternative_search_logs WHERE results_count = 0 GROUP BY normalized_query ORDER BY count DESC LIMIT 20`).all();
+  return { items, references, catalogProducts, requests, settings: getHomepageAlternativesSettings(), analytics: { topSearches, unmatchedSearches, events } };
 }
 
 function alternativeTokens(value) {
@@ -1831,8 +1990,21 @@ export function calculateAlternativeScore(reference, product) {
   const productFamily = `${product?.familyAr || ""} ${product?.familyEn || ""}`.toLocaleLowerCase("ar");
   const familyScore = referenceFamily && productFamily && (referenceFamily.includes(productFamily) || productFamily.includes(referenceFamily)) ? 20 : 10;
   const concentrationScore = reference?.concentration && product?.concentration && String(reference.concentration).toLowerCase() === String(product.concentration).toLowerCase() ? 10 : 6;
-  const score = Math.round(Math.min(98, Math.max(55, noteScore + familyScore + concentrationScore + 12)));
-  return { similarity: score, confidence: Math.max(60, Math.min(96, score - 2)), shared };
+  const layerScore = (referenceLayer, productLayer, fallback) => {
+    const left = alternativeTokens(referenceLayer || []); const right = alternativeTokens(productLayer || []);
+    if (!left.size || !right.size) return fallback;
+    return Math.round(([...left].filter((note) => right.has(note)).length / Math.max(left.size, right.size)) * 100);
+  };
+  const opening = layerScore([...(reference?.notes?.topAr || []), ...(reference?.notes?.topEn || [])], [...(product?.notes?.topAr || []), ...(product?.notes?.topEn || [])], Math.round(noteScore * 1.5));
+  const heart = layerScore([...(reference?.notes?.heartAr || []), ...(reference?.notes?.heartEn || [])], [...(product?.notes?.heartAr || []), ...(product?.notes?.heartEn || [])], Math.round(noteScore * 1.5));
+  const drydown = layerScore([...(reference?.notes?.baseAr || []), ...(reference?.notes?.baseEn || [])], [...(product?.notes?.baseAr || []), ...(product?.notes?.baseEn || [])], Math.round(noteScore * 1.5));
+  const accords = Math.min(100, familyScore * 4);
+  const performance = Math.min(100, concentrationScore * 9);
+  const layeredScore = opening * .2 + heart * .2 + drydown * .25 + accords * .2 + performance * .15;
+  const legacyCompatibleScore = noteScore + familyScore + concentrationScore + 12;
+  const score = Math.round(Math.min(98, Math.max(35, layeredScore, legacyCompatibleScore)));
+  return { similarity: score, confidence: Math.max(55, Math.min(96, Math.round(score * .9))), shared,
+    breakdown: { opening, heart, drydown, accords, performance } };
 }
 
 export function saveAlternativesAdmin(input = {}) {
@@ -1846,14 +2018,24 @@ export function saveAlternativesAdmin(input = {}) {
   }
   if (input.match && typeof input.match === "object") {
     const match = input.match;
-    db.prepare(`UPDATE alternative_matches SET similarity = ?, confidence = ?, reason_ar = ?, reason_en = ?,
-      sort_order = ?, pinned = ?, status = ?, last_reviewed_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP WHERE id = ?`).run(
-      Math.min(100, Math.max(0, Number(match.similarity || 0))), Math.min(100, Math.max(0, Number(match.confidence || 0))),
-      clean(match.reasonAr, 2000), clean(match.reasonEn, 2000), Number(match.sortOrder || 0), match.pinned ? 1 : 0,
-      ["active", "hidden", "draft"].includes(match.status) ? match.status : "active", Number(match.id)
+    const approved = Math.min(100, Math.max(0, Number(match.approvedSimilarity ?? match.similarity ?? 0)));
+    db.prepare(`UPDATE alternative_matches SET similarity = ?, approved_similarity = ?, confidence = ?, reason_ar = ?, reason_en = ?,
+      relationship_type = ?, custom_relation_ar = ?, custom_relation_en = ?, badge_flags_json = ?,
+      sort_order = ?, pinned = ?, is_primary_reference = ?, is_primary_alternative = ?, visible = ?, status = ?, review_status = ?,
+      updated_by = ?, last_reviewed_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP WHERE id = ?`).run(
+      approved, approved, Math.min(100, Math.max(0, Number(match.confidence || 0))),
+      clean(match.reasonAr, 2000), clean(match.reasonEn, 2000),
+      ["direct_alternative", "inspired_by", "similar_character", "similar_opening", "similar_drydown", "custom"].includes(match.relationshipType) ? match.relationshipType : "similar_character",
+      clean(match.customRelationAr, 300), clean(match.customRelationEn, 300), JSON.stringify(Array.isArray(match.badges) ? match.badges.slice(0, 20) : []),
+      Number(match.sortOrder || 0), match.pinned ? 1 : 0, match.primaryReference ? 1 : 0, match.primaryAlternative ? 1 : 0,
+      match.visible === false ? 0 : 1, ["active", "hidden", "draft"].includes(match.status) ? match.status : "active",
+      ["pending", "approved", "rejected"].includes(match.reviewStatus) ? match.reviewStatus : "approved",
+      Number(input.userId) || null, Number(match.id)
     );
+    if (match.primaryReference) db.prepare("UPDATE alternative_matches SET is_primary_reference = CASE WHEN id = ? THEN 1 ELSE 0 END WHERE product_id = (SELECT product_id FROM alternative_matches WHERE id = ?)").run(Number(match.id), Number(match.id));
+    if (match.primaryAlternative) db.prepare("UPDATE alternative_matches SET is_primary_alternative = CASE WHEN id = ? THEN 1 ELSE 0 END WHERE reference_id = (SELECT reference_id FROM alternative_matches WHERE id = ?)").run(Number(match.id), Number(match.id));
   }
-  if (input.reference && typeof input.reference === "object" && input.link && typeof input.link === "object") {
+  if (input.reference && typeof input.reference === "object") {
     const value = input.reference;
     const rawSlug = clean(value.slug || value.nameEn || value.nameAr, 120).toLowerCase()
       .replace(/[^a-z0-9\u0600-\u06ff]+/g, "-").replace(/^-+|-+$/g, "");
@@ -1864,20 +2046,31 @@ export function saveAlternativesAdmin(input = {}) {
     const safeNotes = { topAr: array(notes.topAr), topEn: array(notes.topEn), heartAr: array(notes.heartAr), heartEn: array(notes.heartEn), baseAr: array(notes.baseAr), baseEn: array(notes.baseEn) };
     if (!clean(value.nameAr, 200) || !clean(value.nameEn, 200) || !clean(value.brand, 160)) throw new Error("ALTERNATIVE_REFERENCE_REQUIRED");
     db.prepare(`INSERT INTO reference_perfumes
-      (id, slug, name_ar, name_en, brand, image, concentration, size, reference_price, gender, family_ar, family_en, notes_json, accords_json, performance_json, seasons_json, occasions_json, status, updated_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+      (id, slug, name_ar, name_en, short_name, brand, image, concentration, size, reference_price, gender, family_ar, family_en,
+       description_ar, description_en, release_year, notes_json, accords_json, performance_json, seasons_json, occasions_json, times_json,
+       search_aliases_json, misspellings_json, status, record_status, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
       ON CONFLICT(id) DO UPDATE SET slug=excluded.slug, name_ar=excluded.name_ar, name_en=excluded.name_en,
-      brand=excluded.brand, image=excluded.image, concentration=excluded.concentration, size=excluded.size,
+      short_name=excluded.short_name, brand=excluded.brand, image=excluded.image, concentration=excluded.concentration, size=excluded.size,
       reference_price=excluded.reference_price, gender=excluded.gender, family_ar=excluded.family_ar,
-      family_en=excluded.family_en, notes_json=excluded.notes_json, accords_json=excluded.accords_json,
+      family_en=excluded.family_en, description_ar=excluded.description_ar, description_en=excluded.description_en,
+      release_year=excluded.release_year, notes_json=excluded.notes_json, accords_json=excluded.accords_json,
       performance_json=excluded.performance_json, seasons_json=excluded.seasons_json,
-      occasions_json=excluded.occasions_json, status=excluded.status, updated_at=CURRENT_TIMESTAMP`).run(
-      id, slug, clean(value.nameAr, 200), clean(value.nameEn, 200), clean(value.brand, 160), clean(value.image || "/assets/references/ombre-leather.svg", 1000),
+      occasions_json=excluded.occasions_json, times_json=excluded.times_json, search_aliases_json=excluded.search_aliases_json,
+      misspellings_json=excluded.misspellings_json, status=excluded.status, record_status=excluded.record_status, updated_at=CURRENT_TIMESTAMP`).run(
+      id, slug, clean(value.nameAr, 200), clean(value.nameEn, 200), clean(value.shortName, 120), clean(value.brand, 160), clean(value.image || "/assets/references/ombre-leather.svg", 1000),
       clean(value.concentration, 80), clean(value.size, 80), Math.max(0, Number(value.referencePrice || 0)),
       ["men", "women", "unisex"].includes(value.gender) ? value.gender : "unisex", clean(value.familyAr, 160), clean(value.familyEn, 160),
+      clean(value.descriptionAr, 4000), clean(value.descriptionEn, 4000), value.releaseYear ? Math.max(1800, Math.min(2200, Number(value.releaseYear))) : null,
       JSON.stringify(safeNotes), JSON.stringify(array(value.accords)), JSON.stringify(value.performance || {}), JSON.stringify(array(value.seasons)),
-      JSON.stringify(array(value.occasions)), value.status === "hidden" ? "hidden" : "active"
+      JSON.stringify(array(value.occasions)), JSON.stringify(array(value.times)), JSON.stringify(array(value.searchAliases)), JSON.stringify(array(value.misspellings)),
+      value.status === "archived" ? "hidden" : "active", ["draft", "active", "archived"].includes(value.status) ? value.status : "active"
     );
+    if (Array.isArray(input.links)) {
+      saveAlternativeRelationships({ referenceId: id, links: input.links, userId: input.userId });
+      return alternativesAdminPayload();
+    }
+    if (!input.link || typeof input.link !== "object") return alternativesAdminPayload();
     const productId = clean(input.link.productId, 160);
     const product = productFromRow(db.prepare("SELECT * FROM products WHERE id = ?").get(productId), true);
     const reference = referencePerfumeFromRow(db.prepare("SELECT * FROM reference_perfumes WHERE id = ?").get(id));
@@ -1887,20 +2080,151 @@ export function saveAlternativesAdmin(input = {}) {
     const confidence = input.link.confidence === "" || input.link.confidence == null ? calculated.confidence : Math.min(100, Math.max(0, Number(input.link.confidence)));
     const sharedAr = array(input.link.sharedNotesAr || calculated.shared);
     const sharedEn = array(input.link.sharedNotesEn || calculated.shared);
+    const breakdown = calculated.breakdown || {};
     db.prepare(`INSERT INTO alternative_matches
       (reference_id, product_id, similarity, confidence, reason_ar, reason_en, similarities_ar_json, similarities_en_json,
-       differences_ar_json, differences_en_json, shared_notes_ar_json, shared_notes_en_json, comparison_json, sort_order, pinned, status, updated_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+       differences_ar_json, differences_en_json, shared_notes_ar_json, shared_notes_en_json, comparison_json,
+       calculated_similarity, approved_similarity, opening_similarity, heart_similarity, drydown_similarity, accords_similarity, performance_similarity,
+       relationship_type, custom_relation_ar, custom_relation_en, badge_flags_json, sort_order, pinned, is_primary_reference, is_primary_alternative,
+       visible, status, review_status, created_by, updated_by, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
       ON CONFLICT(reference_id, product_id) DO UPDATE SET similarity=excluded.similarity, confidence=excluded.confidence,
       reason_ar=excluded.reason_ar, reason_en=excluded.reason_en, shared_notes_ar_json=excluded.shared_notes_ar_json,
       shared_notes_en_json=excluded.shared_notes_en_json, comparison_json=excluded.comparison_json,
-      sort_order=excluded.sort_order, pinned=excluded.pinned, status=excluded.status, last_reviewed_at=CURRENT_TIMESTAMP, updated_at=CURRENT_TIMESTAMP`).run(
+      calculated_similarity=excluded.calculated_similarity, approved_similarity=excluded.approved_similarity,
+      opening_similarity=excluded.opening_similarity, heart_similarity=excluded.heart_similarity, drydown_similarity=excluded.drydown_similarity,
+      accords_similarity=excluded.accords_similarity, performance_similarity=excluded.performance_similarity,
+      relationship_type=excluded.relationship_type, custom_relation_ar=excluded.custom_relation_ar, custom_relation_en=excluded.custom_relation_en,
+      badge_flags_json=excluded.badge_flags_json, sort_order=excluded.sort_order, pinned=excluded.pinned,
+      is_primary_reference=excluded.is_primary_reference, is_primary_alternative=excluded.is_primary_alternative,
+      visible=excluded.visible, status=excluded.status, review_status=excluded.review_status, updated_by=excluded.updated_by,
+      last_reviewed_at=CURRENT_TIMESTAMP, updated_at=CURRENT_TIMESTAMP`).run(
       id, productId, similarity, confidence, clean(input.link.reasonAr, 2000), clean(input.link.reasonEn, 2000), "[]", "[]", "[]", "[]",
       JSON.stringify(sharedAr), JSON.stringify(sharedEn), JSON.stringify(input.link.comparison || { longevity: 8, projection: 8 }),
-      Number(input.link.sortOrder || 0), input.link.pinned ? 1 : 0, ["active", "hidden", "draft"].includes(input.link.status) ? input.link.status : "active"
+      calculated.similarity, similarity, breakdown.opening || 0, breakdown.heart || 0, breakdown.drydown || 0, breakdown.accords || 0, breakdown.performance || 0,
+      ["direct_alternative", "inspired_by", "similar_character", "similar_opening", "similar_drydown", "custom"].includes(input.link.relationshipType) ? input.link.relationshipType : "similar_character",
+      clean(input.link.customRelationAr, 300), clean(input.link.customRelationEn, 300), JSON.stringify(Array.isArray(input.link.badges) ? input.link.badges.slice(0, 20) : []),
+      Number(input.link.sortOrder || 0), input.link.pinned ? 1 : 0, input.link.primaryReference ? 1 : 0, input.link.primaryAlternative ? 1 : 0,
+      input.link.visible === false ? 0 : 1, ["active", "hidden", "draft"].includes(input.link.status) ? input.link.status : "active",
+      ["pending", "approved", "rejected"].includes(input.link.reviewStatus) ? input.link.reviewStatus : "approved",
+      Number(input.userId) || null, Number(input.userId) || null
     );
   }
   return alternativesAdminPayload();
+}
+
+export function listReferencePerfumes({ query = "", status = "", page = 1, pageSize = 50 } = {}) {
+  const needle = normalizedAlternativeText(query);
+  let items = db.prepare("SELECT * FROM reference_perfumes ORDER BY updated_at DESC").all().map(referencePerfumeFromRow);
+  if (status) items = items.filter((item) => item.status === status);
+  if (needle) items = items.filter((item) => [item.nameAr, item.nameEn, item.shortName, item.brand, ...item.searchAliases, ...item.misspellings]
+    .map(normalizedAlternativeText).some((value) => value.includes(needle)));
+  const safePageSize = Math.min(100, Math.max(1, Number(pageSize) || 50));
+  const safePage = Math.max(1, Number(page) || 1);
+  return { items: items.slice((safePage - 1) * safePageSize, safePage * safePageSize), pagination: { page: safePage, pageSize: safePageSize, total: items.length, pages: Math.max(1, Math.ceil(items.length / safePageSize)) } };
+}
+
+export function archiveReferencePerfume(referenceId) {
+  const id = clean(referenceId, 160);
+  const result = db.prepare("UPDATE reference_perfumes SET record_status='archived', status='hidden', updated_at=CURRENT_TIMESTAMP WHERE id=?").run(id);
+  db.prepare("UPDATE alternative_matches SET visible=0, status='hidden', updated_at=CURRENT_TIMESTAMP WHERE reference_id=?").run(id);
+  return result.changes > 0;
+}
+
+export function listProductAlternativeReferences(productId, { includeHidden = false } = {}) {
+  const rows = db.prepare(`SELECT * FROM alternative_matches WHERE product_id = ? ${includeHidden ? "" : "AND status='active' AND visible=1 AND review_status='approved'"}
+    ORDER BY is_primary_reference DESC, pinned DESC, sort_order, approved_similarity DESC`).all(clean(productId, 160));
+  return rows.map((row) => alternativeMatchFromRow(row, includeHidden)).filter(Boolean);
+}
+
+export function saveAlternativeRelationships({ referenceId, links = [], userId = null } = {}) {
+  const reference = referencePerfumeFromRow(db.prepare("SELECT * FROM reference_perfumes WHERE id=?").get(clean(referenceId, 160)));
+  if (!reference) throw new Error("ALTERNATIVE_REFERENCE_NOT_FOUND");
+  const uniqueLinks = [...new Map((Array.isArray(links) ? links : []).map((link) => [clean(link.productId, 160), link])).entries()]
+    .filter(([productId]) => productId).slice(0, 200);
+  db.exec("BEGIN IMMEDIATE");
+  try {
+    for (const [productId, link] of uniqueLinks) {
+      const product = productFromRow(db.prepare("SELECT * FROM products WHERE id=?").get(productId), true);
+      if (!product) throw new Error("ALTERNATIVE_PRODUCT_NOT_FOUND");
+      const calculated = calculateAlternativeScore(reference, product);
+      const approved = Math.min(100, Math.max(0, Number(link.approvedSimilarity ?? link.similarity ?? calculated.similarity)));
+      const breakdown = calculated.breakdown || {};
+      db.prepare(`INSERT INTO alternative_matches
+        (reference_id, product_id, similarity, confidence, calculated_similarity, approved_similarity,
+         opening_similarity, heart_similarity, drydown_similarity, accords_similarity, performance_similarity,
+         relationship_type, reason_ar, reason_en, custom_relation_ar, custom_relation_en, badge_flags_json,
+         sort_order, pinned, is_primary_reference, is_primary_alternative, visible, status, review_status, created_by, updated_by, updated_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+        ON CONFLICT(reference_id, product_id) DO UPDATE SET similarity=excluded.similarity, confidence=excluded.confidence,
+        calculated_similarity=excluded.calculated_similarity, approved_similarity=excluded.approved_similarity,
+        opening_similarity=excluded.opening_similarity, heart_similarity=excluded.heart_similarity, drydown_similarity=excluded.drydown_similarity,
+        accords_similarity=excluded.accords_similarity, performance_similarity=excluded.performance_similarity,
+        relationship_type=excluded.relationship_type, reason_ar=excluded.reason_ar, reason_en=excluded.reason_en,
+        custom_relation_ar=excluded.custom_relation_ar, custom_relation_en=excluded.custom_relation_en,
+        badge_flags_json=excluded.badge_flags_json, sort_order=excluded.sort_order, pinned=excluded.pinned,
+        is_primary_reference=excluded.is_primary_reference, is_primary_alternative=excluded.is_primary_alternative,
+        visible=excluded.visible, status=excluded.status, review_status=excluded.review_status, updated_by=excluded.updated_by,
+        last_reviewed_at=CURRENT_TIMESTAMP, updated_at=CURRENT_TIMESTAMP`).run(
+        reference.id, productId, approved, calculated.confidence, calculated.similarity, approved,
+        breakdown.opening || 0, breakdown.heart || 0, breakdown.drydown || 0, breakdown.accords || 0, breakdown.performance || 0,
+        ["direct_alternative", "inspired_by", "similar_character", "similar_opening", "similar_drydown", "custom"].includes(link.relationshipType) ? link.relationshipType : "similar_character",
+        clean(link.reasonAr, 2000), clean(link.reasonEn, 2000), clean(link.customRelationAr, 300), clean(link.customRelationEn, 300),
+        JSON.stringify(Array.isArray(link.badges) ? link.badges.slice(0, 20) : []), Number(link.sortOrder || 0), link.pinned ? 1 : 0,
+        link.primaryReference ? 1 : 0, link.primaryAlternative ? 1 : 0, link.visible === false ? 0 : 1,
+        ["active", "hidden", "draft"].includes(link.status) ? link.status : "active",
+        ["pending", "approved", "rejected"].includes(link.reviewStatus) ? link.reviewStatus : "approved", Number(userId) || null, Number(userId) || null
+      );
+    }
+    for (const [, link] of uniqueLinks) {
+      const id = Number(db.prepare("SELECT id FROM alternative_matches WHERE reference_id=? AND product_id=?").get(reference.id, clean(link.productId, 160))?.id);
+      if (link.primaryAlternative && id) db.prepare("UPDATE alternative_matches SET is_primary_alternative=CASE WHEN id=? THEN 1 ELSE 0 END WHERE reference_id=?").run(id, reference.id);
+      if (link.primaryReference && id) db.prepare("UPDATE alternative_matches SET is_primary_reference=CASE WHEN id=? THEN 1 ELSE 0 END WHERE product_id=?").run(id, clean(link.productId, 160));
+    }
+    db.exec("COMMIT");
+  } catch (error) { db.exec("ROLLBACK"); throw error; }
+  return db.prepare("SELECT * FROM alternative_matches WHERE reference_id=? ORDER BY sort_order").all(reference.id).map((row) => alternativeMatchFromRow(row, true)).filter(Boolean);
+}
+
+export function deleteAlternativeRelationship(matchId) {
+  return db.prepare("DELETE FROM alternative_matches WHERE id=?").run(Number(matchId)).changes > 0;
+}
+
+export function reorderAlternativeRelationships(items = [], userId = null) {
+  const update = db.prepare("UPDATE alternative_matches SET sort_order=?, updated_by=?, updated_at=CURRENT_TIMESTAMP WHERE id=?");
+  db.exec("BEGIN IMMEDIATE");
+  try { (Array.isArray(items) ? items : []).slice(0, 500).forEach((item, index) => update.run(Number(item.sortOrder ?? index), Number(userId) || null, Number(item.id))); db.exec("COMMIT"); }
+  catch (error) { db.exec("ROLLBACK"); throw error; }
+  return true;
+}
+
+export function submitAlternativeSimilarityReview({ matchId, userId, perceivedSimilarity, longevityWinner, sillageWinner, recommends, valueRating, comment } = {}) {
+  const match = db.prepare("SELECT * FROM alternative_matches WHERE id=? AND status='active'").get(Number(matchId));
+  if (!match) throw new Error("ALTERNATIVE_MATCH_NOT_FOUND");
+  const purchase = db.prepare(`SELECT o.id FROM orders o JOIN order_items i ON i.order_id=o.id
+    WHERE o.user_id=? AND i.product_id=? AND o.status='completed' ORDER BY o.id DESC LIMIT 1`).get(Number(userId), match.product_id);
+  if (!purchase) throw new Error("VERIFIED_PURCHASE_REQUIRED");
+  db.prepare(`INSERT INTO alternative_similarity_reviews
+    (match_id,user_id,order_id,perceived_similarity,longevity_winner,sillage_winner,recommends,value_rating,comment,verified_purchase,status,updated_at)
+    VALUES (?,?,?,?,?,?,?,?,?,1,'approved',CURRENT_TIMESTAMP)
+    ON CONFLICT(match_id,user_id) DO UPDATE SET order_id=excluded.order_id, perceived_similarity=excluded.perceived_similarity,
+    longevity_winner=excluded.longevity_winner,sillage_winner=excluded.sillage_winner,recommends=excluded.recommends,
+    value_rating=excluded.value_rating,comment=excluded.comment,verified_purchase=1,status='approved',updated_at=CURRENT_TIMESTAMP`).run(
+    Number(matchId), Number(userId), Number(purchase.id), Math.min(100, Math.max(0, Number(perceivedSimilarity || 0))),
+    ["reference", "alternative", "similar"].includes(longevityWinner) ? longevityWinner : "similar",
+    ["reference", "alternative", "similar"].includes(sillageWinner) ? sillageWinner : "similar",
+    recommends === false ? 0 : 1, Math.min(5, Math.max(1, Number(valueRating || 5))), clean(comment, 1500)
+  );
+  return alternativeMatchFromRow(db.prepare("SELECT * FROM alternative_matches WHERE id=?").get(Number(matchId)), false);
+}
+
+export function createAlternativeRequest({ query, email = "", phone = "", channel = "email", language = "ar" } = {}) {
+  const safeQuery = clean(query, 200);
+  if (safeQuery.length < 2) throw new Error("ALTERNATIVE_QUERY_REQUIRED");
+  const safeChannel = ["email", "sms", "whatsapp"].includes(channel) ? channel : "email";
+  const result = db.prepare(`INSERT INTO alternative_requests (query,normalized_query,email,phone,channel,language)
+    VALUES (?,?,?,?,?,?)`).run(safeQuery, normalizedAlternativeText(safeQuery), clean(email, 250).toLowerCase(), clean(phone, 40), safeChannel, language === "en" ? "en" : "ar");
+  return { id: Number(result.lastInsertRowid), status: "new" };
 }
 
 export function recordActivity(userId, action, entityType = "", entityId = "", details = {}) {
