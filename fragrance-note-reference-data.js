@@ -49,7 +49,7 @@
   {
     "slug": "air",
     "nameEn": "Air",
-    "image": "assets/notes/extracted/air.png"
+    "image": "assets/notes/generated/air.png"
   },
   {
     "slug": "akigalawood",

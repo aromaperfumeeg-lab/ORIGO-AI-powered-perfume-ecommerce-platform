@@ -338,7 +338,16 @@
       if (result.has(slug)) result.set(slug, { ...result.get(slug), ...override, slug });
     });
 
-    notes = [...result.values()].filter((note) => !customState.merges[note.slug]);
+    notes = [...result.values()]
+      .filter((note) => !customState.merges[note.slug])
+      .map((note) => ({
+        ...note,
+        imageStatus: !note.image
+          ? "missing"
+          : note.image.includes("/extracted/")
+            ? "reference"
+            : "ready"
+      }));
     notesBySlug = new Map(notes.map((note) => [note.slug, note]));
     aliasIndex = new Map();
     notes.forEach((note) => {
@@ -373,13 +382,25 @@
     return partial ? notesBySlug.get(partial[1]) || null : null;
   }
 
-  function search(query, { familyId = "all", limit = 72, offset = 0 } = {}) {
+  function search(query, { familyId = "all", imageStatus = "all", limit = 72, offset = 0 } = {}) {
     const key = normalize(query);
+    const collator = new Intl.Collator("en", { sensitivity: "base", numeric: true });
     const filtered = notes.filter((note) => {
       if (familyId !== "all" && note.familyId !== familyId) return false;
+      if (imageStatus === "available" && note.imageStatus !== "ready") return false;
+      if (imageStatus === "reference" && note.imageStatus !== "reference") return false;
+      if (imageStatus === "missing" && note.imageStatus !== "missing") return false;
+      if (imageStatus === "pending" && note.imageStatus === "ready") return false;
       if (!key) return true;
       return [note.nameAr, note.nameEn, note.sourceName, ...(note.aliases || [])]
         .some((value) => normalize(value).includes(key));
+    }).sort((a, b) => {
+      const imageOrder = { ready: 0, reference: 1, missing: 2 };
+      if (a.imageStatus !== b.imageStatus) return imageOrder[a.imageStatus] - imageOrder[b.imageStatus];
+      const familyOrder = families.findIndex((family) => family.id === a.familyId)
+        - families.findIndex((family) => family.id === b.familyId);
+      if (familyOrder) return familyOrder;
+      return collator.compare(a.nameEn || a.nameAr, b.nameEn || b.nameAr);
     });
     return { total: filtered.length, items: filtered.slice(offset, offset + limit) };
   }

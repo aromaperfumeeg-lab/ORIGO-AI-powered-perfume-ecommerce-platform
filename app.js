@@ -1063,6 +1063,7 @@ const state = {
   catalogBrandExpanded: false,
   notesSearchQuery: "",
   notesFamilyFilter: "all",
+  notesImageFilter: "available",
   notesVisibleCount: 72,
   activeNoteSlug: "",
   activeAdminNoteSlug: "",
@@ -3639,12 +3640,17 @@ function noteCardMarkup(note, compact = false) {
   const secondaryLabel = note.nameAr === note.nameEn
     ? (state.lang === "ar" ? "اسم المصدر" : "SOURCE NAME")
     : secondaryName;
+  const imageStateLabel = note.imageStatus === "reference"
+    ? (state.lang === "ar" ? "مرجع يحتاج إعادة توليد" : "REFERENCE — REGENERATION NEEDED")
+    : note.imageStatus === "missing"
+      ? (state.lang === "ar" ? "الصورة غير مضافة" : "IMAGE MISSING")
+      : "";
   return `
-    <button class="library-note-card${compact ? " compact" : ""}" data-action="open-note" data-slug="${escapeHTML(note.slug)}"
+    <button class="library-note-card${compact ? " compact" : ""} image-${escapeHTML(note.imageStatus || "missing")}" data-action="open-note" data-slug="${escapeHTML(note.slug)}"
       style="--note-color:${escapeHTML(family?.color || "#77736e")}">
       <span class="library-note-image"><img src="${escapeHTML(window.ORIGOFragranceNotes.artwork(note))}" alt="${escapeHTML(noteLabel(note))}" loading="lazy" /></span>
       <span class="library-note-copy">
-        <small>${escapeHTML(familyLabel(family) || "")}</small>
+        <small>${escapeHTML(familyLabel(family) || "")}${imageStateLabel ? ` · ${escapeHTML(imageStateLabel)}` : ""}</small>
         <b>${escapeHTML(noteLabel(note))}</b>
         <i dir="${note.nameAr === note.nameEn ? "auto" : (state.lang === "ar" ? "ltr" : "rtl")}">${escapeHTML(secondaryLabel)}</i>
       </span>
@@ -3723,8 +3729,13 @@ function restoreStoreMeta() {
 
 function renderNotesLibrary() {
   const library = window.ORIGOFragranceNotes;
+  const readyCount = library.notes.filter((note) => note.imageStatus === "ready").length;
+  const referenceCount = library.notes.filter((note) => note.imageStatus === "reference").length;
+  const missingCount = library.notes.filter((note) => note.imageStatus === "missing").length;
+  const pendingCount = referenceCount + missingCount;
   const result = library.search(state.notesSearchQuery, {
     familyId: state.notesFamilyFilter,
+    imageStatus: state.notesImageFilter,
     limit: state.notesVisibleCount
   });
   const families = library.families;
@@ -3740,17 +3751,27 @@ function renderNotesLibrary() {
           ? "استكشف العائلات والمكونات، وافهم موقع كل نوتة ثم انتقل مباشرة إلى العطور التي تحملها."
           : "Explore scent families, understand each note's role, and discover perfumes built around it."}</p>
       </div>
-      <div class="notes-page-stat"><strong>${library.notes.length.toLocaleString()}</strong><span>${state.lang === "ar" ? "مكوّنًا منظّمًا" : "organized notes"}</span></div>
+      <div class="notes-page-stats">
+        <div class="notes-page-stat"><strong>${library.notes.length.toLocaleString()}</strong><span>${state.lang === "ar" ? "إجمالي النوتات" : "total notes"}</span></div>
+        <div class="notes-page-stat complete"><strong>${readyCount.toLocaleString()}</strong><span>${state.lang === "ar" ? "صور معتمدة" : "approved artwork"}</span></div>
+        <div class="notes-page-stat pending"><strong>${pendingCount.toLocaleString()}</strong><span>${state.lang === "ar" ? "بانتظار صورة" : "awaiting artwork"}</span></div>
+      </div>
     </header>
     <section class="notes-family-showcase" aria-label="${state.lang === "ar" ? "عائلات النوتات العطرية" : "Fragrance note families"}">
       ${familyCards.map(({ family, notes }) => `<button data-action="filter-note-family" data-family="${escapeHTML(family.id)}" style="--family-color:${escapeHTML(family.color)};--family-accent:${escapeHTML(family.accent)}">
-        <span><img src="${escapeHTML(library.artwork(notes.find((note) => note.image) || notes[0]))}" alt="" loading="lazy" /></span>
+        <span><img src="${escapeHTML(library.artwork(notes.find((note) => note.imageStatus === "ready") || { ...notes[0], image: "" }))}" alt="" loading="lazy" /></span>
         <i>${notes.length}</i><b>${escapeHTML(familyLabel(family))}</b><small>${notes.length} ${state.lang === "ar" ? "نوتة" : "notes"}</small>
       </button>`).join("")}
     </section>
     <div class="notes-library-toolbar">
       <label class="notes-library-search"><span>⌕</span><input id="notes-library-search" type="search"
         value="${escapeHTML(state.notesSearchQuery)}" placeholder="${state.lang === "ar" ? "ابحث: ورد، Oud، برغموت…" : "Search: Rose, Oud, Bergamot…"}" /></label>
+      <div class="notes-image-filters" role="group" aria-label="${state.lang === "ar" ? "حالة صور النوتات" : "Artwork status"}">
+        <button data-action="filter-note-images" data-images="available" class="${state.notesImageFilter === "available" ? "active" : ""}">${state.lang === "ar" ? "صور معتمدة" : "Artwork ready"} <small>${readyCount}</small></button>
+        <button data-action="filter-note-images" data-images="all" class="${state.notesImageFilter === "all" ? "active" : ""}">${state.lang === "ar" ? "كل النوتات" : "All notes"} <small>${library.notes.length}</small></button>
+        <button data-action="filter-note-images" data-images="reference" class="${state.notesImageFilter === "reference" ? "active" : ""}">${state.lang === "ar" ? "مراجع تحتاج إعادة توليد" : "References to regenerate"} <small>${referenceCount}</small></button>
+        <button data-action="filter-note-images" data-images="missing" class="${state.notesImageFilter === "missing" ? "active" : ""}">${state.lang === "ar" ? "صور غير مضافة" : "Missing artwork"} <small>${missingCount}</small></button>
+      </div>
       <div class="notes-family-filters" role="group" aria-label="${state.lang === "ar" ? "فلترة حسب العائلة" : "Filter by family"}">
         <button data-action="filter-note-family" data-family="all" class="${state.notesFamilyFilter === "all" ? "active" : ""}">${state.lang === "ar" ? "كل العائلات" : "All families"} <small>${library.notes.length}</small></button>
         ${families.map((family) => {
@@ -6147,6 +6168,11 @@ document.addEventListener("click", async (event) => {
   }
   if (action === "filter-note-family") {
     state.notesFamilyFilter = actionElement.dataset.family || "all";
+    state.notesVisibleCount = 72;
+    renderNotesLibrary();
+  }
+  if (action === "filter-note-images") {
+    state.notesImageFilter = actionElement.dataset.images || "available";
     state.notesVisibleCount = 72;
     renderNotesLibrary();
   }
