@@ -3635,6 +3635,10 @@ function positionLabel(position) {
 
 function noteCardMarkup(note, compact = false) {
   const family = window.ORIGOFragranceNotes.familyById(note.familyId);
+  const secondaryName = state.lang === "ar" ? note.nameEn : note.nameAr;
+  const secondaryLabel = note.nameAr === note.nameEn
+    ? (state.lang === "ar" ? "اسم المصدر" : "SOURCE NAME")
+    : secondaryName;
   return `
     <button class="library-note-card${compact ? " compact" : ""}" data-action="open-note" data-slug="${escapeHTML(note.slug)}"
       style="--note-color:${escapeHTML(family?.color || "#77736e")}">
@@ -3642,7 +3646,7 @@ function noteCardMarkup(note, compact = false) {
       <span class="library-note-copy">
         <small>${escapeHTML(familyLabel(family) || "")}</small>
         <b>${escapeHTML(noteLabel(note))}</b>
-        <i dir="${state.lang === "ar" ? "ltr" : "rtl"}">${escapeHTML(state.lang === "ar" ? note.nameEn : note.nameAr)}</i>
+        <i dir="${note.nameAr === note.nameEn ? "auto" : (state.lang === "ar" ? "ltr" : "rtl")}">${escapeHTML(secondaryLabel)}</i>
       </span>
       <span class="note-card-arrow">↗</span>
     </button>`;
@@ -3675,9 +3679,10 @@ function updateNotesMeta(note = null) {
     document.head.append(schema);
   }
   if (note) {
+    const hasSecondName = note.nameAr !== note.nameEn;
     const title = state.lang === "ar"
-      ? `${note.nameAr} (${note.nameEn}) | مكتبة مكونات ORIGO`
-      : `${note.nameEn} (${note.nameAr}) | ORIGO Fragrance Notes`;
+      ? `${note.nameAr}${hasSecondName ? ` (${note.nameEn})` : ""} | مكتبة مكونات ORIGO`
+      : `${note.nameEn}${hasSecondName ? ` (${note.nameAr})` : ""} | ORIGO Fragrance Notes`;
     const description = state.lang === "ar" ? note.descriptionAr : note.descriptionEn;
     document.title = title;
     if (meta) meta.content = description.slice(0, 160);
@@ -3686,7 +3691,7 @@ function updateNotesMeta(note = null) {
       "@context": "https://schema.org",
       "@type": "DefinedTerm",
       name: note.nameEn,
-      alternateName: [note.nameAr, ...(note.aliases || [])],
+      alternateName: [...new Set([note.nameAr, note.nameEn, ...(note.aliases || [])])],
       description,
       inDefinedTermSet: new URL("/notes", siteBase).href,
       url: canonical.href
@@ -3779,6 +3784,10 @@ function renderNoteDetail(note) {
   const similarProducts = library.productsFor(note, state.products, { excludeExact: true }).slice(0, 6);
   const related = library.related(note, 8);
   const description = state.lang === "ar" ? note.descriptionAr : note.descriptionEn;
+  const secondaryName = state.lang === "ar" ? note.nameEn : note.nameAr;
+  const secondaryLabel = note.nameAr === note.nameEn
+    ? (state.lang === "ar" ? "الاسم كما ورد في المصدر" : "Name as listed in the source")
+    : secondaryName;
   $("#notes-page-content").innerHTML = `
     <article class="note-detail" style="--note-color:${escapeHTML(family?.color || "#77736e")};--note-accent:${escapeHTML(family?.accent || "#eee")}">
       <button class="note-detail-back" data-action="open-notes">← ${state.lang === "ar" ? "كل المكونات" : "All notes"}</button>
@@ -3787,7 +3796,7 @@ function renderNoteDetail(note) {
         <div class="note-detail-copy">
           <span class="eyebrow">${escapeHTML(familyLabel(family) || "")}</span>
           <h1 id="notes-page-title">${escapeHTML(noteLabel(note))}</h1>
-          <p class="note-secondary-name" dir="${state.lang === "ar" ? "ltr" : "rtl"}">${escapeHTML(state.lang === "ar" ? note.nameEn : note.nameAr)}</p>
+          <p class="note-secondary-name" dir="${note.nameAr === note.nameEn ? "auto" : (state.lang === "ar" ? "ltr" : "rtl")}">${escapeHTML(secondaryLabel)}</p>
           <p>${escapeHTML(description)}</p>
           <div class="note-detail-facts">
             <span><small>${state.lang === "ar" ? "العائلة" : "FAMILY"}</small><b>${escapeHTML(familyLabel(family))}</b></span>

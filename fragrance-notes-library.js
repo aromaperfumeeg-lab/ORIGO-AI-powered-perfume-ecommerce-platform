@@ -138,6 +138,23 @@
     return ascii.replace(/[^a-z0-9-]/g, "").replace(/-+/g, "-").replace(/^-|-$/g, "") || `note-${Date.now().toString(36)}`;
   }
 
+  function stableHash(value) {
+    let hash = 2166136261;
+    for (const character of String(value || "")) {
+      hash ^= character.codePointAt(0);
+      hash = Math.imul(hash, 16777619);
+    }
+    return (hash >>> 0).toString(36);
+  }
+
+  function uniqueSlug(value, familyId, result) {
+    const base = slugify(value);
+    if (!result.has(base)) return base;
+    const familySlug = `${base}-${familyId}`;
+    if (!result.has(familySlug)) return familySlug;
+    return `${familySlug}-${stableHash(value)}`;
+  }
+
   function cleanState(value) {
     const source = value && typeof value === "object" ? value : {};
     return {
@@ -187,17 +204,23 @@
     });
 
     const result = new Map();
+    const sourceIndex = new Map();
     knowledge.categories.forEach((category) => {
       category.ingredients.forEach((ingredient) => {
         const curated = curatedIndex.get(normalize(ingredient));
-        // The source knowledge file contains many one-language names.  Do not
-        // publish phonetic transliterations as if they were translations.
-        // Only verified bilingual entries (or entries added by an editor) are
-        // promoted into the customer-facing note library.
-        if (!curated) return;
-        const rawSlug = curated.slug;
-        const slug = result.has(rawSlug) && !curated ? `${rawSlug}-${category.id}` : rawSlug;
-        const familyId = curated.familyId || category.id;
+        const sourceKey = normalize(ingredient);
+        const existingSlug = sourceIndex.get(sourceKey);
+        if (existingSlug && result.has(existingSlug)) {
+          const existing = result.get(existingSlug);
+          existing.aliases = [...new Set([...existing.aliases, ingredient])];
+          return;
+        }
+        // Keep the original source spelling when a verified bilingual name is
+        // unavailable. This publishes the complete knowledge base without
+        // presenting phonetic transliteration as a real translation.
+        const sourceIsArabic = /[\u0600-\u06FF]/.test(ingredient);
+        const slug = curated?.slug || uniqueSlug(ingredient, category.id, result);
+        const familyId = curated?.familyId || category.id;
         const family = families.find((item) => item.id === familyId) || families.find((item) => item.id === "uncategorized");
         const existing = result.get(slug);
         if (existing) {
@@ -206,23 +229,26 @@
         }
         const note = {
           slug,
-          nameAr: curated.nameAr,
-          nameEn: curated.nameEn,
-          aliases: [...new Set([ingredient, ...(curated.aliases || [])])],
+          nameAr: curated?.nameAr || ingredient,
+          nameEn: curated?.nameEn || ingredient,
+          aliases: [...new Set([ingredient, ...(curated?.aliases || [])])],
           familyId,
           position: curated?.position || family?.position || "multiple",
-          symbol: curated.symbol || family?.symbol || "✦",
-          image: curated.image || "",
+          symbol: curated?.symbol || family?.symbol || "✦",
+          image: curated?.image || "",
           defaultIntensity: Number(curated?.defaultIntensity || 3),
           related: curated?.related || [],
           compatible: curated?.compatible || [],
           opposite: curated?.opposite || [],
           generatedTranslation: false,
+          translationStatus: curated ? "verified" : "source-only",
+          sourceLanguage: curated ? "bilingual" : (sourceIsArabic ? "ar" : "en"),
           sourceName: ingredient
         };
         note.descriptionAr = originalDescription(note, family, "ar");
         note.descriptionEn = originalDescription(note, family, "en");
         result.set(slug, note);
+        sourceIndex.set(sourceKey, slug);
       });
     });
 
@@ -231,7 +257,8 @@
       const family = families.find((item) => item.id === curated.familyId) || families[0];
       const note = {
         defaultIntensity: 3, related: [], compatible: [], opposite: [],
-        ...curated, generatedTranslation: false, sourceName: curated.nameAr, image: curated.image || ""
+        ...curated, generatedTranslation: false, translationStatus: "verified", sourceLanguage: "bilingual",
+        sourceName: curated.nameAr, image: curated.image || ""
       };
       note.descriptionAr = originalDescription(note, family, "ar");
       note.descriptionEn = originalDescription(note, family, "en");
@@ -248,6 +275,8 @@
       compatible: [],
       opposite: [],
       generatedTranslation: false,
+      translationStatus: "custom",
+      sourceLanguage: "bilingual",
       ...note
     }));
     Object.entries(customState.overrides).forEach(([slug, override]) => {
