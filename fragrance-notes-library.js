@@ -412,7 +412,11 @@
   }
 
   function artwork(note) {
-    if (note?.image) return note.image;
+    if (note?.image) {
+      const source = String(note.image).trim();
+      if (/^(?:data:|blob:|https?:|\/\/|\/)/i.test(source)) return source;
+      return `/${source.replace(/^\.\//, "")}`;
+    }
     const family = familyById(note?.familyId) || familyBlueprints.uncategorized;
     const title = escapeXML(String(note?.nameEn || note?.nameAr || "ORIGO").slice(0, 20).toUpperCase());
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="640" height="640" viewBox="0 0 640 640">

@@ -3726,7 +3726,7 @@ function noteCardMarkup(note, compact = false) {
   return `
     <button class="library-note-card${compact ? " compact" : ""} image-${escapeHTML(note.imageStatus || "missing")}" data-action="open-note" data-slug="${escapeHTML(note.slug)}"
       style="--note-color:${escapeHTML(family?.color || "#77736e")}">
-      <span class="library-note-image"><img src="${escapeHTML(window.ORIGOFragranceNotes.artwork(note))}" alt="${escapeHTML(noteLabel(note))}" loading="lazy" /></span>
+      <span class="library-note-image"><img src="${escapeHTML(window.ORIGOFragranceNotes.artwork(note))}" alt="${escapeHTML(noteLabel(note))}" loading="lazy" data-note-artwork="true" data-note-slug="${escapeHTML(note.slug)}" /></span>
       <span class="library-note-copy">
         <small>${escapeHTML(familyLabel(family) || "")}${imageStateLabel ? ` · ${escapeHTML(imageStateLabel)}` : ""}</small>
         <b>${escapeHTML(noteLabel(note))}</b>
@@ -3891,7 +3891,7 @@ function renderNoteDetail(note) {
     <article class="note-detail" style="--note-color:${escapeHTML(family?.color || "#77736e")};--note-accent:${escapeHTML(family?.accent || "#eee")}">
       <button class="note-detail-back" data-action="open-notes">← ${state.lang === "ar" ? "كل المكونات" : "All notes"}</button>
       <div class="note-detail-hero">
-        <div class="note-detail-image"><img src="${escapeHTML(library.artwork(note))}" alt="${escapeHTML(noteLabel(note))}" /></div>
+        <div class="note-detail-image"><img src="${escapeHTML(library.artwork(note))}" alt="${escapeHTML(noteLabel(note))}" data-note-artwork="true" data-note-slug="${escapeHTML(note.slug)}" /></div>
         <div class="note-detail-copy">
           <span class="eyebrow">${escapeHTML(familyLabel(family) || "")}</span>
           <h1 id="notes-page-title">${escapeHTML(noteLabel(note))}</h1>
@@ -4177,10 +4177,19 @@ function resetNoteAdminForm(seed = {}) {
   form.elements.compatible.value = (seed.compatible || []).join(", ");
   form.elements.opposite.value = (seed.opposite || []).join(", ");
   form.elements.familyId.innerHTML = notesAdminOptions(seed.familyId || "uncategorized");
-  $("#note-admin-image-preview").src = window.ORIGOFragranceNotes.artwork({
+  const preview = $("#note-admin-image-preview");
+  preview.dataset.noteArtwork = "true";
+  preview.dataset.noteSlug = "";
+  preview.dataset.noteNameAr = seed.nameAr || "مكوّن جديد";
+  preview.dataset.noteNameEn = seed.nameEn || "NEW NOTE";
+  preview.dataset.noteFamily = seed.familyId || "uncategorized";
+  delete preview.dataset.noteFallback;
+  preview.src = window.ORIGOFragranceNotes.artwork({
     nameAr: seed.nameAr || "مكوّن جديد", nameEn: seed.nameEn || "NEW NOTE",
     familyId: seed.familyId || "uncategorized", symbol: "✦"
   });
+  const imageStatus = $("#note-image-status");
+  if (imageStatus) imageStatus.textContent = adminCopy("اختر صورة واضحة بخلفية شفافة أو بيضاء.", "Choose a clear image with a transparent or white background.");
   $("#note-merge-select").innerHTML = `<option value="">— بدون دمج —</option>${window.ORIGOFragranceNotes.notes.map((note) =>
     `<option value="${escapeHTML(note.slug)}">${escapeHTML(note.nameAr)} · ${escapeHTML(note.nameEn)}</option>`
   ).join("")}`;
@@ -4207,7 +4216,18 @@ function populateNoteAdminForm(note) {
   form.elements.descriptionAr.value = note.descriptionAr || "";
   form.elements.descriptionEn.value = note.descriptionEn || "";
   form.elements.image.value = note.image || "";
-  $("#note-admin-image-preview").src = window.ORIGOFragranceNotes.artwork(note);
+  const preview = $("#note-admin-image-preview");
+  preview.dataset.noteArtwork = "true";
+  preview.dataset.noteSlug = note.slug;
+  preview.dataset.noteNameAr = note.nameAr || "";
+  preview.dataset.noteNameEn = note.nameEn || "";
+  preview.dataset.noteFamily = note.familyId || "uncategorized";
+  delete preview.dataset.noteFallback;
+  preview.src = window.ORIGOFragranceNotes.artwork(note);
+  const imageStatus = $("#note-image-status");
+  if (imageStatus) imageStatus.textContent = note.image
+    ? adminCopy("الصورة الحالية جاهزة ويمكن استبدالها.", "Current artwork is ready and can be replaced.")
+    : adminCopy("لا توجد صورة مخصصة؛ تظهر صورة بديلة تلقائيًا.", "No custom artwork; an automatic fallback is shown.");
   $("#note-merge-select").innerHTML = `<option value="">— بدون دمج —</option>${window.ORIGOFragranceNotes.notes
     .filter((item) => item.slug !== note.slug).map((item) =>
       `<option value="${escapeHTML(item.slug)}">${escapeHTML(item.nameAr)} · ${escapeHTML(item.nameEn)}</option>`
@@ -4241,7 +4261,7 @@ function renderNotesAdmin() {
   $("#notes-admin-list").innerHTML = matches.map((note) => {
     const family = library.familyById(note.familyId);
     return `<button data-action="edit-note" data-slug="${escapeHTML(note.slug)}" class="${state.activeAdminNoteSlug === note.slug ? "active" : ""}">
-      <img src="${escapeHTML(library.artwork(note))}" alt="" loading="lazy" /><span><b>${escapeHTML(note.nameAr)}</b><small>${escapeHTML(note.nameEn)} · ${escapeHTML(family?.nameAr || "")}</small></span><i>←</i></button>`;
+      <img src="${escapeHTML(library.artwork(note))}" alt="" loading="lazy" data-note-artwork="true" data-note-slug="${escapeHTML(note.slug)}" /><span><b>${escapeHTML(note.nameAr)}</b><small>${escapeHTML(note.nameEn)} · ${escapeHTML(family?.nameAr || "")}</small></span><i>←</i></button>`;
   }).join("");
   if (!state.activeAdminNoteSlug && !$("#note-admin-form").elements.nameAr.value) resetNoteAdminForm();
   else $("#note-family-select").innerHTML = notesAdminOptions($("#note-family-select").value);
@@ -4266,7 +4286,7 @@ function renderNoteMatchPreview(form) {
   preview.innerHTML = `
     <div class="note-match-head"><b>${adminCopy("مطابقة المكتبة", "Library matching")}</b>
       <span>${matches.length} ${adminCopy("مطابق", "matched")} · ${enriched.unknown.length} ${adminCopy("غير مصنف", "unclassified")}</span></div>
-    <div class="note-match-items">${matches.map((note) => `<span><img src="${escapeHTML(library.artwork(note))}" alt="" />
+    <div class="note-match-items">${matches.map((note) => `<span><img src="${escapeHTML(library.artwork(note))}" alt="" data-note-artwork="true" data-note-slug="${escapeHTML(note.slug)}" />
       <b>${escapeHTML(note.nameAr)}</b><small>${escapeHTML(note.nameEn)} · ${escapeHTML(positionLabel(note.requestedPosition))}</small></span>`).join("")}
       ${enriched.unknown.map((item) => `<span class="unknown"><i>?</i><b>${escapeHTML(item.name)}</b><small>${adminCopy("سيضاف للمراجعة", "Added to review queue")}</small></span>`).join("")}</div>`;
 }
@@ -7307,6 +7327,12 @@ document.addEventListener("submit", async (event) => {
   }
   if (event.target.id === "note-admin-form") {
     const form = event.target;
+    if (form.dataset.imageProcessing === "true") {
+      showToast(adminCopy("انتظر حتى يكتمل تجهيز الصورة.", "Wait until the artwork finishes processing."));
+      return;
+    }
+    const submitButton = form.querySelector("button[type='submit']");
+    if (submitButton) submitButton.disabled = true;
     const data = new FormData(form);
     const originalSlug = String(data.get("originalSlug") || "");
     const note = window.ORIGOFragranceNotes.upsertNote({
@@ -7336,6 +7362,8 @@ document.addEventListener("submit", async (event) => {
       showToast(adminCopy("تم حفظ المكوّن وربط مرادفاته", "Note and aliases saved"));
     } catch (error) {
       showToast(error.message);
+    } finally {
+      if (submitButton) submitButton.disabled = false;
     }
     return;
   }
@@ -7642,12 +7670,27 @@ document.addEventListener("input", (event) => {
     applyAppearanceSettings(appearanceFromForm(form));
   }
   if (event.target.closest("#note-admin-form") && event.target.name === "image") {
-    $("#note-admin-image-preview").src = event.target.value || window.ORIGOFragranceNotes.artwork({
+    state.pendingNoteImage = "";
+    const uploadInput = $("#note-image-upload");
+    if (uploadInput) uploadInput.value = "";
+    const draft = {
       nameAr: event.target.form.elements.nameAr.value,
       nameEn: event.target.form.elements.nameEn.value,
       familyId: event.target.form.elements.familyId.value,
-      symbol: "✦"
-    });
+      symbol: "✦",
+      image: event.target.value
+    };
+    const preview = $("#note-admin-image-preview");
+    preview.dataset.noteSlug = "";
+    preview.dataset.noteNameAr = draft.nameAr;
+    preview.dataset.noteNameEn = draft.nameEn;
+    preview.dataset.noteFamily = draft.familyId;
+    delete preview.dataset.noteFallback;
+    preview.src = window.ORIGOFragranceNotes.artwork(draft);
+    const imageStatus = $("#note-image-status");
+    if (imageStatus) imageStatus.textContent = event.target.value
+      ? adminCopy("سيتم استخدام رابط الصورة عند الحفظ.", "The artwork URL will be used when saved.")
+      : adminCopy("تمت إزالة الصورة المخصصة؛ سيظهر البديل التلقائي.", "Custom artwork removed; the automatic fallback will be used.");
   }
   if (event.target.closest("#import-review-form")) {
     const editorForm = $("#import-review-form");
@@ -7670,6 +7713,19 @@ document.addEventListener("input", (event) => {
     updateAdminAccordEditor(editorForm);
   }
 });
+
+document.addEventListener("error", (event) => {
+  const image = event.target;
+  if (!(image instanceof HTMLImageElement) || image.dataset.noteArtwork !== "true" || image.dataset.noteFallback === "true") return;
+  const note = window.ORIGOFragranceNotes?.find(image.dataset.noteSlug) || {
+    nameAr: image.dataset.noteNameAr || "مكوّن عطري",
+    nameEn: image.dataset.noteNameEn || "FRAGRANCE NOTE",
+    familyId: image.dataset.noteFamily || "uncategorized",
+    symbol: "✦"
+  };
+  image.dataset.noteFallback = "true";
+  image.src = window.ORIGOFragranceNotes.artwork({ ...note, image: "" });
+}, true);
 
 document.addEventListener("change", async (event) => {
   if (event.target.id === "alternatives-import-file") {
@@ -7806,17 +7862,32 @@ document.addEventListener("change", async (event) => {
   if (event.target.id === "note-image-upload") {
     const file = event.target.files?.[0];
     if (!file) return;
-    if (file.size > 900_000) {
+    const form = event.target.closest("#note-admin-form");
+    const submitButton = form?.querySelector("button[type='submit']");
+    const status = $("#note-image-status");
+    if (form) form.dataset.imageProcessing = "true";
+    if (submitButton) submitButton.disabled = true;
+    if (status) status.textContent = adminCopy("جارٍ ضغط الصورة وتجهيزها…", "Optimizing note artwork…");
+    try {
+      const value = await optimizeProductOptionArtwork(file);
+      state.pendingNoteImage = value;
+      const preview = $("#note-admin-image-preview");
+      preview.dataset.noteArtwork = "true";
+      preview.dataset.noteSlug = state.activeAdminNoteSlug || "";
+      delete preview.dataset.noteFallback;
+      preview.src = value;
+      const sizeKb = Math.max(1, Math.round(value.length * .75 / 1024));
+      if (status) status.textContent = adminCopy(`الصورة جاهزة للحفظ · نحو ${sizeKb} KB`, `Artwork ready to save · about ${sizeKb} KB`);
+      showToast(adminCopy("تم تجهيز صورة النوتة بنجاح.", "Note artwork is ready."));
+    } catch (errorValue) {
       event.target.value = "";
-      showToast(adminCopy("صورة المكوّن أكبر من 900 KB", "Note image exceeds 900 KB"));
-      return;
+      if (status) status.textContent = errorValue.message;
+      showToast(errorValue.message);
+    } finally {
+      if (form) form.dataset.imageProcessing = "false";
+      if (submitButton) submitButton.disabled = false;
     }
-    const reader = new FileReader();
-    reader.addEventListener("load", () => {
-      state.pendingNoteImage = String(reader.result || "");
-      $("#note-admin-image-preview").src = state.pendingNoteImage;
-    }, { once: true });
-    reader.readAsDataURL(file);
+    return;
   }
   if (event.target.matches("[name='selectedImage']")) {
     $$(".review-image").forEach((label) => label.classList.toggle("selected", $("input", label).checked));
