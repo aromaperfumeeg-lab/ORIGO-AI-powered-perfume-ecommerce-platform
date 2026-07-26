@@ -2,6 +2,9 @@
   "use strict";
 
   const knowledge = global.ORIGOFragranceKnowledge?.database || { categories: [] };
+  const referenceNotes = Array.isArray(global.ORIGOFragranceNoteReferences)
+    ? global.ORIGOFragranceNoteReferences
+    : [];
   const STORAGE_VERSION = 2;
   const familyBlueprints = {
     citrus: { color: "#D9A441", accent: "#FFF1B8", symbol: "◉", position: "top" },
@@ -180,6 +183,21 @@
     return `${note.nameEn} belongs to the ${family.nameEn} family. It can bring a ${family.position === "top" ? "bright opening" : family.position === "heart" ? "distinctive heart" : family.position === "base" ? "deep dry-down" : "flexible character across the composition"}, depending on formula and concentration.`;
   }
 
+  function referenceFamilyId(name) {
+    const value = normalize(name);
+    if (/lemon|orange|bergamot|mandarin|grapefruit|lime|citron|citrus|neroli|petitgrain|calamansi|yuzu|kumquat/.test(value)) return "citrus";
+    if (/rose|flower|blossom|jasmine|iris|orris|lily|violet|orchid|peony|lavender|geranium|tuberose|gardenia|freesia|lotus|camellia|carnation|magnolia|mimosa|narcissus|ylang|hibiscus|heliotrope|champaca|osmanthus/.test(value)) return "flowers";
+    if (/wood|cedar|birch|fir|pine|oak|sandal|vetiver|patchouli|cypress|mahogany|bamboo|palo santo|ebony|driftwood|tree/.test(value)) return "woods-mosses";
+    if (/resin|balsam|benzoin|incense|myrrh|olibanum|labdanum|opoponax|styrax|elemi|amberwood/.test(value)) return "resins-balsams";
+    if (/pepper|spice|cardamom|cinnamon|clove|anise|nutmeg|cumin|coriander|saffron|ginger|turmeric|fennel|fenugreek/.test(value)) return "spices";
+    if (/sugar|candy|caramel|chocolate|cocoa|cream|milk|honey|vanilla|praline|toffee|marshmallow|cake|bread|waffle|tiramisu|ice cream|popcorn|sorbet|fudge|meringue|croissant/.test(value)) return "sweets-gourmand";
+    if (/tea|coffee|wine|rum|gin|vodka|whiskey|cognac|champagne|brandy|cola|liqueur|syrup|absinthe|bellini/.test(value)) return "beverages";
+    if (/leaf|grass|green|herb|mint|basil|sage|thyme|rosemary|tarragon|fern|ivy|moss|hay|tobacco|cannabis|artemisia|wormwood|eucalyptus/.test(value)) return "greens-herbs-fougere";
+    if (/musk|ambrox|cetalox|castoreum|civet|animal|leather|suede|beeswax|amber/.test(value)) return "musk-amber-animalic";
+    if (/apple|pear|peach|plum|berry|berries|currant|cherry|fig|mango|melon|banana|coconut|pineapple|apricot|grape|guava|kiwi|lychee|litchi|papaya|fruit|hazelnut|almond|pistachio|macadamia|date|raisin|pumpkin|tomato|cucumber|carrot|rhubarb|quince|olive/.test(value)) return "fruits-vegetables-nuts";
+    return "natural-synthetic-unusual";
+  }
+
   function rebuild() {
     families = knowledge.categories.map((category) => {
       const blueprint = familyBlueprints[category.id] || familyBlueprints.uncategorized;
@@ -259,6 +277,43 @@
         defaultIntensity: 3, related: [], compatible: [], opposite: [],
         ...curated, generatedTranslation: false, translationStatus: "verified", sourceLanguage: "bilingual",
         sourceName: curated.nameAr, image: curated.image || ""
+      };
+      note.descriptionAr = originalDescription(note, family, "ar");
+      note.descriptionEn = originalDescription(note, family, "en");
+      result.set(note.slug, note);
+    });
+
+    referenceNotes.forEach((reference) => {
+      const referenceKey = normalize(reference.nameEn);
+      const existing = result.get(reference.slug)
+        || [...result.values()].find((note) =>
+          normalize(note.nameEn) === referenceKey || normalize(note.sourceName) === referenceKey
+        );
+      if (existing) {
+        if (!existing.image) existing.image = reference.image;
+        return;
+      }
+      const familyId = referenceFamilyId(reference.nameEn);
+      const family = families.find((item) => item.id === familyId)
+        || families.find((item) => item.id === "uncategorized")
+        || families[0];
+      const note = {
+        slug: reference.slug,
+        nameAr: reference.nameEn,
+        nameEn: reference.nameEn,
+        aliases: [],
+        familyId,
+        position: family?.position || "multiple",
+        symbol: family?.symbol || "✦",
+        image: reference.image,
+        defaultIntensity: 3,
+        related: [],
+        compatible: [],
+        opposite: [],
+        generatedTranslation: false,
+        translationStatus: "source-only",
+        sourceLanguage: "en",
+        sourceName: reference.nameEn
       };
       note.descriptionAr = originalDescription(note, family, "ar");
       note.descriptionEn = originalDescription(note, family, "en");
