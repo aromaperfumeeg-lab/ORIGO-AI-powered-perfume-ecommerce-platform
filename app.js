@@ -4888,7 +4888,7 @@ function searchableCreatableSelect({ name, group, labelAr, labelEn, selected = [
     <div class="smart-select" data-smart-select data-group="${escapeHTML(group)}" data-name="${escapeHTML(name)}" data-multiple="${multiple}" data-create="${allowCreate}">
       <input type="hidden" name="${escapeHTML(name)}" value="${escapeHTML(values.join(", "))}" />
       <div class="smart-select-control" data-action="smart-select-open" role="button" tabindex="0" aria-haspopup="listbox" aria-expanded="false">
-        <span class="smart-select-chips">${selectedItems.length ? selectedItems.map((item) => `<i data-smart-value="${escapeHTML(item.value)}">${item.image ? `<img src="${escapeHTML(item.image)}" alt="" />` : item.icon ? `<em>${escapeHTML(item.icon)}</em>` : ""}${escapeHTML(state.lang === "ar" ? item.nameAr || item.nameEn : item.nameEn || item.nameAr)}${multiple ? `<button type="button" data-action="smart-select-remove" data-value="${escapeHTML(item.value)}" aria-label="${adminCopy("حذف","Remove")}">×</button>` : ""}</i>`).join("") : `<small>${adminCopy("ابحث أو اختر…","Search or select…")}</small>`}</span><strong>⌄</strong>
+        <span class="smart-select-chips">${selectedItems.length ? selectedItems.map((item) => smartSelectChipMarkup(item, item.value, { multiple, group })).join("") : `<small>${adminCopy("ابحث أو اختر…","Search or select…")}</small>`}</span><strong>⌄</strong>
       </div>
       <div class="smart-select-menu" hidden>
         <div class="smart-select-search"><input type="search" data-smart-search placeholder="${adminCopy("ابحث بالعربية أو الإنجليزية…","Search in Arabic or English…")}" autocomplete="off"/><button type="button" data-action="smart-select-settings" title="${adminCopy("إدارة الخيارات","Manage options")}">⚙</button></div>
@@ -4897,6 +4897,13 @@ function searchableCreatableSelect({ name, group, labelAr, labelEn, selected = [
         ${allowCreate ? `<button type="button" class="smart-select-create" data-action="smart-select-create">＋ ${adminCopy("إضافة خيار جديد","Add new option")}</button>` : ""}
       </div>
     </div>${hintAr || hintEn ? `<small>${adminCopy(hintAr,hintEn)}</small>` : ""}</label>`;
+}
+
+function smartSelectChipMarkup(item, value, { multiple = false, group = "" } = {}) {
+  const name = state.lang === "ar" ? item.nameAr || item.nameEn : item.nameEn || item.nameAr;
+  const editNote = group === "note" ? `<button type="button" class="smart-select-edit-note" data-action="smart-select-edit-note" data-value="${escapeHTML(value)}" title="${adminCopy("تعديل النوتة أو إضافة صورتها","Edit note or add its image")}" aria-label="${adminCopy(`تعديل نوتة ${name}`, `Edit ${name} note`)}">✎</button>` : "";
+  const remove = multiple ? `<button type="button" class="smart-select-remove" data-action="smart-select-remove" data-value="${escapeHTML(value)}" aria-label="${adminCopy("حذف","Remove")}">×</button>` : "";
+  return `<i data-smart-value="${escapeHTML(value)}">${item.image ? `<img src="${escapeHTML(item.image)}" alt="" />` : item.icon ? `<em>${escapeHTML(item.icon)}</em>` : ""}<span>${escapeHTML(name)}</span>${editNote}${remove}</i>`;
 }
 
 function findDuplicate(product, excludeId = "") {
@@ -5257,6 +5264,7 @@ function renderImportReview(product) {
           ${searchableCreatableSelect({ name:"heartNotes", group:"note", labelAr:"نوتات القلب", labelEn:"Heart notes", selected:product.noteSelections?.heart || product.notes.heartEn || product.notes.heartAr, multiple:true })}
           ${searchableCreatableSelect({ name:"baseNotes", group:"note", labelAr:"نوتات القاعدة", labelEn:"Base notes", selected:product.noteSelections?.base || product.notes.baseEn || product.notes.baseAr, multiple:true })}
         </div>
+        <p class="product-note-edit-help">✎ ${adminCopy("بعد اختيار أي نوتة اضغط زر القلم بجانبها لتعديل الاسم والترجمة والعائلة والوصف أو رفع صورتها من جهازك. تُحفظ الصورة في مكتبة النوتات وتظهر في المنتج والمتجر.", "After selecting a note, use its pencil button to edit the names, family, descriptions, or upload artwork. The image is saved to the note library and used in the product and storefront.")}</p>
         <div class="note-library-match-preview" id="note-library-match-preview"></div>
         ${adminAccordEditor(product)}
         <div class="review-grid perfume-advanced-fields">
@@ -5852,7 +5860,7 @@ function setSmartSelectValues(holder, values) {
   const chips = holder.querySelector(".smart-select-chips");
   chips.innerHTML = next.length ? next.map((value) => {
     const item = items.find((candidate) => normalizeOptionSearch(candidate.value) === normalizeOptionSearch(value)) || { value, nameAr:value, nameEn:value };
-    return `<i data-smart-value="${escapeHTML(value)}">${item.image ? `<img src="${escapeHTML(item.image)}" alt="" />` : item.icon ? `<em>${escapeHTML(item.icon)}</em>` : ""}${escapeHTML(state.lang === "ar" ? item.nameAr || item.nameEn : item.nameEn || item.nameAr)}${multiple ? `<button type="button" data-action="smart-select-remove" data-value="${escapeHTML(value)}" aria-label="${adminCopy("حذف","Remove")}">×</button>` : ""}</i>`;
+    return smartSelectChipMarkup(item, value, { multiple, group });
   }).join("") : `<small>${adminCopy("ابحث أو اختر…","Search or select…")}</small>`;
   holder.querySelectorAll("[role='option']").forEach((option) => option.setAttribute("aria-selected", String(next.some((value) => normalizeOptionSearch(value) === normalizeOptionSearch(option.dataset.value)))));
   holder.closest("form")?.dispatchEvent(new Event("input", { bubbles:true }));
@@ -5978,6 +5986,13 @@ document.addEventListener("click", async (event) => {
     event.stopPropagation();
     const holder = actionElement.closest("[data-smart-select]");
     setSmartSelectValues(holder, smartSelectValues(holder).filter((item) => normalizeOptionSearch(item) !== normalizeOptionSearch(actionElement.dataset.value)));
+    return;
+  }
+  if (action === "smart-select-edit-note") {
+    event.stopPropagation();
+    const holder = actionElement.closest("[data-smart-select]");
+    openProductOptionDialog(holder);
+    populateProductOptionDialog($("#product-option-dialog"), actionElement.dataset.value || "");
     return;
   }
   if (action === "smart-select-clear") {

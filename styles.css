@@ -9079,9 +9079,13 @@ body.dark .finder-admin-group label {
 .smart-select-chips{display:flex;flex:1;align-items:center;gap:6px;flex-wrap:wrap;min-width:0}
 .smart-select-chips>small{color:#6f6461;font-weight:500}
 .smart-select-chips>i{font-style:normal;display:inline-flex;align-items:center;gap:5px;max-width:100%;padding:5px 8px;border-radius:999px;background:#fbf2ed;color:#611025;border:1px solid #efddd3;font-size:.82rem;font-weight:700}
+.smart-select-chips>i>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .smart-select-chips>i em{font-style:normal;color:#b77b17}
 .smart-select-chips>i img{width:22px;height:22px;border-radius:50%;object-fit:cover;flex:0 0 auto}
 .smart-select-chips>i button{border:0;background:transparent;color:#7a001d;font-size:1rem;line-height:1;padding:0;cursor:pointer}
+.smart-select-chips>i .smart-select-edit-note{width:24px;height:24px;display:grid;place-items:center;border-radius:50%;background:#fff;color:#7a001d;border:1px solid #dfc4ba;font-size:.85rem;flex:0 0 auto}
+.smart-select-chips>i .smart-select-edit-note:hover,.smart-select-chips>i .smart-select-edit-note:focus-visible{background:#7a001d;color:#fff;outline:0}
+.product-note-edit-help{grid-column:1/-1;margin:10px 0 2px;padding:10px 12px;border:1px solid #ead8cf;border-radius:10px;background:#fffaf7;color:#68534d;font-size:.82rem;line-height:1.65}
 .smart-select-menu{position:absolute;z-index:80;inset-inline:0;top:calc(100% + 6px);min-width:min(420px,90vw);max-height:390px;border:1px solid #dfc9bf;background:#fff;border-radius:14px;padding:9px;box-shadow:0 20px 55px rgba(49,22,22,.18)}
 .smart-select-search{display:flex;gap:7px;position:sticky;top:0;background:#fff;z-index:2}
 .smart-select-search input{height:42px!important;min-height:42px!important;flex:1}

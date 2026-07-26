@@ -637,6 +637,19 @@ export function updateCustomerProfile(userId,input={}){
   const name=clean(input.name,100),phone=clean(input.phone,30);if(name.length<2)throw Object.assign(new Error("أدخل اسمًا صحيحًا."),{code:"INVALID_NAME"});if(phone&& !/^\+?\d[\d\s()-]{7,24}$/.test(phone))throw Object.assign(new Error("رقم الهاتف غير صحيح."),{code:"INVALID_PHONE"});let avatar=clean(input.avatarUrl,1_500_000);if(avatar&&!/^data:image\/(png|jpeg|webp);base64,/i.test(avatar)&&!/^assets\//.test(avatar))throw Object.assign(new Error("صيغة الصورة غير مدعومة."),{code:"INVALID_AVATAR"});if(avatar.length>1_400_000)throw Object.assign(new Error("حجم الصورة أكبر من الحد المسموح."),{code:"AVATAR_TOO_LARGE"});db.prepare("UPDATE users SET name=?,phone=?,avatar_url=?,updated_at=CURRENT_TIMESTAMP WHERE id=?").run(name,phone,avatar,Number(userId));return accountDashboard(userId).customer;
 }
 
+export function deleteCustomerAccount(userId){
+  const id=Number(userId);const user=db.prepare("SELECT id,role FROM users WHERE id=?").get(id);
+  if(!user)throw Object.assign(new Error("تعذر العثور على الحساب."),{code:"ACCOUNT_NOT_FOUND"});
+  if(user.role!=="customer")throw Object.assign(new Error("لا يمكن حذف حساب إداري من صفحة العميل."),{code:"STAFF_ACCOUNT_PROTECTED"});
+  db.exec("BEGIN IMMEDIATE");
+  try{
+    db.prepare("UPDATE orders SET user_id=NULL WHERE user_id=?").run(id);
+    const result=db.prepare("DELETE FROM users WHERE id=? AND role='customer'").run(id);
+    if(!result.changes)throw Object.assign(new Error("تعذر حذف الحساب."),{code:"ACCOUNT_DELETE_FAILED"});
+    db.exec("COMMIT");return {deleted:true};
+  }catch(error){db.exec("ROLLBACK");throw error;}
+}
+
 export function markNotificationsRead(userId){db.prepare("UPDATE customer_notifications SET read_at=COALESCE(read_at,CURRENT_TIMESTAMP) WHERE user_id=?").run(Number(userId));return accountDashboard(userId);}
 
 export function loyaltyTiers(){return db.prepare("SELECT * FROM loyalty_tiers ORDER BY sort_order,min_points").all().map(row=>({id:row.id,nameAr:row.name_ar,nameEn:row.name_en,minPoints:Number(row.min_points),maxPoints:row.max_points==null?null:Number(row.max_points),benefits:json(row.benefits_json,[]),icon:row.icon,color:row.color,isActive:Boolean(row.is_active),sortOrder:Number(row.sort_order)}));}

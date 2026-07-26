@@ -73,6 +73,7 @@ import {
 } from "./external-integrations.mjs";
 import {
   accountDashboard,
+  deleteCustomerAccount,
   checkoutSettings,
   createCommerceOrder,
   createMarketingInsight,
@@ -788,6 +789,19 @@ async function handleAPI(request, response, url, origin) {
       return jsonResponse(response, 200, { customer: updateCustomerProfile(user.id, body) }, origin);
     } catch (error) {
       return jsonResponse(response, 400, { error: error.message, code: error.code || "PROFILE_UPDATE_FAILED" }, origin);
+    }
+  }
+
+  if (url.pathname === "/api/account" && request.method === "DELETE") {
+    const user = requireUser(request, response, origin);
+    if (!user) return;
+    try {
+      deleteCustomerAccount(user.id);
+      return jsonResponse(response, 200, { ok: true }, origin, {
+        "Set-Cookie": expiredSessionCookie(request)
+      });
+    } catch (error) {
+      return jsonResponse(response, error.code === "STAFF_ACCOUNT_PROTECTED" ? 403 : 400, { error: error.message, code: error.code || "ACCOUNT_DELETE_FAILED" }, origin);
     }
   }
 
