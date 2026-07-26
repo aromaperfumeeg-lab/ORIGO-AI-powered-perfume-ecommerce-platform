@@ -866,9 +866,10 @@ const defaultStoreSettings = {
   passwordRecoveryChannels: { email: true, whatsapp: true, sms: true },
   logos: { light: "assets/origo-logo.svg", dark: "assets/origo-logo-dark.svg", icon: "assets/origo-logo-icon.svg" },
   appearance: {
+    balancedLayoutEnabled: true,
     bodyFont: "elegant",
     headingFont: "classic",
-    baseFontSize: 16,
+    baseFontSize: 17,
     bodyFontWeight: 500,
     headingScale: 1,
     iconScale: 1,
@@ -879,7 +880,7 @@ const defaultStoreSettings = {
     cardBorderWidth: 1,
     cardShadow: "soft",
     density: "comfortable",
-    headerHeight: 118,
+    headerHeight: 104,
     headerIconScale: 1,
     headerIconShape: "round",
     headerActionsOrder: "commerce-first",
@@ -887,10 +888,22 @@ const defaultStoreSettings = {
     darkHeaderColor: "#5b5e63",
     burgundyColor: "#720019",
     goldColor: "#c8943d",
+    lightPageColor: "#ffffff",
+    lightSurfaceColor: "#ffffff",
+    lightTextColor: "#251519",
+    lightMutedColor: "#6e5b60",
+    lightBurgundyColor: "#720019",
+    darkPageColor: "#3b3c40",
+    darkSurfaceColor: "#4b4d52",
+    darkElevatedColor: "#5a5c62",
+    darkTextColor: "#ffffff",
+    darkMutedColor: "#f0f0f2",
+    darkBurgundyColor: "#720019",
     contentMaxWidth: 1440,
-    sectionGap: 28,
-    productCardHeight: 520,
-    adminScale: 1
+    sectionGap: 20,
+    productCardHeight: 500,
+    adminScale: 1.1,
+    layoutTuningVersion: 2
   },
   footerImage: "assets/origo-hero.png",
   footerDescriptionAr: "في أوريجو، نؤمن أن العطر ليس مجرد رائحة، بل هو توقيعك الخاص الذي يترك أثرًا لا يُنسى. اكتشف عالم العطور الفاخرة بين الأصالة والتميز.",
@@ -935,11 +948,21 @@ function mergeStoreSettings(saved = {}) {
   const mergedBenefits = savedBenefits.length
     ? savedBenefits.map((item) => ({ ...(benefitMap.get(item.id) || {}), ...item }))
     : defaultFooterBenefits.map((item) => structuredClone(item));
+  const savedAppearance = saved.appearance && typeof saved.appearance === "object" ? saved.appearance : {};
+  const migratedAppearance = Number(savedAppearance.layoutTuningVersion || 0) >= 2 ? savedAppearance : {
+    ...savedAppearance,
+    baseFontSize: 17,
+    headerHeight: 104,
+    sectionGap: 20,
+    productCardHeight: 500,
+    adminScale: 1.1,
+    layoutTuningVersion: 2
+  };
   return {
     ...defaultStoreSettings,
     ...saved,
     logos: { ...defaultStoreSettings.logos, ...(saved.logos || {}) },
-    appearance: { ...defaultStoreSettings.appearance, ...(saved.appearance || {}) },
+    appearance: { ...defaultStoreSettings.appearance, ...migratedAppearance },
     socialLinks: { ...defaultStoreSettings.socialLinks, ...(saved.socialLinks || {}) },
     appLinks: { ...defaultStoreSettings.appLinks, ...(saved.appLinks || {}) },
     passwordRecoveryChannels: { ...defaultStoreSettings.passwordRecoveryChannels, ...(saved.passwordRecoveryChannels || {}) },
@@ -1910,14 +1933,21 @@ function settingsMarkup() {
     <label>${ar ? "العملة" : "Currency"}<select name="currency">${selectOptions([["EGP","EGP"],["USD","USD"],["SAR","SAR"]], settings.currency)}</select></label>
     <label>${ar ? "الضريبة %" : "Tax rate %"}<input name="taxRate" type="number" min="0" max="100" value="${settings.taxRate}" /></label></div>
     <div class="store-logo-settings">${logoFields.map(([key, arLabel, enLabel]) => `<label class="store-logo-field"><span>${ar ? arLabel : enLabel}</span><img id="store-logo-preview-${key}" src="${escapeHTML(settings.logos[key])}" alt=""/><input name="logo${key[0].toUpperCase()}${key.slice(1)}" value="${escapeHTML(settings.logos[key])}" dir="ltr"/><input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" data-logo-upload="${key}"/></label>`).join("")}</div></section>
-    <section class="appearance-settings"><div class="review-section-head"><span>02</span><div><b>${ar ? "مظهر المتجر العام" : "Global store appearance"}</b><small>${ar ? "تحكم مركزي في الخطوط والصور والأيقونات والبطاقات مع معاينة فورية." : "Central control for typography, images, icons, and cards with live preview."}</small></div></div>
+    <section class="appearance-settings"><input type="hidden" name="appearance.layoutTuningVersion" value="2"/><div class="review-section-head"><span>02</span><div><b>${ar ? "مظهر المتجر العام" : "Global store appearance"}</b><small>${ar ? "تحكم مركزي في الخطوط والصور والأيقونات والبطاقات مع معاينة فورية." : "Central control for typography, images, icons, and cards with live preview."}</small></div></div>
+      <div class="appearance-balance-studio">
+        <label class="appearance-master-switch"><input type="checkbox" name="appearance.balancedLayoutEnabled" ${appearance.balancedLayoutEnabled !== false ? "checked" : ""}/><span class="appearance-switch-track" aria-hidden="true"><i></i></span><span><b>${ar ? "التوازن الذكي للمساحات والنصوص" : "Smart spacing and text balance"}</b><small>${ar ? "يضبط المسافات والمربعات والصور تلقائيًا، ويضمن نصوصًا واضحة في المتجر ولوحة التحكم." : "Automatically balances spacing, cards, and images while keeping storefront and admin text readable."}</small></span></label>
+        <figure class="appearance-layout-preview" aria-label="${ar ? "صورة معاينة للشكل" : "Layout appearance preview"}">
+          <figcaption><b>${ar ? "صورة معاينة الشكل" : "Layout preview"}</b><small>${ar ? "تتغير مباشرة مع المفتاح" : "Updates instantly with the switch"}</small></figcaption>
+          <div class="layout-preview-window"><div class="layout-preview-bar"><i></i><i></i><i></i><span>ORIGO</span></div><div class="layout-preview-scenes"><section><strong>${ar ? "المتجر" : "Store"}</strong><div class="layout-preview-shop"><i></i><i></i><i></i></div><p><span></span><span></span></p></section><section><strong>${ar ? "لوحة التحكم" : "Admin"}</strong><div class="layout-preview-admin"><aside><i></i><i></i><i></i></aside><main><b></b><p></p><div><i></i><i></i></div></main></div></section></div></div>
+        </figure>
+      </div>
       <div class="appearance-settings-grid">
         <label>${ar ? "شكل خط النصوص" : "Body font style"}<select name="appearance.bodyFont">${selectOptions([["elegant",ar?"أنيق":"Elegant"],["modern",ar?"عصري":"Modern"],["classic",ar?"كلاسيكي":"Classic"],["system",ar?"خط النظام":"System"]], appearance.bodyFont)}</select></label>
         <label>${ar ? "شكل خط العناوين" : "Heading font style"}<select name="appearance.headingFont">${selectOptions([["classic",ar?"كلاسيكي فاخر":"Luxury classic"],["elegant",ar?"عربي أنيق":"Elegant Arabic"],["modern",ar?"عصري":"Modern"],["system",ar?"خط النظام":"System"]], appearance.headingFont)}</select></label>
         <label>${ar ? "ملاءمة الصور" : "Image fit"}<select name="appearance.imageFit">${selectOptions([["contain",ar?"إظهار الصورة كاملة":"Show full image"],["cover",ar?"ملء الإطار":"Fill frame"]], appearance.imageFit)}</select></label>
         <label>${ar ? "كثافة البطاقات" : "Card density"}<select name="appearance.density">${selectOptions([["compact",ar?"مضغوط":"Compact"],["comfortable",ar?"مريح":"Comfortable"],["spacious",ar?"واسع":"Spacious"]], appearance.density)}</select></label>
         <label>${ar ? "ظل البطاقات" : "Card shadow"}<select name="appearance.cardShadow">${selectOptions([["none",ar?"بدون":"None"],["soft",ar?"ناعم":"Soft"],["strong",ar?"بارز":"Strong"]], appearance.cardShadow)}</select></label>
-        ${appearanceRange("baseFontSize","حجم الخط الأساسي","Base font size",13,22,1,appearance.baseFontSize,"px")}
+        ${appearanceRange("baseFontSize","حجم الخط الأساسي","Base font size",15,22,1,appearance.baseFontSize,"px")}
         ${appearanceRange("bodyFontWeight","سماكة الخط","Font weight",400,800,100,appearance.bodyFontWeight)}
         ${appearanceRange("headingScale","حجم العناوين","Heading scale",.85,1.35,.05,appearance.headingScale,"×")}
         ${appearanceRange("iconScale","حجم الأيقونات","Icon scale",.75,1.35,.05,appearance.iconScale,"×")}
@@ -1925,12 +1955,12 @@ function settingsMarkup() {
         ${appearanceRange("imageRadius","استدارة الصور","Image corners",0,36,1,appearance.imageRadius,"px")}
         ${appearanceRange("cardRadius","استدارة البطاقات","Card corners",0,36,1,appearance.cardRadius,"px")}
         ${appearanceRange("cardBorderWidth","سماكة حدود البطاقات","Card border",0,3,1,appearance.cardBorderWidth,"px")}
-        ${appearanceRange("headerHeight","ارتفاع الهيدر","Header height",88,160,2,appearance.headerHeight,"px")}
+        ${appearanceRange("headerHeight","ارتفاع الهيدر","Header height",84,140,2,appearance.headerHeight,"px")}
         ${appearanceRange("headerIconScale","حجم أيقونات الهيدر","Header icon scale",.8,1.4,.05,appearance.headerIconScale,"×")}
         ${appearanceRange("contentMaxWidth","عرض محتوى المتجر","Store content width",1180,1760,20,appearance.contentMaxWidth,"px")}
-        ${appearanceRange("sectionGap","المسافة بين الأقسام","Section spacing",12,56,2,appearance.sectionGap,"px")}
+        ${appearanceRange("sectionGap","المسافة بين الأقسام","Section spacing",8,40,2,appearance.sectionGap,"px")}
         ${appearanceRange("productCardHeight","ارتفاع بطاقة المنتج","Product card height",420,680,10,appearance.productCardHeight,"px")}
-        ${appearanceRange("adminScale","حجم واجهة لوحة التحكم","Admin interface scale",.85,1.25,.05,appearance.adminScale,"×")}
+        ${appearanceRange("adminScale","حجم نصوص لوحة التحكم","Admin text scale",1,1.35,.05,appearance.adminScale,"×")}
         <label>${ar ? "شكل أزرار الهيدر" : "Header icon shape"}<select name="appearance.headerIconShape">${selectOptions([["round",ar?"دائري":"Round"],["soft",ar?"مربع ناعم":"Soft square"],["square",ar?"مربع":"Square"]], appearance.headerIconShape)}</select></label>
         <label>${ar ? "ترتيب أدوات الهيدر" : "Header tools order"}<select name="appearance.headerActionsOrder">${selectOptions([["commerce-first",ar?"السلة والمفضلة أولًا":"Cart and wishlist first"],["preferences-first",ar?"اللغة والمظهر أولًا":"Language and theme first"]], appearance.headerActionsOrder)}</select></label>
         <label>${ar ? "لون الهيدر الفاتح" : "Light header color"}<input type="color" name="appearance.lightHeaderColor" value="${escapeHTML(appearance.lightHeaderColor)}"/></label>
@@ -1938,6 +1968,24 @@ function settingsMarkup() {
         <label>${ar ? "اللون النبيتي" : "Burgundy accent"}<input type="color" name="appearance.burgundyColor" value="${escapeHTML(appearance.burgundyColor)}"/></label>
         <label>${ar ? "اللون الذهبي" : "Gold accent"}<input type="color" name="appearance.goldColor" value="${escapeHTML(appearance.goldColor)}"/></label>
       </div>
+      <div class="appearance-palette-editor">
+        <fieldset><legend>${ar ? "ألوان الوضع الفاتح — أبيض نقي ونبيتي" : "Light mode — pure white & burgundy"}</legend><div class="appearance-color-grid">
+          <label>${ar ? "خلفية المتجر" : "Store background"}<input type="color" name="appearance.lightPageColor" value="${escapeHTML(appearance.lightPageColor)}"/></label>
+          <label>${ar ? "لون البطاقات" : "Card surface"}<input type="color" name="appearance.lightSurfaceColor" value="${escapeHTML(appearance.lightSurfaceColor)}"/></label>
+          <label>${ar ? "لون النص" : "Text color"}<input type="color" name="appearance.lightTextColor" value="${escapeHTML(appearance.lightTextColor)}"/></label>
+          <label>${ar ? "النص الثانوي" : "Muted text"}<input type="color" name="appearance.lightMutedColor" value="${escapeHTML(appearance.lightMutedColor)}"/></label>
+          <label>${ar ? "النبيتي الفاتح" : "Light burgundy"}<input type="color" name="appearance.lightBurgundyColor" value="${escapeHTML(appearance.lightBurgundyColor)}"/></label>
+        </div></fieldset>
+        <fieldset><legend>${ar ? "ألوان الوضع الليلي — رمادي وأبيض ونبيتي" : "Dark mode — gray, white & burgundy"}</legend><div class="appearance-color-grid">
+          <label>${ar ? "خلفية المتجر" : "Store background"}<input type="color" name="appearance.darkPageColor" value="${escapeHTML(appearance.darkPageColor)}"/></label>
+          <label>${ar ? "لون البطاقات" : "Card surface"}<input type="color" name="appearance.darkSurfaceColor" value="${escapeHTML(appearance.darkSurfaceColor)}"/></label>
+          <label>${ar ? "السطح المرتفع والحقول" : "Elevated surface & fields"}<input type="color" name="appearance.darkElevatedColor" value="${escapeHTML(appearance.darkElevatedColor)}"/></label>
+          <label>${ar ? "لون النص الأبيض" : "Light text"}<input type="color" name="appearance.darkTextColor" value="${escapeHTML(appearance.darkTextColor)}"/></label>
+          <label>${ar ? "النص الثانوي" : "Muted text"}<input type="color" name="appearance.darkMutedColor" value="${escapeHTML(appearance.darkMutedColor)}"/></label>
+          <label>${ar ? "النبيتي الليلي" : "Dark burgundy"}<input type="color" name="appearance.darkBurgundyColor" value="${escapeHTML(appearance.darkBurgundyColor)}"/></label>
+        </div></fieldset>
+      </div>
+      <div class="appearance-dual-preview" aria-live="polite"><article data-palette-preview="light"><span>✦</span><div><b>${ar ? "الوضع الفاتح" : "Light mode"}</b><p>${ar ? "أبيض نقي مع تفاصيل نبيتي." : "Pure white with burgundy details."}</p></div></article><article data-palette-preview="dark"><span>✦</span><div><b>${ar ? "الوضع الليلي" : "Dark mode"}</b><p>${ar ? "رمادي هادئ مع أبيض ولمسات نبيتي." : "Calm gray with white and burgundy accents."}</p></div></article></div>
       <div class="appearance-preview" aria-live="polite"><span>✦</span><div><h3>${ar ? "معاينة بطاقة ORIGO" : "ORIGO card preview"}</h3><p>${ar ? "تظهر تغييرات الخط والصورة والأيقونة والبطاقة فورًا قبل الحفظ." : "Font, image, icon, and card changes appear instantly before saving."}</p></div><img src="assets/origo-logo-icon.svg" alt=""/></div>
       <button type="button" class="secondary-button compact-button" data-action="reset-appearance">${ar ? "استعادة المظهر الافتراضي" : "Restore appearance defaults"}</button>
     </section>
@@ -2804,6 +2852,7 @@ function appearanceNumber(value, fallback, min, max) {
 function applyAppearanceSettings(saved = {}) {
   const appearance = { ...defaultStoreSettings.appearance, ...(saved || {}) };
   const root = document.documentElement;
+  const balancedLayoutEnabled = appearance.balancedLayoutEnabled !== false && String(appearance.balancedLayoutEnabled) !== "false";
   const bodyFonts = {
     elegant: '"Noto Naskh Arabic","Segoe UI",Tahoma,Arial,sans-serif',
     modern: '"Alexandria","Segoe UI",Tahoma,Arial,sans-serif',
@@ -2828,7 +2877,12 @@ function applyAppearanceSettings(saved = {}) {
   root.style.setProperty("--origo-font-heading", headingFont);
   root.style.setProperty("--font-ar", bodyFont);
   root.style.setProperty("--font-display", headingFont);
-  root.style.setProperty("--origo-base-font-size", `${appearanceNumber(appearance.baseFontSize, 16, 13, 22)}px`);
+  const baseFontSize = appearanceNumber(appearance.baseFontSize, 17, 15, 22);
+  const headerHeight = appearanceNumber(appearance.headerHeight, 104, 84, 140);
+  const sectionGap = appearanceNumber(appearance.sectionGap, 20, 8, 40);
+  const adminScale = appearanceNumber(appearance.adminScale, 1.1, 1, 1.35);
+  root.dataset.balancedLayout = String(balancedLayoutEnabled);
+  root.style.setProperty("--origo-base-font-size", `${balancedLayoutEnabled ? Math.max(baseFontSize, 17) : baseFontSize}px`);
   root.style.setProperty("--origo-body-font-weight", String(appearanceNumber(appearance.bodyFontWeight, 500, 400, 800)));
   root.style.setProperty("--origo-heading-scale", String(appearanceNumber(appearance.headingScale, 1, .85, 1.35)));
   root.style.setProperty("--origo-icon-scale", String(appearanceNumber(appearance.iconScale, 1, .75, 1.35)));
@@ -2838,17 +2892,28 @@ function applyAppearanceSettings(saved = {}) {
   root.style.setProperty("--origo-card-border-width", `${appearanceNumber(appearance.cardBorderWidth, 1, 0, 3)}px`);
   root.style.setProperty("--origo-card-shadow", shadows[appearance.cardShadow] || shadows.soft);
   root.style.setProperty("--origo-card-padding", `${densityPadding[appearance.density] || densityPadding.comfortable}px`);
-  root.style.setProperty("--origo-header-height", `${appearanceNumber(appearance.headerHeight, 118, 88, 160)}px`);
+  root.style.setProperty("--origo-header-height", `${balancedLayoutEnabled ? Math.min(headerHeight, 104) : headerHeight}px`);
   root.style.setProperty("--origo-header-icon-scale", String(appearanceNumber(appearance.headerIconScale, 1, .8, 1.4)));
   root.style.setProperty("--origo-content-max", `${appearanceNumber(appearance.contentMaxWidth, 1440, 1180, 1760)}px`);
-  root.style.setProperty("--origo-section-gap", `${appearanceNumber(appearance.sectionGap, 28, 12, 56)}px`);
-  root.style.setProperty("--origo-product-card-height", `${appearanceNumber(appearance.productCardHeight, 520, 420, 680)}px`);
-  root.style.setProperty("--origo-admin-scale", String(appearanceNumber(appearance.adminScale, 1, .85, 1.25)));
+  root.style.setProperty("--origo-section-gap", `${balancedLayoutEnabled ? Math.min(sectionGap, 20) : sectionGap}px`);
+  root.style.setProperty("--origo-product-card-height", `${appearanceNumber(appearance.productCardHeight, 500, 420, 680)}px`);
+  root.style.setProperty("--origo-admin-scale", String(balancedLayoutEnabled ? Math.max(adminScale, 1.1) : adminScale));
   const safeColor = (value, fallback) => /^#[0-9a-f]{6}$/i.test(String(value || "")) ? String(value) : fallback;
   root.style.setProperty("--origo-header-light", safeColor(appearance.lightHeaderColor, "#ffffff"));
   root.style.setProperty("--origo-header-dark", safeColor(appearance.darkHeaderColor, "#5b5e63"));
   root.style.setProperty("--burgundy", safeColor(appearance.burgundyColor, "#720019"));
   root.style.setProperty("--gold", safeColor(appearance.goldColor, "#c8943d"));
+  root.style.setProperty("--origo-light-page", safeColor(appearance.lightPageColor, "#ffffff"));
+  root.style.setProperty("--origo-light-surface", safeColor(appearance.lightSurfaceColor, "#ffffff"));
+  root.style.setProperty("--origo-light-text", safeColor(appearance.lightTextColor, "#251519"));
+  root.style.setProperty("--origo-light-muted", safeColor(appearance.lightMutedColor, "#6e5b60"));
+  root.style.setProperty("--origo-light-burgundy", safeColor(appearance.lightBurgundyColor || appearance.burgundyColor, "#720019"));
+  root.style.setProperty("--origo-dark-page", safeColor(appearance.darkPageColor, "#3b3c40"));
+  root.style.setProperty("--origo-dark-surface", safeColor(appearance.darkSurfaceColor, "#4b4d52"));
+  root.style.setProperty("--origo-dark-elevated", safeColor(appearance.darkElevatedColor, "#5a5c62"));
+  root.style.setProperty("--origo-dark-text", safeColor(appearance.darkTextColor, "#ffffff"));
+  root.style.setProperty("--origo-dark-muted", safeColor(appearance.darkMutedColor, "#f0f0f2"));
+  root.style.setProperty("--origo-dark-burgundy", safeColor(appearance.darkBurgundyColor || appearance.burgundyColor, "#720019"));
   root.dataset.appearanceImageFit = ["contain", "cover"].includes(appearance.imageFit) ? appearance.imageFit : "contain";
   root.dataset.appearanceDensity = ["compact", "comfortable", "spacious"].includes(appearance.density) ? appearance.density : "comfortable";
   root.dataset.headerIconShape = ["round", "soft", "square"].includes(appearance.headerIconShape) ? appearance.headerIconShape : "round";
@@ -2858,6 +2923,7 @@ function applyAppearanceSettings(saved = {}) {
 function appearanceFromForm(form) {
   const data = new FormData(form);
   return {
+    balancedLayoutEnabled: data.has("appearance.balancedLayoutEnabled"),
     bodyFont: String(data.get("appearance.bodyFont") || defaultStoreSettings.appearance.bodyFont),
     headingFont: String(data.get("appearance.headingFont") || defaultStoreSettings.appearance.headingFont),
     baseFontSize: Number(data.get("appearance.baseFontSize") || defaultStoreSettings.appearance.baseFontSize),
@@ -2879,10 +2945,22 @@ function appearanceFromForm(form) {
     darkHeaderColor: String(data.get("appearance.darkHeaderColor") || defaultStoreSettings.appearance.darkHeaderColor),
     burgundyColor: String(data.get("appearance.burgundyColor") || defaultStoreSettings.appearance.burgundyColor),
     goldColor: String(data.get("appearance.goldColor") || defaultStoreSettings.appearance.goldColor),
+    lightPageColor: String(data.get("appearance.lightPageColor") || defaultStoreSettings.appearance.lightPageColor),
+    lightSurfaceColor: String(data.get("appearance.lightSurfaceColor") || defaultStoreSettings.appearance.lightSurfaceColor),
+    lightTextColor: String(data.get("appearance.lightTextColor") || defaultStoreSettings.appearance.lightTextColor),
+    lightMutedColor: String(data.get("appearance.lightMutedColor") || defaultStoreSettings.appearance.lightMutedColor),
+    lightBurgundyColor: String(data.get("appearance.lightBurgundyColor") || defaultStoreSettings.appearance.lightBurgundyColor),
+    darkPageColor: String(data.get("appearance.darkPageColor") || defaultStoreSettings.appearance.darkPageColor),
+    darkSurfaceColor: String(data.get("appearance.darkSurfaceColor") || defaultStoreSettings.appearance.darkSurfaceColor),
+    darkElevatedColor: String(data.get("appearance.darkElevatedColor") || defaultStoreSettings.appearance.darkElevatedColor),
+    darkTextColor: String(data.get("appearance.darkTextColor") || defaultStoreSettings.appearance.darkTextColor),
+    darkMutedColor: String(data.get("appearance.darkMutedColor") || defaultStoreSettings.appearance.darkMutedColor),
+    darkBurgundyColor: String(data.get("appearance.darkBurgundyColor") || defaultStoreSettings.appearance.darkBurgundyColor),
     contentMaxWidth: Number(data.get("appearance.contentMaxWidth") || defaultStoreSettings.appearance.contentMaxWidth),
     sectionGap: Number(data.get("appearance.sectionGap") || defaultStoreSettings.appearance.sectionGap),
     productCardHeight: Number(data.get("appearance.productCardHeight") || defaultStoreSettings.appearance.productCardHeight),
-    adminScale: Number(data.get("appearance.adminScale") || defaultStoreSettings.appearance.adminScale)
+    adminScale: Number(data.get("appearance.adminScale") || defaultStoreSettings.appearance.adminScale),
+    layoutTuningVersion: 2
   };
 }
 
@@ -4043,11 +4121,15 @@ function productProfileAccordions(product) {
   </section>`;
 }
 
-async function persistNotesState() {
+async function persistNotesState({ syncKnowledge = true } = {}) {
   const value = window.ORIGOFragranceNotes.getState();
-  localStorage.setItem("origoFragranceNotesState", JSON.stringify(value));
+  try {
+    localStorage.setItem("origoFragranceNotesState", JSON.stringify(value));
+  } catch (storageError) {
+    console.warn("Note state exceeded local storage; server persistence will continue.", storageError);
+  }
   if (state.serverAvailable && isStaffUser()) {
-    const knowledge = window.ORIGOFragranceNotes.notes.map((note) => ({
+    const knowledge = syncKnowledge ? window.ORIGOFragranceNotes.notes.map((note) => ({
       id: note.slug,
       nameAr: note.nameAr,
       nameEn: note.nameEn,
@@ -4059,13 +4141,17 @@ async function persistNotesState() {
       compatible: note.compatible || [],
       opposite: note.opposite || [],
       defaultIntensity: Number(note.defaultIntensity || 3)
-    }));
+    })) : null;
     const result = await api("/api/admin/notes/state", {
       method: "POST",
-      body: JSON.stringify({ state: value, knowledge })
+      body: JSON.stringify({ state: value, ...(knowledge ? { knowledge } : {}) })
     });
     window.ORIGOFragranceNotes.setState(result.state);
-    localStorage.setItem("origoFragranceNotesState", JSON.stringify(result.state));
+    try {
+      localStorage.setItem("origoFragranceNotesState", JSON.stringify(result.state));
+    } catch (storageError) {
+      console.warn("Saved note state is available on the server but not in local storage.", storageError);
+    }
   }
 }
 
@@ -5587,6 +5673,41 @@ async function optimizeGalleryImage(file) {
   return canvas.toDataURL("image/webp", .82);
 }
 
+async function optimizeProductOptionArtwork(file) {
+  const allowed = ["image/jpeg", "image/png", "image/webp", "image/avif", "image/svg+xml"];
+  if (!allowed.includes(file.type)) throw new Error(adminCopy("نوع الصورة غير مدعوم.", "Unsupported image type."));
+  if (file.size > 10 * 1024 * 1024) throw new Error(adminCopy("حجم الصورة أكبر من 10 MB.", "Image exceeds 10 MB."));
+  if (file.type === "image/svg+xml") {
+    if (file.size > 450_000) throw new Error(adminCopy("ملف SVG أكبر من 450 KB.", "SVG exceeds 450 KB."));
+    return fileAsDataURL(file);
+  }
+  const source = await fileAsDataURL(file);
+  const image = await new Promise((resolve, reject) => {
+    const preview = new Image();
+    preview.onload = () => resolve(preview);
+    preview.onerror = () => reject(new Error(adminCopy("تعذر قراءة الصورة. جرّب PNG أو JPG.", "Could not read the image. Try PNG or JPG.")));
+    preview.src = source;
+  });
+  const maxSide = 720;
+  const scale = Math.min(1, maxSide / Math.max(image.naturalWidth, image.naturalHeight));
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
+  canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
+  const context = canvas.getContext("2d", { alpha: true });
+  if (!context) throw new Error(adminCopy("تعذر تجهيز الصورة في المتصفح.", "The browser could not prepare the image."));
+  context.imageSmoothingEnabled = true;
+  context.imageSmoothingQuality = "high";
+  context.drawImage(image, 0, 0, canvas.width, canvas.height);
+  let quality = .86;
+  let optimized = canvas.toDataURL("image/webp", quality);
+  while (optimized.length > 620_000 && quality > .56) {
+    quality -= .08;
+    optimized = canvas.toDataURL("image/webp", quality);
+  }
+  if (optimized.length > 900_000) throw new Error(adminCopy("تعذر ضغط الصورة للحجم المناسب. اختر صورة أبسط.", "The image could not be reduced enough. Choose a simpler image."));
+  return optimized;
+}
+
 async function handleGalleryUpload(input) {
   const form = input.closest("#import-review-form");
   const draft = collectReviewProduct(form);
@@ -5888,7 +6009,7 @@ function openProductOptionDialog(holder) {
     <label>${adminCopy("الوصف بالعربية","Arabic description")}<textarea name="descriptionAr" dir="rtl" maxlength="1000"></textarea></label><label>${adminCopy("الوصف بالإنجليزية","English description")}<textarea name="descriptionEn" dir="ltr" maxlength="1000"></textarea></label>
     <label>${adminCopy("العائلة العطرية","Fragrance family")}<select name="familyId">${window.ORIGOFragranceNotes.families.map((family) => `<option value="${escapeHTML(family.id)}">${escapeHTML(family.nameAr)} · ${escapeHTML(family.nameEn)}</option>`).join("")}</select></label>
     <label>${adminCopy("الموضع الافتراضي","Default position")}<select name="position"><option value="multiple">${adminCopy("متعدد","Multiple")}</option><option value="top">${adminCopy("المقدمة","Top")}</option><option value="heart">${adminCopy("القلب","Heart")}</option><option value="base">${adminCopy("القاعدة","Base")}</option></select></label>` : "";
-  const uploadFields = ["note", "brand"].includes(group) ? `<input type="hidden" name="image"/><input type="hidden" name="icon"/><label class="wide option-image-upload"><span>${group === "brand" ? adminCopy("شعار العلامة التجارية من الملفات","Brand logo from files") : adminCopy("صورة النوتة من الملفات","Note image from files")}</span><input type="file" accept="image/jpeg,image/png,image/webp,image/avif,image/svg+xml" data-product-option-image-upload/><small>${adminCopy("PNG أو JPG أو WEBP أو SVG — هذه الصورة هي التي ستظهر في المتجر","PNG, JPG, WEBP or SVG — this artwork appears in the storefront")}</small></label><figure class="option-image-preview" hidden><img alt=""/><button type="button" data-action="remove-product-option-image">×</button></figure>` : `<input type="hidden" name="image"/><input type="hidden" name="icon"/>`;
+  const uploadFields = ["note", "brand"].includes(group) ? `<input type="hidden" name="image"/><input type="hidden" name="icon"/><label class="wide option-image-upload"><span>${group === "brand" ? adminCopy("شعار العلامة التجارية من الملفات","Brand logo from files") : adminCopy("صورة النوتة من الملفات","Note image from files")}</span><input type="file" accept="image/jpeg,image/png,image/webp,image/avif,image/svg+xml" data-product-option-image-upload/><small>${adminCopy("تُضغط الصورة تلقائيًا إلى WEBP شفاف وسريع — بحد أقصى 10 MB للملف الأصلي","Artwork is automatically optimized to a fast transparent WEBP — source up to 10 MB")}</small><em class="option-image-status" aria-live="polite"></em></label><figure class="option-image-preview" hidden><img alt=""/><figcaption></figcaption><button type="button" data-action="remove-product-option-image">×</button></figure>` : `<input type="hidden" name="image"/><input type="hidden" name="icon"/>`;
   dialog.innerHTML = `<form method="dialog"><header><div><small>${adminCopy("إدارة خصائص المنتج","Product attributes")}</small><h3>${group === "note" ? adminCopy("إضافة أو تعديل نوتة عطرية","Add or edit a fragrance note") : group === "brand" ? adminCopy("إضافة أو تعديل علامة تجارية","Add or edit a brand") : adminCopy("إضافة خيار جديد","Add a new option")}</h3></div><button type="button" data-action="close-product-option">×</button></header><input type="hidden" name="slug"/><div class="option-dialog-grid">${noteFields}<label>${adminCopy("الاسم بالعربية","Arabic name")}<input name="nameAr" dir="rtl" required maxlength="160"/></label><label>${adminCopy("الاسم بالإنجليزية","English name")}<input name="nameEn" dir="ltr" required maxlength="160"/></label>${uploadFields}<label>${adminCopy("لون اختياري","Optional color")}<input name="color" type="color" value="#7a001d"/></label><label>${adminCopy("ترتيب الظهور","Sort order")}<input name="sortOrder" type="number" min="0" value="0"/></label><label class="option-active"><input name="active" type="checkbox" checked/><span>${adminCopy("الخيار نشط","Option is active")}</span></label></div><footer><button type="button" class="button secondary-button" data-action="close-product-option">${adminCopy("إلغاء","Cancel")}</button><button type="button" class="button burgundy-button" data-action="save-product-option">${adminCopy("حفظ وإضافة","Save & add")}</button></footer><p class="option-dialog-error" hidden></p></form>`;
   document.body.append(dialog);
   dialog.showModal();
@@ -5927,7 +6048,8 @@ document.addEventListener("click", async (event) => {
     if (!form) return;
     Object.entries(defaultStoreSettings.appearance).forEach(([key, value]) => {
       const field = form.elements[`appearance.${key}`];
-      if (field) field.value = value;
+      if (field?.type === "checkbox") field.checked = Boolean(value);
+      else if (field) field.value = value;
     });
     form.querySelectorAll("[data-appearance-output]").forEach((output) => {
       const key = output.dataset.appearanceOutput;
@@ -6032,16 +6154,22 @@ document.addEventListener("click", async (event) => {
   if (action === "remove-product-option-image") {
     const dialog = actionElement.closest("dialog");
     dialog.querySelector("[name='image']").value = "";
+    const fileInput = dialog.querySelector("[data-product-option-image-upload]");
+    if (fileInput) fileInput.value = "";
+    const status = dialog.querySelector(".option-image-status");
+    if (status) status.textContent = "";
     dialog.querySelector(".option-image-preview").hidden = true;
     return;
   }
   if (action === "save-product-option") {
     const dialog = actionElement.closest("dialog");
     const form = dialog.querySelector("form");
+    const error = dialog.querySelector(".option-dialog-error");
+    if (form.dataset.imageProcessing === "true") { error.hidden=false; error.textContent=adminCopy("انتظر حتى يكتمل تجهيز الصورة.","Wait for the image to finish processing."); return; }
     const data = new FormData(form);
     const payload = { group:dialog.dataset.group, slug:String(data.get("slug") || "").trim(), nameAr:String(data.get("nameAr") || "").trim(), nameEn:String(data.get("nameEn") || "").trim(), image:String(data.get("image") || "").trim(), icon:String(data.get("icon") || "").trim(), color:String(data.get("color") || ""), sortOrder:Number(data.get("sortOrder") || 0), active:data.get("active") === "on" };
     if (payload.group === "note") payload.metadata = { descriptionAr:String(data.get("descriptionAr") || "").trim(), descriptionEn:String(data.get("descriptionEn") || "").trim(), familyId:String(data.get("familyId") || "uncategorized"), position:String(data.get("position") || "multiple"), value:String(data.get("existingOption") || "").trim() || payload.slug || payload.nameEn || payload.nameAr };
-    const error = dialog.querySelector(".option-dialog-error");
+    error.hidden = true;
     if (!payload.nameAr || !payload.nameEn) { error.hidden=false; error.textContent=adminCopy("أدخل الاسم بالعربية والإنجليزية.","Enter both Arabic and English names."); return; }
     if (["note", "brand"].includes(payload.group) && !payload.image) { error.hidden=false; error.textContent=adminCopy("ارفع الصورة من الملفات قبل الحفظ.","Upload the image file before saving."); return; }
     const duplicate = productOptionItems(payload.group).find((item) => item.slug !== payload.slug && [item.nameAr,item.nameEn].some((name) => [payload.nameAr,payload.nameEn].some((candidate) => normalizeOptionSearch(candidate) === normalizeOptionSearch(name))));
@@ -6052,7 +6180,7 @@ document.addEventListener("click", async (event) => {
       state.productOptions = [...state.productOptions.filter((item) => !(item.group === result.option.group && item.slug === result.option.slug)), result.option];
       if (payload.group === "note") {
         window.ORIGOFragranceNotes.upsertNote({ slug:result.option.slug, nameAr:payload.nameAr, nameEn:payload.nameEn, descriptionAr:payload.metadata.descriptionAr, descriptionEn:payload.metadata.descriptionEn, familyId:payload.metadata.familyId, position:payload.metadata.position, image:payload.image, symbol:payload.icon || "✦", aliases:[] });
-        await persistNotesState();
+        await persistNotesState({ syncKnowledge: false });
       }
       if (dialog.dataset.context === "manager") {
         dialog.close(); dialog.remove();
@@ -7567,17 +7695,32 @@ document.addEventListener("change", async (event) => {
   if (event.target.matches("[data-product-option-image-upload]")) {
     const file = event.target.files?.[0];
     if (!file) return;
-    if (file.size > 900_000) { event.target.value = ""; showToast(adminCopy("حجم الصورة أكبر من 900 KB", "Image exceeds 900 KB")); return; }
     const dialog = event.target.closest("dialog");
-    const reader = new FileReader();
-    reader.addEventListener("load", () => {
-      const value = String(reader.result || "");
+    const form = dialog.querySelector("form");
+    const status = dialog.querySelector(".option-image-status");
+    const saveButton = dialog.querySelector("[data-action='save-product-option']");
+    form.dataset.imageProcessing = "true";
+    if (status) status.textContent = adminCopy("جارٍ ضغط الصورة وتجهيزها…", "Optimizing artwork…");
+    if (saveButton) saveButton.disabled = true;
+    try {
+      const value = await optimizeProductOptionArtwork(file);
       dialog.querySelector("[name='image']").value = value;
       const preview = dialog.querySelector(".option-image-preview");
       preview.hidden = false;
       preview.querySelector("img").src = value;
-    }, { once:true });
-    reader.readAsDataURL(file);
+      const sizeKb = Math.max(1, Math.round(value.length * .75 / 1024));
+      const caption = preview.querySelector("figcaption");
+      if (caption) caption.textContent = adminCopy(`جاهزة للحفظ · نحو ${sizeKb} KB`, `Ready to save · about ${sizeKb} KB`);
+      if (status) status.textContent = adminCopy("تم تجهيز الصورة بنجاح.", "Artwork is ready.");
+    } catch (errorValue) {
+      event.target.value = "";
+      dialog.querySelector("[name='image']").value = "";
+      if (status) status.textContent = errorValue.message;
+      showToast(errorValue.message);
+    } finally {
+      form.dataset.imageProcessing = "false";
+      if (saveButton) saveButton.disabled = false;
+    }
     return;
   }
   if (event.target.matches("[data-logo-upload]")) {

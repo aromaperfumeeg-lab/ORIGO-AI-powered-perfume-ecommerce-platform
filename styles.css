@@ -9116,9 +9116,11 @@ body.dark .finder-admin-group label {
 .option-dialog-grid textarea{min-height:92px;resize:vertical}
 .option-dialog-grid .wide{grid-column:1/-1}
 .option-image-upload input{padding:8px;height:auto}
+.option-image-upload .option-image-status{min-height:22px;color:#17683a;font-size:13px;font-style:normal;font-weight:800}.option-image-upload .option-image-status:not(:empty)::before{content:"●";margin-inline-end:7px;color:#c8943d}
 .option-image-preview{grid-column:1/-1;position:relative;margin:0;display:flex;justify-content:center;border:1px solid #eadbd2;border-radius:12px;padding:10px;background:#fffaf7}
 .option-image-preview[hidden]{display:none}
 .option-image-preview img{width:112px;height:88px;object-fit:contain;border-radius:9px}
+.option-image-preview figcaption{align-self:center;margin-inline-start:12px;color:#17683a;font-size:13px;font-weight:800}
 .option-image-preview button{position:absolute;inset-inline-end:8px;top:8px;width:30px;height:30px;border:0;border-radius:50%;background:#720019;color:#fff;cursor:pointer}
 .brand-marquee-set button>img{width:52px;height:38px;object-fit:contain;border-radius:8px;background:#fff}
 .benefit-icon-upload{margin-top:10px;padding:10px;display:grid!important;grid-template-columns:64px 1fr;align-items:center;gap:6px 12px;border:1px solid var(--line);border-radius:10px;background:var(--paper)}.benefit-icon-upload>span,.benefit-icon-upload>small,.benefit-icon-upload>input{grid-column:2}.benefit-icon-upload>img{grid-column:1;grid-row:1/5;width:64px;height:64px;object-fit:contain;border:1px solid var(--line);border-radius:10px;background:#fff}.benefit-icon-upload>small{color:var(--muted);font-size:9px}.footer-benefit-icon img,.benefit-detail-art img{width:100%;height:100%;object-fit:contain}
@@ -9127,6 +9129,7 @@ body.dark .finder-admin-group label {
 .option-dialog-grid .option-active{display:flex;align-items:center;gap:8px;align-self:end;height:46px}
 .option-dialog-grid .option-active input{width:20px;height:20px}
 .product-option-dialog footer{justify-content:flex-end}
+.product-option-dialog footer button:disabled{opacity:.55;cursor:wait}
 .option-dialog-error{padding:10px;border-radius:8px;background:#fff0f0;color:#9b0b2a}
 .pricing-live-metrics{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,1fr);gap:1px;border:1px solid #ead9d0;border-radius:12px;overflow:hidden;background:#ead9d0}
 .pricing-live-metrics span{background:#fffaf7;padding:12px;display:flex;justify-content:space-between;gap:8px;color:#695b57}

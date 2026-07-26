@@ -479,3 +479,218 @@ body.dark .product-media-stage,body.dark .product-media-thumbnails .review-image
 
 /* The language label must remain readable on narrow phones. */
 @media(max-width:640px){.header-main,.compact .header-main{grid-template-columns:38px minmax(72px,1fr) minmax(96px,28vw) 94px}.header-preference-actions .lang-button{width:clamp(58px,18vw,70px);min-width:58px;padding-inline:4px;overflow:visible;font-size:10px}.header-preference-actions{min-width:96px}}
+
+/* Editable semantic palettes. These final rules intentionally override page-specific tints. */
+body:not(.dark){
+  --white:var(--origo-light-surface,#fff);
+  --paper:var(--origo-light-page,#fff);
+  --paper-2:color-mix(in srgb,var(--origo-light-burgundy,#720019) 4%,var(--origo-light-surface,#fff));
+  --card:var(--origo-light-surface,#fff);
+  --surface:var(--origo-light-surface,#fff);
+  --ink:var(--origo-light-text,#251519);
+  --ink-soft:var(--origo-light-muted,#6e5b60);
+  --muted:var(--origo-light-muted,#6e5b60);
+  --burgundy:var(--origo-light-burgundy,#720019);
+  --burgundy-2:color-mix(in srgb,var(--origo-light-burgundy,#720019) 82%,#fff);
+  --burgundy-deep:color-mix(in srgb,var(--origo-light-burgundy,#720019) 78%,#000);
+  --line:color-mix(in srgb,var(--origo-light-burgundy,#720019) 16%,transparent);
+  color:var(--origo-light-text,#251519);
+  background:var(--origo-light-page,#fff)!important;
+}
+body:not(.dark) :where(#storefront-main,.origo-home,.pdp-page,.commerce-page,.account-route-page,.catalog-page,.fragrance-finder-page,.alternatives-page,.benefit-detail-page,.brands-route-page){
+  background-color:var(--origo-light-page,#fff)!important;
+  background-image:none!important;
+}
+body:not(.dark) #storefront-main :where(.product-card,.checkout-main-card,.checkout-summary-card,.checkout-side-card,.account-subview,.recent-orders,.profile-card,.account-mobile-identity,.account-mobile-menu,.account-support-list,.catalog-filter-panel,.catalog-toolbar,.finder-card,.finder-option,.alternative-card,.benefit-content-card,.performance-card,.performance-insight-card),
+body:not(.dark) :where(.mega-dropdown,.brands-dropdown){
+  color:var(--origo-light-text,#251519)!important;
+  background:var(--origo-light-surface,#fff)!important;
+}
+body:not(.dark) .site-header,body:not(.dark) .category-nav{
+  color:var(--origo-light-burgundy,#720019)!important;
+  background:var(--origo-header-light,var(--origo-light-surface,#fff))!important;
+}
+
+body.dark,html[data-theme="dark"] body{
+  --white:var(--origo-dark-surface,#4b4d52);
+  --paper:var(--origo-dark-page,#3b3c40);
+  --paper-2:var(--origo-dark-elevated,#5a5c62);
+  --card:var(--origo-dark-surface,#4b4d52);
+  --surface:var(--origo-dark-surface,#4b4d52);
+  --ink:var(--origo-dark-text,#fff);
+  --ink-soft:var(--origo-dark-muted,#f0f0f2);
+  --muted:var(--origo-dark-muted,#f0f0f2);
+  --burgundy:var(--origo-dark-burgundy,#720019);
+  --burgundy-2:color-mix(in srgb,var(--origo-dark-burgundy,#720019) 78%,#fff);
+  --burgundy-deep:color-mix(in srgb,var(--origo-dark-burgundy,#720019) 78%,#000);
+  --line:color-mix(in srgb,var(--origo-dark-text,#fff) 22%,transparent);
+  color:var(--origo-dark-text,#fff)!important;
+  background:var(--origo-dark-page,#3b3c40)!important;
+}
+body.dark :where(#storefront-main,.origo-home,.pdp-page,.commerce-page,.account-route-page,.catalog-page,.fragrance-finder-page,.alternatives-page,.benefit-detail-page,.brands-route-page,.origo-footer),
+html[data-theme="dark"] :where(#storefront-main,.origo-home,.pdp-page,.commerce-page,.account-route-page,.catalog-page,.fragrance-finder-page,.alternatives-page,.benefit-detail-page,.brands-route-page,.origo-footer){
+  color:var(--origo-dark-text,#fff)!important;
+  background:var(--origo-dark-page,#3b3c40)!important;
+}
+body.dark :where(.product-card,.checkout-main-card,.checkout-summary-card,.checkout-side-card,.account-subview,.recent-orders,.profile-card,.vip-promo,.account-mobile-identity,.account-mobile-menu,.account-support-list,.performance-card,.performance-insight-card,.pdp-card,.pdp-purchase,.catalog-filter-panel,.catalog-toolbar,.finder-card,.finder-option,.alternative-card,.benefit-content-card,.mega-dropdown,.brands-dropdown,[class*="-panel"],[class*="-dialog"]),
+html[data-theme="dark"] :where(.product-card,.checkout-main-card,.checkout-summary-card,.checkout-side-card,.account-subview,.recent-orders,.profile-card,.vip-promo,.account-mobile-identity,.account-mobile-menu,.account-support-list,.performance-card,.performance-insight-card,.pdp-card,.pdp-purchase,.catalog-filter-panel,.catalog-toolbar,.finder-card,.finder-option,.alternative-card,.benefit-content-card,.mega-dropdown,.brands-dropdown,[class*="-panel"],[class*="-dialog"]){
+  color:var(--origo-dark-text,#fff)!important;
+  border-color:color-mix(in srgb,var(--origo-dark-text,#fff) 22%,transparent)!important;
+  background:var(--origo-dark-surface,#4b4d52)!important;
+}
+body.dark :where(input,textarea,select),html[data-theme="dark"] :where(input,textarea,select){
+  color:var(--origo-dark-text,#fff)!important;
+  border-color:color-mix(in srgb,var(--origo-dark-text,#fff) 28%,transparent)!important;
+  background:var(--origo-dark-elevated,#5a5c62)!important;
+}
+body.dark .site-header,body.dark .category-nav,html[data-theme="dark"] .site-header,html[data-theme="dark"] .category-nav{
+  color:var(--origo-dark-text,#fff)!important;
+  background:var(--origo-header-dark,var(--origo-dark-surface,#4b4d52))!important;
+  border-color:color-mix(in srgb,var(--origo-dark-text,#fff) 22%,transparent)!important;
+}
+body.dark :where(.burgundy-button,.pdp-add,.action-count),html[data-theme="dark"] :where(.burgundy-button,.pdp-add,.action-count){
+  color:var(--origo-dark-text,#fff)!important;
+  background:var(--origo-dark-burgundy,#720019)!important;
+}
+body.dark :where(h1,h2,h3,h4,h5,h6,p,b,strong,label,legend,summary,a,button,li,span),
+html[data-theme="dark"] :where(h1,h2,h3,h4,h5,h6,p,b,strong,label,legend,summary,a,button,li,span){color:var(--origo-dark-text,#fff)}
+body.dark :where(small,.muted,[class*="-muted"],[class*="-subtitle"]),
+html[data-theme="dark"] :where(small,.muted,[class*="-muted"],[class*="-subtitle"]){color:var(--origo-dark-muted,#f0f0f2)!important}
+
+.appearance-palette-editor{margin-top:18px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.appearance-palette-editor fieldset{min-width:0;padding:16px;border:1px solid var(--line);border-radius:14px;background:var(--surface,#fff)}
+.appearance-palette-editor legend{padding:0 8px;color:var(--burgundy);font-weight:850}
+.appearance-color-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+.appearance-color-grid label{min-width:0;display:flex!important;align-items:center;justify-content:space-between;gap:10px;padding:9px;border:1px solid var(--line);border-radius:10px}
+.appearance-color-grid input[type="color"]{width:44px!important;height:38px!important;min-height:38px!important;padding:2px!important;flex:0 0 auto;cursor:pointer}
+.appearance-dual-preview{margin-top:15px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.appearance-dual-preview article{min-height:112px;padding:16px;display:grid;grid-template-columns:42px 1fr;align-items:center;gap:12px;border:1px solid;border-radius:14px}
+.appearance-dual-preview article>span{width:42px;height:42px;display:grid;place-items:center;border-radius:50%;font-size:21px}
+.appearance-dual-preview article p{margin:4px 0 0;font-size:12px}
+.appearance-dual-preview [data-palette-preview="light"]{color:var(--origo-light-text,#251519);border-color:color-mix(in srgb,var(--origo-light-burgundy,#720019) 18%,transparent);background:var(--origo-light-page,#fff)}
+.appearance-dual-preview [data-palette-preview="light"]>span{color:#fff;background:var(--origo-light-burgundy,#720019)}
+.appearance-dual-preview [data-palette-preview="light"] p{color:var(--origo-light-muted,#6e5b60)}
+.appearance-dual-preview [data-palette-preview="dark"]{color:var(--origo-dark-text,#fff);border-color:color-mix(in srgb,var(--origo-dark-text,#fff) 22%,transparent);background:var(--origo-dark-page,#3b3c40)}
+.appearance-dual-preview [data-palette-preview="dark"]>span{color:var(--origo-dark-text,#fff);background:var(--origo-dark-burgundy,#720019)}
+.appearance-dual-preview [data-palette-preview="dark"] p{color:var(--origo-dark-muted,#f0f0f2)}
+@media(max-width:760px){.appearance-palette-editor,.appearance-dual-preview{grid-template-columns:1fr}}
+@media(max-width:480px){.appearance-color-grid{grid-template-columns:1fr}}
+
+.appearance-balance-studio{margin:0 0 18px;display:grid;grid-template-columns:minmax(280px,.85fr) minmax(360px,1.15fr);gap:16px;align-items:stretch}
+.appearance-master-switch{margin:0!important;padding:18px!important;display:grid!important;grid-template-columns:auto auto 1fr;align-items:center;gap:13px;border:1px solid color-mix(in srgb,var(--burgundy) 20%,var(--line));border-radius:16px;background:linear-gradient(145deg,color-mix(in srgb,var(--burgundy) 5%,var(--surface,#fff)),var(--surface,#fff));cursor:pointer}
+.appearance-master-switch>input{position:absolute;opacity:0;pointer-events:none}.appearance-master-switch>span:last-child{display:grid;gap:5px}.appearance-master-switch b{font-size:18px;line-height:1.4}.appearance-master-switch small{font-size:14px;line-height:1.65;color:var(--muted)}
+.appearance-switch-track{width:58px;height:32px;padding:3px;display:flex;align-items:center;border-radius:999px;background:#bbb;box-shadow:inset 0 1px 3px #0002;transition:.22s}.appearance-switch-track i{width:26px;height:26px;border-radius:50%;background:#fff;box-shadow:0 2px 7px #0003;transition:.22s}
+.appearance-master-switch>input:checked+.appearance-switch-track{background:var(--burgundy)}.appearance-master-switch>input:checked+.appearance-switch-track i{transform:translateX(26px)}[dir="rtl"] .appearance-master-switch>input:checked+.appearance-switch-track i{transform:translateX(-26px)}
+.appearance-layout-preview{margin:0;padding:14px;border:1px solid var(--line);border-radius:16px;background:var(--surface,#fff);overflow:hidden}.appearance-layout-preview figcaption{margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;gap:10px}.appearance-layout-preview figcaption b{font-size:16px}.appearance-layout-preview figcaption small{font-size:12px;color:var(--muted)}
+.layout-preview-window{overflow:hidden;border:1px solid color-mix(in srgb,var(--ink) 12%,transparent);border-radius:12px;background:var(--origo-light-page,#fff);box-shadow:0 10px 28px #20050d12}.layout-preview-bar{height:25px;padding:0 9px;display:flex;align-items:center;gap:5px;background:var(--origo-light-burgundy,#720019)}.layout-preview-bar i{width:6px;height:6px;border-radius:50%;background:#fff8}.layout-preview-bar span{margin-inline-start:auto;color:#fff;font:700 9px/1 sans-serif;letter-spacing:2px}
+.layout-preview-scenes{padding:9px;display:grid;grid-template-columns:1fr 1.08fr;gap:9px;color:var(--origo-light-text,#251519)}.layout-preview-scenes>section{min-width:0;padding:8px;border:1px solid color-mix(in srgb,var(--origo-light-burgundy,#720019) 13%,transparent);border-radius:9px}.layout-preview-scenes strong{display:block;margin-bottom:7px;font-size:10px}.layout-preview-shop{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}.layout-preview-shop i{height:46px;border-radius:6px;background:linear-gradient(#eee 68%,var(--origo-light-burgundy,#720019) 69% 74%,#f6f1f2 75%)}.layout-preview-scenes>section>p{margin:6px 0 0;display:grid;gap:3px}.layout-preview-scenes>section>p span{height:3px;border-radius:9px;background:#ddd}.layout-preview-scenes>section>p span:last-child{width:68%}
+.layout-preview-admin{height:58px;display:grid;grid-template-columns:32px 1fr;gap:6px}.layout-preview-admin aside{padding:5px 4px;display:grid;align-content:start;gap:5px;border-radius:5px;background:#28282b}.layout-preview-admin aside i{height:4px;border-radius:4px;background:#fff9}.layout-preview-admin main{padding:5px;display:grid;gap:5px;border-radius:5px;background:#f4f4f5}.layout-preview-admin main>b{width:54%;height:6px;border-radius:5px;background:var(--origo-light-burgundy,#720019)}.layout-preview-admin main>p{margin:0;width:82%;height:4px;border-radius:4px;background:#aaa}.layout-preview-admin main>div{display:grid;grid-template-columns:1fr 1fr;gap:4px}.layout-preview-admin main i{border-radius:4px;background:#fff;box-shadow:0 0 0 1px #ddd}
+html[data-balanced-layout="false"] .appearance-layout-preview{filter:saturate(.72)}html[data-balanced-layout="false"] .layout-preview-scenes{padding:14px;gap:14px}html[data-balanced-layout="false"] .layout-preview-shop{gap:9px}html[data-balanced-layout="false"] .layout-preview-scenes strong{font-size:8px}
+@media(max-width:900px){.appearance-balance-studio{grid-template-columns:1fr}.appearance-layout-preview{min-height:0}}
+@media(max-width:520px){.appearance-master-switch{grid-template-columns:auto 1fr}.appearance-master-switch>span:last-child{grid-column:1/-1}.layout-preview-scenes{grid-template-columns:1fr}}
+
+/* Balanced density and legibility: tighter rhythm with larger useful typography. */
+#storefront-main>section,.origo-home>section{margin-block-end:var(--origo-section-gap,20px)}
+.home-brand-directory,.home-new-arrivals,.home-brand-showcases{margin-top:var(--origo-section-gap,20px)}
+.home-benefits{min-height:150px;padding:16px 18px;gap:12px}
+.home-benefits article{min-height:92px;padding:10px;gap:5px}
+.home-benefits b{font-size:15px}.home-benefits small{font-size:13px;line-height:1.55}
+.home-gender-section,.home-best-sellers{padding-top:14px}
+.gender-grid{gap:16px}.home-promo-strip{margin-top:16px}.home-promo-strip article{padding-inline:18px;gap:14px}
+.home-best-sellers .product-grid{gap:14px;padding-inline:12px}
+.home-best-sellers .product-image{height:210px;padding:12px}
+.home-best-sellers .product-info{padding:7px 12px 11px}
+.home-best-sellers .product-brand{font-size:13px}.home-best-sellers .product-info h3{font-size:15px;line-height:1.5}
+.home-best-sellers .product-rating small{font-size:12px}.home-best-sellers .product-price{font-size:16px}
+.home-categories{gap:10px;margin-block:12px}.home-categories a{height:88px;gap:5px}.home-categories b{font-size:13px}
+.catalog-main{padding:24px 24px 44px}.catalog-search-area{gap:12px}.catalog-results-toolbar{min-height:60px}
+.catalog-breadcrumb{padding-bottom:12px;font-size:13px}.catalog-filter-heading{padding:14px 0 8px}.catalog-filter-heading h2{font-size:17px}
+.catalog-filter-section>button{min-height:44px;font-size:14px}.catalog-check{min-height:34px;font-size:13px}.catalog-check small{font-size:11px}
+.catalog-brand-search,.catalog-price-inputs input{font-size:13px}.catalog-search-box>input{font-size:14px}.catalog-description-button{font-size:13px}
+.catalog-autocomplete-group>small{font-size:11px}.catalog-autocomplete button{font-size:13px}.catalog-autocomplete button small{font-size:11px}
+.catalog-quick-filters button{font-size:12px}.catalog-active-filters>button{font-size:11px}.catalog-sort-controls label span,.catalog-sort-controls select,.catalog-mobile-toolbar select{font-size:12px}
+.catalog-product-grid .perfume-product-card .product-card-secondary-name{font-size:11px}.catalog-product-grid .perfume-product-card .product-card-type{font-size:11px}
+
+.advanced-admin-panel,.product-admin-overlay{font-size:calc(var(--origo-base-font-size,17px) * var(--origo-admin-scale,1.1));line-height:1.65}
+.advanced-admin-panel{grid-template-columns:282px minmax(0,1fr)}
+#advanced-admin-nav>small{font-size:14px}#advanced-admin-nav button{min-height:50px;font-size:17px}#advanced-admin-nav button b{font-size:12px}
+.advanced-admin-body{padding:clamp(18px,2vw,26px)}
+.admin-view-head{margin-bottom:16px}.admin-view-head h1{font-size:clamp(32px,2.2vw,42px)}.admin-view-head p{font-size:17px;line-height:1.65}
+.admin-dashboard-content{gap:15px}.admin-metrics-grid{gap:12px}.admin-metric{min-height:124px;padding:17px}.admin-metric small{font-size:15px}
+.admin-chart-card{min-height:330px;padding:18px}.admin-chart-card h3{font-size:20px}.admin-chart-card>footer{font-size:15px}
+.catalog-review{padding:16px 18px 88px}.catalog-review .review-section{margin-top:14px;padding:18px}.catalog-review .review-section-head{margin-bottom:13px}
+.catalog-review .review-section-head b{font-size:clamp(20px,1.5vw,24px)}.catalog-review .review-section-head small{font-size:14px}
+.catalog-review label,.admin-settings-form label{font-size:16px;line-height:1.65}
+.catalog-review :where(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),select,textarea),.admin-settings-form :where(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),select,textarea){min-height:48px;font-size:16px}
+.advanced-admin-panel :where(button,.button){font-size:15px}.review-submit b{font-size:16px}.review-submit small{font-size:14px}
+.admin-table-card :where(th,td),.catalog-admin-table :where(th,td){font-size:15px;line-height:1.55}
+
+@media(max-width:900px){
+  .home-benefits{min-height:0;padding:10px;gap:8px}.home-benefits article{min-height:96px}.home-benefits b{font-size:14px}.home-benefits small{font-size:12px}
+  .catalog-main{padding:16px 12px 84px}.catalog-search-box>input{font-size:13px}.catalog-mobile-toolbar>button,.catalog-mobile-toolbar label{font-size:12px}
+  .catalog-product-grid{gap:8px}.catalog-product-grid .perfume-product-card .product-card-info{padding:10px}.catalog-product-grid .perfume-product-card .product-info h3{font-size:14px}.catalog-product-grid .perfume-product-card .product-card-type{font-size:10px}
+}
+@media(max-width:760px){
+  .advanced-admin-panel{grid-template-columns:1fr}.advanced-admin-sidebar{width:min(310px,90vw)}.advanced-admin-body{padding:14px 10px}
+  .catalog-review{padding:10px 10px 132px}.catalog-review .review-section{padding:14px}.catalog-review label,.admin-settings-form label{font-size:15px}
+  .catalog-review :where(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),select,textarea),.admin-settings-form :where(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),select,textarea){font-size:16px}
+}
+
+/* Manual mode restores independent spacing and typography controls. */
+html[data-balanced-layout="false"] .home-benefits{min-height:174px;padding:22px 28px;gap:22px}
+html[data-balanced-layout="false"] .home-benefits article{min-height:104px;padding:14px}
+html[data-balanced-layout="false"] .home-best-sellers .product-grid{gap:18px;padding-inline:18px}
+html[data-balanced-layout="false"] .home-best-sellers .product-image{height:218px;padding:16px}
+html[data-balanced-layout="false"] .catalog-main{padding:34px 32px 58px}
+html[data-balanced-layout="false"] .advanced-admin-panel{grid-template-columns:260px minmax(0,1fr)}
+html[data-balanced-layout="false"] #advanced-admin-nav button{min-height:46px;font-size:16px}
+html[data-balanced-layout="false"] .advanced-admin-body{padding:clamp(24px,3vw,38px)}
+html[data-balanced-layout="false"] .admin-view-head h1{font-size:clamp(28px,2vw,36px)}
+html[data-balanced-layout="false"] .admin-view-head p{font-size:15px}
+html[data-balanced-layout="false"] .catalog-review label,html[data-balanced-layout="false"] .admin-settings-form label{font-size:15px}
+
+/* Final admin readability pass: replace legacy micro type and oversized empty rhythm. */
+html:not([data-balanced-layout="false"]) .advanced-admin-panel{font-size:18px;line-height:1.6}
+html:not([data-balanced-layout="false"]) .admin-sidebar-brand small{font-size:11px!important}
+html:not([data-balanced-layout="false"]) #advanced-admin-nav>small{margin:13px 12px 6px;font-size:12px!important}
+html:not([data-balanced-layout="false"]) #advanced-admin-nav button{min-height:48px;padding:9px 12px;grid-template-columns:28px 1fr auto;gap:10px;font-size:16px!important}
+html:not([data-balanced-layout="false"]) #advanced-admin-nav button i{width:28px;height:28px;font-size:15px}
+html:not([data-balanced-layout="false"]) #advanced-admin-nav button b{min-width:24px;padding:3px 7px;font-size:11px!important}
+html:not([data-balanced-layout="false"]) .admin-breadcrumb{font-size:13px!important}
+html:not([data-balanced-layout="false"]) .admin-view-head{margin-bottom:16px;gap:14px}
+html:not([data-balanced-layout="false"]) .admin-view-head p{font-size:16px!important;line-height:1.55}
+html:not([data-balanced-layout="false"]) .admin-view-actions .button{min-height:46px;padding:10px 16px;font-size:15px!important}
+html:not([data-balanced-layout="false"]) .admin-metric-card{min-height:116px;padding:15px;border-radius:12px}
+html:not([data-balanced-layout="false"]) .admin-metric-card header i{font-size:12px!important}
+html:not([data-balanced-layout="false"]) .admin-metric-card>small{font-size:14px!important}
+html:not([data-balanced-layout="false"]) .admin-settings-form{padding:18px;border-radius:14px}
+html:not([data-balanced-layout="false"]) .admin-settings-form>section+section{margin-top:18px}
+html:not([data-balanced-layout="false"]) .admin-settings-tabs{margin-bottom:18px}
+html:not([data-balanced-layout="false"]) .admin-settings-tabs button{min-height:46px;padding:9px 14px;font-size:15px}
+html:not([data-balanced-layout="false"]) .admin-toggle-row{padding:11px 0;gap:14px}
+html:not([data-balanced-layout="false"]) .admin-toggle-row b{font-size:16px!important}
+html:not([data-balanced-layout="false"]) .admin-toggle-row small{font-size:13px!important;line-height:1.5}
+html:not([data-balanced-layout="false"]) .advanced-admin-panel :where(.admin-chart-card,.admin-status-card,.admin-list-card,.admin-alerts-card,.admin-data-table,.admin-generic-grid article,.admin-report-grid article){border-radius:12px}
+html:not([data-balanced-layout="false"]) .advanced-admin-panel :where(.admin-chart-card,.admin-status-card,.admin-list-card,.admin-alerts-card){padding:17px}
+html:not([data-balanced-layout="false"]) .advanced-admin-panel :where(.admin-data-table,.admin-table-card,.catalog-admin-table) :where(th,td){padding:11px 12px;font-size:15px!important;line-height:1.5}
+html:not([data-balanced-layout="false"]) .catalog-review .review-grid,html:not([data-balanced-layout="false"]) .admin-settings-form .review-grid{gap:14px}
+html:not([data-balanced-layout="false"]) .smart-select-control{min-height:50px;padding:7px 11px}
+html:not([data-balanced-layout="false"]) .smart-select-chips>small{font-size:14px!important}
+html:not([data-balanced-layout="false"]) .smart-select-chips>i{padding:6px 9px;font-size:14px}
+html:not([data-balanced-layout="false"]) .smart-select-options [role=option]{min-height:52px;padding:9px;font-size:15px}
+html:not([data-balanced-layout="false"]) .smart-select-options [role=option]>img,html:not([data-balanced-layout="false"]) .smart-select-options [role=option]>em{width:40px;height:40px}
+html:not([data-balanced-layout="false"]) .product-options-groups{gap:13px;margin-top:16px}
+html:not([data-balanced-layout="false"]) .product-options-groups>section{padding:13px}
+html:not([data-balanced-layout="false"]) .product-options-groups article{min-height:58px;padding:9px;font-size:15px}
+html:not([data-balanced-layout="false"]) .product-options-groups article>img,html:not([data-balanced-layout="false"]) .product-options-groups article>i{width:42px;height:42px}
+html:not([data-balanced-layout="false"]) .product-options-groups article small{font-size:13px!important}
+html:not([data-balanced-layout="false"]) .product-option-dialog{font-size:16px}
+html:not([data-balanced-layout="false"]) .product-option-dialog form{padding:20px}
+html:not([data-balanced-layout="false"]) .option-dialog-grid{gap:12px;padding:16px 0}
+@media(max-width:760px){
+  html:not([data-balanced-layout="false"]) .advanced-admin-body{padding:13px 10px 82px}
+  html:not([data-balanced-layout="false"]) .admin-view-head h1{font-size:30px}
+  html:not([data-balanced-layout="false"]) .admin-view-head p{font-size:15px!important}
+  html:not([data-balanced-layout="false"]) .admin-settings-form{padding:13px}
+  html:not([data-balanced-layout="false"]) .admin-metric-card{min-height:108px}
+}
