@@ -4556,6 +4556,17 @@ function productCardMarkup(product, options = {}) {
   const sizeLabel = variant?.size || (product.sizes || [])[0] || "";
   const formattedSize = formatProductSize(sizeLabel);
   const concentrationLabel = product.concentration || product.fragranceType || "EDP";
+  const rawGender = String(product.gender || product.forGender || product.filters?.gender || "").toLowerCase();
+  const genderLabel = /women|female|نسائ/.test(rawGender)
+    ? (isArabic ? "نسائي" : "Women")
+    : /men|male|رجال|رجالي/.test(rawGender)
+      ? (isArabic ? "رجالي" : "Men")
+      : /unisex|both|للجنسين/.test(rawGender)
+        ? (isArabic ? "للجنسين" : "Unisex")
+        : "";
+  const ratingValue = Number(product.averageRating ?? product.ratingAverage ?? product.rating ?? 0);
+  const ratingCount = Number(product.reviewCount ?? product.reviewsCount ?? product.ratingCount ?? 0);
+  const hasRating = Number.isFinite(ratingValue) && ratingValue > 0;
   const loyaltyPoints = Number(variant?.loyaltyPoints ?? product.loyaltyPoints);
   const delayStyle = Number.isFinite(options.delay) ? ` style="transition-delay:${options.delay}ms"` : "";
   const context = escapeHTML(options.context || "grid");
@@ -4579,7 +4590,7 @@ function productCardMarkup(product, options = {}) {
     </div>
     <div class="product-info product-card-info">
       <div class="product-card-summary">
-        <div class="product-card-identity"><div class="product-brand">${escapeHTML(product.brand || "ORIGO")}</div><div class="product-card-title-row"><div><h3>${escapeHTML(name || (isArabic ? "منتج جديد" : "New product"))}</h3>${secondaryName && secondaryName !== name ? `<p class="product-card-secondary-name">${escapeHTML(secondaryName)}</p>` : ""}</div><p class="product-card-type"><bdi dir="ltr">${escapeHTML(concentrationLabel)}</bdi>${formattedSize ? `<span aria-hidden="true">·</span><bdi dir="ltr">${escapeHTML(formattedSize)}</bdi>` : ""}</p></div></div>
+        <div class="product-card-identity"><div class="product-brand">${escapeHTML(product.brand || "ORIGO")}</div><div class="product-card-title-row"><div><h3>${escapeHTML(name || (isArabic ? "منتج جديد" : "New product"))}</h3>${secondaryName && secondaryName !== name ? `<p class="product-card-secondary-name">${escapeHTML(secondaryName)}</p>` : ""}</div><p class="product-card-type">${genderLabel ? `<span>${escapeHTML(genderLabel)}</span><span aria-hidden="true">·</span>` : ""}<bdi dir="ltr">${escapeHTML(concentrationLabel)}</bdi>${formattedSize ? `<span aria-hidden="true">·</span><bdi dir="ltr">${escapeHTML(formattedSize)}</bdi>` : ""}</p>${hasRating ? `<div class="product-card-rating" aria-label="${escapeHTML(isArabic ? `التقييم ${ratingValue.toFixed(1)} من 5` : `Rated ${ratingValue.toFixed(1)} out of 5`)}"><span aria-hidden="true">★★★★★</span><small><bdi dir="ltr">${ratingValue.toFixed(1)}</bdi>${ratingCount > 0 ? ` (${Math.round(ratingCount)})` : ""}</small></div>` : ""}</div></div>
         <div class="product-card-price-row"><b class="product-price">${formatPrice(price)}</b>${oldPrice > price ? `<span><del>${formatPrice(oldPrice)}</del><em>-${discount}%</em></span>` : ""}${Number.isFinite(loyaltyPoints) && loyaltyPoints > 0 ? `<small>◉ +${Math.round(loyaltyPoints)} ${isArabic ? "نقطة ORIGO" : "ORIGO points"}</small>` : ""}</div>
       </div>
       ${options.meta ? `<p class="product-card-meta">${escapeHTML(options.meta)}</p>` : ""}

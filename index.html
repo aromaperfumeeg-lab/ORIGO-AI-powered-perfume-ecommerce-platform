@@ -3,6 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <base href="/" />
+    <script>
+      if (window.location.protocol === "file:") {
+        window.location.replace("http://127.0.0.1:4173/");
+      }
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#6d0d24" />
     <meta
@@ -28,7 +33,7 @@
     <link rel="stylesheet" href="alternatives.css?v=1" />
     <link rel="stylesheet" href="performance-insights.css?v=3" />
 <link rel="stylesheet" href="shell.css?v=5" />
-    <link rel="stylesheet" href="appearance.css?v=6" />
+    <link rel="stylesheet" href="appearance.css?v=10" />
     <link rel="stylesheet" href="notes-admin-fixes.css?v=1" />
     <link rel="stylesheet" href="components/product-card/perfume-aura.css?v=4" />
   </head>
@@ -990,7 +995,7 @@
     <script src="external-tracking.js?v=1"></script>
   <script src="components/product-card/perfume-card-components.js?v=2"></script>
   <script src="components/product-card/perfume-aura-controller.js?v=3"></script>
-  <script src="app.js?v=38"></script>
+  <script src="app.js?v=39"></script>
   <script src="alternatives.js?v=1"></script>
   <script src="performance-insights.js?v=2"></script>
   <script src="commerce.js?v=2"></script>
