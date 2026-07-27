@@ -4428,7 +4428,7 @@ function productCardAuraNotes(product, isArabic = state.lang === "ar") {
   }).filter(Boolean);
   const isKhamrah = /khamrah|خمر[ةه]/.test(ORIGOCatalog.normalize(`${product.nameAr || ""} ${product.nameEn || ""}`));
   if (isKhamrah && notes.length < 6) {
-    window.ORIGOProductCardComponents.FALLBACK_NOTES.forEach((fallback) => {
+    resolveProductCardComponents().FALLBACK_NOTES.forEach((fallback) => {
       if (notes.length >= 6) return;
       const key = ORIGOCatalog.normalize(isArabic ? fallback.nameAr : fallback.nameEn);
       if (seen.has(key) || notes.some((note) => ORIGOCatalog.normalize(note.nameEn) === ORIGOCatalog.normalize(fallback.nameEn))) return;
@@ -4437,6 +4437,42 @@ function productCardAuraNotes(product, isArabic = state.lang === "ar") {
     });
   }
   return notes.slice(0, 6);
+}
+
+function resolveProductCardComponents() {
+  const components = window.ORIGOProductCardComponents;
+  const required = [
+    "cardEdgeEffects",
+    "perfumeAura",
+    "perfumeSmokeAura",
+    "noteBubbles",
+    "performanceBubbles",
+    "productDots",
+    "topActions",
+    "addToCartButton",
+    "performanceTrigger"
+  ];
+  if (components && required.every((key) => typeof components[key] === "function")) return components;
+
+  return {
+    FALLBACK_NOTES: [],
+    cardEdgeEffects: () => "",
+    perfumeAura: () => "",
+    perfumeSmokeAura: () => "",
+    noteBubbles: () => "",
+    performanceBubbles: () => "",
+    productDots: (mediaCount, activeIndex, productId, isArabic) => mediaCount <= 1
+      ? `<div class="card-image-dots card-image-dots--single" aria-hidden="true"><span class="active"></span></div>`
+      : `<div class="card-image-dots" aria-label="${isArabic ? "صور المنتج" : "Product images"}">${Array.from({ length: mediaCount }, (_, index) => `<button data-action="card-image-index" data-id="${escapeHTML(productId)}" data-index="${index}" class="${index === activeIndex ? "active" : ""}" aria-label="${isArabic ? `الصورة ${index + 1}` : `Image ${index + 1}`}"></button>`).join("")}</div>`,
+    topActions: ({ saved, compared, interactive, disabled, favoriteLabel, compareLabel }) => `<div class="product-card-top-actions">
+      <button class="card-action-button card-favorite-button${saved ? " active" : ""}"${interactive ? ` data-action="toggle-wishlist"` : disabled} aria-label="${escapeHTML(favoriteLabel)}" aria-pressed="${saved}">♡</button>
+      <button class="card-action-button card-compare-button${compared ? " active" : ""}"${interactive ? ` data-action="toggle-product-compare"` : disabled} aria-label="${escapeHTML(compareLabel)}" aria-pressed="${compared}">⚖</button>
+    </div>`,
+    addToCartButton: ({ interactive, disabled, outOfStock, label, unavailableLabel }) => `<button class="card-add-button"${interactive ? ` data-action="add-to-cart"` : disabled} aria-label="${escapeHTML(label)}"${outOfStock ? " disabled" : ""}>
+      <i aria-hidden="true">▢</i><span class="card-add-label">${escapeHTML(outOfStock ? unavailableLabel : label)}</span><span class="card-add-loading" aria-hidden="true"></span>
+    </button>`,
+    performanceTrigger: () => ""
+  };
 }
 
 function productCardPerformance(product, isArabic = state.lang === "ar") {
@@ -4524,7 +4560,7 @@ function productCardMarkup(product, options = {}) {
   const delayStyle = Number.isFinite(options.delay) ? ` style="transition-delay:${options.delay}ms"` : "";
   const context = escapeHTML(options.context || "grid");
   const disabled = interactive ? "" : " disabled tabindex=\"-1\"";
-  const cardComponents = window.ORIGOProductCardComponents;
+  const cardComponents = resolveProductCardComponents();
   const favoriteLabel = saved ? translations[state.lang].removeFavorite : translations[state.lang].favorites;
   const compareLabel = isArabic ? "مقارنة المنتج" : "Compare product";
   const dotsMarkup = cardComponents.productDots(media.length, imageIndex, product.id, isArabic);

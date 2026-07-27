@@ -1603,9 +1603,11 @@ async function serveStatic(request, response, url) {
     const info = await stat(filePath);
     if (!info.isFile()) throw new Error("Not a file");
     const data = await readFile(filePath);
+    const extension = extname(filePath).toLowerCase();
+    const isRuntimeAsset = [".html", ".js", ".mjs", ".css"].includes(extension);
     response.writeHead(200, {
-      "Cache-Control": filePath.endsWith(".html") ? "no-cache" : "public, max-age=300",
-      "Content-Type": mimeTypes[extname(filePath).toLowerCase()] || "application/octet-stream",
+      "Cache-Control": isRuntimeAsset ? "no-cache" : "public, max-age=300",
+      "Content-Type": mimeTypes[extension] || "application/octet-stream",
       "X-Content-Type-Options": "nosniff"
     });
     if (request.method === "HEAD") response.end();
