@@ -4456,13 +4456,27 @@ function productCardPerformance(product, isArabic = state.lang === "ar") {
   const longevitySource = performance.longevity ?? performance.longevityScore ?? filterData.longevity ?? product.insights?.longevity;
   const sillage = normalizeScore(sillageSource);
   const longevity = normalizeScore(longevitySource);
+  const rawSillageRating = Number(sillageSource);
+  const sillageRating = Number.isFinite(rawSillageRating)
+    ? Math.max(1, Math.min(5, rawSillageRating > 5 ? rawSillageRating / 2 : rawSillageRating))
+    : sillage;
+  const sillageRatingLabel = Number.isInteger(sillageRating) ? String(sillageRating) : sillageRating.toFixed(1);
+  const percentage = (source, fallback) => {
+    const numeric = Number(source);
+    if (!Number.isFinite(numeric)) return fallback;
+    return Math.round(Math.max(0, Math.min(100, numeric > 5 ? numeric * 10 : numeric * 20)));
+  };
+  const projectionPercentage = percentage(sillageSource, 85);
+  const longevityPercentage = percentage(longevitySource, 92);
   const longevityHours = isKhamrah ? Math.max(10, Math.round(Number(longevitySource) || 10)) : (Number(longevitySource) > 5 ? Math.round(Number(longevitySource)) : 10);
   const sillageValue = sillage >= 4 ? (isArabic ? "قوي" : "Strong") : sillage === 3 ? (isArabic ? "متوسط" : "Moderate") : (isArabic ? "هادئ" : "Soft");
   return [
-    { icon: "〰", title: isArabic ? "الفوحان" : "Sillage", value: sillageValue, detail: `${sillage}/5`, score: sillage },
-    { icon: "◷", title: isArabic ? "الثبات" : "Longevity", value: isArabic ? "طويل" : "Long lasting", detail: isArabic ? `${longevityHours}+ ساعات` : `${longevityHours}+ hours`, score: longevity },
-    { icon: "☾", title: isArabic ? "المناسبة" : "Occasion", value: evening ? (isArabic ? "للمساء" : "Evening") : (isArabic ? "يومي" : "Daily"), detail: evening ? (isArabic ? "مناسب للسهرات" : "Ideal for nights out") : (isArabic ? "مناسب للاستخدام اليومي" : "Easy everyday wear"), score: evening ? 5 : 4 },
-    { icon: "❄", title: isArabic ? "الموسم" : "Season", value: winter ? (isArabic ? "شتوي" : "Winter") : (isArabic ? "متعدد المواسم" : "All season"), detail: winter ? (isArabic ? "للأجواء الباردة" : "For colder weather") : (isArabic ? "مرن طوال العام" : "Flexible year-round"), score: winter ? 5 : 4 }
+    { id: "projection", icon: "≋", title: isArabic ? "الفوحان" : "Sillage", value: isArabic ? `فوحان ${sillageValue}` : `${sillageValue} sillage`, detail: `${sillageRatingLabel}/5`, score: sillageRating, percentage: projectionPercentage, color: "#E76F9A" },
+    { id: "longevity", icon: "◷", title: isArabic ? "الثبات" : "Longevity", value: isArabic ? "ثبات طويل" : "Long lasting", detail: isArabic ? `${longevityHours}+ ساعات` : `${longevityHours}+ hours`, score: longevity, percentage: longevityPercentage, color: "#568FE8" },
+    { id: "season", icon: "❄", title: isArabic ? "الفصل" : "Season", value: winter ? (isArabic ? "شتوي" : "Winter") : (isArabic ? "كل الفصول" : "All season"), detail: isArabic ? "أفضل فصل" : "Best season", score: winter ? 5 : 4, percentage: winter ? 95 : 82, color: "#8C6DE8" },
+    { id: "time", icon: "☾", title: isArabic ? "الوقت" : "Time", value: evening ? (isArabic ? "مسائي" : "Evening") : (isArabic ? "نهاري" : "Daytime"), detail: evening ? (isArabic ? "بعد الغروب" : "After sunset") : (isArabic ? "خلال النهار" : "During the day"), score: evening ? 5 : 4, percentage: evening ? 90 : 80, color: "#7065D8" },
+    { id: "occasion", icon: "✦", title: isArabic ? "المناسبة" : "Occasion", value: evening ? (isArabic ? "السهرات" : "Nights out") : (isArabic ? "يومي" : "Everyday"), detail: evening ? (isArabic ? "للمناسبات" : "For occasions") : (isArabic ? "استخدام مرن" : "Versatile wear"), score: evening ? 5 : 4, percentage: evening ? 88 : 80, color: "#42B5B2" },
+    { id: "weather", icon: "♨", title: isArabic ? "الأجواء" : "Weather", value: winter ? (isArabic ? "أجواء باردة" : "Cold weather") : (isArabic ? "أجواء معتدلة" : "Mild weather"), detail: isArabic ? "أفضل أداء" : "Best performance", score: winter ? 5 : 4, percentage: winter ? 82 : 78, color: "#D49A45" }
   ];
 }
 
@@ -4515,9 +4529,12 @@ function productCardMarkup(product, options = {}) {
   const compareLabel = isArabic ? "مقارنة المنتج" : "Compare product";
   const dotsMarkup = cardComponents.productDots(media.length, imageIndex, product.id, isArabic);
   return `<article class="product-card perfume-product-card origo-product-card origo-product-card--${context}${options.reveal ? " reveal" : ""}${outOfStock ? " is-out" : ""}${options.compact ? " is-compact" : ""}" data-id="${escapeHTML(product.id)}" data-aura-state="idle" data-aura-note-count="${notes.length}" data-visible-note-count="0"${delayStyle}>
+    ${cardComponents.cardEdgeEffects()}
     <div class="product-image product-card-media product-card-media-swipe" data-product-id="${escapeHTML(product.id)}" role="link" tabindex="${interactive ? "0" : "-1"}" aria-label="${escapeHTML(isArabic ? `عرض تفاصيل ${name}` : `View ${name}`)}">
       ${cardComponents.perfumeAura()}
+      ${cardComponents.perfumeSmokeAura()}
       ${cardComponents.noteBubbles(notes, isArabic)}
+      ${cardComponents.performanceBubbles(performanceMetrics, isArabic)}
       <img class="product-card-primary${embeddedImageClass}" src="${escapeHTML(mainImage)}" alt="${escapeHTML(`${product.brand} ${name}`)}" width="640" height="700" loading="lazy" decoding="async" />
       <div class="product-card-badges">${badges.map(([, label, kind]) => `<span class="product-badge badge-${kind}">${escapeHTML(label)}</span>`).join("")}</div>
       ${cardComponents.topActions({ saved, compared, interactive, disabled, favoriteLabel, compareLabel })}
@@ -4531,7 +4548,7 @@ function productCardMarkup(product, options = {}) {
       </div>
       ${options.meta ? `<p class="product-card-meta">${escapeHTML(options.meta)}</p>` : ""}
       <div class="product-card-commerce">${cardComponents.addToCartButton({ interactive, disabled, outOfStock, label: translations[state.lang].addToBag, unavailableLabel: isArabic ? "غير متوفر" : "Unavailable" })}</div>
-      ${cardComponents.performanceBar(performanceMetrics, isArabic)}
+      ${cardComponents.performanceTrigger(isArabic, interactive, disabled)}
     </div>
   </article>`;
 }
