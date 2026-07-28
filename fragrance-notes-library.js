@@ -5,6 +5,7 @@
   const referenceNotes = Array.isArray(global.ORIGOFragranceNoteReferences)
     ? global.ORIGOFragranceNoteReferences
     : [];
+  const autoArtwork = global.ORIGOFragranceNoteAutoArtwork || {};
   const STORAGE_VERSION = 2;
   const familyBlueprints = {
     citrus: { color: "#D9A441", accent: "#FFF1B8", symbol: "◉", position: "top" },
@@ -340,14 +341,18 @@
 
     notes = [...result.values()]
       .filter((note) => !customState.merges[note.slug])
-      .map((note) => ({
-        ...note,
-        imageStatus: !note.image
-          ? "missing"
-          : note.image.includes("/extracted/")
-            ? "reference"
-            : "ready"
-      }));
+      .map((note) => {
+        const image = note.image || autoArtwork[note.slug] || "";
+        return {
+          ...note,
+          image,
+          imageStatus: !image
+            ? "missing"
+            : image.includes("/extracted/")
+              ? "reference"
+              : "ready"
+        };
+      });
     notesBySlug = new Map(notes.map((note) => [note.slug, note]));
     aliasIndex = new Map();
     notes.forEach((note) => {

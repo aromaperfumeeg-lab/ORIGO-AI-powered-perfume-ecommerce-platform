@@ -2738,8 +2738,9 @@ function renderHomepageCommerce() {
   const newest = $("#new-product-grid");
   if (newest) {
     const products = state.products.map((product, index) => ({ product, score: productDateScore(product, index) })).sort((a, b) => b.score - a.score).slice(0, 12).map(({ product }) => product);
-    newest.innerHTML = products.map((product, index) => productCardMarkup(product, { context: "grid", delay: Math.min(index * 45, 180) })).join("");
+    newest.innerHTML = products.map((product, index) => productCardMarkup(product, { context: "grid", interactiveShowcase: true, delay: Math.min(index * 45, 180) })).join("");
     bindHorizontalRail(newest);
+    window.ORIGOInteractiveCarousel?.enhanceRail(newest);
   }
   const showcase = $("#home-brand-showcases");
   if (showcase) {
@@ -2750,9 +2751,12 @@ function renderHomepageCommerce() {
       const products = homeBrandProducts(brand);
       if (!products.length) return "";
       const banner = configured.find((item) => item.placement === "brand-banner" && ORIGOCatalog.normalize(item.brand || "") === ORIGOCatalog.normalize(brand));
-      return `<section class="home-brand-showcase"><div class="home-section-head"><button data-action="brand-search" data-query="${escapeHTML(brand)}">${state.lang === "ar" ? "عرض كل المنتجات" : "View all products"} ‹</button><div><small>${state.lang === "ar" ? "مختارات العلامة" : "Brand selection"}</small><h2>${escapeHTML(brand)}</h2></div></div>${banner ? `<button class="home-brand-banner" data-action="brand-search" data-query="${escapeHTML(brand)}"><img src="${escapeHTML(banner.url)}" alt="${escapeHTML(state.lang === "ar" ? banner.altAr : banner.altEn)}" loading="lazy"/></button>` : ""}<div class="product-grid horizontal-scroll horizontal-rail" data-horizontal-rail>${products.slice(0, 12).map((product) => productCardMarkup(product, { context: "grid" })).join("")}</div></section>`;
+      return `<section class="home-brand-showcase"><div class="home-section-head"><button data-action="brand-search" data-query="${escapeHTML(brand)}">${state.lang === "ar" ? "عرض كل المنتجات" : "View all products"} ‹</button><div><small>${state.lang === "ar" ? "مختارات العلامة" : "Brand selection"}</small><h2>${escapeHTML(brand)}</h2></div></div>${banner ? `<button class="home-brand-banner" data-action="brand-search" data-query="${escapeHTML(brand)}"><img src="${escapeHTML(banner.url)}" alt="${escapeHTML(state.lang === "ar" ? banner.altAr : banner.altEn)}" loading="lazy"/></button>` : ""}<div class="product-grid horizontal-scroll horizontal-rail" data-horizontal-rail>${products.slice(0, 12).map((product) => productCardMarkup(product, { context: "grid", interactiveShowcase: true })).join("")}</div></section>`;
     }).join("");
-    $$('[data-horizontal-rail]', showcase).forEach(bindHorizontalRail);
+    $$('[data-horizontal-rail]', showcase).forEach((rail) => {
+      bindHorizontalRail(rail);
+      window.ORIGOInteractiveCarousel?.enhanceRail(rail);
+    });
   }
   observeReveals();
 }
@@ -3131,9 +3135,11 @@ function renderProducts(filter = "all") {
   }
   grid.innerHTML = visibleProducts.map((product, index) => productCardMarkup(product, {
     context: "grid",
+    interactiveShowcase: true,
     reveal: true,
     delay: Math.min(index * 70, 280)
   })).join("");
+  window.ORIGOInteractiveCarousel?.enhanceRail(grid);
   observeReveals();
 }
 
@@ -4254,8 +4260,10 @@ function renderNotesAdmin() {
   const library = window.ORIGOFragranceNotes;
   const query = $("#notes-admin-search")?.value || "";
   const matches = library.search(query, { limit: 120 }).items;
+  const artworkCount = library.notes.reduce((count, note) => count + (library.artwork(note) ? 1 : 0), 0);
   $("#notes-admin-stats").innerHTML = `
     <article><span>✦</span><div><b>${library.notes.length}</b><small>مكوّن</small></div></article>
+    <article class="${artworkCount === library.notes.length ? "complete" : "attention"}"><span>▧</span><div><b>${artworkCount}</b><small>صورة جاهزة</small></div></article>
     <article><span>◉</span><div><b>${library.families.length}</b><small>عائلة رئيسية</small></div></article>
     <article><span>?</span><div><b>${library.unclassified.length}</b><small>غير مصنف</small></div></article>`;
   $("#notes-admin-list").innerHTML = matches.map((note) => {
@@ -4475,12 +4483,14 @@ function resolveProductCardComponents() {
   };
 }
 
-function productCardPerformance(product, isArabic = state.lang === "ar") {
+function productCardPerformance(product, isArabic = state.lang === "ar", strict = false) {
   const performance = product.performance || product.editorialPerformance || {};
   const filterData = product.filters || {};
   const isKhamrah = /khamrah|خمر[ةه]/.test(ORIGOCatalog.normalize(`${product.nameAr || ""} ${product.nameEn || ""}`));
   const seasons = [...(product.seasons || []), ...(Array.isArray(filterData.season) ? filterData.season : [filterData.season])].filter(Boolean).map((item) => ORIGOCatalog.normalize(item));
   const occasions = [...(product.usageTimes || []), ...(product.occasions || [])].map((item) => ORIGOCatalog.normalize(item));
+  const genderSource = product.gender || product.forGender || filterData.gender;
+  const ratingSource = product.averageRating ?? product.ratingAverage ?? product.rating;
   const winter = seasons.some((item) => /winter|شتاء|شتوي/.test(item));
   const evening = isKhamrah || occasions.some((item) => /night|evening|مساء|ليل|سهرة/.test(item));
   const normalizeScore = (value, fallback = 5) => {
@@ -4506,14 +4516,22 @@ function productCardPerformance(product, isArabic = state.lang === "ar") {
   const longevityPercentage = percentage(longevitySource, 92);
   const longevityHours = isKhamrah ? Math.max(10, Math.round(Number(longevitySource) || 10)) : (Number(longevitySource) > 5 ? Math.round(Number(longevitySource)) : 10);
   const sillageValue = sillage >= 4 ? (isArabic ? "قوي" : "Strong") : sillage === 3 ? (isArabic ? "متوسط" : "Moderate") : (isArabic ? "هادئ" : "Soft");
-  return [
-    { id: "projection", icon: "≋", title: isArabic ? "الفوحان" : "Sillage", value: isArabic ? `فوحان ${sillageValue}` : `${sillageValue} sillage`, detail: `${sillageRatingLabel}/5`, score: sillageRating, percentage: projectionPercentage, color: "#E76F9A" },
-    { id: "longevity", icon: "◷", title: isArabic ? "الثبات" : "Longevity", value: isArabic ? "ثبات طويل" : "Long lasting", detail: isArabic ? `${longevityHours}+ ساعات` : `${longevityHours}+ hours`, score: longevity, percentage: longevityPercentage, color: "#568FE8" },
-    { id: "season", icon: "❄", title: isArabic ? "الفصل" : "Season", value: winter ? (isArabic ? "شتوي" : "Winter") : (isArabic ? "كل الفصول" : "All season"), detail: isArabic ? "أفضل فصل" : "Best season", score: winter ? 5 : 4, percentage: winter ? 95 : 82, color: "#8C6DE8" },
-    { id: "time", icon: "☾", title: isArabic ? "الوقت" : "Time", value: evening ? (isArabic ? "مسائي" : "Evening") : (isArabic ? "نهاري" : "Daytime"), detail: evening ? (isArabic ? "بعد الغروب" : "After sunset") : (isArabic ? "خلال النهار" : "During the day"), score: evening ? 5 : 4, percentage: evening ? 90 : 80, color: "#7065D8" },
-    { id: "occasion", icon: "✦", title: isArabic ? "المناسبة" : "Occasion", value: evening ? (isArabic ? "السهرات" : "Nights out") : (isArabic ? "يومي" : "Everyday"), detail: evening ? (isArabic ? "للمناسبات" : "For occasions") : (isArabic ? "استخدام مرن" : "Versatile wear"), score: evening ? 5 : 4, percentage: evening ? 88 : 80, color: "#42B5B2" },
-    { id: "weather", icon: "♨", title: isArabic ? "الأجواء" : "Weather", value: winter ? (isArabic ? "أجواء باردة" : "Cold weather") : (isArabic ? "أجواء معتدلة" : "Mild weather"), detail: isArabic ? "أفضل أداء" : "Best performance", score: winter ? 5 : 4, percentage: winter ? 82 : 78, color: "#D49A45" }
+  const rawGender = ORIGOCatalog.normalize(genderSource || "");
+  const genderValue = /women|female|نسائ/.test(rawGender)
+    ? (isArabic ? "نسائي" : "Women")
+    : /men|male|رجال|رجالي/.test(rawGender)
+      ? (isArabic ? "رجالي" : "Men")
+      : (isArabic ? "للجنسين" : "Unisex");
+  const numericRating = Number(ratingSource);
+  const metrics = [
+    { id: "projection", available: sillageSource !== undefined && sillageSource !== null && sillageSource !== "", icon: "≋", title: isArabic ? "الفوحان" : "Sillage", value: isArabic ? `فوحان ${sillageValue}` : `${sillageValue} sillage`, detail: `${sillageRatingLabel}/5`, score: sillageRating, percentage: projectionPercentage, color: "#E76F9A" },
+    { id: "longevity", available: longevitySource !== undefined && longevitySource !== null && longevitySource !== "", icon: "◷", title: isArabic ? "الثبات" : "Longevity", value: isArabic ? "ثبات طويل" : "Long lasting", detail: isArabic ? `${longevityHours}+ ساعات` : `${longevityHours}+ hours`, score: longevity, percentage: longevityPercentage, color: "#568FE8" },
+    { id: "occasion", available: occasions.length > 0, icon: "✦", title: isArabic ? "المناسبة" : "Occasion", value: evening ? (isArabic ? "السهرات" : "Nights out") : (isArabic ? "يومي" : "Everyday"), detail: evening ? (isArabic ? "للمناسبات" : "For occasions") : (isArabic ? "استخدام مرن" : "Versatile wear"), score: evening ? 5 : 4, percentage: evening ? 88 : 80, color: "#42B5B2" },
+    { id: "season", available: seasons.length > 0, icon: "❄", title: isArabic ? "الفصل" : "Season", value: winter ? (isArabic ? "شتوي" : "Winter") : (isArabic ? "كل الفصول" : "All season"), detail: isArabic ? "أفضل فصل" : "Best season", score: winter ? 5 : 4, percentage: winter ? 95 : 82, color: "#8C6DE8" },
+    { id: "gender", available: Boolean(genderSource), icon: "♢", title: isArabic ? "الفئة" : "Gender", value: genderValue, detail: isArabic ? "الفئة المقترحة" : "Suggested audience", score: 4, percentage: 80, color: "#D49A45" },
+    { id: "rating", available: Number.isFinite(numericRating) && numericRating > 0, icon: "★", title: isArabic ? "التقييم" : "Rating", value: Number.isFinite(numericRating) ? numericRating.toFixed(1) : "—", detail: isArabic ? "من 5" : "out of 5", score: numericRating || 0, percentage: Number.isFinite(numericRating) ? Math.round(Math.min(5, numericRating) * 20) : 0, color: "#C8942E" }
   ];
+  return strict ? metrics.filter((metric) => metric.available) : metrics;
 }
 
 function productCardMarkup(product, options = {}) {
@@ -4550,7 +4568,7 @@ function productCardMarkup(product, options = {}) {
   ].filter(Boolean).sort((a, b) => b[0] - a[0]);
   const badges = badgeCandidates.filter((item, index, list) => list.findIndex((other) => other[1] === item[1]) === index).slice(0, 2);
   const notes = productCardAuraNotes(product, isArabic);
-  const performanceMetrics = productCardPerformance(product, isArabic);
+  const performanceMetrics = productCardPerformance(product, isArabic, Boolean(options.interactiveShowcase));
   const saved = state.wishlist.includes(product.id);
   const compared = state.comparison.includes(product.id);
   const sizeLabel = variant?.size || (product.sizes || [])[0] || "";
@@ -4575,7 +4593,7 @@ function productCardMarkup(product, options = {}) {
   const favoriteLabel = saved ? translations[state.lang].removeFavorite : translations[state.lang].favorites;
   const compareLabel = isArabic ? "مقارنة المنتج" : "Compare product";
   const dotsMarkup = cardComponents.productDots(media.length, imageIndex, product.id, isArabic);
-  return `<article class="product-card perfume-product-card origo-product-card origo-product-card--${context}${options.reveal ? " reveal" : ""}${outOfStock ? " is-out" : ""}${options.compact ? " is-compact" : ""}" data-id="${escapeHTML(product.id)}" data-aura-state="idle" data-aura-note-count="${notes.length}" data-visible-note-count="0"${delayStyle}>
+  return `<article class="product-card perfume-product-card origo-product-card origo-product-card--${context}${options.reveal ? " reveal" : ""}${outOfStock ? " is-out" : ""}${options.compact ? " is-compact" : ""}${options.interactiveShowcase ? " is-interactive-showcase" : ""}" data-id="${escapeHTML(product.id)}" data-aura-state="idle" data-aura-note-count="${notes.length}" data-aura-metric-count="${performanceMetrics.length}" data-visible-note-count="0" data-visible-metric-count="0"${delayStyle}>
     ${cardComponents.cardEdgeEffects()}
     <div class="product-image product-card-media product-card-media-swipe" data-product-id="${escapeHTML(product.id)}" role="link" tabindex="${interactive ? "0" : "-1"}" aria-label="${escapeHTML(isArabic ? `عرض تفاصيل ${name}` : `View ${name}`)}">
       ${cardComponents.perfumeAura()}
@@ -4588,6 +4606,7 @@ function productCardMarkup(product, options = {}) {
       ${media.length > 1 ? `<button class="card-image-arrow previous" data-action="card-image" data-id="${escapeHTML(product.id)}" data-change="-1" aria-label="${isArabic ? "الصورة السابقة" : "Previous image"}">‹</button><button class="card-image-arrow next" data-action="card-image" data-id="${escapeHTML(product.id)}" data-change="1" aria-label="${isArabic ? "الصورة التالية" : "Next image"}">›</button>` : ""}
       ${dotsMarkup}
     </div>
+    ${options.interactiveShowcase && typeof cardComponents.interactiveDetails === "function" ? cardComponents.interactiveDetails(notes, performanceMetrics, isArabic, interactive, disabled) : ""}
     <div class="product-info product-card-info">
       <div class="product-card-summary">
         <div class="product-card-identity"><div class="product-brand">${escapeHTML(product.brand || "ORIGO")}</div><div class="product-card-title-row"><div><h3>${escapeHTML(name || (isArabic ? "منتج جديد" : "New product"))}</h3>${secondaryName && secondaryName !== name ? `<p class="product-card-secondary-name">${escapeHTML(secondaryName)}</p>` : ""}</div><p class="product-card-type">${genderLabel ? `<span>${escapeHTML(genderLabel)}</span><span aria-hidden="true">·</span>` : ""}<bdi dir="ltr">${escapeHTML(concentrationLabel)}</bdi>${formattedSize ? `<span aria-hidden="true">·</span><bdi dir="ltr">${escapeHTML(formattedSize)}</bdi>` : ""}</p>${hasRating ? `<div class="product-card-rating" aria-label="${escapeHTML(isArabic ? `التقييم ${ratingValue.toFixed(1)} من 5` : `Rated ${ratingValue.toFixed(1)} out of 5`)}"><span aria-hidden="true">★★★★★</span><small><bdi dir="ltr">${ratingValue.toFixed(1)}</bdi>${ratingCount > 0 ? ` (${Math.round(ratingCount)})` : ""}</small></div>` : ""}</div></div>
