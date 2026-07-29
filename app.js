@@ -6,8 +6,48 @@ const ORIGO_PERFUME_BRANDS = [
   "Ajmal", "Maison Alhambra", "Amouage", "French Avenue", "Khadlaj Perfumes", "Arabiyat Prestige",
   "Zimaya", "Gissah", "Al Majed Oud", "Ibrahim Al Qurashi", "Gulf Orchid", "Reef",
   "Ard Al Zaafaran", "Laverne", "Matin Martin", "Dkhoon AlEmiratia", "Alezz", "Sedra",
-  "Assaf", "Volaré", "Le Bonheur Perfumes", "Le Falcone Perfumes", "Otoori", "الرونق للعطور"
+  "Assaf", "Volaré", "Le Bonheur Perfumes", "Le Falcone Perfumes", "Otoori", "الرونق للعطور", "Rayhaan"
 ];
+
+const ORIGO_BRAND_LOGOS = {
+  "Lattafa": "assets/brands/lattafa.webp",
+  "Armaf": "assets/brands/armaf.jpeg",
+  "Afnan Perfumes": "assets/brands/afnan.jpeg",
+  "Paris Corner": "assets/brands/paris-corner.jpeg",
+  "Swiss Arabian": "assets/brands/swiss-arabian.jpeg",
+  "Rasasi Perfumes": "assets/brands/rasasi.jpeg",
+  "Ajmal": "assets/brands/ajmal.jpeg",
+  "Maison Alhambra": "assets/brands/maison-alhambra.jpeg",
+  "Amouage": "assets/brands/amouage.jpeg",
+  "French Avenue": "assets/brands/french-avenue.jpeg",
+  "Khadlaj Perfumes": "assets/brands/khadlaj.jpeg",
+  "Arabiyat Prestige": "assets/brands/arabiyat-prestige.jpeg",
+  "Zimaya": "assets/brands/zimaya.webp",
+  "Gissah": "assets/brands/gissah.jpeg",
+  "Al Majed Oud": "assets/brands/al-majed-oud.jpeg",
+  "Ibrahim Al Qurashi": "assets/brands/ibrahim-al-qurashi.jpeg",
+  "Gulf Orchid": "assets/brands/gulf-orchid.jpeg",
+  "Reef": "assets/brands/reef.jpeg",
+  "Ard Al Zaafaran": "assets/brands/ard-al-zaafaran.jpeg",
+  "Laverne": "assets/brands/laverne.jpeg",
+  "Matin Martin": "assets/brands/matin-martin.jpeg",
+  "Dkhoon AlEmiratia": "assets/brands/dkhoon-alemiratia.jpeg",
+  "Alezz": "assets/brands/alezz.jpeg",
+  "Sedra": "assets/brands/sedra.jpeg",
+  "Assaf": "assets/brands/assaf.jpeg",
+  "Volaré": "assets/brands/volare.jpeg",
+  "Le Bonheur Perfumes": "assets/brands/le-bonheur.jpeg",
+  "Le Falcone Perfumes": "assets/brands/le-falcone.jpeg",
+  "Otoori": "assets/brands/otoori.jpg",
+  "الرونق للعطور": "assets/brands/alrawnaq.jpeg",
+  "Rayhaan": "assets/brands/rayhaan.jpeg"
+};
+
+function origoBrandLogo(brand) {
+  const target = String(brand || "").trim();
+  const key = Object.keys(ORIGO_BRAND_LOGOS).find((name) => name.localeCompare(target, undefined, { sensitivity: "base" }) === 0);
+  return key ? ORIGO_BRAND_LOGOS[key] : "";
+}
 
 const ORIGO_HOME_CATEGORIES = [
   ["perfume", "العطور", "Perfumes", "♨"], ["skincare", "العناية بالبشرة", "Skincare", "♧"],
@@ -96,7 +136,7 @@ function hydrateLuxuryIcons(root = document) {
     ['.category-nav [data-action="categories-menu"] .nav-icon', "grid"],
     ['.category-nav a[href="#best-sellers"] .nav-icon', "crown"],
     ['.category-nav a[href="#new-arrivals"] .nav-icon', "sparkle"],
-    ['.category-nav a[href="#footer-brand-title"] .nav-icon', "info"],
+    ['.category-nav a[href="#site-footer"] .nav-icon', "info"],
     ['.category-nav [data-action="open-alternatives"] .nav-icon', "arrows"],
     ['.category-nav [data-action="find-matches"] .nav-icon', "sparkle"]
   ];
@@ -152,7 +192,7 @@ const translations = {
     navHaircare: "العناية بالشعر",
     navIncense: "البخور والمباخر",
     navDeodorants: "مزيلات العرق",
-    navBrands: "البراندات",
+    navBrands: "العلامات التجارية",
     featuredBrands: "براندات مختارة",
     account: "الحساب",
     language: "English",
@@ -914,11 +954,12 @@ const defaultStoreSettings = {
   socialLinks: { youtube: "", facebook: "", tiktok: "", instagram: "", snapchat: "", telegram: "", whatsapp: "" },
   appLinks: { appStore: "", googlePlay: "" },
   homepageRails: {
-    benefits: { enabled: true, order: 1, titleAr: "مزايا ORIGO", titleEn: "ORIGO benefits" },
+    benefits: { enabled: true, order: 1, titleAr: "مزايا ORIGO", titleEn: "ORIGO benefits", speed: 18 },
     gender: { enabled: true, order: 2, titleAr: "تسوق حسب الجنس", titleEn: "Shop by gender" },
     categories: { enabled: true, order: 3, titleAr: "تسوق حسب الفئة", titleEn: "Shop by category" },
     brands: { enabled: true, order: 4, titleAr: "العلامات التجارية", titleEn: "Brands", speed: 34 }
   },
+  homeHero: { intervalSeconds: 2.5 },
   homeMedia: [],
   categoryIcons: {},
   homeBenefitIcons: {},
@@ -967,6 +1008,7 @@ function mergeStoreSettings(saved = {}) {
     appLinks: { ...defaultStoreSettings.appLinks, ...(saved.appLinks || {}) },
     passwordRecoveryChannels: { ...defaultStoreSettings.passwordRecoveryChannels, ...(saved.passwordRecoveryChannels || {}) },
     homepageRails: Object.fromEntries(Object.entries(defaultStoreSettings.homepageRails).map(([key, value]) => [key, { ...value, ...(saved.homepageRails?.[key] || {}) }])),
+    homeHero: { ...defaultStoreSettings.homeHero, ...(saved.homeHero || {}) },
     homeMedia: Array.isArray(saved.homeMedia) ? saved.homeMedia : [],
     categoryIcons: { ...defaultStoreSettings.categoryIcons, ...(saved.categoryIcons || {}) },
     homeBenefitIcons: { ...defaultStoreSettings.homeBenefitIcons, ...(saved.homeBenefitIcons || {}) },
@@ -2106,14 +2148,42 @@ function homepageRailsAdminMarkup() {
     benefits: ["شريط المزايا", "Benefits rail"], gender: ["التسوق حسب الجنس", "Gender rail"],
     categories: ["شريط الفئات", "Categories rail"], brands: ["شريط العلامات التلقائي", "Autoplay brand marquee"]
   };
-  return `<form id="admin-homepage-rails" class="admin-settings-form homepage-rails-admin"><section><div class="review-section-head"><span>01</span><div><b>${ar ? "إدارة أشرطة الصفحة الرئيسية" : "Homepage rails management"}</b><small>${ar ? "الثلاثة الأولى يدوية فقط، وشريط العلامات وحده يتحرك تلقائيًا." : "The first three are manual-only; only the brand marquee autoplays."}</small></div></div>
-    <div class="homepage-rail-settings">${Object.entries(settings.homepageRails).map(([key, rail]) => `<article><header><b>${escapeHTML(labels[key][ar ? 0 : 1])}</b><label class="admin-toggle-row"><span>${ar ? "ظاهر" : "Visible"}</span><input name="${key}.enabled" type="checkbox"${rail.enabled !== false ? " checked" : ""}/></label></header><div class="review-grid"><label>${ar ? "العنوان العربي" : "Arabic title"}<input name="${key}.titleAr" value="${escapeHTML(rail.titleAr || "")}"/></label><label>${ar ? "العنوان الإنجليزي" : "English title"}<input name="${key}.titleEn" value="${escapeHTML(rail.titleEn || "")}"/></label><label>${ar ? "الترتيب" : "Order"}<input name="${key}.order" type="number" min="1" max="10" value="${Number(rail.order || 1)}"/></label>${key === "brands" ? `<label>${ar ? "مدة الدورة بالثواني" : "Cycle duration (seconds)"}<input name="brands.speed" type="number" min="12" max="120" value="${Number(rail.speed || 34)}"/></label>` : ""}</div></article>`).join("")}</div></section>
-    <section><div class="review-section-head"><span>02</span><div><b>${ar ? "مكتبة وسائط الصفحة الرئيسية" : "Homepage media library"}</b><small>${ar ? "ارفع بانرات الدعاية أو بانرًا مميزًا لعلامة بعينها، مع نص بديل للغتين." : "Upload campaign banners or a featured brand banner with bilingual alt text."}</small></div></div><div class="review-grid"><label>${ar ? "اسم الأصل" : "Asset name"}<input name="mediaName"/></label><label>${ar ? "مكان العرض" : "Placement"}<select name="mediaPlacement"><option value="hero">${ar ? "بانر الدعاية المتغير" : "Rotating campaign banner"}</option><option value="brand-banner">${ar ? "بانر علامة تجارية" : "Brand feature banner"}</option><option value="general">${ar ? "وسائط عامة" : "General media"}</option></select></label><label>${ar ? "العلامة (لبانر العلامة فقط)" : "Brand (brand banner only)"}<input name="mediaBrand" list="homepage-brand-list"/><datalist id="homepage-brand-list">${ORIGO_PERFUME_BRANDS.map((brand) => `<option value="${escapeHTML(brand)}"></option>`).join("")}</datalist></label><label>${ar ? "النص البديل العربي" : "Arabic alt text"}<input name="mediaAltAr"/></label><label>${ar ? "النص البديل الإنجليزي" : "English alt text"}<input name="mediaAltEn"/></label><label>${ar ? "رفع صورة" : "Upload image"}<input name="mediaFile" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml"/></label></div><div class="home-media-library">${settings.homeMedia.length ? settings.homeMedia.map((item) => `<article><img src="${escapeHTML(item.url)}" alt="${escapeHTML(ar ? item.altAr : item.altEn)}"/><span><b>${escapeHTML(item.name)}</b><small>${escapeHTML(item.placement || "general")}${item.brand ? ` · ${escapeHTML(item.brand)}` : ""}<br/>${escapeHTML(ar ? item.altAr : item.altEn)}</small></span><button type="button" data-action="delete-home-media" data-id="${escapeHTML(item.id)}" aria-label="${ar ? "حذف" : "Delete"}">×</button></article>`).join("") : `<p>${ar ? "لم تتم إضافة وسائط بعد." : "No media assets yet."}</p>`}</div></section><button class="button burgundy-button" type="submit">${ar ? "حفظ إعدادات الأشرطة" : "Save rail settings"}</button></form>`;
+  const mediaCards = settings.homeMedia.map((item) => {
+    const isHero = item.placement === "hero";
+    return `<article class="${isHero ? "home-hero-media-card" : ""}">
+      <img src="${escapeHTML(item.url)}" alt="${escapeHTML(ar ? item.altAr : item.altEn)}"/>
+      <span><b>${escapeHTML(item.name)}</b><small>${escapeHTML(item.placement || "general")}${item.brand ? ` · ${escapeHTML(item.brand)}` : ""}</small></span>
+      <button type="button" data-action="delete-home-media" data-id="${escapeHTML(item.id)}" aria-label="${ar ? "حذف" : "Delete"}">×</button>
+      ${isHero ? `<div class="home-hero-slide-fields">
+        <label>${ar ? "عنوان الشريحة بالعربية" : "Arabic slide title"}<input data-home-media-field="titleAr" data-id="${escapeHTML(item.id)}" value="${escapeHTML(item.titleAr || "")}"/></label>
+        <label>${ar ? "عنوان الشريحة بالإنجليزية" : "English slide title"}<input data-home-media-field="titleEn" data-id="${escapeHTML(item.id)}" value="${escapeHTML(item.titleEn || "")}"/></label>
+        <label>${ar ? "الوصف بالعربية" : "Arabic description"}<textarea data-home-media-field="descriptionAr" data-id="${escapeHTML(item.id)}">${escapeHTML(item.descriptionAr || "")}</textarea></label>
+        <label>${ar ? "الوصف بالإنجليزية" : "English description"}<textarea data-home-media-field="descriptionEn" data-id="${escapeHTML(item.id)}">${escapeHTML(item.descriptionEn || "")}</textarea></label>
+        <label>${ar ? "نص الزر بالعربية" : "Arabic button label"}<input data-home-media-field="buttonAr" data-id="${escapeHTML(item.id)}" value="${escapeHTML(item.buttonAr || "")}"/></label>
+        <label>${ar ? "نص الزر بالإنجليزية" : "English button label"}<input data-home-media-field="buttonEn" data-id="${escapeHTML(item.id)}" value="${escapeHTML(item.buttonEn || "")}"/></label>
+        <label class="wide">${ar ? "رابط الزر" : "Button link"}<input data-home-media-field="href" data-id="${escapeHTML(item.id)}" dir="ltr" value="${escapeHTML(item.href || "#new-arrivals")}"/></label>
+      </div>` : `<small>${escapeHTML(ar ? item.altAr : item.altEn)}</small>`}
+    </article>`;
+  }).join("");
+  return `<form id="admin-homepage-rails" class="admin-settings-form homepage-rails-admin"><section><div class="review-section-head"><span>01</span><div><b>${ar ? "إدارة أشرطة الصفحة الرئيسية" : "Homepage rails management"}</b><small>${ar ? "تحكم في ظهور الأشرطة وترتيبها وسرعة حركة المميزات والعلامات." : "Control rail visibility, order, and the benefits and brands motion speed."}</small></div></div>
+    <div class="homepage-rail-settings">${Object.entries(settings.homepageRails).map(([key, rail]) => `<article><header><b>${escapeHTML(labels[key][ar ? 0 : 1])}</b><label class="admin-toggle-row"><span>${ar ? "ظاهر" : "Visible"}</span><input name="${key}.enabled" type="checkbox"${rail.enabled !== false ? " checked" : ""}/></label></header><div class="review-grid"><label>${ar ? "العنوان العربي" : "Arabic title"}<input name="${key}.titleAr" value="${escapeHTML(rail.titleAr || "")}"/></label><label>${ar ? "العنوان الإنجليزي" : "English title"}<input name="${key}.titleEn" value="${escapeHTML(rail.titleEn || "")}"/></label><label>${ar ? "الترتيب" : "Order"}<input name="${key}.order" type="number" min="1" max="10" value="${Number(rail.order || 1)}"/></label>${key === "brands" || key === "benefits" ? `<label>${ar ? "مدة الدورة بالثواني" : "Cycle duration (seconds)"}<input name="${key}.speed" type="number" min="6" max="120" step="1" value="${Number(rail.speed || (key === "benefits" ? 18 : 34))}"/></label>` : ""}</div></article>`).join("")}</div></section>
+    <section><div class="review-section-head"><span>02</span><div><b>${ar ? "البنر المتغير" : "Rotating hero banner"}</b><small>${ar ? "أضف عدة صور دفعة واحدة، ثم خصص النص والزر لكل صورة." : "Upload multiple images at once, then customize every slide's copy and button."}</small></div></div>
+      <div class="review-grid">
+        <label>${ar ? "زمن عرض كل صورة بالثواني" : "Seconds per slide"}<input name="heroIntervalSeconds" type="number" min="1" max="30" step="0.5" value="${Number(settings.homeHero.intervalSeconds || 2.5)}"/></label>
+        <label>${ar ? "رفع صور البنر من الملفات" : "Upload banner images"}<input name="mediaFile" type="file" multiple accept="image/png,image/jpeg,image/webp,image/avif"/></label>
+        <label>${ar ? "عنوان عربي مبدئي للصور الجديدة" : "Initial Arabic title"}<input name="mediaTitleAr"/></label>
+        <label>${ar ? "عنوان إنجليزي مبدئي للصور الجديدة" : "Initial English title"}<input name="mediaTitleEn"/></label>
+        <label>${ar ? "وصف عربي مبدئي" : "Initial Arabic description"}<textarea name="mediaDescriptionAr"></textarea></label>
+        <label>${ar ? "وصف إنجليزي مبدئي" : "Initial English description"}<textarea name="mediaDescriptionEn"></textarea></label>
+      </div>
+      <input name="mediaPlacement" type="hidden" value="hero"/>
+      <div class="home-media-library">${settings.homeMedia.length ? mediaCards : `<p>${ar ? "لم تتم إضافة صور للبنر بعد." : "No banner images have been added yet."}</p>`}</div>
+    </section><button class="button burgundy-button" type="submit">${ar ? "حفظ البنر وإعدادات الصفحة" : "Save banner and homepage settings"}</button></form>`;
 }
 
 function applyHomepageRailSettings() {
   const settings = mergeStoreSettings(state.adminWorkspace.settings || {}).homepageRails;
-  const map = { benefits: ".home-benefits", gender: ".home-gender-section", categories: ".home-categories", brands: ".home-brand-directory" };
+  const map = { benefits: ".home-benefits-directory", gender: ".home-gender-section", categories: ".home-categories", brands: ".home-brand-directory" };
   Object.entries(map).forEach(([key, selector]) => {
     const element = $(selector);
     if (!element) return;
@@ -2122,6 +2192,7 @@ function applyHomepageRailSettings() {
     element.setAttribute("aria-label", state.lang === "ar" ? settings[key]?.titleAr || "" : settings[key]?.titleEn || "");
   });
   document.documentElement.style.setProperty("--brand-marquee-duration", `${Math.max(12, Math.min(120, Number(settings.brands?.speed || 34)))}s`);
+  document.documentElement.style.setProperty("--benefit-marquee-duration", `${Math.max(6, Math.min(120, Number(settings.benefits?.speed || 18)))}s`);
 }
 
 function renderAdminDashboard(view = state.adminView) {
@@ -2558,23 +2629,8 @@ function localizeStaticStorefront() {
   setText("#home-hero .home-primary-button span", "تسوق الآن", "Shop now");
   setText("#new-arrivals-title", "المنتجات الحديثة", "New arrivals");
   setText(".home-new-arrivals .home-section-head>a span:first-child", "عرض باقي المنتجات الحديثة", "View all new arrivals");
-  const benefits = [
-    ["منتجات أصلية 100%", "جودة مضمونة", "100% authentic products", "Guaranteed quality"],
-    ["شحن سريع", "إلى جميع المدن", "Fast shipping", "To all cities"],
-    ["استرجاع واستبدال سهل", "سياسة مرنة", "Easy returns & exchanges", "Flexible policy"],
-    ["أسعار منافسة", "قيمة أفضل", "Competitive prices", "Better value"],
-    ["دفع عند الاستلام", "تسوق بثقة", "Cash on delivery", "Shop with confidence"],
-    ["تغليف فاخر", "جاهز للإهداء", "Luxury wrapping", "Gift-ready"],
-    ["دعم العملاء 24/7", "نحن دائمًا معك", "24/7 customer support", "Always here for you"]
-  ];
-  $$(".home-benefits article").forEach((item, index) => {
-    const copy = benefits[index];
-    if (!copy) return;
-    const title = $("b", item);
-    const subtitle = $("small", item);
-    if (title) title.textContent = ar ? copy[0] : copy[2];
-    if (subtitle) subtitle.textContent = ar ? copy[1] : copy[3];
-  });
+  setText("#home-benefits-title", "مميزاتنا", "Our benefits");
+  renderHomeBenefitsMarquee();
   const genders = [
     ["للرجال", "عطور تعكس القوة والأناقة والثقة", "Men", "Fragrances of strength, elegance, and confidence"],
     ["للنساء", "عطور تجمع بين الأنوثة والرقي والجاذبية", "Women", "Fragrances of femininity, refinement, and allure"],
@@ -2589,20 +2645,6 @@ function localizeStaticStorefront() {
     if (title) title.textContent = ar ? copy[0] : copy[2];
     if (description) description.textContent = ar ? copy[1] : copy[3];
     if (link) link.childNodes[0].textContent = `${ar ? "تسوق الآن" : "Shop now"} `;
-  });
-  const promos = [
-    ["برنامج ولاء", "اكسب نقاطًا ومكافآت", "Loyalty program", "Earn points and rewards"],
-    ["منتجات جديدة", "كل أسبوع", "New products", "Every week"],
-    ["خصومات مميزة", "تصل حتى 50%", "Special discounts", "Up to 50%"],
-    ["عروض حصرية", "على نخبة المنتجات", "Exclusive offers", "On selected products"]
-  ];
-  $$(".home-promo-strip article").forEach((item, index) => {
-    const copy = promos[index];
-    if (!copy) return;
-    const title = $("b", item);
-    const subtitle = $("small", item);
-    if (title) title.textContent = ar ? copy[0] : copy[2];
-    if (subtitle) subtitle.textContent = ar ? copy[1] : copy[3];
   });
   const brandSearch = $("#brand-carousel-search");
   if (brandSearch) brandSearch.placeholder = ar ? "ابحث عن علامة تجارية" : "Search brands";
@@ -2661,14 +2703,29 @@ function renderBrandCarousel(query = "") {
   const brandOptions = productOptionItems("brand");
   const items = brands.map(([brand, count]) => {
     const option = brandOptions.find((item) => [item.value,item.nameAr,item.nameEn].some((value) => normalizeOptionSearch(value) === normalizeOptionSearch(brand)));
-    const artwork = option?.image ? `<img src="${escapeHTML(option.image)}" alt="" loading="lazy"/>` : `<span aria-hidden="true">${escapeHTML(brand.slice(0, 2).toUpperCase())}</span>`;
-    return `<button data-action="brand-search" data-query="${escapeHTML(brand)}" aria-label="${escapeHTML(`${state.lang === "ar" ? "عرض منتجات" : "View products by"} ${brand}`)}">${artwork}<b>${escapeHTML(brand)}</b></button>`;
+    const logo = option?.image || origoBrandLogo(brand);
+    const artwork = logo ? `<img src="${escapeHTML(logo)}" alt="" loading="lazy"/>` : `<span aria-hidden="true">${escapeHTML(brand.slice(0, 2).toUpperCase())}</span>`;
+    return `<button class="marquee-item" data-action="brand-search" data-query="${escapeHTML(brand)}" aria-label="${escapeHTML(`${state.lang === "ar" ? "عرض منتجات" : "View products by"} ${brand}`)}">${artwork}<b>${escapeHTML(brand)}</b></button>`;
   }).join("");
   const duplicateItems = items.replaceAll("<button ", '<button tabindex="-1" ');
   $$("#brand-carousel-track, #home-brand-carousel-track").forEach((track) => {
     track.innerHTML = items ? `<div class="brand-marquee-content"><div class="brand-marquee-set">${items}</div><div class="brand-marquee-set" aria-hidden="true">${duplicateItems}</div></div>` : "";
     bindBrandMarquee(track);
   });
+}
+
+function renderHomeBenefitsMarquee() {
+  const track = $("#home-benefits-track");
+  if (!track) return;
+  const benefits = activeFooterBenefits();
+  const items = benefits.map((benefit) => {
+    const title = state.lang === "ar" ? benefit.titleAr : benefit.titleEn;
+    const short = state.lang === "ar" ? benefit.shortAr : benefit.shortEn;
+    return `<a class="marquee-item benefit-marquee-item" href="/benefits/${escapeHTML(benefit.slug)}" data-action="benefit-link" data-slug="${escapeHTML(benefit.slug)}"><span class="benefit-icon">${benefit.image ? `<img src="${escapeHTML(benefit.image)}" alt="" loading="lazy"/>` : footerBenefitIcon(benefit.icon, benefit.colors)}</span><b>${escapeHTML(title)}</b><small>${escapeHTML(short || "")}</small></a>`;
+  }).join("");
+  const duplicates = items.replaceAll("<a ", '<a tabindex="-1" aria-hidden="true" ');
+  track.innerHTML = items ? `<div class="brand-marquee-content benefit-marquee-content"><div class="brand-marquee-set benefit-marquee-set">${items}</div><div class="brand-marquee-set benefit-marquee-set" aria-hidden="true">${duplicates}</div></div>` : "";
+  bindBrandMarquee(track);
 }
 
 function renderHomeNavigation() {
@@ -2691,14 +2748,26 @@ function renderHomeHero() {
   const visual = hero?.querySelector(".home-hero-products");
   const dots = hero?.querySelector(".home-hero-dots");
   if (!hero || !visual || !dots) return;
-  const media = (state.adminWorkspace.settings?.homeMedia || []).filter((item) => item.placement === "hero" && item.url);
-  const slides = media.length ? media : [{ url: "assets/home/hero/hero-main.png", altAr: "مجموعة عطور فاخرة", altEn: "Luxury perfume collection" }];
+  const settings = mergeStoreSettings(state.adminWorkspace.settings || {});
+  const media = settings.homeMedia.filter((item) => item.placement === "hero" && item.url);
+  const slides = media.length ? media : [{ url: "assets/home/hero/hero-main.png", altAr: "مجموعة عطور فاخرة", altEn: "Luxury perfume collection", titleAr: "اكتشف عالم العطور الفاخرة", titleEn: "Discover the world of luxury fragrance", descriptionAr: "نخبة مختارة من أفضل الماركات العالمية", descriptionEn: "A curated selection from leading global brands", buttonAr: "تسوق الآن", buttonEn: "Shop now", href: "#new-arrivals" }];
   homeHeroIndex = Math.min(homeHeroIndex, slides.length - 1);
   const show = (index) => {
     homeHeroIndex = (index + slides.length) % slides.length;
     const item = slides[homeHeroIndex];
     visual.style.backgroundImage = `url("${String(item.url).replace(/["\\]/g, "")}")`;
     visual.setAttribute("aria-label", state.lang === "ar" ? item.altAr || item.name || "بانر دعائي" : item.altEn || item.name || "Campaign banner");
+    const title = hero.querySelector(".home-hero-copy h1");
+    const description = hero.querySelector(".home-hero-copy>p");
+    const button = hero.querySelector(".home-primary-button");
+    const isArabic = state.lang === "ar";
+    if (title) title.textContent = (isArabic ? item.titleAr : item.titleEn) || (isArabic ? "اكتشف عالم العطور الفاخرة" : "Discover the world of luxury fragrance");
+    if (description) description.textContent = (isArabic ? item.descriptionAr : item.descriptionEn) || (isArabic ? "نخبة مختارة من أفضل الماركات العالمية" : "A curated selection from leading global brands");
+    if (button) {
+      const label = button.querySelector("span");
+      if (label) label.textContent = (isArabic ? item.buttonAr : item.buttonEn) || (isArabic ? "تسوق الآن" : "Shop now");
+      button.href = item.href || "#new-arrivals";
+    }
     [...dots.children].forEach((dot, dotIndex) => dot.classList.toggle("active", dotIndex === homeHeroIndex));
   };
   dots.innerHTML = slides.map((_, index) => `<button type="button" data-home-hero-slide="${index}" aria-label="${state.lang === "ar" ? "الشريحة" : "Slide"} ${index + 1}"></button>`).join("");
@@ -2716,7 +2785,8 @@ function renderHomeHero() {
     });
   }
   clearInterval(homeHeroTimer);
-  if (slides.length > 1 && !matchMedia("(prefers-reduced-motion: reduce)").matches) homeHeroTimer = setInterval(() => show(homeHeroIndex + 1), 6500);
+  const intervalMs = Math.max(1000, Math.min(30000, Number(settings.homeHero.intervalSeconds || 2.5) * 1000));
+  if (slides.length > 1 && !matchMedia("(prefers-reduced-motion: reduce)").matches) homeHeroTimer = setInterval(() => show(homeHeroIndex + 1), intervalMs);
   show(homeHeroIndex);
 }
 
@@ -2735,6 +2805,7 @@ function homeBrandProducts(brand) {
 }
 
 function renderHomepageCommerce() {
+  renderHomeBenefitsMarquee();
   const newest = $("#new-product-grid");
   if (newest) {
     const products = state.products.map((product, index) => ({ product, score: productDateScore(product, index) })).sort((a, b) => b.score - a.score).slice(0, 12).map(({ product }) => product);
@@ -2983,17 +3054,11 @@ function renderSiteFooter() {
     if (textNode) textNode.textContent = `${label} `;
     else row.insertBefore(document.createTextNode(`${label} `), row.firstChild);
   };
-  $("#footer-description").textContent = description;
   $("#footer-newsletter-title").textContent = newsletterTitle;
   $("#footer-newsletter-copy").textContent = newsletterCopy;
   $("#footer-email").placeholder = isArabic ? "أدخل بريدك الإلكتروني" : "Enter your email address";
   const newsletterButton = $("#newsletter-form button[type='submit'] span");
   if (newsletterButton && $("#newsletter-form").dataset.status !== "loading") newsletterButton.textContent = isArabic ? "اشترك الآن" : "Subscribe now";
-  const storyImage = $("#footer-story-image");
-  if (storyImage && settings.footerImage) storyImage.src = settings.footerImage;
-  $("#footer-benefits").innerHTML = activeFooterBenefits().map((benefit) => `<a class="footer-benefit-card" href="/benefits/${escapeHTML(benefit.slug)}" data-action="benefit-link" data-slug="${escapeHTML(benefit.slug)}">
-    <span class="footer-benefit-icon">${benefit.image ? `<img src="${escapeHTML(benefit.image)}" alt="" loading="lazy"/>` : footerBenefitIcon(benefit.icon, benefit.colors)}</span>
-    <b>${escapeHTML(isArabic ? benefit.titleAr : benefit.titleEn)}</b><small>${escapeHTML(isArabic ? benefit.shortAr : benefit.shortEn)}</small></a>`).join("");
   const email = String(settings.supportEmail || defaultStoreSettings.supportEmail).trim();
   const emailLink = $("#footer-support-email");
   emailLink.href = `mailto:${encodeURIComponent(email)}`;
@@ -3404,7 +3469,7 @@ function renderBrandsPage() {
     <div class="brands-page-grid">${names.map((brand) => {
       const option = optionMap.get(ORIGOCatalog.normalize(brand));
       const fallback = state.products.find((product) => ORIGOCatalog.normalize(product.brand) === ORIGOCatalog.normalize(brand));
-      const image = option?.image || option?.logo || fallback?.brandLogo || "";
+      const image = option?.image || option?.logo || fallback?.brandLogo || origoBrandLogo(brand);
       return `<button data-action="brand-search" data-query="${escapeHTML(brand)}">${image ? `<img src="${escapeHTML(image)}" alt="${escapeHTML(brand)}" loading="lazy"/>` : `<span>${escapeHTML(brand.split(/\s+/).map((part) => part[0]).join("").slice(0,3).toUpperCase())}</span>`}<b>${escapeHTML(brand)}</b></button>`;
     }).join("")}</div>`;
 }
@@ -4822,6 +4887,90 @@ function searchProducts(query) {
       .join(" "))
       .includes(normalized)
   );
+}
+
+function smartSearchDistance(left, right) {
+  const a = ORIGOCatalog.normalize(left);
+  const b = ORIGOCatalog.normalize(right);
+  if (!a) return b.length;
+  if (!b) return a.length;
+  const row = Array.from({ length: b.length + 1 }, (_, index) => index);
+  for (let i = 1; i <= a.length; i += 1) {
+    let previous = row[0];
+    row[0] = i;
+    for (let j = 1; j <= b.length; j += 1) {
+      const current = row[j];
+      row[j] = Math.min(row[j] + 1, row[j - 1] + 1, previous + (a[i - 1] === b[j - 1] ? 0 : 1));
+      previous = current;
+    }
+  }
+  return row[b.length];
+}
+
+function smartSearchScore(query, values) {
+  const needle = ORIGOCatalog.normalize(query);
+  if (!needle) return 0;
+  let best = 0;
+  values.flatMap((value) => {
+    const normalized = ORIGOCatalog.normalize(value || "");
+    return [normalized, ...normalized.split(/\s+/)];
+  }).filter(Boolean).forEach((candidate) => {
+    if (candidate === needle) best = Math.max(best, 120);
+    else if (candidate.startsWith(needle)) best = Math.max(best, 100 - Math.min(20, candidate.length - needle.length));
+    else if (candidate.includes(needle)) best = Math.max(best, 82 - Math.min(20, candidate.length - needle.length));
+    else if (needle.length >= 3) {
+      const distance = smartSearchDistance(needle, candidate);
+      const tolerance = Math.max(1, Math.floor(needle.length * .28));
+      if (distance <= tolerance) best = Math.max(best, 68 - distance * 8);
+    }
+  });
+  return best;
+}
+
+function smartSearchProductValues(product) {
+  return [
+    product.nameAr, product.nameEn, product.brand, product.sku, product.barcode,
+    ...(product.searchAliases || []), ...(product.misspellings || []),
+    ...(product.notesAr || []), ...(product.notesEn || []), ...(product.mainIngredients || []),
+    ...(product.mainAccords || []), ...(product.tags || [])
+  ];
+}
+
+function renderMobileSmartSearch(query) {
+  const holder = $("#mobile-smart-search-results");
+  const input = $("#mobile-header-search-input");
+  if (!holder || !input) return;
+  const needle = String(query || "").trim();
+  if (needle.length < 2) {
+    holder.hidden = true;
+    holder.innerHTML = "";
+    input.setAttribute("aria-expanded", "false");
+    return;
+  }
+  const products = state.products
+    .map((product) => ({ product, score: smartSearchScore(needle, smartSearchProductValues(product)) }))
+    .filter((item) => item.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 5);
+  const brandNames = [...new Set(state.products.map((product) => product.brand).filter(Boolean))];
+  const brands = brandNames
+    .map((brand) => ({ brand, score: smartSearchScore(needle, [brand]) }))
+    .filter((item) => item.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 3);
+  const noteNames = [...new Set(state.products.flatMap((product) => [...(product.notesAr || []), ...(product.notesEn || []), ...(product.mainIngredients || [])]).filter(Boolean))];
+  const notes = noteNames
+    .map((note) => ({ note, score: smartSearchScore(needle, [note]) }))
+    .filter((item) => item.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 3);
+  const groups = [];
+  if (products.length) groups.push(`<div class="mobile-smart-search-group"><small>${state.lang === "ar" ? "منتجات مقترحة" : "Suggested products"}</small>${products.map(({ product }) => `<button type="button" role="option" data-action="mobile-smart-product" data-id="${escapeHTML(product.id)}"><img src="${escapeHTML(product.image || "assets/origo-hero.png")}" alt=""/><span><b>${escapeHTML(localizedProductName(product))}</b><small>${escapeHTML(product.brand || "")} · ${formatPrice(product.price)}</small></span></button>`).join("")}</div>`);
+  if (brands.length) groups.push(`<div class="mobile-smart-search-group"><small>${state.lang === "ar" ? "البراندات" : "Brands"}</small>${brands.map(({ brand }) => `<button type="button" role="option" data-action="mobile-smart-brand" data-value="${escapeHTML(brand)}"><span><b>${escapeHTML(brand)}</b><small>${state.lang === "ar" ? "عرض منتجات البراند" : "View brand products"}</small></span></button>`).join("")}</div>`);
+  if (notes.length) groups.push(`<div class="mobile-smart-search-group"><small>${state.lang === "ar" ? "النوتات والمكونات" : "Notes & ingredients"}</small>${notes.map(({ note }) => `<button type="button" role="option" data-action="mobile-smart-note" data-value="${escapeHTML(note)}"><span><b>${escapeHTML(note)}</b><small>${state.lang === "ar" ? "البحث بهذه النوتة" : "Search this note"}</small></span></button>`).join("")}</div>`);
+  holder.innerHTML = groups.join("") || `<div class="mobile-smart-search-empty">${state.lang === "ar" ? "لا توجد مطابقة مباشرة — اضغط Enter للبحث عن العبارة كاملة" : "No direct match — press Enter to search the full phrase"}</div>`;
+  holder.hidden = false;
+  input.setAttribute("aria-expanded", "true");
 }
 
 function renderSearchSuggestions(query) {
@@ -6510,6 +6659,34 @@ document.addEventListener("click", async (event) => {
     renderNotesLibrary();
   }
   if (action === "search") openOverlay("#search-overlay");
+  if (action === "mobile-header-search") {
+    const mobileSearch = $("#mobile-header-search");
+    const isHomepage = location.pathname === "/" || location.pathname === "/index.html";
+    if (window.matchMedia("(max-width: 640px)").matches && isHomepage) {
+      const opening = mobileSearch.hidden;
+      mobileSearch.hidden = !opening;
+      actionElement.setAttribute("aria-expanded", String(opening));
+      if (opening) requestAnimationFrame(() => $("#mobile-header-search-input")?.focus());
+    } else {
+      openOverlay("#search-overlay");
+    }
+  }
+  if (action === "mobile-search-filters") {
+    const query = $("#mobile-header-search-input")?.value.trim() || "";
+    navigateCatalog({ category: "perfume", query });
+  }
+  if (action === "mobile-smart-product") {
+    $("#mobile-smart-search-results").hidden = true;
+    showProductDetails(getProduct(actionElement.dataset.id));
+  }
+  if (action === "mobile-smart-brand") {
+    $("#mobile-smart-search-results").hidden = true;
+    navigateCatalog({ category: "perfume", brand: actionElement.dataset.value });
+  }
+  if (action === "mobile-smart-note") {
+    $("#mobile-smart-search-results").hidden = true;
+    navigateCatalog({ category: "perfume", query: actionElement.dataset.value });
+  }
   if (action === "admin") {
     toggleMobileMenu(false);
     if (!state.user) {
@@ -7340,23 +7517,44 @@ document.addEventListener("submit", async (event) => {
       ...current.homepageRails[key], enabled: data.has(`${key}.enabled`),
       titleAr: String(data.get(`${key}.titleAr`) || "").trim(), titleEn: String(data.get(`${key}.titleEn`) || "").trim(),
       order: Math.max(1, Math.min(10, Number(data.get(`${key}.order`) || 1))),
-      ...(key === "brands" ? { speed: Math.max(12, Math.min(120, Number(data.get("brands.speed") || 34))) } : {})
+      ...(key === "brands" ? { speed: Math.max(12, Math.min(120, Number(data.get("brands.speed") || 34))) } : {}),
+      ...(key === "benefits" ? { speed: Math.max(6, Math.min(120, Number(data.get("benefits.speed") || 18))) } : {})
     }]));
-    const file = event.target.elements.mediaFile?.files?.[0];
-    const media = [...current.homeMedia];
-    if (file) {
+    const files = [...(event.target.elements.mediaFile?.files || [])];
+    const media = current.homeMedia.map((item) => ({ ...item }));
+    event.target.querySelectorAll("[data-home-media-field]").forEach((input) => {
+      const item = media.find((candidate) => String(candidate.id) === String(input.dataset.id));
+      if (item) item[input.dataset.homeMediaField] = input.value.trim();
+    });
+    if (files.length) {
       try {
-        const url = await optimizeGalleryImage(file);
-        media.unshift({ id: `media-${Date.now()}`, name: String(data.get("mediaName") || file.name).trim(), placement: String(data.get("mediaPlacement") || "hero"), brand: String(data.get("mediaBrand") || "").trim(), altAr: String(data.get("mediaAltAr") || "").trim(), altEn: String(data.get("mediaAltEn") || "").trim(), url, createdAt: new Date().toISOString() });
+        const uploaded = await Promise.all(files.map(async (file, index) => ({
+          id: `media-${Date.now()}-${index}`,
+          name: file.name,
+          placement: "hero",
+          altAr: String(data.get("mediaTitleAr") || file.name).trim(),
+          altEn: String(data.get("mediaTitleEn") || file.name).trim(),
+          titleAr: String(data.get("mediaTitleAr") || "").trim(),
+          titleEn: String(data.get("mediaTitleEn") || "").trim(),
+          descriptionAr: String(data.get("mediaDescriptionAr") || "").trim(),
+          descriptionEn: String(data.get("mediaDescriptionEn") || "").trim(),
+          buttonAr: "تسوق الآن",
+          buttonEn: "Shop now",
+          href: "#new-arrivals",
+          url: await optimizeGalleryImage(file),
+          createdAt: new Date().toISOString()
+        })));
+        media.push(...uploaded);
       } catch (error) { showToast(adminCopy("تعذر معالجة الصورة", "Could not process image")); return; }
     }
-    state.adminWorkspace.settings = mergeStoreSettings({ ...current, homepageRails: nextRails, homeMedia: media });
+    const intervalSeconds = Math.max(1, Math.min(30, Number(data.get("heroIntervalSeconds") || 2.5)));
+    state.adminWorkspace.settings = mergeStoreSettings({ ...current, homepageRails: nextRails, homeHero: { ...current.homeHero, intervalSeconds }, homeMedia: media });
     saveAdminWorkspace("homepage");
     applyHomepageRailSettings();
     renderHomeHero();
     renderHomepageCommerce();
     renderAdminDashboard("homepage");
-    showToast(adminCopy("تم حفظ إعدادات الأشرطة", "Homepage rails saved"));
+    showToast(adminCopy(files.length ? `تمت إضافة ${files.length} صورة وحفظ البنر` : "تم حفظ إعدادات البنر", files.length ? `${files.length} banner images added and saved` : "Banner settings saved"));
     return;
   }
   if (event.target.id === "admin-alternatives-settings") {
@@ -8093,6 +8291,30 @@ $("#alternative-input").addEventListener("keydown", (event) => {
   if (event.key === "Enter") runAlternativeSearch();
 });
 
+$("#mobile-header-search")?.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const query = $("#mobile-header-search-input")?.value.trim() || "";
+  if (query) navigateCatalog({ category: "perfume", query });
+  else $("#mobile-header-search-input")?.focus();
+});
+
+$("#mobile-header-search-input")?.addEventListener("input", (event) => renderMobileSmartSearch(event.target.value));
+$("#mobile-header-search-input")?.addEventListener("keydown", (event) => {
+  const holder = $("#mobile-smart-search-results");
+  if (!holder || holder.hidden || !["ArrowDown", "ArrowUp"].includes(event.key)) return;
+  const options = [...holder.querySelectorAll("[role='option']")];
+  if (!options.length) return;
+  event.preventDefault();
+  const current = options.indexOf(document.activeElement);
+  const next = event.key === "ArrowDown" ? (current + 1) % options.length : (current <= 0 ? options.length - 1 : current - 1);
+  options[next].focus();
+});
+$("#mobile-header-search")?.addEventListener("focusout", (event) => {
+  if (event.currentTarget.contains(event.relatedTarget)) return;
+  $("#mobile-smart-search-results").hidden = true;
+  $("#mobile-header-search-input")?.setAttribute("aria-expanded", "false");
+});
+
 document.addEventListener("keydown", (event) => {
   if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
     event.preventDefault();
@@ -8156,6 +8378,12 @@ function bindBrandMarquee(brandTrack) {
     brandStartX = event.clientX;
     brandStartScroll = brandTrack.scrollLeft;
     brandTrack.setPointerCapture?.(event.pointerId);
+    const selected = event.target.closest(".marquee-item");
+    if (selected) {
+      selected.classList.remove("is-selected");
+      requestAnimationFrame(() => selected.classList.add("is-selected"));
+      window.setTimeout(() => selected.classList.remove("is-selected"), 850);
+    }
   });
   brandTrack.addEventListener("pointermove", (event) => {
     if (brandDragging) brandTrack.scrollLeft = brandStartScroll - (event.clientX - brandStartX);
@@ -8201,7 +8429,7 @@ function bindHorizontalRail(rail) {
   }, true);
 }
 
-$$("[data-brand-marquee]").forEach(bindBrandMarquee);
+$$("[data-brand-marquee], [data-benefit-marquee]").forEach(bindBrandMarquee);
 $$('[data-horizontal-rail]').forEach(bindHorizontalRail);
 
 window.ORIGOStore = {

@@ -18,8 +18,8 @@
 .origo-footer a,.origo-footer button{font:inherit}
 .origo-footer a{text-decoration:none}
 .origo-footer .footer-top-grid{
-  display:grid!important;grid-template-columns:minmax(340px,1.2fr) minmax(290px,.92fr) minmax(430px,1.35fr)!important;
-  grid-template-areas:"story newsletter benefits";gap:0!important;padding:22px 28px 24px!important;
+  display:grid!important;grid-template-columns:minmax(0,1fr)!important;
+  grid-template-areas:"newsletter";gap:0!important;padding:22px 28px 24px!important;
   border-bottom:1px solid var(--footer-line);background:linear-gradient(145deg,#fffdfa 0%,#fff 48%,#fff9f4 100%)!important;
 }
 .footer-brand-story{grid-area:story;display:grid;grid-template-columns:minmax(148px,.85fr) minmax(175px,1fr);gap:22px;align-items:center;padding-inline-end:26px;border-inline-end:1px solid var(--footer-line)}
@@ -29,7 +29,7 @@
 .footer-logo{display:block;width:min(100%,205px);height:auto;margin:0 auto 17px;object-fit:contain}
 .footer-story-copy p{margin:0;color:var(--footer-text);font-size:14px;line-height:2.05;text-wrap:pretty}
 
-.origo-footer .footer-newsletter{grid-area:newsletter;position:relative;display:flex;flex-direction:column;justify-content:center;padding:20px 28px!important;border-inline-end:1px solid var(--footer-line);background:transparent!important;text-align:center;color:var(--footer-text)!important}
+.origo-footer .footer-newsletter{grid-area:newsletter;position:relative;display:flex;flex-direction:column;justify-content:center;width:min(100%,720px);margin:auto;padding:20px 28px!important;border-inline-end:0;background:transparent!important;text-align:center;color:var(--footer-text)!important}
 .footer-newsletter .footer-spark{position:absolute;top:3px;inset-inline-start:16px;color:var(--footer-burgundy);font-size:21px}
 .origo-footer .footer-newsletter h2{margin:0 0 10px!important;color:var(--footer-burgundy)!important;font-size:clamp(21px,2vw,27px)!important;line-height:1.45!important;font-weight:800!important}
 .origo-footer .footer-newsletter>p{margin:0 0 22px!important;color:var(--footer-text)!important;font-size:14px!important}
@@ -138,14 +138,14 @@ body.dark .benefit-detail-copy>p,body.dark .benefit-step-list li,body.dark .bene
 body.dark .benefit-faqs summary{color:#f7efea}body.dark .benefit-faqs details{border-color:#4c3033}
 
 @media(max-width:1220px){
-  .origo-footer .footer-top-grid{grid-template-columns:1fr 1fr!important;grid-template-areas:"story newsletter" "benefits benefits"}
+  .origo-footer .footer-top-grid{grid-template-columns:minmax(280px,.8fr) minmax(430px,1.4fr)!important;grid-template-areas:"newsletter benefits"}
   .footer-benefit-grid{padding:22px 0 0;grid-template-columns:repeat(4,minmax(0,1fr))}.footer-benefit-card{min-height:185px}.footer-brand-story{border-inline-end:1px solid var(--footer-line)}
   .origo-footer .footer-directory{grid-template-columns:repeat(3,minmax(0,1fr))!important;row-gap:26px!important}.origo-footer .footer-column:nth-child(4){border-inline-end:0}.origo-footer .footer-column:nth-child(n+4){padding-top:8px}
 }
 @media(max-width:820px){
   .site-header .brand-logo-link{min-width:118px}.site-header .brand-logo-link img{width:116px;height:46px}
   .origo-footer{width:min(calc(100% - 12px),1600px)!important;margin-top:18px!important;border-radius:14px!important}
-  .origo-footer .footer-top-grid{grid-template-columns:1fr!important;grid-template-areas:"story" "newsletter" "benefits";padding:18px!important}
+  .origo-footer .footer-top-grid{grid-template-columns:1fr!important;grid-template-areas:"newsletter" "benefits";padding:18px!important}
   .footer-brand-story{grid-template-columns:minmax(120px,.72fr) 1fr;padding:0 0 20px;border-inline-end:0;border-bottom:1px solid var(--footer-line)}
   .footer-story-image{height:220px}.footer-logo{width:170px}.footer-story-copy p{font-size:13px}
   .origo-footer .footer-newsletter{padding:27px 0!important;border-inline-end:0;border-bottom:1px solid var(--footer-line)}

@@ -248,3 +248,83 @@ footer.origo-footer{width:min(calc(100% - 48px),1450px);margin:0 auto 26px;paddi
   .brand-marquee-set>button>span{width:56px;height:50px;font-size:15px}
   .brand-marquee-set b{font-size:9px}
 }
+
+.home-hero-copy :is(h1,p){white-space:pre-line!important}
+
+@media(max-width:640px){
+  .home-brand-directory{width:calc(100% - 20px);padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important}
+  .home-brand-directory .home-section-head{min-height:34px;padding-inline:2px}
+  .home-brand-directory .ornament-heading{gap:0}
+  .home-brand-directory .ornament-heading>span{display:none}
+  .home-brand-directory .ornament-heading h2{font-size:20px!important}
+  .home-brand-directory .home-section-head>a{display:flex!important;color:#171214!important;font-size:10px;font-weight:700}
+  .home-brand-directory .brand-carousel-track{margin-top:8px;overflow:hidden}
+  .home-brand-directory .brand-marquee-set{gap:12px;padding-inline-end:12px}
+  .home-brand-directory .brand-marquee-set>button{width:calc((100vw - 60px)/4);height:calc((100vw - 60px)/4);min-width:0;padding:0!important;border:0!important;border-radius:14px!important;background:transparent!important;box-shadow:none!important}
+  .home-brand-directory .brand-marquee-set button>img{width:108%;height:108%;display:block;object-fit:contain;border-radius:14px;background:transparent}
+  .home-brand-directory .brand-marquee-set>button>span{width:100%;height:100%;border:0!important;border-radius:14px;background:transparent;font-size:17px}
+  .home-brand-directory .brand-marquee-set b{display:none!important}
+}
+
+/* Illustrated shop-by-gender cards supplied by the store owner. */
+.home-gender-section{padding-top:34px}
+.home-gender-section>.ornament-heading{margin-bottom:18px}
+.home-gender-section>.ornament-heading::before{content:"♢";position:absolute;margin-top:-54px;color:#c98b20;font-size:28px}
+.home-gender-section>.ornament-heading h2{font-size:clamp(30px,4vw,58px);line-height:1.2}
+.home-gender-section .gender-grid{gap:clamp(10px,2vw,30px);margin-top:0}
+.home-gender-section .gender-card{display:block;min-height:0;aspect-ratio:460/765;overflow:hidden;border:1px solid rgba(255,255,255,.9);border-radius:clamp(18px,3vw,42px);background-image:url("assets/home/gender/shop-by-gender-reference.png")!important;background-repeat:no-repeat;background-size:333.913% 133.856%;box-shadow:0 12px 30px rgba(72,43,34,.1);transition:transform .3s ease,box-shadow .3s ease}
+.home-gender-section .gender-card::after{display:none!important;content:none!important}
+.home-gender-section .gender-card:hover,.home-gender-section .gender-card:focus-visible{z-index:2;transform:translateY(-6px) scale(1.015);box-shadow:0 20px 42px rgba(72,43,34,.17);outline:3px solid rgba(201,139,32,.35);outline-offset:3px}
+.home-gender-section .gender-men{background-position:4.2% 84.6%!important}
+.home-gender-section .gender-women{background-position:50% 84.6%!important}
+.home-gender-section .gender-unisex{background-position:95.7% 84.6%!important}
+@media(max-width:640px){
+  .home-gender-section{width:calc(100% - 16px);padding-top:26px}
+  .home-gender-section>.ornament-heading{margin-bottom:10px}
+  .home-gender-section>.ornament-heading::before{margin-top:-37px;font-size:19px}
+  .home-gender-section>.ornament-heading h2{font-size:23px!important}
+  .home-gender-section .gender-grid.horizontal-rail{gap:6px!important}
+  .home-gender-section .gender-grid.horizontal-rail .gender-card{min-height:0!important;aspect-ratio:460/765!important;border-radius:14px!important}
+}
+
+/* Continuous brand and benefit marquees */
+.home-brand-directory,.home-benefits-directory{width:min(calc(100% - 64px),1380px);margin:26px auto 0;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important}
+.home-brand-directory :is(.brand-carousel-track,.brand-marquee-content),.home-benefits-directory :is(.benefit-carousel-track,.benefit-marquee-content){background:transparent!important;box-shadow:none!important;-webkit-mask-image:none!important;mask-image:none!important}
+.home-brand-directory::before,.home-brand-directory::after,.home-brand-directory :is(.brand-carousel-track,.brand-marquee-content,.brand-marquee-set)::before,.home-brand-directory :is(.brand-carousel-track,.brand-marquee-content,.brand-marquee-set)::after{display:none!important;content:none!important;background:none!important;box-shadow:none!important}
+.home-brand-directory .brand-carousel-track{box-sizing:border-box;width:calc(100% + 32px);margin: -7px -16px;padding:16px;overflow:clip!important;scrollbar-width:none!important;border:0!important;filter:none!important}
+.home-brand-directory .brand-marquee-content{padding-block:7px}
+.home-brand-directory .marquee-item{border:0!important;border-radius:14px!important;background:transparent!important;box-shadow:none!important;filter:none!important;isolation:isolate;transform-origin:center;backface-visibility:hidden}
+.home-brand-directory .marquee-item:is(:hover,:focus-visible,.is-selected){border:0!important;background:transparent!important;box-shadow:none!important;filter:none!important;animation:none}
+.home-brand-directory .marquee-item>img{border-radius:14px!important;clip-path:inset(0 round 14px)}
+.home-brand-directory .marquee-item>img{mix-blend-mode:multiply}
+.home-brand-directory .marquee-item>img:is([src*="matin-martin"],[src*="alrawnaq"],[src*="ajmal"],[src*="al-majed-oud"],[src*="reef"],[src*="ard-al-zaafaran"],[src*="dkhoon-alemiratia"],[src*="afnan"],[src*="ibrahim-al-qurashi"],[src*="rasasi"],[src*="assaf"],[src*="gissah"]){filter:invert(1) grayscale(1) contrast(1.35);mix-blend-mode:multiply}
+.benefit-carousel-track{display:block;overflow-x:auto;overflow-y:visible;scrollbar-width:none;touch-action:pan-x pan-y}
+.benefit-carousel-track::-webkit-scrollbar{display:none}
+.benefit-marquee-content{animation-duration:var(--benefit-marquee-duration,18s)}
+.home-benefits-directory .benefit-carousel-track{box-sizing:border-box;width:calc(100% + 48px);margin:-18px -24px;padding:28px 24px;overflow:clip!important;scrollbar-width:none!important;border:0!important;background:transparent!important;box-shadow:none!important}
+.home-benefits-directory .benefit-marquee-content{padding-block:10px}
+.benefit-marquee-set>a{position:relative;width:clamp(120px,13vw,170px);height:clamp(120px,13vw,170px);padding:12px;display:grid;place-items:center;align-content:center;gap:5px;flex:0 0 auto;border:0!important;border-radius:18px;color:var(--ink);background:transparent!important;box-shadow:none!important;text-align:center;text-decoration:none;overflow:visible}
+.benefit-marquee-item .benefit-icon{width:58px;height:58px;display:grid;place-items:center;margin:0;color:var(--burgundy)}
+.benefit-marquee-item .benefit-icon :is(svg,img){width:100%;height:100%;object-fit:contain}
+.benefit-marquee-item b{font-size:12px}.benefit-marquee-item small{color:var(--muted);font-size:9px}
+.benefit-carousel-track:hover .brand-marquee-content,.benefit-carousel-track:focus-within .brand-marquee-content,.benefit-carousel-track.is-interacting .brand-marquee-content{animation-play-state:paused}
+.marquee-item{position:relative;z-index:1;overflow:visible;transition:transform .25s ease,filter .25s ease,box-shadow .25s ease}
+.marquee-item:is(:hover,:focus-visible,.is-selected){z-index:5;transform:scale(1.1);filter:brightness(1.08) saturate(1.08);outline:0}
+.benefit-marquee-item:is(:hover,:focus-visible,.is-selected){transform:scale(1.3);border:0!important;background:transparent!important;box-shadow:none!important;animation:none}
+.marquee-item::after{content:"";position:absolute;z-index:-1;right:10%;bottom:-13px;left:10%;height:25px;pointer-events:none;border-radius:50%;background:radial-gradient(ellipse at center,rgba(255,214,112,.95) 0,rgba(201,148,63,.58) 38%,rgba(123,10,32,.22) 58%,transparent 76%);opacity:0;filter:blur(4px);transform:scale(.25,.4)}
+.marquee-item:is(:hover,:focus-visible,.is-selected)::after{animation:origoBottomGlimmer .85s ease-in-out infinite alternate}
+@keyframes origoSelectedGlimmer{0%{opacity:0;transform:translateX(-75%) rotate(8deg)}25%{opacity:1}100%{opacity:0;transform:translateX(75%) rotate(8deg)}}
+@keyframes origoBenefitHalo{from{box-shadow:0 0 0 1px rgba(201,148,63,.3),0 0 7px rgba(201,148,63,.28)}to{box-shadow:0 0 0 3px rgba(201,148,63,.75),0 0 22px rgba(123,10,32,.5)}}
+@keyframes origoBrandHalo{from{box-shadow:0 0 0 1px rgba(201,148,63,.28),0 0 6px rgba(201,148,63,.22)}to{box-shadow:0 0 0 3px rgba(201,148,63,.72),0 0 20px rgba(123,10,32,.42)}}
+@keyframes origoBottomGlimmer{from{opacity:.38;transform:scale(.35,.45);filter:blur(5px)}to{opacity:1;transform:scale(1.08,1);filter:blur(2px)}}
+@media(max-width:640px){
+  .home-brand-directory,.home-benefits-directory{width:calc(100% - 20px);margin-top:18px}
+  .home-benefits-directory .home-section-head{min-height:34px;padding-inline:2px}
+  .home-benefits-directory .ornament-heading h2{font-size:20px!important}
+  .home-benefits-directory .home-section-head>a{display:flex!important;color:#171214!important;font-size:10px;font-weight:700}
+  .home-benefits-directory .benefit-carousel-track{margin-top:8px;overflow:hidden}
+  .benefit-marquee-set{gap:12px;padding-inline-end:12px}
+  .benefit-marquee-set>a{width:calc((100vw - 72px)/4);height:calc((100vw - 72px)/4);padding:7px;border:0!important;border-radius:14px;background:transparent!important;box-shadow:none!important}
+  .benefit-marquee-item .benefit-icon{width:42px;height:42px}
+  .benefit-marquee-item b{font-size:9px;line-height:1.25}.benefit-marquee-item small{font-size:7px}
+}
