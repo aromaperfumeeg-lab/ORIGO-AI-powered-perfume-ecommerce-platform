@@ -134,6 +134,7 @@ body.dark footer{border-top:1px solid #39272c}
 /* Production horizontal rails: manual sections never wrap and brands alone autoplay. */
 .horizontal-rail{display:flex!important;grid-template-columns:none!important;flex-wrap:nowrap!important;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scroll-padding-inline:14px;overscroll-behavior-inline:contain;touch-action:pan-x pan-y;scrollbar-width:none;-webkit-overflow-scrolling:touch;cursor:grab}
 .horizontal-rail::-webkit-scrollbar{display:none}.horizontal-rail.is-dragging{cursor:grabbing;scroll-behavior:auto;user-select:none}.horizontal-rail>*{scroll-snap-align:start;scroll-snap-stop:normal}
+.horizontal-rail .origo-product-card,.horizontal-rail .origo-product-card *{cursor:grab}.horizontal-rail.is-dragging .origo-product-card,.horizontal-rail.is-dragging .origo-product-card *{cursor:grabbing}
 .home-benefits.horizontal-rail article{flex:0 0 clamp(150px,26vw,215px);min-height:118px}.gender-grid.horizontal-rail .gender-card{flex:0 0 clamp(260px,72vw,440px)}.home-categories.horizontal-rail a{flex:0 0 clamp(108px,24vw,160px)}
 .brand-carousel-track{display:block;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;scroll-snap-type:none;touch-action:pan-x pan-y}.brand-carousel-track::-webkit-scrollbar{display:none}.brand-marquee-content{width:max-content;display:flex;will-change:transform;animation:origoBrandMarquee 34s linear infinite}.brand-marquee-set{display:flex;align-items:stretch;gap:14px;padding-inline-end:14px}.brand-marquee-set>button{width:clamp(92px,9vw,124px);height:clamp(92px,9vw,124px);padding:10px;display:grid;place-items:center;align-content:center;gap:4px;flex:0 0 auto;border:1px solid var(--line);border-radius:14px;color:var(--ink);background:var(--surface);scroll-snap-align:start;cursor:pointer}.brand-marquee-set>button>span{width:42px;height:42px;display:grid;place-items:center;border:1px solid color-mix(in srgb,var(--gold) 55%,transparent);border-radius:10px;color:var(--burgundy);background:var(--paper);font-family:var(--font-display)}.brand-marquee-set b{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px}.brand-marquee-set small{font-size:8px}.brand-carousel-track:hover .brand-marquee-content,.brand-carousel-track:focus-within .brand-marquee-content,.brand-carousel-track.is-interacting .brand-marquee-content{animation-play-state:paused}
 @keyframes origoBrandMarquee{to{transform:translateX(-50%)}}
@@ -293,39 +294,41 @@ footer.origo-footer{width:min(calc(100% - 48px),1450px);margin:0 auto 26px;paddi
 .home-brand-directory::before,.home-brand-directory::after,.home-brand-directory :is(.brand-carousel-track,.brand-marquee-content,.brand-marquee-set)::before,.home-brand-directory :is(.brand-carousel-track,.brand-marquee-content,.brand-marquee-set)::after{display:none!important;content:none!important;background:none!important;box-shadow:none!important}
 .home-brand-directory .brand-carousel-track{box-sizing:border-box;width:calc(100% + 32px);margin: -7px -16px;padding:16px;overflow:clip!important;scrollbar-width:none!important;border:0!important;filter:none!important}
 .home-brand-directory .brand-marquee-content{padding-block:7px}
-.home-brand-directory .marquee-item{border:0!important;border-radius:14px!important;background:transparent!important;box-shadow:none!important;filter:none!important;isolation:isolate;transform-origin:center;backface-visibility:hidden}
+.home-brand-directory .marquee-item{border:0!important;border-radius:14px!important;background:transparent!important;box-shadow:none!important;filter:none!important;isolation:auto!important;transform-origin:center;backface-visibility:hidden}
 .home-brand-directory .marquee-item:is(:hover,:focus-visible,.is-selected){border:0!important;background:transparent!important;box-shadow:none!important;filter:none!important;animation:none}
 .home-brand-directory .marquee-item>img{border-radius:14px!important;clip-path:inset(0 round 14px)}
-.home-brand-directory .marquee-item>img{mix-blend-mode:multiply}
-.home-brand-directory .marquee-item>img:is([src*="matin-martin"],[src*="alrawnaq"],[src*="ajmal"],[src*="al-majed-oud"],[src*="reef"],[src*="ard-al-zaafaran"],[src*="dkhoon-alemiratia"],[src*="afnan"],[src*="ibrahim-al-qurashi"],[src*="rasasi"],[src*="assaf"],[src*="gissah"]){filter:invert(1) grayscale(1) contrast(1.35);mix-blend-mode:multiply}
+.home-brand-directory .marquee-item>img{mix-blend-mode:multiply;filter:contrast(1.45) brightness(1.03)}
+.home-brand-directory .marquee-item>img:is([src*="matin-martin"],[src*="alrawnaq"],[src*="ajmal"],[src*="al-majed-oud"],[src*="reef"],[src*="ard-al-zaafaran"],[src*="dkhoon-alemiratia"],[src*="afnan"],[src*="ibrahim-al-qurashi"],[src*="rasasi"],[src*="assaf"],[src*="gissah"]){filter:invert(1) grayscale(1) contrast(1.7) brightness(1.12);mix-blend-mode:multiply}
 .benefit-carousel-track{display:block;overflow-x:auto;overflow-y:visible;scrollbar-width:none;touch-action:pan-x pan-y}
 .benefit-carousel-track::-webkit-scrollbar{display:none}
 .benefit-marquee-content{animation-duration:var(--benefit-marquee-duration,18s)}
-.home-benefits-directory .benefit-carousel-track{box-sizing:border-box;width:calc(100% + 48px);margin:-18px -24px;padding:28px 24px;overflow:clip!important;scrollbar-width:none!important;border:0!important;background:transparent!important;box-shadow:none!important}
+.home-benefits-directory .home-section-head{margin-bottom:-12px}
+.home-benefits-directory .benefit-carousel-track{box-sizing:border-box;width:calc(100% + 48px);margin:-18px -24px;padding:28px 24px;overflow-x:auto!important;overflow-y:hidden!important;scrollbar-width:none!important;border:0!important;background:transparent!important;box-shadow:none!important;cursor:grab}
+.home-benefits-directory .benefit-carousel-track:active{cursor:grabbing}
 .home-benefits-directory .benefit-marquee-content{padding-block:10px}
-.benefit-marquee-set>a{position:relative;width:clamp(120px,13vw,170px);height:clamp(120px,13vw,170px);padding:12px;display:grid;place-items:center;align-content:center;gap:5px;flex:0 0 auto;border:0!important;border-radius:18px;color:var(--ink);background:transparent!important;box-shadow:none!important;text-align:center;text-decoration:none;overflow:visible}
+.benefit-marquee-set>a{position:relative;width:clamp(138px,14.95vw,196px);height:clamp(138px,14.95vw,196px);padding:12px;display:grid;place-items:center;align-content:center;gap:5px;flex:0 0 auto;border:0!important;border-radius:18px;color:var(--ink);background:transparent!important;box-shadow:none!important;text-align:center;text-decoration:none;overflow:visible}
 .benefit-marquee-item .benefit-icon{width:58px;height:58px;display:grid;place-items:center;margin:0;color:var(--burgundy)}
 .benefit-marquee-item .benefit-icon :is(svg,img){width:100%;height:100%;object-fit:contain}
 .benefit-marquee-item b{font-size:12px}.benefit-marquee-item small{color:var(--muted);font-size:9px}
 .benefit-carousel-track:hover .brand-marquee-content,.benefit-carousel-track:focus-within .brand-marquee-content,.benefit-carousel-track.is-interacting .brand-marquee-content{animation-play-state:paused}
 .marquee-item{position:relative;z-index:1;overflow:visible;transition:transform .25s ease,filter .25s ease,box-shadow .25s ease}
-.marquee-item:is(:hover,:focus-visible,.is-selected){z-index:5;transform:scale(1.1);filter:brightness(1.08) saturate(1.08);outline:0}
+.marquee-item:is(:hover,:focus-visible,.is-selected){z-index:5;transform:scale(1.1);filter:none;outline:0}
 .benefit-marquee-item:is(:hover,:focus-visible,.is-selected){transform:scale(1.3);border:0!important;background:transparent!important;box-shadow:none!important;animation:none}
-.marquee-item::after{content:"";position:absolute;z-index:-1;right:10%;bottom:-13px;left:10%;height:25px;pointer-events:none;border-radius:50%;background:radial-gradient(ellipse at center,rgba(255,214,112,.95) 0,rgba(201,148,63,.58) 38%,rgba(123,10,32,.22) 58%,transparent 76%);opacity:0;filter:blur(4px);transform:scale(.25,.4)}
+.marquee-item::after{content:"";position:absolute;z-index:-1;inset:2%;pointer-events:none;border:2px solid rgba(220,166,55,.68);border-radius:22px;background:radial-gradient(ellipse at center,transparent 51%,rgba(255,220,125,.18) 67%,rgba(211,153,38,.48) 78%,transparent 91%);box-shadow:0 0 14px rgba(216,161,48,.5),0 0 25px rgba(255,211,101,.3);opacity:0;filter:blur(4px);transform:scale(.82)}
 .marquee-item:is(:hover,:focus-visible,.is-selected)::after{animation:origoBottomGlimmer .85s ease-in-out infinite alternate}
 @keyframes origoSelectedGlimmer{0%{opacity:0;transform:translateX(-75%) rotate(8deg)}25%{opacity:1}100%{opacity:0;transform:translateX(75%) rotate(8deg)}}
 @keyframes origoBenefitHalo{from{box-shadow:0 0 0 1px rgba(201,148,63,.3),0 0 7px rgba(201,148,63,.28)}to{box-shadow:0 0 0 3px rgba(201,148,63,.75),0 0 22px rgba(123,10,32,.5)}}
 @keyframes origoBrandHalo{from{box-shadow:0 0 0 1px rgba(201,148,63,.28),0 0 6px rgba(201,148,63,.22)}to{box-shadow:0 0 0 3px rgba(201,148,63,.72),0 0 20px rgba(123,10,32,.42)}}
-@keyframes origoBottomGlimmer{from{opacity:.38;transform:scale(.35,.45);filter:blur(5px)}to{opacity:1;transform:scale(1.08,1);filter:blur(2px)}}
+@keyframes origoBottomGlimmer{from{opacity:.24;transform:scale(.84);filter:blur(6px)}to{opacity:.68;transform:scale(1.08);filter:blur(3px)}}
 @media(max-width:640px){
   .home-brand-directory,.home-benefits-directory{width:calc(100% - 20px);margin-top:18px}
   .home-benefits-directory .home-section-head{min-height:34px;padding-inline:2px}
   .home-benefits-directory .ornament-heading h2{font-size:20px!important}
   .home-benefits-directory .home-section-head>a{display:flex!important;color:#171214!important;font-size:10px;font-weight:700}
-  .home-benefits-directory .benefit-carousel-track{margin-top:8px;overflow:hidden}
+  .home-benefits-directory .benefit-carousel-track{margin-top:-6px;overflow-x:auto!important;overflow-y:hidden!important}
   .benefit-marquee-set{gap:12px;padding-inline-end:12px}
-  .benefit-marquee-set>a{width:calc((100vw - 72px)/4);height:calc((100vw - 72px)/4);padding:7px;border:0!important;border-radius:14px;background:transparent!important;box-shadow:none!important}
-  .benefit-marquee-item .benefit-icon{width:42px;height:42px}
+  .benefit-marquee-set>a{width:calc((100vw - 60px)/4);height:calc((100vw - 60px)/4);padding:7px;border:0!important;border-radius:14px;background:transparent!important;box-shadow:none!important}
+  .benefit-marquee-item .benefit-icon{width:48px;height:48px}
   .benefit-marquee-item b{font-size:9px;line-height:1.25}.benefit-marquee-item small{font-size:7px}
 }
 
@@ -346,11 +349,146 @@ footer.origo-footer{width:min(calc(100% - 48px),1450px);margin:0 auto 26px;paddi
 .home-brand-directory .brand-marquee-set{gap:12px;padding-inline-end:12px}
 .home-brand-directory .brand-marquee-set>button{width:clamp(130px,14vw,180px);height:clamp(130px,14vw,180px);padding:8px!important;border:0!important;border-radius:18px!important;background:transparent!important;box-shadow:none!important}
 .home-brand-directory .brand-marquee-set>button b,.home-brand-directory .brand-marquee-set>button small{display:none!important}
-.home-brand-directory .brand-marquee-set>button>img{width:100%;height:100%;object-fit:contain;border:0!important;border-radius:0!important;background:transparent!important;clip-path:none!important}
+.home-brand-directory .brand-marquee-set>button>img{width:100%;height:100%;object-fit:contain;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;clip-path:none!important;outline:0!important;mix-blend-mode:multiply}
 .home-brand-directory .brand-marquee-set>button>span{width:100%;height:100%;border:0!important;border-radius:0!important;background:transparent!important}
 .home-brand-directory .marquee-item:is(:hover,:focus-visible,.is-selected){transform:scale(1.3);border:0!important;background:transparent!important;box-shadow:none!important;outline:0}
+.home-brand-directory :is(.brand-carousel-track,.brand-marquee-content,.brand-marquee-set,.marquee-item),.home-benefits-directory :is(.benefit-carousel-track,.benefit-marquee-content,.benefit-marquee-set,.marquee-item){box-shadow:none!important;text-shadow:none!important}
 @media(max-width:640px){
   .home-brand-directory .brand-marquee-set{gap:12px!important;padding-inline-end:12px!important}
   .home-brand-directory .brand-marquee-set>button{width:calc((100vw - 60px)/4);height:calc((100vw - 60px)/4);padding:4px!important}
   .home-brand-directory .brand-marquee-set>button>img{width:105%;height:105%}
+}
+
+/* Refined gender heading and the same interactive treatment as benefits. */
+.home-gender-section{width:min(calc(100% - 24px),1040px)}
+.home-gender-section>.ornament-heading{gap:clamp(14px,2.4vw,34px)}
+.home-gender-section>.ornament-heading>span{position:relative;width:clamp(72px,10vw,145px);height:2px;border:0;background:linear-gradient(90deg,transparent,#d7a43c 24%,#8f5610 50%,#d7a43c 76%,transparent)}
+.home-gender-section>.ornament-heading>span::before{content:"";position:absolute;top:50%;left:50%;width:9px;height:9px;border:2px solid #c98b20;background:#fffaf4;transform:translate(-50%,-50%) rotate(45deg)}
+.home-gender-section>.ornament-heading>span::after{content:"•  ✦  •";position:absolute;top:50%;left:50%;width:max-content;padding:0 8px;color:#c98b20;background:#fff;font-size:10px;letter-spacing:5px;transform:translate(-50%,-52%)}
+.home-gender-section .gender-grid.horizontal-rail{grid-template-columns:repeat(3,clamp(144px,14.95vw,201px))!important}
+.home-gender-section .gender-grid.horizontal-rail .gender-card{position:relative;overflow:visible!important;isolation:isolate;transition:transform .25s ease}
+.home-gender-section .gender-grid.horizontal-rail .gender-card::before{content:"";position:absolute;z-index:-1;inset:2%;border:2px solid rgba(220,166,55,.68);border-radius:22px;background:radial-gradient(ellipse at center,transparent 51%,rgba(255,220,125,.18) 67%,rgba(211,153,38,.48) 78%,transparent 91%);box-shadow:0 0 14px rgba(216,161,48,.5),0 0 25px rgba(255,211,101,.3);opacity:0;filter:blur(4px);transform:scale(.82);pointer-events:none}
+.home-gender-section .gender-grid.horizontal-rail .gender-card:is(:hover,:focus-visible,:active){z-index:5;transform:scale(1.3);border-color:transparent!important;box-shadow:none!important;outline:0}
+.home-gender-section .gender-grid.horizontal-rail .gender-card:is(:hover,:focus-visible,:active)::before{animation:origoBottomGlimmer .85s ease-in-out infinite alternate}
+@media(max-width:640px){
+  .home-gender-section>.ornament-heading{gap:8px}
+  .home-gender-section>.ornament-heading>span{width:clamp(38px,13vw,58px)}
+  .home-gender-section>.ornament-heading>span::after{padding:0 3px;font-size:7px;letter-spacing:2px}
+  .home-gender-section .gender-grid.horizontal-rail{grid-template-columns:repeat(3,minmax(0,calc((100vw - 28px)/3)))!important;gap:6px!important}
+}
+
+/* White luxury glass treatment for brands, benefits, and gender cards. */
+body:not(.dark),body:not(.dark) #storefront-main,body:not(.dark) .origo-home{background:#fff!important}
+body:not(.dark) :is(.home-brand-directory .marquee-item,.home-benefits-directory .benefit-marquee-item){
+  border:1px solid rgba(255,255,255,.72)!important;
+  background:linear-gradient(145deg,rgba(255,255,255,.58),rgba(244,247,255,.3))!important;
+  -webkit-backdrop-filter:blur(7px) saturate(112%);
+  backdrop-filter:blur(7px) saturate(112%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.88)!important;
+}
+body:not(.dark) .home-gender-section .gender-card{
+  border:1px solid rgba(255,255,255,.8)!important;
+  box-shadow:inset 0 0 0 999px rgba(255,255,255,.045),inset 0 1px 0 rgba(255,255,255,.92)!important;
+}
+body:not(.dark) :is(.home-brand-directory .marquee-item,.home-benefits-directory .benefit-marquee-item)::after,
+body:not(.dark) .home-gender-section .gender-card::before{
+  content:"";
+  position:absolute;
+  z-index:7;
+  inset:0;
+  padding:1.5px;
+  border:0;
+  border-radius:inherit;
+  pointer-events:none;
+  opacity:0;
+  filter:none;
+  transform:none;
+  background:linear-gradient(125deg,rgba(142,92,255,.78),rgba(56,157,255,.76) 48%,rgba(225,61,93,.36) 82%,rgba(142,92,255,.68));
+  box-shadow:0 0 0 rgba(94,130,255,0);
+  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;
+  mask-composite:exclude;
+}
+body:not(.dark) .home-gender-section .gender-card::before{
+  z-index:-1;
+  inset:-3%;
+  padding:0;
+  border:0;
+  background:transparent;
+  -webkit-mask:none;
+  mask:none;
+}
+body:not(.dark) :is(.home-brand-directory .marquee-item,.home-benefits-directory .benefit-marquee-item):is(:hover,:focus-visible,.is-selected)::after,
+body:not(.dark) .home-gender-section .gender-card:is(:hover,:focus-visible,:active)::before{
+  animation:origoGlassEdgeGlow .9s ease-in-out infinite alternate;
+}
+body:not(.dark) :is(.home-brand-directory .marquee-item,.home-benefits-directory .benefit-marquee-item):is(:hover,:focus-visible,.is-selected),
+body:not(.dark) .home-gender-section .gender-card:is(:hover,:focus-visible,:active){
+  box-shadow:0 12px 30px rgba(74,113,220,.1),0 7px 22px rgba(136,76,206,.08),0 3px 14px rgba(205,55,78,.045),inset 0 1px 0 rgba(255,255,255,.9)!important;
+}
+@keyframes origoGlassEdgeGlow{
+  from{opacity:.59;box-shadow:0 0 11px rgba(110,91,255,.25),0 0 7px rgba(49,151,255,.2)}
+  to{opacity:1;box-shadow:0 0 25px rgba(110,91,255,.43),0 0 20px rgba(49,151,255,.35),0 0 13px rgba(218,55,84,.17)}
+}
+@media(max-width:640px){
+  body:not(.dark) :is(.home-brand-directory .marquee-item,.home-benefits-directory .benefit-marquee-item){-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+}
+
+/* Gender cards use an external edge glow only, matched to each card. */
+.home-gender-section .gender-men{--gender-edge:#5da6eb;--gender-edge-soft:#c9e8ff;--gender-edge-glow:rgba(70,157,238,.78)}
+.home-gender-section .gender-women{--gender-edge:#ef8497;--gender-edge-soft:#ffd4dc;--gender-edge-glow:rgba(239,105,132,.78)}
+.home-gender-section .gender-unisex{--gender-edge:#a670da;--gender-edge-soft:#e5cff9;--gender-edge-glow:rgba(153,83,218,.78)}
+body:not(.dark) .home-gender-section .gender-card::before{display:none!important;content:none!important;animation:none!important}
+body:not(.dark) .home-gender-section .gender-card::after{
+  content:""!important;
+  position:absolute;
+  z-index:7;
+  inset:0;
+  display:block!important;
+  padding:2px;
+  border-radius:inherit;
+  pointer-events:none;
+  background:linear-gradient(128deg,rgba(255,255,255,.98),var(--gender-edge-soft) 22%,var(--gender-edge) 49%,rgba(255,255,255,.95) 64%,var(--gender-edge) 84%,rgba(255,255,255,.98));
+  background-size:180% 180%;
+  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;
+  mask-composite:exclude;
+  opacity:.88;
+}
+body:not(.dark) .home-gender-section .gender-card:is(:hover,:focus-visible,:active){
+  animation:origoGenderEdgeGlow .9s ease-in-out infinite alternate;
+}
+body:not(.dark) .home-gender-section .gender-card:is(:hover,:focus-visible,:active)::after{animation:origoGenderGlassReflection 1.15s ease-in-out infinite alternate}
+@keyframes origoGenderEdgeGlow{
+  from{filter:drop-shadow(0 0 8px var(--gender-edge-glow)) drop-shadow(0 0 4px var(--gender-edge-glow))}
+  to{filter:drop-shadow(0 0 19px var(--gender-edge-glow)) drop-shadow(0 0 12px var(--gender-edge-glow))}
+}
+@keyframes origoGenderGlassReflection{from{opacity:.76;background-position:0% 50%}to{opacity:1;background-position:100% 50%}}
+
+/* Burgundy reflective glass edges for brands and benefits. */
+body:not(.dark) :is(.home-brand-directory .marquee-item,.home-benefits-directory .benefit-marquee-item)::after{
+  z-index:7;
+  inset:0;
+  padding:2px;
+  border:0;
+  border-radius:inherit;
+  background:linear-gradient(128deg,rgba(255,255,255,.98),#f2cbd5 20%,#78142f 46%,rgba(255,255,255,.96) 63%,#9d2343 83%,rgba(255,255,255,.98));
+  background-size:180% 180%;
+  box-shadow:none;
+  opacity:.78;
+  filter:none;
+  transform:none;
+  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;
+  mask-composite:exclude;
+}
+body:not(.dark) :is(.home-brand-directory .marquee-item,.home-benefits-directory .benefit-marquee-item):is(:hover,:focus-visible,.is-selected)::after{
+  animation:origoBurgundyGlassReflection 1.15s ease-in-out infinite alternate;
+}
+body:not(.dark) :is(.home-brand-directory .marquee-item,.home-benefits-directory .benefit-marquee-item):is(:hover,:focus-visible,.is-selected){
+  filter:drop-shadow(0 0 9px rgba(120,20,47,.68)) drop-shadow(0 0 5px rgba(157,35,67,.48))!important;
+}
+@keyframes origoBurgundyGlassReflection{
+  from{opacity:.72;background-position:0% 50%;box-shadow:0 0 7px rgba(120,20,47,.28)}
+  to{opacity:1;background-position:100% 50%;box-shadow:0 0 18px rgba(120,20,47,.58),0 0 10px rgba(157,35,67,.42)}
 }

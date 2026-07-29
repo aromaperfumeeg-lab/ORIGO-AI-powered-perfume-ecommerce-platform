@@ -6240,7 +6240,7 @@ document.addEventListener("error", (event) => {
 let productCardGesture = null;
 document.addEventListener("pointerdown", (event) => {
   const media = event.target.closest(".product-card-media-swipe");
-  if (!media || event.target.closest("button")) return;
+  if (!media || media.closest("[data-horizontal-rail]") || event.target.closest("button")) return;
   productCardGesture = { media, x: event.clientX, y: event.clientY };
   media.setPointerCapture?.(event.pointerId);
 });
