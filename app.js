@@ -8432,6 +8432,14 @@ function bindHorizontalRail(rail) {
 $$("[data-brand-marquee], [data-benefit-marquee]").forEach(bindBrandMarquee);
 $$('[data-horizontal-rail]').forEach(bindHorizontalRail);
 
+const backToTopButton = $("#back-to-top");
+if (backToTopButton) {
+  const updateBackToTop = () => backToTopButton.classList.toggle("visible", window.scrollY > 420);
+  window.addEventListener("scroll", updateBackToTop, { passive: true });
+  backToTopButton.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+  updateBackToTop();
+}
+
 window.ORIGOStore = {
   api,
   get state() { return state; },
