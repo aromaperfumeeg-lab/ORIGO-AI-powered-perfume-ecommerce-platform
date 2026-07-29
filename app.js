@@ -8349,9 +8349,49 @@ const sectionObserver = new IntersectionObserver((entries) => {
 }, { rootMargin: "-35% 0px -55%", threshold: 0 });
 sections.forEach((section) => sectionObserver.observe(section));
 
-window.addEventListener("scroll", () => {
-  $(".site-header").classList.toggle("compact", window.scrollY > 28);
-}, { passive: true });
+let mobileChromeLastScrollY = Math.max(0, window.scrollY);
+let mobileChromeFrame = 0;
+
+function isPersistentBottomNavigationRoute() {
+  return document.body.classList.contains("commerce-route")
+    || /\/(?:cart|checkout|payment|track(?:ing)?|orders?)(?:\/|$)/i.test(window.location.pathname);
+}
+
+function updateMobileScrollChrome() {
+  mobileChromeFrame = 0;
+  const currentScrollY = Math.max(0, window.scrollY);
+  const delta = currentScrollY - mobileChromeLastScrollY;
+  const isMobile = window.matchMedia("(max-width: 640px)").matches;
+  const nearTop = currentScrollY < 28;
+
+  $(".site-header")?.classList.toggle("compact", currentScrollY > 28);
+
+  if (!isMobile || nearTop) {
+    document.body.classList.remove("mobile-header-condensed", "mobile-nav-hidden");
+  } else if (delta > 3) {
+    document.body.classList.toggle("mobile-header-condensed", currentScrollY > 90);
+    document.body.classList.toggle(
+      "mobile-nav-hidden",
+      currentScrollY > 260 && !isPersistentBottomNavigationRoute()
+    );
+  } else if (delta < -2) {
+    document.body.classList.remove("mobile-header-condensed", "mobile-nav-hidden");
+  }
+
+  if (isPersistentBottomNavigationRoute()) {
+    document.body.classList.remove("mobile-nav-hidden");
+  }
+  mobileChromeLastScrollY = currentScrollY;
+}
+
+function requestMobileScrollChromeUpdate() {
+  if (mobileChromeFrame) return;
+  mobileChromeFrame = window.requestAnimationFrame(updateMobileScrollChrome);
+}
+
+window.addEventListener("scroll", requestMobileScrollChromeUpdate, { passive: true });
+window.addEventListener("resize", requestMobileScrollChromeUpdate, { passive: true });
+updateMobileScrollChrome();
 
 window.addEventListener("popstate", () => {
   handleBenefitRoute();

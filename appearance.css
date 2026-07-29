@@ -1708,6 +1708,86 @@ body:not(.dark) :where(
     0 18px 42px rgba(28,20,38,.15)!important;
 }
 
+/* Apple-inspired mobile tab bar and an opaque navigation drawer. */
+@media (max-width: 640px) {
+  body {
+    padding-bottom: 86px;
+  }
+
+  .store-bottom-nav {
+    right: 12px;
+    bottom: max(10px, env(safe-area-inset-bottom));
+    left: 12px;
+    width: auto;
+    height: 64px;
+    padding: 5px 7px;
+    overflow: visible;
+    border: 1px solid rgba(86, 66, 72, .12);
+    border-radius: 22px;
+    color: #847a7d;
+    background: #fff;
+    box-shadow:
+      0 12px 32px rgba(40, 19, 27, .16),
+      inset 0 1px 0 rgba(255, 255, 255, .98);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  .store-bottom-nav > :is(a, button) {
+    min-height: 52px;
+    padding: 4px 2px;
+    align-content: center;
+    gap: 3px;
+    border-radius: 16px;
+    transition: color 180ms ease, background-color 180ms ease, transform 180ms ease;
+  }
+
+  .store-bottom-nav > :is(a, button):active {
+    transform: scale(.94);
+  }
+
+  .store-bottom-nav span,
+  .store-bottom-nav .store-bottom-discover span {
+    width: auto;
+    height: auto;
+    margin: 0;
+    color: currentColor;
+    background: transparent;
+    box-shadow: none;
+    font-size: 21px;
+  }
+
+  .store-bottom-nav b {
+    color: currentColor;
+    font-size: 9px;
+    line-height: 1.2;
+  }
+
+  .store-bottom-nav .active {
+    color: #72001f;
+    background: #f8eef1;
+  }
+
+  .mobile-menu-panel,
+  body:not(.dark) .mobile-menu-panel,
+  body.dark .mobile-menu-panel {
+    color: #21171a !important;
+    background: #fff !important;
+    background-image: none !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+
+  .mobile-menu-panel :is(.mobile-menu-search, .mobile-taxonomy-group) {
+    color: #21171a;
+    background: #faf8f8;
+  }
+
+  .mobile-menu-panel nav a {
+    color: #21171a;
+  }
+}
+
 body:not(.dark) #storefront-main > :where(section,div){
   background-image:none!important;
 }
@@ -2108,5 +2188,18 @@ body:not(.dark) :where(
   #storefront-main .origo-product-card{
     -webkit-backdrop-filter:blur(22px) saturate(1.2)!important;
     backdrop-filter:blur(22px) saturate(1.2)!important;
+  }
+}
+
+/* The mobile navigation drawer intentionally stays opaque above glass presets. */
+@media (max-width: 640px) {
+  .mobile-menu-panel,
+  body:not(.dark) .mobile-menu-panel,
+  body.dark .mobile-menu-panel {
+    color: #21171a !important;
+    background: #fff !important;
+    background-image: none !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
   }
 }

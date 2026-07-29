@@ -855,3 +855,98 @@ fieldset {
     min-height: 68px;
   }
 }
+
+/* Mobile scroll chrome: compact header and direction-aware bottom navigation. */
+@media (max-width: 640px) {
+  .site-header,
+  .site-header.compact,
+  .header-main,
+  .compact .header-main,
+  .header-main > .brand,
+  .compact .header-main > .brand,
+  .header-preference-actions,
+  .header-commerce-actions > button,
+  .store-bottom-nav {
+    transition:
+      height 240ms ease,
+      min-height 240ms ease,
+      opacity 220ms ease,
+      transform 240ms ease,
+      width 240ms ease,
+      padding 240ms ease;
+  }
+
+  body.mobile-header-condensed .site-header,
+  body.mobile-header-condensed .site-header.compact {
+    min-height: 56px;
+  }
+
+  body.mobile-header-condensed .header-main,
+  body.mobile-header-condensed .compact .header-main {
+    height: 56px;
+    min-height: 56px;
+    grid-template-columns: 44px minmax(0, 1fr) 76px;
+    grid-template-areas: "menu spacer commerce";
+    padding-inline: 10px;
+  }
+
+  body.mobile-header-condensed .header-main > .brand,
+  body.mobile-header-condensed .compact .header-main > .brand,
+  body.mobile-header-condensed .header-preference-actions {
+    width: 0;
+    min-width: 0;
+    height: 0;
+    min-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-10px) scale(.92);
+  }
+
+  body.mobile-header-condensed .header-commerce-zone {
+    grid-area: commerce;
+    justify-self: end;
+  }
+
+  body.mobile-header-condensed .header-commerce-actions {
+    grid-template-columns: repeat(2, 34px);
+    gap: 4px;
+  }
+
+  body.mobile-header-condensed .header-commerce-actions > button {
+    width: 34px;
+    min-width: 34px;
+    height: 40px;
+  }
+
+  body.mobile-header-condensed .header-commerce-actions :is(.wishlist-button, .account-button) {
+    display: none !important;
+  }
+
+  body.mobile-header-condensed .mobile-menu-button {
+    width: 40px;
+    height: 40px;
+  }
+
+  body.mobile-nav-hidden .store-bottom-nav {
+    opacity: 0;
+    transform: translateY(calc(100% + env(safe-area-inset-bottom)));
+    pointer-events: none;
+  }
+
+  body.commerce-route .store-bottom-nav {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-header,
+  .site-header.compact,
+  .header-main,
+  .compact .header-main,
+  .store-bottom-nav {
+    transition-duration: 1ms !important;
+  }
+}
