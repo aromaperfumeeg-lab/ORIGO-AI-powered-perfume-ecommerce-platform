@@ -464,31 +464,3 @@ body:not(.dark) .home-gender-section .gender-card:is(:hover,:focus-visible,:acti
   to{filter:drop-shadow(0 0 19px var(--gender-edge-glow)) drop-shadow(0 0 12px var(--gender-edge-glow))}
 }
 @keyframes origoGenderGlassReflection{from{opacity:.76;background-position:0% 50%}to{opacity:1;background-position:100% 50%}}
-
-/* Burgundy reflective glass edges for brands and benefits. */
-body:not(.dark) :is(.home-brand-directory .marquee-item,.home-benefits-directory .benefit-marquee-item)::after{
-  z-index:7;
-  inset:0;
-  padding:2px;
-  border:0;
-  border-radius:inherit;
-  background:linear-gradient(128deg,rgba(255,255,255,.98),#f2cbd5 20%,#78142f 46%,rgba(255,255,255,.96) 63%,#9d2343 83%,rgba(255,255,255,.98));
-  background-size:180% 180%;
-  box-shadow:none;
-  opacity:.78;
-  filter:none;
-  transform:none;
-  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
-  -webkit-mask-composite:xor;
-  mask-composite:exclude;
-}
-body:not(.dark) :is(.home-brand-directory .marquee-item,.home-benefits-directory .benefit-marquee-item):is(:hover,:focus-visible,.is-selected)::after{
-  animation:origoBurgundyGlassReflection 1.15s ease-in-out infinite alternate;
-}
-body:not(.dark) :is(.home-brand-directory .marquee-item,.home-benefits-directory .benefit-marquee-item):is(:hover,:focus-visible,.is-selected){
-  filter:drop-shadow(0 0 9px rgba(120,20,47,.68)) drop-shadow(0 0 5px rgba(157,35,67,.48))!important;
-}
-@keyframes origoBurgundyGlassReflection{
-  from{opacity:.72;background-position:0% 50%;box-shadow:0 0 7px rgba(120,20,47,.28)}
-  to{opacity:1;background-position:100% 50%;box-shadow:0 0 18px rgba(120,20,47,.58),0 0 10px rgba(157,35,67,.42)}
-}
