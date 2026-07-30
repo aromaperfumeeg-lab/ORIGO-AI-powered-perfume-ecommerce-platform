@@ -2154,9 +2154,10 @@ function homepageRailsAdminMarkup() {
     benefits: ["شريط المزايا", "Benefits rail"], gender: ["التسوق حسب الجنس", "Gender rail"],
     categories: ["شريط الفئات", "Categories rail"], brands: ["شريط العلامات التلقائي", "Autoplay brand marquee"]
   };
-  const mediaCards = settings.homeMedia.map((item) => {
-    const isHero = item.placement === "hero";
-    return `<article class="${isHero ? "home-hero-media-card" : ""}">
+  const heroMedia = settings.homeMedia.filter((item) => item.placement === "hero");
+  const mediaCards = heroMedia.map((item) => {
+    const isHero = true;
+    return `<article class="home-hero-media-card">
       <img src="${escapeHTML(item.url)}" alt="${escapeHTML(ar ? item.altAr : item.altEn)}"/>
       <span><b>${escapeHTML(item.name)}</b><small>${escapeHTML(item.placement || "general")}${item.brand ? ` · ${escapeHTML(item.brand)}` : ""}</small></span>
       <button type="button" data-action="delete-home-media" data-id="${escapeHTML(item.id)}" aria-label="${ar ? "حذف" : "Delete"}">×</button>
@@ -2177,9 +2178,9 @@ function homepageRailsAdminMarkup() {
       </div>` : `<small>${escapeHTML(ar ? item.altAr : item.altEn)}</small>`}
     </article>`;
   }).join("");
-  return `<form id="admin-homepage-rails" class="admin-settings-form homepage-rails-admin"><section><div class="review-section-head"><span>01</span><div><b>${ar ? "إدارة أشرطة الصفحة الرئيسية" : "Homepage rails management"}</b><small>${ar ? "تحكم في ظهور الأشرطة وترتيبها وسرعة حركة المميزات والعلامات." : "Control rail visibility, order, and the benefits and brands motion speed."}</small></div></div>
-    <div class="homepage-rail-settings">${Object.entries(settings.homepageRails).map(([key, rail]) => `<article><header><b>${escapeHTML(labels[key][ar ? 0 : 1])}</b><label class="admin-toggle-row"><span>${ar ? "ظاهر" : "Visible"}</span><input name="${key}.enabled" type="checkbox"${rail.enabled !== false ? " checked" : ""}/></label></header><div class="review-grid"><label>${ar ? "العنوان العربي" : "Arabic title"}<input name="${key}.titleAr" value="${escapeHTML(rail.titleAr || "")}"/></label><label>${ar ? "العنوان الإنجليزي" : "English title"}<input name="${key}.titleEn" value="${escapeHTML(rail.titleEn || "")}"/></label><label>${ar ? "الترتيب" : "Order"}<input name="${key}.order" type="number" min="1" max="10" value="${Number(rail.order || 1)}"/></label>${key === "brands" || key === "benefits" ? `<label>${ar ? "مدة الدورة بالثواني" : "Cycle duration (seconds)"}<input name="${key}.speed" type="number" min="6" max="120" step="1" value="${Number(rail.speed || (key === "benefits" ? 18 : 34))}"/></label>` : ""}</div></article>`).join("")}</div></section>
-    <section><div class="review-section-head"><span>02</span><div><b>${ar ? "البنر المتغير" : "Rotating hero banner"}</b><small>${ar ? "أضف عدة صور دفعة واحدة، ثم خصص النص والزر لكل صورة." : "Upload multiple images at once, then customize every slide's copy and button."}</small></div></div>
+  return `<form id="admin-homepage-rails" class="admin-settings-form homepage-rails-admin">
+    <section class="admin-home-hero-panel"><div class="review-section-head"><span>01</span><div><b>${ar ? "البنر الرئيسي" : "Homepage hero banner"}</b><small>${ar ? "قسم مستقل للتحكم في صورة البنر ونصه وزره وسرعة تبديل الشرائح." : "A dedicated section for the banner image, copy, button, and slide timing."}</small></div></div>
+      ${heroMedia.length ? "" : `<div class="admin-home-hero-default"><img src="assets/home/hero/hero-main.png" alt="${ar ? "معاينة البنر الرئيسي الافتراضي" : "Default homepage banner preview"}"/><span><b>${ar ? "البنر الافتراضي نشط الآن" : "The default banner is active"}</b><small>${ar ? "ارفع صورة جديدة أدناه لاستبداله، ويمكنك رفع عدة صور لإنشاء بنر متغير." : "Upload a new image below to replace it, or upload several images for a rotating banner."}</small></span></div>`}
       <div class="review-grid">
         <label>${ar ? "زمن عرض كل صورة بالثواني" : "Seconds per slide"}<input name="heroIntervalSeconds" type="number" min="1" max="30" step="0.5" value="${Number(settings.homeHero.intervalSeconds || 2.5)}"/></label>
         <label>${ar ? "رفع صور البنر من الملفات" : "Upload banner images"}<input name="mediaFile" type="file" multiple accept="image/png,image/jpeg,image/webp,image/avif"/></label>
@@ -2189,8 +2190,12 @@ function homepageRailsAdminMarkup() {
         <label>${ar ? "وصف إنجليزي مبدئي" : "Initial English description"}<textarea name="mediaDescriptionEn"></textarea></label>
       </div>
       <input name="mediaPlacement" type="hidden" value="hero"/>
-      <div class="home-media-library">${settings.homeMedia.length ? mediaCards : `<p>${ar ? "لم تتم إضافة صور للبنر بعد." : "No banner images have been added yet."}</p>`}</div>
-    </section><button class="button burgundy-button" type="submit">${ar ? "حفظ البنر وإعدادات الصفحة" : "Save banner and homepage settings"}</button></form>`;
+      <div class="home-media-library">${heroMedia.length ? mediaCards : `<p>${ar ? "لا توجد صور مخصصة؛ يتم استخدام صورة ORIGO الافتراضية المعروضة أعلاه." : "No custom slides yet; the ORIGO default shown above is in use."}</p>`}</div>
+    </section>
+    <section><div class="review-section-head"><span>02</span><div><b>${ar ? "إدارة أشرطة الصفحة الرئيسية" : "Homepage rails management"}</b><small>${ar ? "تحكم في ظهور الأشرطة وترتيبها وسرعة حركة المميزات والعلامات." : "Control rail visibility, order, and the benefits and brands motion speed."}</small></div></div>
+      <div class="homepage-rail-settings">${Object.entries(settings.homepageRails).map(([key, rail]) => `<article><header><b>${escapeHTML(labels[key][ar ? 0 : 1])}</b><label class="admin-toggle-row"><span>${ar ? "ظاهر" : "Visible"}</span><input name="${key}.enabled" type="checkbox"${rail.enabled !== false ? " checked" : ""}/></label></header><div class="review-grid"><label>${ar ? "العنوان العربي" : "Arabic title"}<input name="${key}.titleAr" value="${escapeHTML(rail.titleAr || "")}"/></label><label>${ar ? "العنوان الإنجليزي" : "English title"}<input name="${key}.titleEn" value="${escapeHTML(rail.titleEn || "")}"/></label><label>${ar ? "الترتيب" : "Order"}<input name="${key}.order" type="number" min="1" max="10" value="${Number(rail.order || 1)}"/></label>${key === "brands" || key === "benefits" ? `<label>${ar ? "مدة الدورة بالثواني" : "Cycle duration (seconds)"}<input name="${key}.speed" type="number" min="6" max="120" step="1" value="${Number(rail.speed || (key === "benefits" ? 18 : 34))}"/></label>` : ""}</div></article>`).join("")}</div>
+    </section>
+    <button class="button burgundy-button" type="submit">${ar ? "حفظ البنر وإعدادات الصفحة" : "Save banner and homepage settings"}</button></form>`;
 }
 
 function applyHomepageRailSettings() {
@@ -2739,7 +2744,9 @@ function renderHomeBenefitsMarquee() {
     return `<a class="marquee-item benefit-marquee-item" href="/benefits/${escapeHTML(benefit.slug)}" data-action="benefit-link" data-slug="${escapeHTML(benefit.slug)}"><span class="benefit-icon">${benefit.image ? `<img src="${escapeHTML(benefit.image)}" alt="" loading="lazy"/>` : footerBenefitIcon(benefit.icon, benefit.colors)}</span><b>${escapeHTML(title)}</b><small>${escapeHTML(short || "")}</small></a>`;
   }).join("");
   const duplicates = items.replaceAll("<a ", '<a tabindex="-1" aria-hidden="true" ');
-  track.innerHTML = items ? `<div class="brand-marquee-content benefit-marquee-content"><div class="brand-marquee-set benefit-marquee-set">${items}</div><div class="brand-marquee-set benefit-marquee-set" aria-hidden="true">${duplicates}</div></div>` : "";
+  const benefitSetCount = Math.max(4, Math.ceil(12 / Math.max(benefits.length, 1)) + 1);
+  const benefitShift = 100 / benefitSetCount;
+  track.innerHTML = items ? `<div class="brand-marquee-content benefit-marquee-content" style="--benefit-marquee-shift:-${benefitShift}%;--benefit-marquee-shift-rtl:${benefitShift}%"><div class="brand-marquee-set benefit-marquee-set">${items}</div>${Array.from({ length: benefitSetCount - 1 }, () => `<div class="brand-marquee-set benefit-marquee-set" aria-hidden="true">${duplicates}</div>`).join("")}</div>` : "";
   bindBrandMarquee(track);
 }
 
@@ -2855,7 +2862,7 @@ function renderHomepageCommerce() {
 function renderFooterBrands() {
   const holder = $("#footer-brand-links");
   if (!holder) return;
-  const brands = [...new Set(state.products.map((product) => String(product.brand || "").trim()).filter(Boolean))].slice(0, 5);
+  const brands = ORIGO_PERFUME_BRANDS.slice(0, 5);
   holder.innerHTML = brands.length
     ? brands.map((brand) => `<button data-action="brand-search" data-query="${escapeHTML(brand)}">${escapeHTML(brand)}</button>`).join("")
     : `<a href="/perfumes">${state.lang === "ar" ? "منتجات ORIGO" : "ORIGO products"}</a>`;
@@ -3117,19 +3124,25 @@ function renderSiteFooter() {
     const labels = isArabic ? ["العطور للرجال", "العطور للنساء", "العطور للجنسين", "البدائل", "العطور الشرقية", "العطور العربية", "العروض", "الجديد"] : ["Men's fragrances", "Women's fragrances", "Unisex fragrances", "Alternatives", "Oriental fragrances", "Arabic fragrances", "Offers", "New arrivals"];
     $$(':scope > a', shop).forEach((row, index) => setRowText(row, labels[index]));
   }
-  if (columns[1]) { $("h3", columns[1]).textContent = isArabic ? "ماركات" : "Brands"; setRowText($(".footer-all-link", columns[1]), isArabic ? "عرض جميع الماركات" : "View all brands"); }
+  if (columns[1]) {
+    $("h3", columns[1]).textContent = isArabic ? "ماركات" : "Brands";
+    setRowText($(".footer-all-link", columns[1]), isArabic ? "عرض جميع الماركات" : "View all brands");
+  }
   if (columns[2]) {
     $("h3", columns[2]).textContent = isArabic ? "معلومات" : "Information";
     const labels = isArabic ? ["عن أوريجو", "الأسئلة الشائعة", "سياسة الشحن والتوصيل", "سياسة الاسترجاع", "سياسة الخصوصية", "الشروط والأحكام", "تتبع الطلب"] : ["About ORIGO", "Frequently asked questions", "Shipping policy", "Return policy", "Privacy policy", "Terms & conditions", "Track order"];
     [...$$(':scope > a', columns[2]), ...$$(':scope > button', columns[2])].forEach((row, index) => setRowText(row, labels[index]));
   }
-  if (columns[3]) $("h3", columns[3]).textContent = isArabic ? "خدمة العملاء" : "Customer service";
+  if (columns[3]) {
+    const headings = $$("h3", columns[3]);
+    if (headings[0]) headings[0].textContent = isArabic ? "خدمة العملاء" : "Customer service";
+    if (headings[1]) headings[1].textContent = isArabic ? "حمل التطبيق" : "Get the app";
+    const copy = $(".footer-contact-app > p", columns[3]);
+    if (copy) copy.innerHTML = isArabic ? "تسوق أسهل وأسرع<br />مع تطبيق أوريجو" : "Shop faster and easier<br />with the ORIGO app";
+  }
   if (columns[4]) {
     const headings = $$("h3", columns[4]);
-    if (headings[0]) headings[0].textContent = isArabic ? "حمل التطبيق" : "Get the app";
-    if (headings[1]) headings[1].textContent = isArabic ? "تابعنا" : "Follow us";
-    const copy = $(":scope > p", columns[4]);
-    if (copy) copy.innerHTML = isArabic ? "تسوق أسهل وأسرع<br />مع تطبيق أوريجو" : "Shop faster and easier<br />with the ORIGO app";
+    if (headings[0]) headings[0].textContent = isArabic ? "تابعنا" : "Follow us";
   }
   const copyright = $(".footer-bottom-bar p", footer);
   if (copyright) copyright.innerHTML = `© <span id="footer-year">${new Date().getFullYear()}</span> ORIGO. ${isArabic ? "جميع الحقوق محفوظة." : "All rights reserved."}`;
@@ -8603,35 +8616,49 @@ function bindBrandMarquee(brandTrack) {
   if (!brandTrack || brandTrack.dataset.dragBound === "true") return;
   brandTrack.dataset.dragBound = "true";
   let brandDragging = false;
+  let brandMoved = false;
   let brandStartX = 0;
   let brandStartScroll = 0;
   brandTrack.addEventListener("wheel", (event) => {
-    if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
+    const horizontalDelta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : (event.shiftKey ? event.deltaY : 0);
+    if (!horizontalDelta) return;
     event.preventDefault();
-    brandTrack.scrollLeft += event.deltaY;
+    brandTrack.scrollLeft += horizontalDelta;
   }, { passive: false });
   brandTrack.addEventListener("pointerdown", (event) => {
+    if (event.pointerType === "mouse" && event.button !== 0) return;
     brandDragging = true;
+    brandMoved = false;
     brandTrack.classList.add("is-interacting");
     brandStartX = event.clientX;
     brandStartScroll = brandTrack.scrollLeft;
     brandTrack.setPointerCapture?.(event.pointerId);
-    const selected = event.target.closest(".marquee-item");
-    if (selected) {
-      selected.classList.remove("is-selected");
-      requestAnimationFrame(() => selected.classList.add("is-selected"));
-      window.setTimeout(() => selected.classList.remove("is-selected"), 850);
-    }
   });
   brandTrack.addEventListener("pointermove", (event) => {
-    if (brandDragging) brandTrack.scrollLeft = brandStartScroll - (event.clientX - brandStartX);
+    if (!brandDragging) return;
+    const delta = event.clientX - brandStartX;
+    if (Math.abs(delta) > 6) brandMoved = true;
+    brandTrack.scrollLeft = brandStartScroll - delta;
   });
   const stopBrandDrag = () => {
     brandDragging = false;
-    window.setTimeout(() => brandTrack.classList.remove("is-interacting"), 900);
+    window.setTimeout(() => brandTrack.classList.remove("is-interacting"), 240);
   };
   brandTrack.addEventListener("pointerup", stopBrandDrag);
   brandTrack.addEventListener("pointercancel", stopBrandDrag);
+  brandTrack.addEventListener("click", (event) => {
+    if (brandMoved) {
+      event.preventDefault();
+      event.stopPropagation();
+      brandMoved = false;
+      return;
+    }
+    const selected = event.target.closest(".marquee-item");
+    if (!selected) return;
+    brandTrack.querySelectorAll(".marquee-item.is-selected").forEach((item) => item.classList.remove("is-selected"));
+    selected.classList.add("is-selected");
+    window.setTimeout(() => selected.classList.remove("is-selected"), 850);
+  }, true);
 }
 
 function bindHorizontalRail(rail) {

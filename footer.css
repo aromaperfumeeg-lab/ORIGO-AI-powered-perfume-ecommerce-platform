@@ -70,6 +70,11 @@
 .origo-footer .footer-contact p{display:flex;align-items:flex-start;justify-content:center;gap:15px;margin:24px 0!important;color:var(--footer-text)!important;font-size:13px!important;line-height:2!important;text-align:start}
 .origo-footer .footer-contact p span{color:var(--footer-burgundy);font-size:22px}
 .origo-footer .footer-contact>small{display:block;margin-top:auto;color:var(--footer-burgundy)!important;font-size:11px;line-height:1.8;text-align:center}
+.origo-footer .footer-contact>#footer-support-note{margin-top:-15px;margin-bottom:0}
+.origo-footer .footer-contact-app{width:100%;margin-top:26px;padding-top:18px;border-top:1px solid var(--footer-line);text-align:center}
+.origo-footer .footer-contact-app h3{margin-bottom:9px!important;font-size:16px!important}
+.origo-footer .footer-contact-app>p{display:block;margin:0 0 12px!important;color:var(--footer-text)!important;font-size:11px!important;line-height:1.75!important;text-align:center}
+.origo-footer .footer-contact-app .footer-app-links{margin-bottom:0}
 .origo-footer .footer-app>p{margin:0 0 14px!important;color:var(--footer-text)!important;font-size:13px!important;line-height:1.9;text-align:center}
 .footer-app-links{display:grid;gap:8px;margin-bottom:20px}
 .footer-app-links>small{display:block;width:max-content;max-width:100%;margin:0 auto;padding:9px 16px;border:1px solid #cfa29b;border-radius:10px;color:var(--footer-burgundy);text-align:center}
