@@ -22,7 +22,7 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="styles.css?v=20" />
-    <link rel="stylesheet" href="home.css?v=34" />
+    <link rel="stylesheet" href="home.css?v=36" />
     <link rel="stylesheet" href="product-detail.css?v=7" />
     <link rel="stylesheet" href="catalog.css?v=1" />
     <link rel="stylesheet" href="footer.css?v=8" />
@@ -32,7 +32,7 @@
     <link rel="stylesheet" href="alternatives.css?v=1" />
     <link rel="stylesheet" href="performance-insights.css?v=3" />
 <link rel="stylesheet" href="shell.css?v=10" />
-    <link rel="stylesheet" href="appearance.css?v=11" />
+    <link rel="stylesheet" href="appearance.css?v=16" />
     <link rel="stylesheet" href="notes-admin-fixes.css?v=2" />
   </head>
   <body>
@@ -56,9 +56,17 @@
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"></path></svg>
               <span class="action-count wishlist-count">0</span>
             </button>
-            <button class="icon-button account-button" data-action="account" aria-label="الحساب">
+            <button class="icon-button account-button" data-action="account-menu" aria-label="قائمة الحساب" aria-haspopup="menu" aria-expanded="false" aria-controls="header-account-menu">
               <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21a7.5 7.5 0 0 1 15 0"></path></svg>
             </button>
+            <div class="header-account-menu" id="header-account-menu" role="menu" hidden>
+              <button type="button" role="menuitem" data-action="account"><i>♙</i><span class="menu-ar">حسابي</span><span class="menu-en">My account</span></button>
+              <button type="button" role="menuitem" data-action="view-orders"><i>▣</i><span class="menu-ar">طلباتي</span><span class="menu-en">My orders</span></button>
+              <button type="button" role="menuitem" data-action="wishlist"><i>♡</i><span class="menu-ar">المفضلة</span><span class="menu-en">Wishlist</span></button>
+              <button type="button" role="menuitem" data-action="theme"><i>◐</i><span class="menu-ar">الوضع الداكن</span><span class="menu-en">Dark mode</span></button>
+              <button type="button" role="menuitem" data-action="language"><i>◎</i><span class="menu-ar">اللغة</span><span class="menu-en">Language</span></button>
+              <button type="button" role="menuitem" data-action="account"><i>⚙</i><span class="menu-ar">الإعدادات</span><span class="menu-en">Settings</span></button>
+            </div>
           </div>
           <button class="header-search" data-action="search" aria-label="بحث">
             <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -71,10 +79,7 @@
         <a class="brand brand-logo-link" href="/" data-action="catalog-home" aria-label="ORIGO home">
           <img data-store-logo data-logo-variant="auto" src="assets/origo-logo.svg" alt="ORIGO" />
         </a>
-        <div class="header-preference-actions">
-          <button class="lang-button" data-action="language" aria-label="Switch to English">English ◎</button>
-          <button class="theme-toggle" data-action="theme" aria-label="تفعيل الوضع المظلم" aria-pressed="false"><span class="sun">☀</span><span class="moon">☾</span></button>
-        </div>
+        <div class="header-preference-actions" hidden></div>
       </div>
       <form class="mobile-header-search" id="mobile-header-search" role="search" hidden>
         <button class="mobile-header-search-submit" type="submit" aria-label="بحث">
@@ -1006,7 +1011,7 @@
     <script src="fragrance-notes-library.js?v=7"></script>
     <script src="catalog-providers.js?v=6"></script>
     <script src="external-tracking.js?v=1"></script>
-    <script src="app.js?v=53"></script>
+    <script src="app.js?v=54"></script>
   <script src="alternatives.js?v=1"></script>
   <script src="performance-insights.js?v=2"></script>
   <script src="commerce.js?v=2"></script>

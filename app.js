@@ -6457,8 +6457,26 @@ function populateProductOptionDialog(dialog, value = "") {
 
 document.addEventListener("click", async (event) => {
   const actionElement = event.target.closest("[data-action]");
-  if (!actionElement) return;
+  const accountMenu = $("#header-account-menu");
+  const accountMenuButton = $("[data-action='account-menu']");
+  if (!actionElement) {
+    if (accountMenu && !accountMenu.hidden) {
+      accountMenu.hidden = true;
+      accountMenuButton?.setAttribute("aria-expanded", "false");
+    }
+    return;
+  }
   const action = actionElement.dataset.action;
+  if (action === "account-menu") {
+    const opening = accountMenu?.hidden !== false;
+    if (accountMenu) accountMenu.hidden = !opening;
+    actionElement.setAttribute("aria-expanded", String(opening));
+    return;
+  }
+  if (accountMenu && !accountMenu.hidden) {
+    accountMenu.hidden = true;
+    accountMenuButton?.setAttribute("aria-expanded", "false");
+  }
   if (action === "reset-appearance") {
     const form = actionElement.closest("#admin-settings-form");
     if (!form) return;
