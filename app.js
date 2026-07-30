@@ -2699,10 +2699,12 @@ function renderBrandCarousel(query = "") {
   const catalogNames = [...ORIGO_PERFUME_BRANDS, ...counts.keys()].filter((brand, index, values) =>
     values.findIndex((candidate) => ORIGOCatalog.normalize(candidate) === ORIGOCatalog.normalize(brand)) === index
   );
+  const mobile = matchMedia("(max-width: 700px)").matches;
   const brands = catalogNames.map((brand) => [brand, counts.get(brand) || 0])
     .filter(([brand]) => !normalized || ORIGOCatalog.normalize(brand).includes(normalized));
+  const visibleBrands = mobile && !normalized ? brands.slice(0, 12) : brands;
   const brandOptions = productOptionItems("brand");
-  const items = brands.map(([brand, count]) => {
+  const items = visibleBrands.map(([brand, count]) => {
     const option = brandOptions.find((item) => [item.value,item.nameAr,item.nameEn].some((value) => normalizeOptionSearch(value) === normalizeOptionSearch(brand)));
     const logo = option?.image || origoBrandLogo(brand);
     const artwork = logo ? `<img src="${escapeHTML(logo)}" alt="" loading="lazy"/>` : `<span aria-hidden="true">${escapeHTML(brand.slice(0, 2).toUpperCase())}</span>`;
@@ -2818,11 +2820,14 @@ function renderHomepageCommerce() {
     const configured = state.adminWorkspace.settings?.homeMedia || [];
     const dataBrands = [...new Set(state.products.map((product) => String(product.brand || "").trim()).filter(Boolean))];
     const ordered = [...ORIGO_PERFUME_BRANDS, ...dataBrands].filter((brand, index, values) => values.findIndex((candidate) => ORIGOCatalog.normalize(candidate) === ORIGOCatalog.normalize(brand)) === index);
-    showcase.innerHTML = ordered.map((brand) => {
+    const mobile = matchMedia("(max-width: 700px)").matches;
+    const visibleBrands = mobile ? ordered.filter((brand) => homeBrandProducts(brand).length).slice(0, 4) : ordered;
+    const productLimit = mobile ? 6 : 12;
+    showcase.innerHTML = visibleBrands.map((brand) => {
       const products = homeBrandProducts(brand);
       if (!products.length) return "";
       const banner = configured.find((item) => item.placement === "brand-banner" && ORIGOCatalog.normalize(item.brand || "") === ORIGOCatalog.normalize(brand));
-      return `<section class="home-brand-showcase"><div class="home-section-head"><button data-action="brand-search" data-query="${escapeHTML(brand)}">${state.lang === "ar" ? "عرض كل المنتجات" : "View all products"} ‹</button><div><small>${state.lang === "ar" ? "مختارات العلامة" : "Brand selection"}</small><h2>${escapeHTML(brand)}</h2></div></div>${banner ? `<button class="home-brand-banner" data-action="brand-search" data-query="${escapeHTML(brand)}"><img src="${escapeHTML(banner.url)}" alt="${escapeHTML(state.lang === "ar" ? banner.altAr : banner.altEn)}" loading="lazy"/></button>` : ""}<div class="product-grid horizontal-scroll horizontal-rail" data-horizontal-rail>${products.slice(0, 12).map((product) => productCardMarkup(product, { context: "grid" })).join("")}</div></section>`;
+      return `<section class="home-brand-showcase"><div class="home-section-head"><button data-action="brand-search" data-query="${escapeHTML(brand)}">${state.lang === "ar" ? "عرض كل المنتجات" : "View all products"} ‹</button><div><small>${state.lang === "ar" ? "مختارات العلامة" : "Brand selection"}</small><h2>${escapeHTML(brand)}</h2></div></div>${banner ? `<button class="home-brand-banner" data-action="brand-search" data-query="${escapeHTML(brand)}"><img src="${escapeHTML(banner.url)}" alt="${escapeHTML(state.lang === "ar" ? banner.altAr : banner.altEn)}" loading="lazy" decoding="async"/></button>` : ""}<div class="product-grid horizontal-scroll horizontal-rail" data-horizontal-rail>${products.slice(0, productLimit).map((product) => productCardMarkup(product, { context: "grid" })).join("")}</div></section>`;
     }).join("");
     $$('[data-horizontal-rail]', showcase).forEach((rail) => {
       bindHorizontalRail(rail);

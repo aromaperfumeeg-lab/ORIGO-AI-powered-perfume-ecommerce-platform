@@ -3,6 +3,8 @@ import { readFile, stat } from "node:fs/promises";
 import { extname, join, normalize, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { randomBytes } from "node:crypto";
+import { brotliCompress, gzip } from "node:zlib";
+import { promisify } from "node:util";
 import {
   ROLE_PERMISSIONS,
   alternativesAdminPayload,
@@ -1752,14 +1754,45 @@ async function serveStatic(request, response, url) {
     if (!info.isFile()) throw new Error("Not a file");
     const data = await readFile(filePath);
     const extension = extname(filePath).toLowerCase();
-    const isRuntimeAsset = [".html", ".js", ".mjs", ".css"].includes(extension);
-    response.writeHead(200, {
-      "Cache-Control": isRuntimeAsset ? "no-cache" : "public, max-age=300",
+    const isHtml = extension === ".html";
+    const isVersionedRuntimeAsset = [".js", ".mjs", ".css"].includes(extension) && url.searchParams.has("v");
+    const etag = `W/"${info.size.toString(16)}-${Math.floor(info.mtimeMs).toString(16)}"`;
+    const headers = {
+      "Cache-Control": isHtml
+        ? "no-cache"
+        : isVersionedRuntimeAsset
+          ? "public, max-age=604800, immutable"
+          : "public, max-age=86400",
       "Content-Type": mimeTypes[extension] || "application/octet-stream",
+      "ETag": etag,
+      "Vary": "Accept-Encoding",
       "X-Content-Type-Options": "nosniff"
-    });
-    if (request.method === "HEAD") response.end();
-    else response.end(data);
+    };
+    if (request.headers["if-none-match"] === etag) {
+      response.writeHead(304, headers).end();
+      return;
+    }
+    if (request.method === "HEAD") {
+      response.writeHead(200, headers).end();
+      return;
+    }
+
+    const canCompress = data.length > 1024 && [
+      ".html", ".css", ".js", ".mjs", ".json", ".svg", ".txt", ".xml"
+    ].includes(extension);
+    const acceptedEncoding = request.headers["accept-encoding"] || "";
+    if (canCompress && /\bbr\b/.test(acceptedEncoding)) {
+      headers["Content-Encoding"] = "br";
+      response.writeHead(200, headers);
+      response.end(await promisify(brotliCompress)(data));
+    } else if (canCompress && /\bgzip\b/.test(acceptedEncoding)) {
+      headers["Content-Encoding"] = "gzip";
+      response.writeHead(200, headers);
+      response.end(await promisify(gzip)(data));
+    } else {
+      response.writeHead(200, headers);
+      response.end(data);
+    }
   } catch {
     response.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" }).end("Not found");
   }
