@@ -1,0 +1,25 @@
+.mobile-menu svg,
+.top-actions button svg,
+.sidebar-help svg,
+.channel-icon svg {
+  width: 19px;
+  height: 19px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.65;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.mobile-menu,
+.top-actions [data-admin-theme],
+.sidebar-help > span,
+.channel-icon {
+  display: grid;
+  place-items: center;
+}
+
+.sidebar-help > span svg { width: 25px; height: 25px; }
+.channel-icon svg { width: 18px; height: 18px; }
+.top-actions [data-admin-theme] { transition: transform .2s, color .2s; }
+.top-actions [data-admin-theme]:hover { transform: rotate(12deg); color: var(--gold); }

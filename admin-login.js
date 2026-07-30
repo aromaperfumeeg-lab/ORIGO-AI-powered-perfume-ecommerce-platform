@@ -1,0 +1,11 @@
+let lang=localStorage.getItem('origo-admin-lang')||'ar';
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+function apply(){document.documentElement.lang=lang;document.documentElement.dir=lang==='ar'?'rtl':'ltr';$$('[data-ar]').forEach(el=>el.textContent=el.dataset[lang]);$('[data-login-lang]').textContent=lang==='ar'?'EN':'ع';$('[data-login-theme]').textContent=document.documentElement.dataset.theme==='dark'?'☀':'☾'}
+function toast(msg){const t=$('.login-toast');t.textContent=msg;t.classList.add('show');clearTimeout(window.t);window.t=setTimeout(()=>t.classList.remove('show'),2200)}
+$('[data-login-lang]').addEventListener('click',()=>{lang=lang==='ar'?'en':'ar';localStorage.setItem('origo-admin-lang',lang);apply()});
+$('[data-login-theme]').addEventListener('click',()=>{const t=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=t;localStorage.setItem('origo-admin-theme',t);apply()});
+$('[data-password-toggle]').addEventListener('click',e=>{const input=$('#admin-password');input.type=input.type==='password'?'text':'password';e.currentTarget.textContent=input.type==='password'?'◉':'⊘'});
+$('[data-forgot]').addEventListener('click',()=>toast(lang==='ar'?'تواصل مع مسؤول النظام لإعادة التعيين':'Contact the system administrator to reset it'));
+$('#admin-email').value='admin@origo.test';$('#admin-password').value='TestPassword123!';
+$('#admin-login-form').addEventListener('submit',async e=>{e.preventDefault();const button=e.currentTarget.querySelector('[type="submit"]');button.disabled=true;try{const response=await fetch('/api/admin/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:$('#admin-email').value,password:$('#admin-password').value})});const result=await response.json();if(!response.ok||!result.token)throw new Error('invalid');localStorage.setItem('origo-admin-token',result.token);localStorage.setItem('origo-admin-session','true');toast(lang==='ar'?'تم تسجيل الدخول بنجاح':'Signed in successfully');setTimeout(()=>location.href='admin.html',450)}catch{toast(lang==='ar'?'بيانات الدخول غير صحيحة':'Invalid credentials')}finally{button.disabled=false}});
+apply();

@@ -1,1024 +1,299 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
-  <head>
-    <meta charset="UTF-8" />
-    <base href="/" />
-    <script>
-      if (window.location.protocol === "file:") {
-        window.location.replace("http://127.0.0.1:4173/");
-      }
-    </script>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#6d0d24" />
-    <meta
-      name="description"
-      content="ORIGO — متجر ومنصة عربية لاكتشاف العطور، النوتات، البدائل، والمقارنات."
-    />
-    <title>ORIGO | أصل الحكاية العطرية</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Alexandria:wght@300;400;500;600;700;800&family=DM+Serif+Display&family=Noto+Naskh+Arabic:wght@400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="styles.css?v=20" />
-    <link rel="stylesheet" href="home.css?v=36" />
-    <link rel="stylesheet" href="product-detail.css?v=7" />
-    <link rel="stylesheet" href="catalog.css?v=1" />
-    <link rel="stylesheet" href="footer.css?v=9" />
-    <link rel="stylesheet" href="commerce.css?v=1" />
-    <link rel="stylesheet" href="account.css?v=2" />
-    <link rel="stylesheet" href="fragrance-finder.css?v=1" />
-    <link rel="stylesheet" href="alternatives.css?v=1" />
-    <link rel="stylesheet" href="performance-insights.css?v=3" />
-<link rel="stylesheet" href="shell.css?v=10" />
-    <link rel="stylesheet" href="appearance.css?v=16" />
-    <link rel="stylesheet" href="notes-admin-fixes.css?v=2" />
-  </head>
-  <body>
-    <div class="announcement" aria-hidden="true"></div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#2a020d" />
+  <meta name="description" content="ORIGO - وجهتك لاكتشاف العطور الأصلية بذكاء." />
+  <link rel="icon" href="assets/origo-mark.svg" type="image/svg+xml" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <title>ORIGO | اكتشف عطرك الاستثنائي</title>
+  <script>try{const q=new URLSearchParams(location.search),t=q.get('theme')||localStorage.getItem('origo-theme')||'light',l=q.get('lang')||localStorage.getItem('origo-lang')||'ar';if(q.get('theme'))localStorage.setItem('origo-theme',t);if(q.get('lang'))localStorage.setItem('origo-lang',l);if(q.get('view'))document.documentElement.dataset.view=q.get('view');document.documentElement.dataset.theme=t;document.documentElement.lang=l;document.documentElement.dir=l==='ar'?'rtl':'ltr'}catch(e){}</script>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="smart-finder.css" />
+  <link rel="stylesheet" href="alternative-finder.css" />
+</head>
+<body>
+  <svg class="icon-sprite" aria-hidden="true">
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 4.8 6v5.3c0 4.6 2.8 7.7 7.2 9.7 4.4-2 7.2-5.1 7.2-9.7V6L12 3Z"/><path d="m8.7 12 2.1 2.1 4.7-5"/></symbol>
+    <symbol id="i-truck" viewBox="0 0 24 24"><path d="M3 6h11v10H3zM14 10h3.4l3.6 3.5V16h-7z"/><circle cx="7" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M6.1 8.4A7 7 0 0 1 18.8 9M5.2 15A7 7 0 0 0 17.9 15.6"/></symbol>
+    <symbol id="i-headset" viewBox="0 0 24 24"><path d="M4 14v-2a8 8 0 0 1 16 0v2M4 14h3v6H5a2 2 0 0 1-2-2v-2a2 2 0 0 1 1-2ZM20 14h-3v6h2a2 2 0 0 0 2-2v-2a2 2 0 0 0-1-2Z"/></symbol>
+    <symbol id="i-perfume" viewBox="0 0 24 24"><path d="M9 3h6v4H9zM8 7h8l2 4v9H6v-9l2-4Z"/><path d="M9 13h6v4H9z"/></symbol>
+    <symbol id="i-flower" viewBox="0 0 24 24"><circle cx="12" cy="12" r="2.2"/><path d="M12 9c-4-1-4-5-1.4-6 2.3-.8 3.7 2.7 1.4 6ZM15 12c1-4 5-4 6-1.4.8 2.3-2.7 3.7-6 1.4ZM12 15c4 1 4 5 1.4 6-2.3.8-3.7-2.7-1.4-6ZM9 12c-1 4-5 4-6 1.4C2.2 11.1 5.7 9.7 9 12Z"/></symbol>
+    <symbol id="i-citrus" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m12 12 5.5-5.5M12 12l-7-1M12 12l2 7"/><circle cx="12" cy="12" r="1"/></symbol>
+    <symbol id="i-wood" viewBox="0 0 24 24"><path d="M6 3h12l2 18H4L6 3Z"/><path d="M9 6c4 1 2 4 6 5M8 15c3-2 5 2 8 1"/></symbol>
+    <symbol id="i-spice" viewBox="0 0 24 24"><path d="M5 19C9 11 12 8 20 4M7 15c2 0 4 1 5 3M12 10c1 1 3 2 5 2"/><circle cx="6" cy="7" r="2"/><circle cx="18" cy="18" r="2"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="i-projection" viewBox="0 0 24 24"><path d="M4 12h5M15 12h5M7 7l3 3M14 14l3 3M7 17l3-3M14 10l3-3"/><circle cx="12" cy="12" r="2"/></symbol>
+    <symbol id="i-season" viewBox="0 0 24 24"><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6 5.6 18.4"/><circle cx="12" cy="12" r="4"/></symbol>
+    <symbol id="i-gift" viewBox="0 0 24 24"><path d="M3 10h18v11H3zM2 7h20v4H2zM12 7v14"/><path d="M12 7c-3-5-7-3-6 0M12 7c3-5 7-3 6 0"/></symbol>
+    <symbol id="i-card" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h4"/></symbol>
+    <symbol id="i-location" viewBox="0 0 24 24"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></symbol>
+    <symbol id="i-bag" viewBox="0 0 24 24"><path d="M5 8h14l1 13H4L5 8Z"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/></symbol>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="m3 11 9-8 9 8"/><path d="M5.5 9.5V21h13V9.5M9 21v-6h6v6"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="7"/><path d="m16 16 5 5"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M20.8 4.8a5.4 5.4 0 0 0-7.7 0L12 5.9l-1.1-1.1a5.4 5.4 0 1 0-7.7 7.7L12 21l8.8-8.5a5.4 5.4 0 0 0 0-7.7Z"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c.8-4.2 3.5-6 8-6s7.2 1.8 8 6"/></symbol>
+    <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3.5 12h17M12 3c3 3.1 3 14.9 0 18M12 3c-3 3.1-3 14.9 0 18"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 15.2A8.6 8.6 0 0 1 8.8 4a8.7 8.7 0 1 0 11.2 11.2Z"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6.5h16M4 12h16M4 17.5h16"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.5 12s3.4-6 9.5-6 9.5 6 9.5 6-3.4 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.7"/></symbol>
+    <symbol id="i-sparkles" viewBox="0 0 24 24"><path d="M12 2c.7 4.6 2.5 6.4 7 7-4.5.7-6.3 2.5-7 7-.7-4.5-2.5-6.3-7-7 4.5-.6 6.3-2.4 7-7Z"/><path d="M19 15c.3 2.2 1.2 3.1 3 3.5-1.8.3-2.7 1.2-3 3.5-.4-2.3-1.3-3.2-3-3.5 1.7-.4 2.6-1.3 3-3.5Z"/></symbol>
+    <symbol id="i-tag" viewBox="0 0 24 24"><path d="M3 12 12 3h7l2 2v7l-9 9-9-9Z"/><circle cx="16" cy="8" r="1.5"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 9a6 6 0 1 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9ZM10 21h4"/></symbol>
+  </svg>
+  <div class="announcement">
+    <span data-i18n="promoShipping">توصيل مجاني للطلبات فوق 999 ج.م</span>
+    <span class="announcement-dot"></span>
+    <span data-i18n="promoDiscount">خصومات تصل إلى 40%</span>
+    <span class="announcement-dot"></span>
+    <span data-i18n="promoOriginal">منتجات أصلية 100%</span>
+    <button class="plain-btn announcement-close" aria-label="إغلاق الإعلان">×</button>
+  </div>
 
-    <header class="site-header" id="top">
-      <div class="header-main">
-        <button class="mobile-menu-button" data-action="mobile-menu" aria-label="فتح القائمة" aria-expanded="false">
-          <span></span><span></span><span></span>
-        </button>
-        <div class="header-commerce-zone">
-          <div class="header-commerce-actions">
-            <button class="icon-button mobile-header-search-trigger" data-action="mobile-header-search" aria-label="بحث" aria-expanded="false" aria-controls="mobile-header-search">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg>
-            </button>
-            <button class="cart-button" data-action="cart" aria-label="سلة التسوق">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3h2l2.2 10.2a2 2 0 0 0 2 1.6h7.9a2 2 0 0 0 2-1.6L20.5 7H6"></path><circle cx="10" cy="20" r="1"></circle><circle cx="18" cy="20" r="1"></circle></svg>
-              <span class="action-count cart-count">0</span>
-            </button>
-            <button class="icon-button wishlist-button" data-action="wishlist" aria-label="المفضلة">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"></path></svg>
-              <span class="action-count wishlist-count">0</span>
-            </button>
-            <button class="icon-button account-button" data-action="account-menu" aria-label="قائمة الحساب" aria-haspopup="menu" aria-expanded="false" aria-controls="header-account-menu">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21a7.5 7.5 0 0 1 15 0"></path></svg>
-            </button>
-            <div class="header-account-menu" id="header-account-menu" role="menu" hidden>
-              <button type="button" role="menuitem" data-action="account"><i>♙</i><span class="menu-ar">حسابي</span><span class="menu-en">My account</span></button>
-              <button type="button" role="menuitem" data-action="view-orders"><i>▣</i><span class="menu-ar">طلباتي</span><span class="menu-en">My orders</span></button>
-              <button type="button" role="menuitem" data-action="wishlist"><i>♡</i><span class="menu-ar">المفضلة</span><span class="menu-en">Wishlist</span></button>
-              <button type="button" role="menuitem" data-action="theme"><i>◐</i><span class="menu-ar">الوضع الداكن</span><span class="menu-en">Dark mode</span></button>
-              <button type="button" role="menuitem" data-action="language"><i>◎</i><span class="menu-ar">اللغة</span><span class="menu-en">Language</span></button>
-              <button type="button" role="menuitem" data-action="account"><i>⚙</i><span class="menu-ar">الإعدادات</span><span class="menu-en">Settings</span></button>
-            </div>
-          </div>
-          <button class="header-search" data-action="search" aria-label="بحث">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <circle cx="11" cy="11" r="7"></circle>
-              <path d="m20 20-4-4"></path>
-            </svg>
-            <span><b data-i18n="searchPlaceholder">ابحث عن عطر، ماركة، منتج...</b></span>
-          </button>
-        </div>
-        <a class="brand brand-logo-link" href="/" data-action="catalog-home" aria-label="ORIGO home">
-          <img data-store-logo data-logo-variant="auto" src="assets/origo-logo.svg" alt="ORIGO" />
-        </a>
-        <div class="header-preference-actions" hidden></div>
-      </div>
-      <form class="mobile-header-search" id="mobile-header-search" role="search" hidden>
-        <button class="mobile-header-search-submit" type="submit" aria-label="بحث">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg>
-        </button>
-        <input id="mobile-header-search-input" type="search" autocomplete="off" placeholder="ابحث عن عطر أو ماركة..." data-i18n-placeholder="searchPlaceholder" />
-        <button class="mobile-header-search-filter" type="button" data-action="mobile-search-filters" aria-label="فلاتر البحث">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M7 12h10M10 17h4"></path><circle cx="8" cy="7" r="1.5"></circle><circle cx="15" cy="12" r="1.5"></circle><circle cx="12" cy="17" r="1.5"></circle></svg>
-        </button>
-        <div class="mobile-smart-search-results" id="mobile-smart-search-results" role="listbox" aria-label="اقتراحات البحث" hidden></div>
+  <header class="site-header">
+    <div class="header-main container">
+      <button class="icon-btn menu-btn" aria-label="فتح القائمة" data-open-menu>
+        <svg class="ui-icon"><use href="#i-menu"/></svg>
+      </button>
+      <a class="brand" href="#" aria-label="أوريجو - الرئيسية">
+        <span class="brand-crown">♛</span>
+        <span class="brand-name">ORIGO</span>
+        <span class="brand-sub">SCENTS</span>
+      </a>
+      <form class="search" role="search">
+        <svg class="ui-icon"><use href="#i-search"/></svg>
+        <input id="search-input" type="search" placeholder="ابحث عن عطر، ماركة، أو نوتة..." aria-label="البحث في المتجر" />
+        <kbd>⌘ K</kbd>
+        <div class="search-suggestions" id="search-suggestions" role="listbox" aria-label="اقتراحات البحث"></div>
       </form>
-
-      <nav class="category-nav" aria-label="أقسام المتجر">
-        <a class="active" href="/" data-action="catalog-home"><span class="nav-icon" aria-hidden="true">⌂</span><span data-i18n="home">الرئيسية</span></a>
-        <div class="brands-nav">
-          <button data-action="brands-menu" aria-expanded="false"><span class="nav-icon" aria-hidden="true">◇</span><span data-i18n="navBrands">البراندات</span><i>⌄</i></button>
-          <div class="brands-dropdown mega-dropdown" id="header-brands-dropdown"></div>
-        </div>
-        <div class="brands-nav categories-nav">
-          <button data-action="categories-menu" aria-expanded="false"><span class="nav-icon" aria-hidden="true">▦</span><span data-i18n="categories">الفئات</span><i>⌄</i></button>
-          <div class="brands-dropdown mega-dropdown" id="header-categories-dropdown"></div>
-        </div>
-        <a href="#best-sellers"><span class="nav-icon" aria-hidden="true">★</span><span data-i18n="bestSellers">الأكثر مبيعًا</span></a>
-        <a href="#new-arrivals"><span class="nav-icon" aria-hidden="true">✦</span><span data-i18n="newArrivals">المنتجات الحديثة</span></a>
-          <a href="#site-footer"><span class="nav-icon" aria-hidden="true">ⓘ</span><span data-i18n="about">عن ORIGO</span></a>
-        <a href="/alternatives" data-action="open-alternatives"><span class="nav-icon" aria-hidden="true">⇄</span><span data-i18n="alternatives">البدائل</span></a>
-        <a class="smart-scent-nav" href="/fragrance-finder/for-whom" data-action="find-matches"><span class="nav-icon" aria-hidden="true">✧</span><span data-i18n="finderEntry">اكتشف عطرًا يناسب ذوقك</span></a>
-      </nav>
-    </header>
-
-    <div class="mobile-menu-backdrop" data-action="close-mobile-menu"></div>
-    <aside class="mobile-menu-panel" id="mobile-menu" aria-hidden="true">
-      <div class="mobile-menu-head">
-        <a class="brand brand-logo-link" href="/" data-action="catalog-home" aria-label="ORIGO home"><img data-store-logo data-logo-variant="auto" src="assets/origo-logo.svg" alt="ORIGO" /></a>
-        <button class="close-button" data-action="close-mobile-menu" aria-label="إغلاق">×</button>
+      <div class="header-actions">
+        <button class="header-control lang-toggle" type="button" aria-label="Switch language" data-lang-toggle><svg class="ui-icon"><use href="#i-globe"/></svg><b>EN</b></button>
+        <button class="header-control theme-toggle" type="button" aria-label="تبديل الوضع الليلي" data-theme-toggle><svg class="ui-icon theme-icon"><use href="#i-moon"/></svg></button>
+        <button class="action-btn" aria-label="الحساب" data-account>
+          <svg class="ui-icon"><use href="#i-user"/></svg><span>حسابي</span>
+        </button>
+        <button class="action-btn" aria-label="المفضلة" data-favorites>
+          <svg class="ui-icon"><use href="#i-heart"/></svg><span>المفضلة</span><em class="count fav-count">0</em>
+        </button>
+        <button class="action-btn" aria-label="السلة" data-open-cart>
+          <svg class="ui-icon"><use href="#i-bag"/></svg><span>السلة</span><em class="count cart-count">0</em>
+        </button>
       </div>
-      <button class="mobile-menu-search" data-action="search"><span>⌕</span><b data-i18n="headerSearchTitle">ابحث عن منتج أو براند</b></button>
-      <nav>
-        <a href="/" data-action="catalog-home" data-i18n="home">الرئيسية</a>
-        <a href="/perfumes" data-action="catalog-category" data-category="perfume" data-i18n="navPerfumes">العطور</a>
-        <a href="#new-arrivals" data-action="close-mobile-menu" data-i18n="newArrivals">المنتجات الحديثة</a>
-        <a href="#best-sellers" data-action="close-mobile-menu" data-i18n="bestSellers">الأكثر مبيعًا</a>
-          <a href="#site-footer" data-action="close-mobile-menu" data-i18n="about">عن ORIGO</a>
-        <a href="#offers" data-action="close-mobile-menu" data-i18n="offers">العروض</a>
-        <a href="/alternatives" data-action="open-alternatives" data-i18n="alternatives">البدائل</a>
-        <a href="/fragrance-finder/for-whom" data-action="find-matches"><span data-i18n="finderEntry">اكتشف عطرًا يناسب ذوقك</span></a>
-      </nav>
-      <div class="mobile-taxonomy">
-        <details class="mobile-taxonomy-group">
-          <summary><span data-i18n="navCategories">الفئات</span><i>⌄</i></summary>
-          <div id="mobile-categories-list" class="mobile-taxonomy-list"></div>
-        </details>
-        <details class="mobile-taxonomy-group mobile-brands">
-          <summary><span data-i18n="navBrands">العلامات التجارية</span><i>⌄</i></summary>
-          <div id="mobile-brands-list" class="mobile-taxonomy-list"></div>
-        </details>
-      </div>
-      <button class="mobile-admin-link" data-action="admin" hidden><span>◇</span><b data-i18n="adminLink">إدارة المنتجات</b><i>←</i></button>
-      <div class="mobile-menu-actions">
-        <button data-action="account"><span>♙</span><b data-i18n="account">الحساب</b></button>
-        <button data-action="language"><span>文</span><b data-i18n="language">English</b></button>
-        <button data-action="theme"><span>◐</span><b data-i18n="appearance">المظهر</b></button>
-      </div>
-    </aside>
-
-    <main id="storefront-main">
-      <section class="commerce-page" id="commerce-page" hidden aria-live="polite">
-        <div class="commerce-shell" id="commerce-root"></div>
-      </section>
-      <section class="account-route-page" id="account-page" hidden aria-live="polite">
-        <div class="account-shell" id="account-root"></div>
-      </section>
-      <section class="fragrance-finder-page" id="fragrance-finder-page" hidden aria-live="polite">
-        <div class="finder-shell" id="fragrance-finder-root"></div>
-      </section>
-      <section class="alternatives-route-page" id="alternatives-page" hidden aria-live="polite">
-        <div class="alternatives-shell" id="alternatives-root"></div>
-      </section>
-      <section class="notes-route-page" id="notes-library-page" hidden aria-labelledby="notes-page-title">
-        <div class="notes-page-shell">
-          <nav class="notes-breadcrumb" aria-label="مسار الصفحة">
-            <button data-action="notes-home" data-i18n="home">الرئيسية</button><span>/</span><b data-i18n="notesLibrary">مكتبة المكونات العطرية</b>
-          </nav>
-          <div id="notes-page-content"></div>
-        </div>
-      </section>
-      <section class="brands-route-page" id="brands-page" hidden aria-labelledby="brands-page-title">
-        <div class="brands-page-shell" id="brands-page-content"></div>
-      </section>
-      <section class="benefits-route-page" id="benefits-page" hidden aria-labelledby="benefits-page-title">
-        <div class="benefits-page-shell" id="benefits-page-content"></div>
-      </section>
-
-      <section class="benefit-detail-page" id="benefit-detail-page" hidden aria-labelledby="benefit-detail-title">
-        <div class="benefit-detail-shell" id="benefit-detail-content"></div>
-      </section>
-
-      <div class="origo-home" id="home">
-        <section class="origo-home-hero" id="home-hero" aria-labelledby="home-hero-title">
-          <div class="home-hero-copy">
-            <h1 id="home-hero-title">اكتشف عالم العطور<br /><em>الفاخرة</em></h1>
-            <p>نخبة مختارة من أفضل الماركات العالمية</p>
-            <a class="home-primary-button" href="#new-arrivals"><span>تسوق الآن</span><i>‹</i></a>
-            <div class="home-hero-dots" aria-label="شرائح البانر"><button class="active" aria-label="الشريحة 1"></button><button aria-label="الشريحة 2"></button><button aria-label="الشريحة 3"></button><button aria-label="الشريحة 4"></button></div>
-          </div>
-          <div class="home-hero-products" role="img" aria-label="مجموعة عطور فاخرة من أمواج وزيرجوف وشانيل"></div>
-        </section>
-
-        <section class="home-brand-directory" aria-labelledby="home-brands-title">
-          <div class="home-section-head"><a href="/brands" data-action="open-brands-page"><span data-i18n="viewAll">عرض الكل</span> <span>‹</span></a><div class="ornament-heading"><h2 id="home-brands-title" data-i18n="navBrands">العلامات التجارية</h2></div></div>
-          <div class="brand-carousel-track" id="home-brand-carousel-track" data-brand-marquee aria-live="off"></div>
-        </section>
-
-        <section class="home-benefits-directory" aria-labelledby="home-benefits-title">
-          <div class="home-section-head"><a href="/benefits" data-action="open-benefits-page"><span data-i18n="viewAll">عرض الكل</span> <span>‹</span></a><div class="ornament-heading"><h2 id="home-benefits-title">مميزاتنا</h2></div></div>
-          <div class="benefit-carousel-track" id="home-benefits-track" data-benefit-marquee aria-live="off"></div>
-        </section>
-
-        <section class="home-gender-section" aria-labelledby="gender-title">
-          <div class="ornament-heading"><span></span><h2 id="gender-title" data-i18n="shopByGender">تسوق حسب الجنس</h2><span></span></div>
-          <div class="gender-grid horizontal-rail" data-horizontal-rail>
-            <a class="gender-card gender-men" href="/perfumes?quick=men" aria-label="تسوق عطور الرجال"></a>
-            <a class="gender-card gender-women" href="/perfumes?quick=women" aria-label="تسوق عطور النساء"></a>
-            <a class="gender-card gender-unisex" href="/perfumes?quick=unisex" aria-label="تسوق عطور الجنسين"></a>
-          </div>
-        </section>
-
-        <section class="home-best-sellers home-new-arrivals" id="new-arrivals" aria-labelledby="new-arrivals-title"><div class="home-section-head"><a href="/perfumes?sort=newest"><span data-i18n="viewAll">عرض باقي المنتجات الحديثة</span> <span>‹</span></a><div class="ornament-heading"><span></span><h2 id="new-arrivals-title">المنتجات الحديثة</h2><span></span></div></div><div class="home-products-wrap"><div class="product-grid horizontal-scroll horizontal-rail" id="new-product-grid" data-horizontal-rail></div></div></section>
-
-        <section class="home-best-sellers" id="best-sellers" aria-labelledby="best-sellers-title">
-          <div class="home-section-head">
-            <a href="#featured"><span data-i18n="viewAll">عرض الكل</span> <span>‹</span></a>
-            <div class="ornament-heading"><span></span><h2 id="best-sellers-title" data-i18n="bestSellers">الأكثر مبيعًا</h2><span></span></div>
-          </div>
-          <div class="dynamic-filter-bar" id="dynamic-filter-bar" aria-label="فلاتر القسم"></div>
-          <div class="home-products-wrap">
-            <button class="home-carousel-arrow previous" data-scroll="products" data-direction="-1" aria-label="السابق">‹</button>
-            <div class="product-grid horizontal-scroll horizontal-rail" id="product-grid" data-horizontal-rail></div>
-            <button class="home-carousel-arrow next" data-scroll="products" data-direction="1" aria-label="التالي">›</button>
-          </div>
-        </section>
-
-        <section class="home-brand-showcases" id="home-brand-showcases" aria-label="منتجات العلامات التجارية"></section>
-
-        <nav class="home-categories horizontal-rail" data-horizontal-rail aria-label="فئات المنتجات">
-          <a href="#featured" data-action="catalog-category" data-category="perfume"><span data-home-category-icon="perfume">♨</span><b data-i18n="navPerfumes">العطور</b></a>
-          <a href="#featured" data-action="catalog-category" data-category="skincare"><span data-home-category-icon="skincare">♙</span><b data-i18n="navSkincare">العناية بالبشرة</b></a>
-          <a href="#featured" data-action="catalog-category" data-category="bodycare"><span data-home-category-icon="bodycare">🎁</span><b data-i18n="navBodycare">العناية بالجسم</b></a>
-          <a href="#featured" data-action="catalog-category" data-category="haircare"><span data-home-category-icon="haircare">♟</span><b data-i18n="navHaircare">العناية بالشعر</b></a>
-          <a href="#featured" data-action="catalog-category" data-category="incense"><span data-home-category-icon="incense">♨</span><b data-i18n="navIncense">البخور</b></a>
-          <a href="#featured" data-action="catalog-category" data-category="home"><span data-home-category-icon="home">♜</span><b data-i18n="navHomeFragrance">المعطرات المنزلية</b></a>
-          <a href="#featured"><span data-home-category-icon="gifts">🎁</span><b data-i18n="gifts">الهدايا</b></a>
-          <a href="#offers"><span data-home-category-icon="offers">٪</span><b data-i18n="offers">العروض</b></a>
-        </nav>
-
-        <section class="home-alternatives-promo" id="home-alternatives-promo" aria-live="polite"></section>
-        <section class="home-alternatives-section" id="home-alternatives-section" aria-live="polite"></section>
-
-        <section class="home-ai-banner" id="ai-perfume" aria-labelledby="ai-banner-title">
-          <div class="ai-copy ai-copy-primary"><h2 id="ai-banner-title" data-i18n="finderName">مكتشف العطر المناسب لذوقك</h2><p data-i18n="finderIntroShort">أجب عن أسئلة بسيطة عن ذوقك<br />لنرشح لك أفضل العطور المناسبة</p><button data-action="find-matches"><span data-i18n="finderEntry">اكتشف عطرًا يناسب ذوقك</span> <span>◇</span></button></div>
-          <div class="ai-product" role="img" aria-label="عطر ORIGO"></div>
-          <div class="ai-copy ai-copy-secondary alternative-entry"><h2 data-i18n="alternativeFinderName">مكتشف البديل الذكي</h2><p data-i18n="alternativeFinderIntro">اكتب اسم عطر تعرفه<br />لنقترح بديل ORIGO الأقرب له</p><form id="home-alternative-search"><label class="sr-only" for="home-alternative-query" data-i18n="alternativeSearchLabel">عن أي عطر تبحث؟</label><div><input id="home-alternative-query" type="search" autocomplete="off" data-i18n-placeholder="alternativeSearchPlaceholder" placeholder="مثال: Oud Wood"/><button type="submit"><span data-i18n="search">ابحث</span> <span>⌕</span></button></div></form></div>
-          <span class="ai-robot" aria-hidden="true">◉</span>
-        </section>
-      </div>
-
-      <section class="hero" aria-labelledby="hero-title">
-        <div class="hero-image" role="img" aria-label="زجاجة عطر فاخرة على خلفية نبيتي"></div>
-        <div class="hero-vignette"></div>
-        <div class="hero-content reveal">
-          <span class="eyebrow light" data-i18n="heroEyebrow">مجموعة ORIGO الخاصة · 2026</span>
-          <h1 id="hero-title" data-i18n="heroTitle">ليس عطرًا فقط.<br />إنه <em>أثرٌ يبقى.</em></h1>
-          <p data-i18n="heroBody">
-            اكتشف تركيبات منتقاة بعناية، وافهم نوتاتها، ثم اختر العطر الذي يشبه حضورك.
-          </p>
-          <div class="hero-actions">
-            <a class="button gold-button" href="#featured">
-              <span data-i18n="shopNow">تسوّق المجموعة</span>
-              <span aria-hidden="true">←</span>
-            </a>
-            <a class="button ghost-button" href="/fragrance-finder/for-whom" data-action="find-matches">
-              <span data-i18n="finderEntry">اكتشف عطرًا يناسب ذوقك</span>
-              <span class="play" aria-hidden="true">◇</span>
-            </a>
-          </div>
-          <div class="hero-proof">
-            <div class="avatar-stack" aria-hidden="true">
-              <span>ن</span><span>ل</span><span>م</span><span>س</span>
-            </div>
-            <p><b>+12,000</b> <span data-i18n="happyClients">عميل وجدوا عطرهم</span></p>
-          </div>
-        </div>
-        <div class="hero-index" aria-hidden="true"><span>01</span><i></i><span>03</span></div>
-        <a class="scroll-cue" href="#featured" aria-label="انتقل إلى المنتجات">
-          <span data-i18n="scroll">اكتشف</span><i></i>
-        </a>
-      </section>
-
-      <section class="service-strip" aria-label="مزايا المتجر">
-        <article>
-          <span class="service-icon">✦</span>
-          <div><b data-i18n="authentic">أصلي 100%</b><small data-i18n="authenticSub">مصادر موثوقة ومختارة</small></div>
-        </article>
-        <article>
-          <span class="service-icon">◌</span>
-          <div><b data-i18n="samples">عينات قبل الالتزام</b><small data-i18n="samplesSub">جرّب الرائحة على بشرتك</small></div>
-        </article>
-        <article>
-          <span class="service-icon">↯</span>
-          <div><b data-i18n="fastDelivery">توصيل سريع</b><small data-i18n="fastDeliverySub">خلال 2–4 أيام عمل</small></div>
-        </article>
-        <article>
-          <span class="service-icon">♢</span>
-          <div><b data-i18n="consult">استشارة عطرية</b><small data-i18n="consultSub">ترشيحات حسب ذوقك</small></div>
-        </article>
-      </section>
-
-      <section class="brand-carousel-section" aria-label="العلامات التجارية">
-        <div class="brand-carousel-head"><div><span class="eyebrow">BRAND DIRECTORY</span><h2 data-i18n="navBrands">البراندات</h2></div>
-          <div><input id="brand-carousel-search" type="search" placeholder="ابحث عن براند" /><button data-action="brand-carousel-scroll" data-direction="-1" aria-label="السابق">→</button><button data-action="brand-carousel-scroll" data-direction="1" aria-label="التالي">←</button></div>
-        </div>
-        <div class="brand-carousel-track" id="brand-carousel-track" aria-live="off"></div>
-      </section>
-
-      <section class="section featured-section" id="featured">
-        <div class="section-heading reveal">
-          <div>
-            <span class="eyebrow" data-i18n="curated">مختارات المحرر</span>
-            <h2 data-i18n="bestSellers">الأكثر حضورًا</h2>
-          </div>
-          <div class="heading-actions">
-            <div class="filter-chips" role="tablist" aria-label="فلترة المنتجات">
-              <button class="chip active" data-filter="all" data-i18n="all">الكل</button>
-              <button class="chip" data-filter="رجالي" data-i18n="men">رجالي</button>
-              <button class="chip" data-filter="نسائي" data-i18n="women">نسائي</button>
-              <button class="chip" data-filter="للجنسين" data-i18n="unisex">للجنسين</button>
-            </div>
-            <div class="carousel-arrows">
-              <button data-scroll="products" data-direction="-1" aria-label="السابق">→</button>
-              <button data-scroll="products" data-direction="1" aria-label="التالي">←</button>
-            </div>
-          </div>
-        </div>
-        <div class="dynamic-filter-bar" id="legacy-dynamic-filter-bar" aria-label="فلاتر القسم"></div>
-        <div class="product-grid horizontal-scroll" id="legacy-product-grid"></div>
-      </section>
-
-      <section class="collection-story" id="offers">
-        <div class="story-visual reveal">
-          <div class="story-number">01</div>
-          <div class="floating-note note-one"><span>فانيليا</span><i>BASE</i></div>
-          <div class="floating-note note-two"><span>عود</span><i>HEART</i></div>
-        </div>
-        <div class="story-copy reveal">
-          <span class="eyebrow light" data-i18n="limited">إصدار محدود</span>
-          <h2 data-i18n="storyTitle">حين يلتقي<br />العود <em>بالذهب.</em></h2>
-          <p data-i18n="storyBody">
-            دفء العود الكمبودي يلتف حول فانيليا داكنة ولمسة زعفران مضيئة. تركيبة مسائية ذات أثر واثق وثبات طويل.
-          </p>
-          <div class="note-ribbon">
-            <span><i>01</i><b data-i18n="saffron">زعفران</b><small data-i18n="opening">الافتتاحية</small></span>
-            <span><i>02</i><b data-i18n="oud">عود كمبودي</b><small data-i18n="heart">القلب</small></span>
-            <span><i>03</i><b data-i18n="vanilla">فانيليا سوداء</b><small data-i18n="base">القاعدة</small></span>
-          </div>
-          <a class="text-link light" href="#featured"><span data-i18n="discoverCollection">اكتشف المجموعة</span> <span>←</span></a>
-        </div>
-      </section>
-
-      <section class="section discover-section" id="discover">
-        <div class="discover-intro reveal">
-          <span class="eyebrow" data-i18n="scentFinder">مستكشف ORIGO</span>
-          <h2 data-i18n="finderTitle">ما المزاج الذي<br />تبحث عنه؟</h2>
-          <p data-i18n="finderBody">
-            اختر النوتات التي تحبها وسنرتب العطور حسب نسبة التطابق، لا حسب تشابه الاسم.
-          </p>
-          <div class="finder-stat">
-            <strong id="match-count">24</strong>
-            <span data-i18n="matchingScents">عطرًا متاحًا للمطابقة</span>
-          </div>
-        </div>
-        <div class="note-selector reveal" id="note-selector">
-          <div class="note-selector-head">
-            <p><span data-i18n="chooseNotes">اختر حتى 4 نوتات</span> <b id="selected-count">0/4</b></p>
-            <button class="text-button dark-text" data-action="clear-notes" data-i18n="clear">مسح الاختيار</button>
-          </div>
-          <div class="note-bubbles">
-            <button class="note-bubble" data-note="حمضيات"><span class="note-art citrus">🍋</span><b data-i18n="citrus">حمضيات</b><small>CITRUS</small></button>
-            <button class="note-bubble" data-note="ورد"><span class="note-art rose">🌹</span><b data-i18n="rose">ورد</b><small>ROSE</small></button>
-            <button class="note-bubble" data-note="عود"><span class="note-art oud">🪵</span><b data-i18n="oudShort">عود</b><small>OUD</small></button>
-            <button class="note-bubble" data-note="فانيليا"><span class="note-art vanilla">◈</span><b data-i18n="vanillaShort">فانيليا</b><small>VANILLA</small></button>
-            <button class="note-bubble" data-note="توابل"><span class="note-art spice">✺</span><b data-i18n="spices">توابل</b><small>SPICES</small></button>
-            <button class="note-bubble" data-note="مسك"><span class="note-art musk">◌</span><b data-i18n="musk">مسك</b><small>MUSK</small></button>
-            <button class="note-bubble" data-note="عنبر"><span class="note-art amber">◆</span><b data-i18n="amber">عنبر</b><small>AMBER</small></button>
-            <button class="note-bubble" data-note="أخشاب"><span class="note-art woods">♜</span><b data-i18n="woods">أخشاب</b><small>WOODS</small></button>
-          </div>
-          <button class="button burgundy-button finder-button" data-action="find-matches">
-            <span data-i18n="showMatches">اعرض أفضل التطابقات</span>
-            <span aria-hidden="true">←</span>
-          </button>
-        </div>
-      </section>
-
-      <section class="notes-library" id="notes">
-        <div class="notes-header reveal">
-          <span class="eyebrow light" data-i18n="olfactoryAtlas">أطلس الروائح</span>
-          <h2 data-i18n="notesTitle">اقرأ العطر<br />من <em>مكوّناته.</em></h2>
-          <p data-i18n="notesBody">مكتبة بصرية مبسطة تساعدك على فهم كل نوتة والعطور التي تظهر فيها.</p>
-          <a class="text-link light" href="#discover"><span data-i18n="scentFinder">استخدم مستكشف العطر</span> <span>←</span></a>
-        </div>
-        <div class="note-category-grid reveal">
-          <article class="note-category category-citrus">
-            <span class="category-index">01</span>
-            <div>
-              <small data-i18n="freshBright">منعشة · مضيئة</small>
-              <h3 data-i18n="citrusFruits">الفواكه والحمضيات</h3>
-              <p data-i18n="citrusExamples">برغموت · ليمون · برتقال مر</p>
-            </div>
-            <b>🍊</b>
-          </article>
-          <article class="note-category category-floral">
-            <span class="category-index">02</span>
-            <div>
-              <small data-i18n="softExpressive">ناعمة · معبّرة</small>
-              <h3 data-i18n="flowers">الزهور</h3>
-              <p data-i18n="floralExamples">ورد · ياسمين · زهر البرتقال</p>
-            </div>
-            <b>🌸</b>
-          </article>
-          <article class="note-category category-woods">
-            <span class="category-index">03</span>
-            <div>
-              <small data-i18n="deepWarm">عميقة · دافئة</small>
-              <h3 data-i18n="woodsOud">الأخشاب والعود</h3>
-              <p data-i18n="woodExamples">صندل · أرز · عود</p>
-            </div>
-            <b>🪵</b>
-          </article>
-          <article class="note-category category-gourmand">
-            <span class="category-index">04</span>
-            <div>
-              <small data-i18n="sweetAddictive">حلوة · آسرة</small>
-              <h3 data-i18n="gourmand">الحلوى والمأكولات</h3>
-              <p data-i18n="gourmandExamples">فانيليا · كراميل · قهوة</p>
-            </div>
-            <b>☕</b>
-          </article>
-        </div>
-      </section>
-
-      <section class="section profile-section" id="profile">
-        <div class="section-heading reveal">
-          <div>
-            <span class="eyebrow" data-i18n="insidePerfume">داخل العطر</span>
-            <h2 data-i18n="readProfile">ملف عطري كامل، بوضوح.</h2>
-          </div>
-          <p class="section-description" data-i18n="profileIntro">
-            نعرض ما يهمك فعلًا: النوتات، قوة الأكوردات، الثبات، الفوحان، الموسم، والقيمة.
-          </p>
-        </div>
-
-        <div class="perfume-profile reveal">
-          <article class="profile-product">
-            <span class="profile-badge" data-i18n="editorsPick">اختيار المحرر</span>
-            <div class="mini-bottle" aria-hidden="true"><i></i><b>O</b></div>
-            <small>ORIGO PRIVATE BLEND</small>
-            <h3>NOCTURNE 01</h3>
-            <div class="profile-rating"><span>★★★★★</span><b>4.8</b><small>(186)</small></div>
-            <p data-i18n="nocturneDesc">شرقي خشبي للجنسين · عطر مركز 75 مل</p>
-            <button class="button burgundy-button" data-action="quick-add" data-product="nocturne">
-              <span data-i18n="addToBag">أضف للسلة</span><span>3,250 ج.م</span>
-            </button>
-          </article>
-
-          <article class="pyramid-panel">
-            <div class="panel-title">
-              <div><span class="eyebrow" data-i18n="composition">التركيبة</span><h3 data-i18n="scentPyramid">الهرم العطري</h3></div>
-              <span class="panel-icon">⌁</span>
-            </div>
-            <div class="pyramid-row top-notes">
-              <span class="pyramid-label"><small>TOP</small><b data-i18n="openingNotes">الافتتاحية</b></span>
-              <div><i>🍋</i><b data-i18n="bergamot">برغموت</b></div>
-              <div><i>✺</i><b data-i18n="pinkPepper">فلفل وردي</b></div>
-              <div><i>🌿</i><b data-i18n="sage">مريمية</b></div>
-            </div>
-            <div class="pyramid-row heart-notes">
-              <span class="pyramid-label"><small>HEART</small><b data-i18n="heartNotes">قلب العطر</b></span>
-              <div><i>🌹</i><b data-i18n="turkishRose">ورد تركي</b></div>
-              <div><i>🪵</i><b data-i18n="oudShort">عود</b></div>
-              <div><i>◆</i><b data-i18n="saffron">زعفران</b></div>
-            </div>
-            <div class="pyramid-row base-notes">
-              <span class="pyramid-label"><small>BASE</small><b data-i18n="baseNotes">المكونات الأساسية</b></span>
-              <div><i>◈</i><b data-i18n="vanillaShort">فانيليا</b></div>
-              <div><i>◌</i><b data-i18n="whiteMusk">مسك أبيض</b></div>
-              <div><i>🌲</i><b data-i18n="sandalwood">صندل</b></div>
-            </div>
-          </article>
-
-          <article class="accord-panel">
-            <div class="panel-title">
-              <div><span class="eyebrow" data-i18n="identity">الهوية</span><h3 data-i18n="mainAccords">الأكوردات الرئيسية</h3></div>
-              <span class="panel-icon">≋</span>
-            </div>
-            <div class="accord-bars">
-              <div style="--value: 92%; --color: #6d0d24"><b data-i18n="woody">خشبي</b><i><span></span></i><small>92%</small></div>
-              <div style="--value: 84%; --color: #c69a3d"><b data-i18n="amber">عنبر</b><i><span></span></i><small>84%</small></div>
-              <div style="--value: 76%; --color: #a34b5d"><b data-i18n="warmSpicy">توابل دافئة</b><i><span></span></i><small>76%</small></div>
-              <div style="--value: 65%; --color: #d5b269"><b data-i18n="vanillaShort">فانيليا</b><i><span></span></i><small>65%</small></div>
-              <div style="--value: 51%; --color: #36302c"><b data-i18n="smoky">دخاني</b><i><span></span></i><small>51%</small></div>
-            </div>
-            <div class="scent-meta">
-              <span><small data-i18n="season">الموسم</small><b data-i18n="autumnWinter">خريف · شتاء</b></span>
-              <span><small data-i18n="time">الوقت</small><b data-i18n="evening">مسائي</b></span>
-              <span><small data-i18n="gender">النوع</small><b data-i18n="unisex">للجنسين</b></span>
-            </div>
-          </article>
-        </div>
-
-        <div class="performance-grid reveal">
-          <article>
-            <div class="metric-head"><span>◴</span><div><small data-i18n="performance">الأداء</small><h3 data-i18n="longevity">الثبات</h3></div><b>8.7<small>/10</small></b></div>
-            <div class="metric-scale"><i class="active"></i><i class="active"></i><i class="active"></i><i class="active"></i><i></i></div>
-            <div class="metric-labels"><span data-i18n="weak">ضعيف</span><span data-i18n="eternal">أبدي</span></div>
-            <p data-i18n="longevityNote">يبقى ملحوظًا من 8 إلى 10 ساعات على البشرة.</p>
-          </article>
-          <article>
-            <div class="metric-head"><span>◎</span><div><small data-i18n="presence">الحضور</small><h3 data-i18n="sillage">الفوحان</h3></div><b>8.2<small>/10</small></b></div>
-            <div class="metric-scale"><i class="active"></i><i class="active"></i><i class="active"></i><i class="active"></i><i></i></div>
-            <div class="metric-labels"><span data-i18n="soft">ناعم</span><span data-i18n="enormous">هائل</span></div>
-            <p data-i18n="sillageNote">هالة واضحة في الساعات الأولى ثم تصبح أقرب.</p>
-          </article>
-          <article>
-            <div class="metric-head"><span>◉</span><div><small data-i18n="investment">الاستثمار</small><h3 data-i18n="value">قيمة السعر</h3></div><b>9.1<small>/10</small></b></div>
-            <div class="metric-scale"><i class="active"></i><i class="active"></i><i class="active"></i><i class="active"></i><i class="active"></i></div>
-            <div class="metric-labels"><span data-i18n="overpriced">مبالغ</span><span data-i18n="greatValue">قيمة رائعة</span></div>
-            <p data-i18n="valueNote">تركيز مرتفع وأداء قوي مقابل كل رشة.</p>
-          </article>
-        </div>
-      </section>
-
-      <section class="alternative-section">
-        <div class="alternative-copy reveal">
-          <span class="eyebrow light" data-i18n="smartAlternative">البديل الذكي</span>
-          <h2 data-i18n="alternativeTitle">تحب عطرًا مشهورًا؟<br /><em>سنجد لك الأقرب.</em></h2>
-          <p data-i18n="alternativeBody">
-            نقارن البصمة العطرية: القاعدة 35%، القلب 25%، الافتتاحية 15%، الأكوردات 15%، والعائلة والأداء 10%.
-          </p>
-          <div class="alternative-search">
-            <input id="alternative-input" type="search" placeholder="اكتب اسم عطر… مثل: Ombre Leather" data-i18n-placeholder="alternativePlaceholder" />
-            <button data-action="alternative-search"><span data-i18n="compare">قارن</span> <span>←</span></button>
-          </div>
-          <small class="search-hint" data-i18n="algorithmHint">النتائج لا تعتمد على تشابه الاسم.</small>
-        </div>
-        <div class="match-card reveal" id="match-card">
-          <div class="match-score"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52"></circle><circle class="score-ring" cx="60" cy="60" r="52"></circle></svg><b>94<small>%</small></b></div>
-          <span class="match-label" data-i18n="closestMatch">أقرب تطابق</span>
-          <div class="match-product">
-            <div class="tiny-bottle"><i></i><b>O</b></div>
-            <div><small>ORIGO</small><h3>SMOKED SAFFRON</h3><p>2,450 ج.م · 75 ML</p></div>
-          </div>
-          <div class="match-reason">
-            <b data-i18n="whyMatch">لماذا هذا الترشيح؟</b>
-            <p data-i18n="matchReason">يشترك معه في الجلد، الهيل، العنبر، والقاعدة الخشبية الداكنة مع ثبات متقارب.</p>
-          </div>
-          <button class="button gold-button full" data-action="quick-add" data-product="smoked"><span data-i18n="addToBag">أضف للسلة</span><span>＋</span></button>
-        </div>
-      </section>
-
-      <section class="section journal-section">
-        <div class="section-heading reveal">
-          <div><span class="eyebrow" data-i18n="origoJournal">دفتر ORIGO</span><h2 data-i18n="knowScent">اعرف رائحتك أكثر.</h2></div>
-          <a class="text-link" href="#notes"><span data-i18n="allArticles">كل المقالات</span> <span>←</span></a>
-        </div>
-        <div class="journal-grid reveal">
-          <article class="journal-card large">
-            <div class="journal-art art-layering"><span>O</span></div>
-            <div><small data-i18n="guide">دليل</small><h3 data-i18n="layeringTitle">فن تنسيق طبقات العطر دون أن تفقد هويتك</h3><a href="#profile" data-i18n="readMore">اقرأ أكثر</a></div>
-          </article>
-          <article class="journal-card">
-            <div class="journal-art art-oud"><span>✦</span></div>
-            <div><small data-i18n="ingredients">مكوّنات</small><h3 data-i18n="oudTitle">كيف تميّز العود الصافي من الدخاني؟</h3><a href="#notes" data-i18n="readMore">اقرأ أكثر</a></div>
-          </article>
-          <article class="journal-card">
-            <div class="journal-art art-season"><span>☼</span></div>
-            <div><small data-i18n="selection">اختيار</small><h3 data-i18n="seasonTitle">عطور للصيف… بلا حضور صارخ</h3><a href="#discover" data-i18n="readMore">اقرأ أكثر</a></div>
-          </article>
-        </div>
-      </section>
-
-      <section class="newsletter">
-        <div>
-          <span class="eyebrow light" data-i18n="privateCircle">دائرة ORIGO الخاصة</span>
-          <h2 data-i18n="newsletterTitle">رسائل قليلة.<br />اختيارات <em>تستحق.</em></h2>
-        </div>
-        <form id="legacy-newsletter-form">
-          <label for="email" data-i18n="newsletterLabel">كن أول من يعرف عن الإصدارات والعينات الجديدة.</label>
-          <div><input id="email" type="email" required placeholder="بريدك الإلكتروني" data-i18n-placeholder="emailPlaceholder" /><button type="submit"><span data-i18n="join">انضم</span> <span>←</span></button></div>
-          <small data-i18n="privacy">لا رسائل مزعجة. يمكنك المغادرة في أي وقت.</small>
-        </form>
-      </section>
-
-      <section class="catalog-page" id="catalog-page" hidden aria-labelledby="catalog-title">
-        <div class="catalog-shell">
-          <aside class="catalog-sidebar" aria-label="فلاتر المنتجات">
-            <nav class="catalog-breadcrumb" id="catalog-breadcrumb" aria-label="مسار الصفحة"></nav>
-            <div class="catalog-filter-heading"><h2>الفلاتر</h2><span aria-hidden="true">☷</span></div>
-            <div class="catalog-filter-content" id="catalog-sidebar-filters"></div>
-          </aside>
-          <div class="catalog-main">
-            <div class="catalog-search-area">
-              <div class="catalog-search-box">
-                <label class="sr-only" for="catalog-search-input">بحث المنتجات</label>
-                <input id="catalog-search-input" type="search" autocomplete="off" placeholder="ابحث عن عطر، ماركة، نوتة أو مكون..." />
-                <button data-action="catalog-submit-search" aria-label="بحث"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg></button>
-                <div class="catalog-autocomplete" id="catalog-autocomplete" role="listbox" hidden></div>
-              </div>
-              <button class="catalog-description-button" data-action="catalog-description-search"><span>ابحث بوصفك</span><i aria-hidden="true">✦</i></button>
-            </div>
-            <header class="catalog-title-area">
-              <div><h1 id="catalog-title">العطور</h1><p id="catalog-result-count"></p></div>
-              <span class="catalog-title-art" aria-hidden="true">ORIGO</span>
-            </header>
-            <div class="catalog-quick-filters" id="catalog-quick-filters" role="tablist" aria-label="فلاتر سريعة"></div>
-            <div class="catalog-mobile-toolbar">
-              <button data-action="open-catalog-filters"><span>☷</span><b id="catalog-mobile-filter-count">الفلاتر</b></button>
-              <label><span class="sr-only">الترتيب</span><select id="catalog-mobile-sort" data-catalog-sort></select></label>
-            </div>
-            <div class="catalog-results-toolbar">
-              <div class="catalog-active-filters" id="catalog-active-filters"></div>
-              <div class="catalog-sort-controls">
-                <button class="catalog-view-button active" aria-label="عرض شبكي" aria-pressed="true">▦</button>
-                <label><span>الترتيب حسب</span><select id="catalog-sort" data-catalog-sort></select></label>
-              </div>
-            </div>
-            <div class="catalog-product-grid" id="catalog-product-grid" aria-live="polite"></div>
-            <nav class="catalog-pagination" id="catalog-pagination" aria-label="صفحات النتائج"></nav>
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <div class="catalog-filter-backdrop" data-action="close-catalog-filters"></div>
-    <aside class="catalog-filter-drawer" id="catalog-filter-drawer" aria-hidden="true" aria-label="فلاتر المنتجات">
-      <div class="catalog-filter-drawer-head"><div><small>تصفية النتائج</small><h2>الفلاتر</h2></div><button data-action="close-catalog-filters" aria-label="إغلاق">×</button></div>
-      <div class="catalog-filter-content" id="catalog-mobile-filters"></div>
-      <div class="catalog-filter-drawer-footer"><button data-action="catalog-clear-all">مسح الكل</button><button data-action="close-catalog-filters" id="catalog-mobile-show-results">عرض المنتجات</button></div>
-    </aside>
-
-    <div class="overlay catalog-description-overlay" id="catalog-description-overlay" aria-hidden="true">
-      <section class="catalog-description-dialog" role="dialog" aria-modal="true" aria-labelledby="catalog-description-title">
-        <button class="close-button" data-action="close-overlay" aria-label="إغلاق">×</button>
-        <span aria-hidden="true">✦</span><h2 id="catalog-description-title">صف لنا العطر الذي تبحث عنه</h2>
-        <p>اكتب المزاج أو النوتات أو المناسبة وسنجهز البحث من بيانات المتجر.</p>
-        <form id="catalog-description-form"><label for="catalog-description-input">وصف العطر</label><textarea id="catalog-description-input" required placeholder="مثال: أريد عطرًا رجاليًا خشبيًا مناسبًا للمساء"></textarea><button type="submit">ابحث</button></form>
-        <div class="catalog-description-status" id="catalog-description-status" role="status"></div>
-      </section>
     </div>
-
-    <footer class="origo-footer" id="site-footer">
-      <div class="footer-top-grid">
-        <section class="footer-newsletter" aria-labelledby="footer-newsletter-title">
-          <span class="footer-spark" aria-hidden="true">✦</span><h2 id="footer-newsletter-title">اشترك في نشرتنا البريدية</h2><p id="footer-newsletter-copy">كن أول من يعرف عن العروض والمنتجات الجديدة</p>
-          <form id="newsletter-form" novalidate>
-            <label for="footer-email" class="sr-only">البريد الإلكتروني</label>
-            <div class="footer-email-field"><span aria-hidden="true">✉</span><input id="footer-email" name="email" type="email" autocomplete="email" required placeholder="أدخل بريدك الإلكتروني" /></div>
-            <button type="submit"><span>اشترك الآن</span><i aria-hidden="true">←</i></button>
-            <small id="newsletter-status" aria-live="polite"></small>
-          </form>
-        </section>
-
+    <nav class="main-nav" aria-label="التنقل الرئيسي">
+      <div class="container nav-inner">
+        <a class="active" href="#" data-i18n="navHome">الرئيسية</a>
+        <a href="#products" data-i18n="navPerfumes">العطور</a>
+        <a href="#home-scents" data-i18n="navHomeScents">البخور والعطور المنزلية</a>
+        <a href="#care" data-i18n="navCare">العناية الشخصية</a>
+        <a href="#collections" data-i18n="navBrands">الماركات</a>
+        <a href="#gifts" data-i18n="navGifts">الهدايا والمجموعات</a>
+        <a href="#products" data-i18n="navOffers">العروض</a>
+        <button class="smart-link" data-open-quiz><svg class="ui-icon"><use href="#i-sparkles"/></svg><span data-i18n="smartFinder">مكتشف العطر الذكي</span></button>
       </div>
-
-      <div class="footer-directory">
-        <section class="footer-column"><h3>تسوق</h3><a href="/perfumes?quick=men">العطور للرجال <span>♙</span></a><a href="/perfumes?quick=women">العطور للنساء <span>♙</span></a><a href="/perfumes?quick=unisex">العطور للجنسين <span>♙</span></a><a href="/alternatives" data-action="open-alternatives">البدائل <span>⇄</span></a><a href="/search?q=عطور+شرقية">العطور الشرقية <span>♙</span></a><a href="/search?q=عطور+عربية">العطور العربية <span>♙</span></a><a href="/perfumes?quick=sale">العروض <span>‹</span></a><a href="/perfumes?quick=new">الجديد <span>‹</span></a></section>
-        <section class="footer-column"><h3>ماركات</h3><div class="footer-brand-list" id="footer-brand-links"><button data-action="brand-search" data-query="ORIGO">ORIGO</button></div><a class="footer-all-link" href="/perfumes">عرض جميع الماركات <span>▦</span></a></section>
-        <section class="footer-column"><h3>معلومات</h3><a href="/#home-hero">عن أوريجو <span>ⓘ</span></a><a href="/benefits/customer-service">الأسئلة الشائعة <span>?</span></a><a href="/benefits/customer-service">سياسة الشحن والتوصيل <span>▱</span></a><a href="/benefits/easy-returns">سياسة الاسترجاع <span>↶</span></a><a id="footer-privacy-link" href="mailto:support@origoscents.com?subject=سياسة الخصوصية">سياسة الخصوصية <span>♢</span></a><a id="footer-terms-link" href="mailto:support@origoscents.com?subject=الشروط والأحكام">الشروط والأحكام <span>▣</span></a><button data-action="account">تتبع الطلب <span>◇</span></button></section>
-        <section class="footer-contact footer-column"><h3>تواصل معنا</h3><a id="footer-support-email" href="mailto:support@origoscents.com"><span>✉</span><b dir="ltr">support@origoscents.com</b></a><a id="footer-support-whatsapp" class="footer-whatsapp-link" href="#" target="_blank" rel="noopener noreferrer" hidden><span>◉</span><b>واتساب</b></a><p><span>◷</span><b id="footer-support-hours">من السبت إلى الخميس<br />9:00 صباحًا – 11:00 مساءً</b></p><small id="footer-support-note">نجيب الرسائل خلال ساعات العمل الرسمية.</small></section>
-        <section class="footer-app footer-column"><h3>حمل التطبيق</h3><p>تسوق أسهل وأسرع<br />مع تطبيق أوريجو</p><div class="footer-app-links" id="footer-app-links"><small>التطبيق قريبًا</small></div><h3>تابعنا</h3><div class="footer-socials" id="footer-socials" aria-label="شبكات ORIGO الاجتماعية"></div></section>
-      </div>
-
-      <div class="footer-bottom-bar"><p>© <span id="footer-year">2026</span> ORIGO. جميع الحقوق محفوظة.</p></div>
-    </footer>
-
-    <nav class="store-bottom-nav" aria-label="التنقل الرئيسي للهاتف">
-    <a class="active" href="/" data-action="catalog-home"><span>⌂</span><b data-i18n="home">الرئيسية</b></a>
-    <a href="/perfumes"><span>▦</span><b data-i18n="categories">الفئات</b></a>
-    <a class="store-bottom-discover" href="/fragrance-finder/for-whom" data-action="find-matches"><span>✦</span><b data-i18n="scroll">اكتشف</b></a>
-    <button data-action="wishlist"><span>♡</span><b data-i18n="favorites">المفضلة</b></button>
-    <button data-action="account"><span>♙</span><b data-i18n="account">الحساب</b></button>
     </nav>
+  </header>
 
-    <div class="overlay" id="search-overlay" aria-hidden="true">
-      <div class="search-panel">
-        <button class="close-button" data-action="close-overlay" aria-label="إغلاق">×</button>
-        <span class="eyebrow" data-i18n="smartSearch">بحث ORIGO الذكي</span>
-        <h2 data-i18n="searchPrompt">عمّ تبحث اليوم؟</h2>
-        <div class="global-search">
-          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg>
-          <input id="global-search-input" type="search" autocomplete="off" placeholder="اسم العطر، البراند، أو نوتة…" data-i18n-placeholder="searchPlaceholder" />
-          <kbd>ESC</kbd>
+  <main>
+    <section class="hero reference-hero">
+      <div class="container hero-banner">
+        <div class="hero-copy">
+          <div class="eyebrow"><span>✦</span> <span data-i18n="heroEyebrow">عطور أصلية · فخامة تدوم</span></div>
+          <h1 data-i18n="heroTitle">اكتشف عطرك المثالي</h1>
+          <h2 data-i18n="heroSubtitle">تشكيلة حصرية من أرقى الماركات العالمية</h2>
+          <p data-i18n="heroBody">تجربة تسوّق عطرية متكاملة، من الاختيار الذكي حتى التوصيل الآمن إلى بابك.</p>
+          <div class="hero-actions">
+            <a class="btn btn-wine" href="#products"><span data-i18n="shopNow">تسوّق الآن</span> <span>←</span></a>
+            <button class="btn btn-outline-wine" data-open-quiz><span data-i18n="discoverOffers">اكتشف العطر المناسب</span> <span>✦</span></button>
+          </div>
+          <div class="hero-dots" aria-label="شرائح العرض"><i class="active"></i><i></i><i></i></div>
         </div>
-        <div class="search-suggestions" id="search-suggestions"></div>
-        <button class="search-all-results" data-action="view-all-search" hidden><span data-i18n="viewAllResults">عرض كل النتائج</span><i>←</i></button>
-        <div class="popular-searches">
-          <span data-i18n="popularSearches">الأكثر بحثًا</span>
-          <button data-search-value="عود">عود</button><button data-search-value="فانيليا">فانيليا</button><button data-search-value="Nocturne">Nocturne 01</button>
+        <div class="hero-visual" aria-label="عطر شرقي فاخر">
+          <div class="leaf leaf-one">❧</div><div class="leaf leaf-two">❧</div>
+          <div class="hero-product-frame"><img data-media-slot="hero-main" src="assets/products/khamrah-studio-v2.webp" alt="عطر شرقي فاخر من ORIGO" /></div>
+          <div class="hero-seal"><span>100%</span><small data-i18n="original">أصلي</small></div>
         </div>
       </div>
-    </div>
+    </section>
 
-    <aside class="drawer" id="cart-drawer" aria-hidden="true">
-      <div class="drawer-head"><div><span class="eyebrow" data-i18n="yourSelection">اختياراتك</span><h2 data-i18n="bag">السلة</h2></div><button class="close-button" data-action="close-drawer">×</button></div>
-      <div class="cart-items" id="cart-items"></div>
-      <div class="drawer-footer">
-        <div class="cart-total"><span data-i18n="subtotal">المجموع</span><b id="cart-total">0 ج.م</b></div>
-        <button class="button burgundy-button full" data-action="checkout" data-i18n="checkout">إتمام الطلب</button>
-        <small data-i18n="shippingCalculated">الشحن والخصم يُحسبان في الخطوة التالية.</small>
+    <section class="benefits" id="benefits">
+      <div class="container benefits-grid">
+        <article><span class="benefit-icon"><svg><use href="#i-shield"/></svg></span><div><b data-i18n="benefitOriginal">منتجات أصلية 100%</b><small data-i18n="benefitOriginalSub">مضمونة ومعتمدة</small></div></article>
+        <article><span class="benefit-icon"><svg><use href="#i-headset"/></svg></span><div><b data-i18n="benefitService">خدمة عملاء مميزة</b><small data-i18n="benefitServiceSub">24/7 هنا لخدمتك</small></div></article>
+        <article><span class="benefit-icon"><svg><use href="#i-truck"/></svg></span><div><b data-i18n="benefitShipping">توصيل سريع وآمن</b><small data-i18n="benefitShippingSub">لكل محافظات مصر</small></div></article>
+        <article><span class="benefit-icon"><svg><use href="#i-refresh"/></svg></span><div><b data-i18n="benefitReturns">إرجاع واستبدال سهل</b><small data-i18n="benefitReturnsSub">خلال 14 يومًا</small></div></article>
+        <article><span class="benefit-icon"><svg><use href="#i-gift"/></svg></span><div><b data-i18n="benefitSamples">عينات مجانية مع كل طلب</b><small data-i18n="benefitSamplesSub">اكتشف عطرك القادم</small></div></article>
       </div>
-    </aside>
+    </section>
 
-    <aside class="drawer wishlist-drawer" id="wishlist-drawer" aria-hidden="true">
-      <div class="drawer-head"><div><span class="eyebrow" data-i18n="savedScents">عطور محفوظة</span><h2 data-i18n="favorites">المفضلة</h2></div><button class="close-button" data-action="close-drawer" aria-label="إغلاق">×</button></div>
-      <div class="wishlist-items" id="wishlist-items"></div>
-      <div class="drawer-footer wishlist-footer">
-        <a class="button burgundy-button full" href="#featured" data-action="close-wishlist"><span data-i18n="continueShopping">تابع التسوق</span><span>←</span></a>
+    <section class="mobile-quick-cats" id="home-scents" aria-label="فئات سريعة">
+      <a href="#products"><span><svg><use href="#i-gift"/></svg></span><b data-i18n="navOffers">العروض</b></a>
+      <a href="#products"><span><svg><use href="#i-perfume"/></svg></span><b data-i18n="navPerfumes">العطور</b></a>
+      <a href="#care"><span><svg><use href="#i-flower"/></svg></span><b data-i18n="navCare">العناية الشخصية</b></a>
+      <a href="#gifts"><span><svg><use href="#i-gift"/></svg></span><b data-i18n="navGifts">الهدايا والمجموعات</b></a>
+      <a href="#home-scents"><span><svg><use href="#i-spice"/></svg></span><b data-i18n="navHomeScents">البخور والعطور المنزلية</b></a>
+    </section>
+
+    <section class="brand-showcase container" id="collections">
+      <div class="section-head compact"><div><span class="section-kicker" data-i18n="browseByBrand">تسوّق حسب الماركة</span><h2 data-i18n="famousBrands">أشهر الماركات</h2></div><a href="#products" data-i18n="viewAll">عرض الكل ←</a></div>
+      <div class="brand-row">
+        <button class="brand-circle all-brands" data-brand=""><span>⌘</span><b data-i18n="allBrands">جميع الماركات</b></button>
+        <button class="brand-circle" data-brand="PRADA"><b>PRADA</b></button><button class="brand-circle" data-brand="AMOUAGE"><b>AMOUAGE</b></button><button class="brand-circle" data-brand="YSL"><b>YSL</b></button><button class="brand-circle" data-brand="CHANEL"><b>CHANEL</b></button><button class="brand-circle featured" data-brand="LATTAFA"><b>Lattafa</b></button><button class="brand-circle" data-brand="Dior"><b>Dior</b></button><button class="brand-circle" data-brand="TOM FORD"><b>TOM FORD</b></button><button class="brand-circle" data-brand="CREED"><b>CREED</b></button>
       </div>
-    </aside>
+    </section>
 
-    <div class="overlay product-overlay" id="product-overlay" aria-hidden="true">
-      <section class="product-dialog" role="dialog" aria-modal="true" aria-labelledby="product-dialog-title">
-        <button class="close-button" data-action="close-overlay" aria-label="إغلاق">×</button>
-        <div id="product-dialog-content"></div>
-      </section>
-    </div>
+    <section class="shop-by-gender container" id="care">
+      <div class="gender-card men"><img src="assets/products/club-studio-v2.webp" alt=""><div><small>MEN</small><h3 data-i18n="menPerfumes">عطور رجالية</h3><a href="#products" data-i18n="shopCollection">تسوّق المجموعة ←</a></div></div>
+      <div class="gender-card women"><img src="assets/products/fakhar-studio-v2.webp" alt=""><div><small>WOMEN</small><h3 data-i18n="womenPerfumes">عطور نسائية</h3><a href="#products" data-i18n="shopCollection">تسوّق المجموعة ←</a></div></div>
+      <div class="gender-card unisex"><img src="assets/products/naque-studio-v2.webp" alt=""><div><small>UNISEX</small><h3 data-i18n="unisexPerfumes">عطور للجنسين</h3><a href="#products" data-i18n="shopCollection">تسوّق المجموعة ←</a></div></div>
+    </section>
 
-    <div class="overlay account-overlay" id="account-overlay" aria-hidden="true">
-      <section class="account-panel" role="dialog" aria-modal="true" aria-labelledby="account-title">
-        <button class="close-button" data-action="close-overlay" aria-label="إغلاق">×</button>
-        <div id="account-content"></div>
-      </section>
-    </div>
+    <section class="smart-tools container" id="smart-finder">
+      <div class="smart-tools-heading"><span class="section-kicker">أداتان ذكيتان داخل ORIGO</span><h2>اختر طريقتك المثالية لاكتشاف العطور</h2><p>سواء كنت تبحث عن عطرك الأول أو عن بديل أوفر لعطر تحبه.</p></div>
+      <div class="smart-tools-grid">
+        <article class="smart-tool-card discovery">
+          <span class="smart-tool-icon"><svg><use href="#i-sparkles"/></svg></span>
+          <h3>مكتشف العطر الذكي</h3><p>أجب عن أسئلة بسيطة وسنرشّح لك العطور الأقرب إلى ذوقك وشخصيتك وميزانيتك.</p>
+          <div class="smart-tool-products"><img src="assets/products/fakhar-studio-v2.webp" alt=""><img src="assets/products/khamrah-studio-v2.webp" alt=""><img src="assets/products/naque-studio-v2.webp" alt=""></div>
+          <button class="btn btn-wine" data-open-quiz>ابدأ الاكتشاف <span>←</span></button>
+        </article>
+        <article class="smart-tool-card alternative">
+          <span class="smart-tool-icon"><svg><use href="#i-search"/></svg></span>
+          <h3>مكتشف البديل الذكي</h3><p>اكتب اسم عطرك المفضل وسنقارن الرائحة والأداء والسعر لنجد أفضل البدائل المتاحة.</p>
+          <div class="alternative-pair"><img src="assets/alternatives/silver-crest-v1.webp" alt="عطر مرجعي"><b>97%<small>تشابه</small></b><img src="assets/alternatives/origo-majestic-oud-v1.webp" alt="بديل ORIGO"></div>
+          <button class="btn btn-wine" data-open-alternative>ابحث عن بديل <span>←</span></button>
+        </article>
+      </div>
+      <div class="smart-tools-trust"><span><svg><use href="#i-shield"/></svg> خصوصيتك محمية</span><span><svg><use href="#i-sparkles"/></svg> نتائج دقيقة وموثوقة</span><span><svg><use href="#i-tag"/></svg> توفير ذكي</span></div>
+    </section>
 
-    <div class="overlay checkout-overlay" id="checkout-overlay" aria-hidden="true">
-      <section class="checkout-panel" role="dialog" aria-modal="true" aria-labelledby="checkout-title">
-        <button class="close-button" data-action="close-overlay" aria-label="إغلاق">×</button>
-        <div class="checkout-grid">
-          <form class="checkout-form" id="checkout-form">
-            <span class="eyebrow" data-i18n="checkoutEyebrow">إتمام الطلب</span>
-            <h2 id="checkout-title" data-i18n="deliveryDetails">بيانات التوصيل</h2>
-            <p data-i18n="checkoutIntro">راجع بياناتك، وسنتواصل معك لتأكيد الطلب قبل الشحن.</p>
-            <div class="commerce-fields">
-              <label><span data-i18n="fullName">الاسم بالكامل</span><input name="name" autocomplete="name" required minlength="2" maxlength="100" /></label>
-              <label><span data-i18n="phone">رقم الهاتف</span><input name="phone" autocomplete="tel" inputmode="tel" required /></label>
-              <label><span data-i18n="governorate">المحافظة</span><select name="governorate" required>
-                <option value="" data-i18n="chooseGovernorate">اختر المحافظة</option>
-                <option>القاهرة</option><option>الجيزة</option><option>الإسكندرية</option><option>الدقهلية</option>
-                <option>البحر الأحمر</option><option>البحيرة</option><option>الفيوم</option><option>الغربية</option>
-                <option>الإسماعيلية</option><option>المنوفية</option><option>المنيا</option><option>القليوبية</option>
-                <option>الوادي الجديد</option><option>السويس</option><option>أسوان</option><option>أسيوط</option>
-                <option>بني سويف</option><option>بورسعيد</option><option>دمياط</option><option>الشرقية</option>
-                <option>جنوب سيناء</option><option>كفر الشيخ</option><option>مطروح</option><option>الأقصر</option>
-                <option>قنا</option><option>شمال سيناء</option><option>سوهاج</option>
-              </select></label>
-              <label class="wide"><span data-i18n="address">العنوان بالتفصيل</span><textarea name="address" autocomplete="street-address" required minlength="8" maxlength="500"></textarea></label>
-              <label class="wide"><span data-i18n="orderNotes">ملاحظات للطلب (اختياري)</span><textarea name="notes" maxlength="1000"></textarea></label>
-            </div>
-            <div class="payment-choice"><span>✓</span><div><b data-i18n="cashOnDelivery">الدفع عند الاستلام</b><small data-i18n="cashOnDeliveryBody">ادفع نقدًا عند وصول الطلب.</small></div></div>
-            <p class="form-error" id="checkout-error" role="alert"></p>
-            <button class="button burgundy-button full" type="submit" data-i18n="confirmOrder">تأكيد الطلب</button>
-          </form>
-          <aside class="checkout-summary">
-            <span class="eyebrow" data-i18n="orderSummary">ملخص الطلب</span>
-            <div id="checkout-items"></div>
-            <div class="checkout-total"><span data-i18n="total">الإجمالي</span><b id="checkout-total">0 ج.م</b></div>
-          </aside>
+    <section class="products-section" id="products">
+      <div class="container">
+        <div class="section-head">
+          <div><span class="section-kicker">مختارات خبرائنا</span><h2>الأكثر طلبًا هذا الأسبوع</h2></div>
+          <a href="#products">عرض كل العطور <span>←</span></a>
         </div>
-      </section>
+        <div class="product-tabs" role="tablist">
+          <button class="active" role="tab" aria-selected="true" data-filter="all">الكل</button>
+          <button role="tab" aria-selected="false" data-filter="men">رجالي</button>
+          <button role="tab" aria-selected="false" data-filter="unisex">للجنسين</button>
+          <button role="tab" aria-selected="false" data-filter="oriental">شرقي</button>
+          <button role="tab" aria-selected="false" data-filter="offers">عروض</button>
+        </div>
+        <div class="catalog-toolbar">
+          <span id="catalog-count">6 منتجات</span>
+          <div><label for="catalog-sort">ترتيب حسب</label><select id="catalog-sort"><option value="featured">الأكثر تميزًا</option><option value="price-asc">السعر: الأقل أولًا</option><option value="price-desc">السعر: الأعلى أولًا</option><option value="rating">الأعلى تقييمًا</option></select><button data-open-filters><svg><use href="#i-spice"/></svg><span>تصفية</span><em id="active-filter-count">0</em></button></div>
+        </div>
+        <div class="product-grid" id="product-grid"></div>
+      </div>
+    </section>
+
+    <section class="story" id="gifts">
+      <div class="container story-grid">
+        <div class="story-art">
+          <div class="story-number">01</div>
+          <div class="story-product"><img src="assets/products/asad-studio-v2.webp" alt="عطر أسد من لطافة" /></div>
+          <span class="story-line">ORIGO EDIT</span>
+        </div>
+        <div class="story-copy">
+          <span class="section-kicker light">اختيار ORIGO</span>
+          <h2>حضور لا يحتاج<br>إلى تعريف</h2>
+          <p>أسد من لطافة: افتتاحية حارة من الفلفل الأسود والأناناس، وقلب دافئ من القهوة والتبغ. عطر للرجل الذي يترك أثره قبل أن يتكلم.</p>
+          <div class="accords"><span>حار</span><span>خشبي</span><span>عنبر</span><span>فانيليا</span></div>
+          <div class="story-price"><b>1,180 <small>ج.م</small></b><button class="btn btn-gold quick-add" data-id="asad">أضف للسلة</button></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="newsletter">
+      <div class="container newsletter-inner">
+        <div><span>✦</span><h3>كن أول من يكتشف الجديد</h3><p>عروض حصرية، إصدارات جديدة ونصائح عطرية تصل إلى بريدك.</p></div>
+        <form id="newsletter-form"><input type="email" required placeholder="بريدك الإلكتروني" aria-label="البريد الإلكتروني" /><button type="submit">اشترك</button></form>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer-grid">
+      <div class="footer-brand"><a class="brand" href="#"><span class="brand-crown">♛</span><span class="brand-name">ORIGO</span><span class="brand-sub">SCENTS</span></a><p>وجهتك لاكتشاف عطور أصلية تليق بتفرّدك.</p></div>
+      <div><h4>تسوّق</h4><a href="#products">العطور الرجالية</a><a href="#products">العطور النسائية</a><a href="#products">العروض</a></div>
+      <div><h4>نساعدك</h4><button data-open-quiz>اختبار العطر الذكي</button><a href="#">الأسئلة الشائعة</a><a href="#">سياسة الاستبدال</a><a href="admin-login.html">لوحة الإدارة</a></div>
+      <div><h4>تواصل معنا</h4><a href="tel:+201000000000">+20 100 000 0000</a><a href="mailto:hello@origo.eg">hello@origo.eg</a><span>يوميًا 10 ص - 10 م</span></div>
     </div>
+    <div class="container footer-bottom"><span>© 2026 ORIGO. جميع الحقوق محفوظة.</span><span>الدفع الآمن · Visa · Mastercard · Meeza</span></div>
+  </footer>
 
-    <div class="overlay admin-orders-overlay" id="admin-orders-overlay" aria-hidden="true">
-      <section class="orders-panel" role="dialog" aria-modal="true" aria-labelledby="admin-orders-title">
-        <button class="close-button" data-action="close-overlay" aria-label="إغلاق">×</button>
-        <div class="orders-head"><span class="eyebrow" data-i18n="storeOrders">طلبات المتجر</span><h2 id="admin-orders-title" data-i18n="manageOrders">متابعة الطلبات</h2></div>
-        <div class="orders-list" id="admin-orders-list"></div>
-      </section>
+  <nav class="mobile-nav" aria-label="التنقل على الهاتف">
+    <a class="active" href="#"><svg class="ui-icon"><use href="#i-home"/></svg>الرئيسية</a><a href="#products"><svg class="ui-icon"><use href="#i-search"/></svg>اكتشف</a><button data-open-quiz><span class="smart-orb"><svg class="ui-icon"><use href="#i-sparkles"/></svg></span>الذكي</button><button data-favorites><svg class="ui-icon"><use href="#i-heart"/></svg>المفضلة</button><button data-open-cart><svg class="ui-icon"><use href="#i-bag"/></svg>السلة<em class="count cart-count">0</em></button>
+  </nav>
+
+  <aside class="drawer cart-drawer" aria-hidden="true" inert>
+    <div class="drawer-head"><div><span>سلة التسوق</span><small id="cart-summary">0 منتجات</small></div><button class="icon-btn" data-close-cart aria-label="إغلاق سلة التسوق">×</button></div>
+    <div class="cart-items" id="cart-items"></div>
+    <div class="empty-cart" id="empty-cart"><span>♧</span><h3>سلتك تنتظر عطرك</h3><p>اختر من مجموعتنا المنتقاة بعناية.</p><button class="btn btn-dark" data-close-cart>ابدأ التسوق</button></div>
+    <div class="cart-footer" id="cart-footer"><div><span>الإجمالي</span><b id="cart-total">0 ج.م</b></div><button class="btn btn-gold" data-checkout>إتمام الطلب بأمان</button></div>
+  </aside>
+  <aside class="drawer favorites-drawer" aria-hidden="true" inert>
+    <div class="drawer-head"><div><span data-i18n-dynamic="wishlistTitle">المفضلة</span><small id="favorites-summary">0 منتجات</small></div><button class="icon-btn" data-close-favorites aria-label="إغلاق المفضلة">×</button></div>
+    <div class="favorites-items" id="favorites-items"></div>
+    <div class="empty-cart" id="empty-favorites"><span>♡</span><h3>قائمتك المفضلة فارغة</h3><p>احتفظ بالعطور التي لفتت انتباهك لتعود إليها بسهولة.</p><button class="btn btn-dark" data-close-favorites>اكتشف العطور</button></div>
+  </aside>
+  <aside class="drawer filter-drawer" aria-hidden="true" inert>
+    <div class="drawer-head"><div><span>تصفية المنتجات</span><small>اعثر على عطرك بسرعة</small></div><button class="icon-btn" data-close-filters aria-label="إغلاق الفلاتر">×</button></div>
+    <form id="catalog-filter-form"></form>
+  </aside>
+  <div class="overlay" data-close-all></div>
+
+  <div class="modal quiz-modal" role="dialog" aria-modal="true" aria-labelledby="quiz-title" aria-hidden="true" inert>
+    <button class="modal-close" data-close-quiz aria-label="إغلاق الاختبار">×</button>
+    <div class="quiz-brand">ORIGO <span>✦</span> SMART</div>
+    <div id="quiz-content"></div>
+  </div>
+
+  <div class="modal product-modal" role="dialog" aria-modal="true" aria-labelledby="product-modal-title" aria-hidden="true" inert>
+    <button class="modal-close" data-close-product aria-label="إغلاق تفاصيل المنتج">×</button>
+    <div id="product-modal-content"></div>
+  </div>
+
+  <div class="modal compare-modal" role="dialog" aria-modal="true" aria-labelledby="compare-title" aria-hidden="true" inert>
+    <button class="modal-close" data-close-compare aria-label="إغلاق المقارنة">×</button>
+    <div id="compare-content"></div>
+  </div>
+
+  <div class="modal account-modal" role="dialog" aria-modal="true" aria-labelledby="account-title" aria-hidden="true" inert>
+    <button class="modal-close" data-close-account aria-label="إغلاق الحساب">×</button>
+    <div id="account-content"></div>
+  </div>
+
+  <div class="compare-tray" aria-live="polite">
+    <div><span class="compare-icon">⇄</span><b id="compare-tray-title">اختر عطرين للمقارنة</b><small id="compare-tray-count">0 / 2</small></div>
+    <div class="compare-miniatures" id="compare-miniatures"></div>
+    <button class="btn btn-gold" data-open-compare disabled>قارن الآن</button>
+    <button class="plain-btn compare-clear" data-clear-compare>مسح</button>
+  </div>
+
+  <section class="checkout-view" aria-hidden="true" inert>
+    <header class="checkout-header">
+      <button class="checkout-back" data-close-checkout aria-label="العودة إلى المتجر">→</button>
+      <a class="brand" href="#" aria-label="ORIGO"><span class="brand-crown">♛</span><span class="brand-name">ORIGO</span><span class="brand-sub">SCENTS</span></a>
+      <span class="secure-label">♢ <b>دفع آمن ومشفّر</b></span>
+    </header>
+    <div class="checkout-progress" id="checkout-progress"></div>
+    <div class="checkout-shell container">
+      <div class="checkout-main" id="checkout-main"></div>
+      <aside class="checkout-summary" id="checkout-summary"></aside>
     </div>
+  </section>
 
-    <div class="overlay advanced-admin-overlay" id="admin-overlay" aria-hidden="true">
-      <section class="advanced-admin-panel" role="dialog" aria-modal="true" aria-labelledby="advanced-admin-title">
-        <aside class="advanced-admin-sidebar">
-          <div class="admin-sidebar-brand">
-            <img data-store-logo data-logo-variant="dark" src="assets/origo-logo-dark.svg" alt="ORIGO" />
-            <small>ADMIN SUITE</small>
-          </div>
-          <nav id="advanced-admin-nav" aria-label="أقسام لوحة التحكم"></nav>
-          <div class="admin-sidebar-user">
-            <span>OA</span>
-            <div><b id="admin-sidebar-user-name">ORIGO Admin</b><small>OWNER</small></div>
-            <button data-action="logout" aria-label="تسجيل الخروج">↗</button>
-          </div>
-        </aside>
+  <section class="alternative-view" aria-hidden="true" inert>
+    <div id="alternative-content"></div>
+  </section>
 
-        <div class="advanced-admin-main">
-          <header class="advanced-admin-topbar">
-            <button class="admin-sidebar-toggle" data-action="toggle-admin-sidebar" aria-label="فتح القائمة">☰</button>
-            <label class="admin-global-search">
-              <span>⌕</span>
-              <input id="admin-global-search" type="search" placeholder="ابحث في الطلبات، المنتجات، العملاء…" />
-              <kbd>⌘ K</kbd>
-            </label>
-            <div class="admin-topbar-actions">
-              <button data-action="admin-language" aria-label="تبديل اللغة">AR / EN</button>
-              <button data-action="theme" aria-label="الوضع الداكن">◐</button>
-              <button class="admin-notifications" data-action="admin-notifications" aria-label="الإشعارات">♢<i>4</i></button>
-              <button class="admin-profile-button" data-action="admin-profile"><span>OA</span><b id="admin-profile-name">ORIGO Admin</b><i>⌄</i></button>
-              <button class="close-button" data-action="close-overlay" aria-label="إغلاق">×</button>
-            </div>
-          </header>
-          <div class="advanced-admin-body">
-            <div class="admin-view-head">
-              <div>
-                <nav class="admin-breadcrumb"><span>ORIGO</span><i>/</i><b id="admin-breadcrumb-current">لوحة التحكم</b></nav>
-                <h1 id="advanced-admin-title">لوحة التحكم</h1>
-                <p id="admin-view-description">ملخص أداء المتجر والعمليات التي تحتاج انتباهك الآن.</p>
-              </div>
-              <div class="admin-view-actions" id="admin-view-actions"></div>
-            </div>
-            <main class="admin-dashboard-content" id="admin-dashboard-content"></main>
-          </div>
-        </div>
-      </section>
-    </div>
-
-    <div class="overlay admin-overlay product-admin-overlay" id="product-admin-overlay" aria-hidden="true">
-      <section class="admin-panel">
-        <div class="admin-head">
-          <div>
-            <span class="eyebrow" data-i18n="catalogStudio">استوديو الكتالوج</span>
-            <h2 data-i18n="smartImport">إضافة المنتج الذكية</h2>
-            <p data-i18n="smartImportBody">نجمع البيانات من مصادر عامة مسموحة، ثم تبقى بانتظار مراجعتك قبل الحفظ.</p>
-          </div>
-          <div class="admin-head-actions">
-            <button class="secondary-button compact-button" data-action="admin-notes">Fragrance Knowledge Base</button>
-            <button class="secondary-button compact-button" data-action="back-to-dashboard">لوحة التحكم</button>
-            <button class="secondary-button compact-button" data-action="admin-orders" data-i18n="orders">الطلبات</button>
-            <button class="close-button" data-action="close-overlay" aria-label="إغلاق">×</button>
-          </div>
-        </div>
-
-        <div class="admin-stats">
-          <article><span>◇</span><div><b id="catalog-total-count">0</b><small data-i18n="catalogProducts">منتج محفوظ</small></div></article>
-          <article><span>◷</span><div><b id="catalog-draft-count">0</b><small data-i18n="catalogDrafts">مسودة</small></div></article>
-          <article><span>✓</span><div><b id="catalog-published-count">0</b><small data-i18n="catalogPublished">منشور</small></div></article>
-        </div>
-
-        <div class="admin-dashboard">
-          <div class="admin-flow">
-            <div class="import-steps">
-              <span class="active"><b>1</b><i data-i18n="webSearch">البحث والاقتراحات</i></span>
-              <span><b>2</b><i data-i18n="reviewData">مراجعة وتعديل</i></span>
-              <span><b>3</b><i data-i18n="saveProduct">حفظ المنتج</i></span>
-            </div>
-            <form class="web-import-search" id="web-import-form">
-              <div class="admin-search-field">
-                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg>
-                <input id="web-product-query" required type="search" autocomplete="off" placeholder="مثال: Dior Sauvage Eau de Parfum" data-i18n-placeholder="webSearchPlaceholder" />
-                <span class="admin-search-spinner" aria-hidden="true"></span>
-                <div class="admin-suggestions" id="admin-suggestions"></div>
-              </div>
-              <button class="button burgundy-button" type="submit"><span data-i18n="searchWeb">بحث شامل</span><span>⌕</span></button>
-            </form>
-            <section class="quick-image-import" aria-labelledby="quick-image-import-title">
-              <div class="quick-image-import-copy">
-                <span aria-hidden="true">▧</span>
-                <div>
-                  <h3 id="quick-image-import-title">الاستخراج والاستيراد السريع</h3>
-                  <p>ارفع صور المنتج أو لقطات المعلومات، وسننشئ مسودة قابلة للمراجعة دون نشر تلقائي.</p>
-                </div>
-              </div>
-              <label class="quick-image-drop">
-                <input id="quick-import-images" type="file" accept="image/jpeg,image/png,image/webp" multiple />
-                <span>＋</span>
-                <b>اختر الصور من الملفات</b>
-                <small>حتى 6 صور · JPG أو PNG أو WEBP</small>
-              </label>
-              <div class="quick-image-preview" id="quick-image-preview" hidden></div>
-              <div class="quick-image-actions">
-                <input id="quick-import-hint" type="text" maxlength="220" placeholder="اختياري: اسم العطر أو العلامة أو الباركود" />
-                <button class="button burgundy-button" type="button" data-action="extract-product-images" disabled>
-                  <span>استخراج وإنشاء مسودة</span><i>✦</i>
-                </button>
-                <button class="button secondary-button" type="button" data-action="clear-product-images" hidden>مسح الصور</button>
-              </div>
-              <p class="quick-image-status" id="quick-image-status" aria-live="polite"></p>
-            </section>
-            <div class="source-note">
-              <span>✓</span>
-              <p data-i18n="sourceNote">مصادر مهيكلة ومسموحة، وقاعدة مكونات محلية، وبحث OpenAI اختياري بمصادر إنترنت قابلة للمراجعة. يظهر Fragrantica كمرجع يدوي فقط ما لم يتوفر API مصرح به. لن يُحفظ شيء دون مراجعتك.</p>
-              <span class="ai-source-badge checking" id="ai-source-status">OpenAI · فحص الاتصال…</span>
-            </div>
-            <div class="import-workspace" id="import-workspace">
-              <div class="import-empty">
-                <span>⌕</span>
-                <h3 data-i18n="startProductSearch">ابدأ باسم المنتج أو الباركود</h3>
-                <p data-i18n="startProductSearchBody">ستظهر اقتراحات مباشرة، ثم نجمع البيانات ونوضح مصدر كل معلومة ونسبة الثقة.</p>
-              </div>
-            </div>
-          </div>
-          <aside class="catalog-sidebar">
-            <div class="catalog-sidebar-head">
-              <div><span class="eyebrow" data-i18n="productPanel">لوحة المنتجات</span><h3 data-i18n="recentProducts">أحدث المنتجات</h3></div>
-              <button data-action="new-product" aria-label="منتج جديد">＋</button>
-            </div>
-            <div class="catalog-list" id="catalog-list"></div>
-          </aside>
-        </div>
-      </section>
-    </div>
-
-    <div class="overlay notes-admin-overlay" id="notes-admin-overlay" aria-hidden="true">
-      <section class="notes-admin-panel" role="dialog" aria-modal="true" aria-labelledby="notes-admin-title">
-        <div class="admin-head">
-          <div>
-            <span class="eyebrow">FRAGRANCE NOTES LIBRARY</span>
-            <h2 id="notes-admin-title">إدارة مكتبة المكونات</h2>
-            <p>الأسماء والترجمات والمرادفات والصور والعائلات من مكان واحد.</p>
-          </div>
-          <div class="admin-head-actions">
-            <button class="secondary-button compact-button" data-action="back-to-products">لوحة المنتجات</button>
-            <button class="close-button" data-action="close-overlay" aria-label="إغلاق">×</button>
-          </div>
-        </div>
-
-        <div class="notes-admin-stats" id="notes-admin-stats"></div>
-        <div class="notes-admin-grid">
-          <aside class="notes-admin-browser">
-            <label class="notes-admin-search">
-              <span>⌕</span>
-              <input id="notes-admin-search" type="search" placeholder="ابحث بالاسم أو المرادف…" />
-            </label>
-            <div class="notes-admin-list" id="notes-admin-list"></div>
-          </aside>
-
-          <div class="notes-admin-editor">
-            <div class="notes-admin-tabs">
-              <button class="active" data-action="notes-admin-tab" data-tab="note">مكوّن</button>
-              <button data-action="notes-admin-tab" data-tab="family">عائلة رئيسية</button>
-              <button data-action="notes-admin-tab" data-tab="unclassified">غير مصنفة</button>
-            </div>
-
-            <form id="note-admin-form" class="notes-editor-form">
-              <input type="hidden" name="originalSlug" />
-              <div class="notes-editor-heading">
-                <div><small>NOTE EDITOR</small><h3>إضافة أو تعديل مكوّن</h3></div>
-                <button type="button" class="secondary-button compact-button" data-action="new-note">مكوّن جديد</button>
-              </div>
-              <div class="review-grid">
-                <label>الاسم العربي<input name="nameAr" dir="rtl" required /></label>
-                <label>English name<input name="nameEn" dir="ltr" required /></label>
-                <label>الرابط الصديق<input name="slug" dir="ltr" pattern="[a-z0-9-]+" placeholder="rose" /></label>
-                <label>العائلة<select name="familyId" id="note-family-select"></select></label>
-                <label>مكان الظهور<select name="position">
-                  <option value="top">افتتاحية</option>
-                  <option value="heart">قلب</option>
-                  <option value="base">قاعدة</option>
-                  <option value="multiple">متعدد</option>
-                </select></label>
-                <label>المرادفات<input name="aliases" placeholder="Oud, Oudh, Agarwood, عود" /></label>
-                <label>القوة الافتراضية (1–5)<input name="defaultIntensity" type="number" min="1" max="5" value="3" /></label>
-                <label>المكوّن الأب<input name="parentId" dir="ltr" placeholder="musk" /></label>
-                <label>مكونات قريبة<input name="related" dir="ltr" placeholder="white-musk, amber" /></label>
-                <label>مكونات متوافقة<input name="compatible" dir="ltr" placeholder="vanilla, rose" /></label>
-                <label>مكونات متعارضة<input name="opposite" dir="ltr" placeholder="marine-note" /></label>
-              </div>
-              <div class="review-grid description-grid">
-                <label>وصف الرائحة بالعربية<textarea name="descriptionAr" dir="rtl"></textarea></label>
-                <label>Scent description<textarea name="descriptionEn" dir="ltr"></textarea></label>
-              </div>
-              <div class="note-image-editor">
-                <img id="note-admin-image-preview" alt="" />
-                <div>
-                  <label>رابط الصورة<input name="image" dir="ltr" placeholder="https://…" /></label>
-                  <label class="gallery-upload compact-upload">
-                    <input id="note-image-upload" type="file" accept="image/jpeg,image/png,image/webp,image/avif,image/svg+xml" />
-                    <span>＋</span><div><b>رفع أو تغيير الصورة</b><small>PNG / JPG / WebP حتى 10 MB — يتم ضغطها تلقائيًا</small></div>
-                  </label>
-                  <p class="note-image-status" id="note-image-status" role="status">اختر صورة واضحة بخلفية شفافة أو بيضاء.</p>
-                </div>
-              </div>
-              <div class="note-merge-row">
-                <label>دمج هذا المكوّن داخل<select name="mergeInto" id="note-merge-select"><option value="">— بدون دمج —</option></select></label>
-                <small>المرادفات القديمة ستشير تلقائيًا إلى المكوّن الهدف.</small>
-              </div>
-              <button class="button burgundy-button" type="submit">حفظ المكوّن <span>←</span></button>
-            </form>
-
-            <form id="family-admin-form" class="notes-editor-form" hidden>
-              <div class="notes-editor-heading">
-                <div><small>FAMILY EDITOR</small><h3>إضافة عائلة رئيسية</h3></div>
-              </div>
-              <div class="review-grid">
-                <label>اسم العائلة بالعربية<input name="nameAr" required dir="rtl" /></label>
-                <label>Family name<input name="nameEn" required dir="ltr" /></label>
-                <label>المعرّف<input name="id" dir="ltr" pattern="[a-z0-9-]+" /></label>
-                <label>اللون<input name="color" type="color" value="#6d0d24" /></label>
-                <label>الموضع الافتراضي<select name="position">
-                  <option value="top">افتتاحية</option><option value="heart">قلب</option>
-                  <option value="base">قاعدة</option><option value="multiple">متعدد</option>
-                </select></label>
-                <label>الرمز<input name="symbol" maxlength="3" value="✦" /></label>
-              </div>
-              <button class="button burgundy-button" type="submit">حفظ العائلة <span>←</span></button>
-            </form>
-
-            <section id="unclassified-admin-panel" class="notes-editor-form" hidden>
-              <div class="notes-editor-heading">
-                <div><small>REVIEW QUEUE</small><h3>مكونات غير مصنفة</h3></div>
-              </div>
-              <div id="unclassified-notes-list" class="unclassified-notes-list"></div>
-            </section>
-          </div>
-        </div>
-      </section>
-    </div>
-
-    <button class="back-to-top" id="back-to-top" type="button" aria-label="العودة إلى أعلى الصفحة" title="العودة إلى أعلى الصفحة"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5.5 11.5 12 5l6.5 6.5M12 5v14"/></svg></button>
-    <div class="toast-region" id="toast-region" aria-live="polite"></div>
-
-    <script src="fragrance-knowledge.js?v=1"></script>
-    <script src="fragrance-note-reference-data.js?v=1"></script>
-    <script src="fragrance-note-auto-artwork.js?v=1"></script>
-    <script src="fragrance-notes-library.js?v=7"></script>
-    <script src="catalog-providers.js?v=6"></script>
-    <script src="external-tracking.js?v=1"></script>
-    <script src="app.js?v=55"></script>
-  <script src="alternatives.js?v=1"></script>
-  <script src="performance-insights.js?v=2"></script>
-  <script src="commerce.js?v=2"></script>
-    <script src="account.js?v=2"></script>
-    <script type="module" src="fragrance-finder.js?v=1"></script>
-  </body>
+  <div class="toast" role="status" aria-live="polite"></div>
+  <script src="app.js"></script>
+  <script src="media-overrides.js"></script>
+</body>
 </html>

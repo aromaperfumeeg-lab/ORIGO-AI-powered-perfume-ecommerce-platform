@@ -1,12 +1,5 @@
-node_modules/
-data/
-.env
-.env.*
-!.env.example
+.edge-*/
 *.log
-*.sqlite
-*.sqlite-*
-*.tmp
-*.pid
-.DS_Store
-Thumbs.db
+.server.*
+.qa-server.*
+tmp/pdfs/reference/

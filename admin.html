@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ar" dir="rtl" data-theme="light">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ORIGO Admin | لوحة الإدارة</title>
+  <script>try{const l=localStorage.getItem('origo-admin-lang')||'ar',t=localStorage.getItem('origo-admin-theme')||'light';document.documentElement.lang=l;document.documentElement.dir=l==='ar'?'rtl':'ltr';document.documentElement.dataset.theme=t}catch(e){}</script>
+  <link rel="stylesheet" href="admin.css">
+  <link rel="stylesheet" href="admin-icons.css">
+<link rel="stylesheet" href="admin-ai.css">
+<link rel="stylesheet" href="admin-media.css">
+</head>
+<body>
+  <aside class="admin-sidebar">
+    <a class="admin-brand" href="index.html"><span>♛</span><b>ORIGO</b><small>ADMIN CONSOLE</small></a>
+    <nav>
+      <button class="active" data-section="overview"><svg><use href="assets/icons/admin-sprite.svg#dashboard"/></svg><span data-ar="نظرة عامة" data-en="Overview">نظرة عامة</span></button>
+      <button data-section="orders"><svg><use href="assets/icons/admin-sprite.svg#orders"/></svg><span data-ar="الطلبات" data-en="Orders">الطلبات</span><em>12</em></button>
+      <button data-section="products"><svg><use href="assets/icons/admin-sprite.svg#products"/></svg><span data-ar="المنتجات والمخزون" data-en="Products & inventory">المنتجات والمخزون</span></button>
+      <button data-section="customers"><svg><use href="assets/icons/admin-sprite.svg#customers"/></svg><span data-ar="العملاء" data-en="Customers">العملاء</span></button>
+      <button data-section="marketing"><svg><use href="assets/icons/admin-sprite.svg#marketing"/></svg><span data-ar="التسويق والعروض" data-en="Marketing & offers">التسويق والعروض</span></button>
+      <button data-section="analytics"><svg><use href="assets/icons/admin-sprite.svg#analytics"/></svg><span data-ar="التحليلات" data-en="Analytics">التحليلات</span></button>
+<button data-section="ai-tools"><svg><use href="assets/icons/admin-sprite.svg#sparkles"/></svg><span data-ar="الأنظمة الذكية" data-en="Smart systems">الأنظمة الذكية</span></button>
+<button data-section="filters"><svg><use href="assets/icons/admin-sprite.svg#filter"/></svg><span data-ar="فلاتر الأقسام" data-en="Section filters">فلاتر الأقسام</span></button>
+<button data-section="media"><svg><use href="assets/icons/admin-sprite.svg#products"/></svg><span data-ar="مكتبة الوسائط" data-en="Media library">مكتبة الوسائط</span></button>
+      <span class="nav-label" data-ar="النظام" data-en="System">النظام</span>
+      <button data-section="settings"><svg><use href="assets/icons/admin-sprite.svg#settings"/></svg><span data-ar="الإعدادات" data-en="Settings">الإعدادات</span></button>
+    </nav>
+    <div class="sidebar-help"><span><svg><use href="assets/icons/admin-sprite.svg#sparkles"/></svg></span><b data-ar="مركز مساعدة ORIGO" data-en="ORIGO Help Center">مركز مساعدة ORIGO</b><small data-ar="نحن هنا لمساعدتك 24/7" data-en="We are here 24/7">نحن هنا لمساعدتك 24/7</small><button data-ar="تواصل معنا" data-en="Contact us">تواصل معنا</button></div>
+  </aside>
+  <div class="admin-shell">
+    <header class="admin-topbar">
+      <button class="mobile-menu" data-menu aria-label="القائمة"><svg><use href="assets/icons/admin-sprite.svg#menu"/></svg></button>
+      <form class="admin-search"><svg><use href="assets/icons/admin-sprite.svg#search"/></svg><input data-ar-placeholder="ابحث عن طلب، منتج أو عميل..." data-en-placeholder="Search orders, products or customers..." placeholder="ابحث عن طلب، منتج أو عميل..."><kbd>⌘ K</kbd></form>
+      <div class="top-actions"><button data-admin-lang>EN</button><button data-admin-theme aria-label="الوضع الليلي"><svg><use href="assets/icons/admin-sprite.svg#moon"/></svg></button><button class="notification" data-notifications aria-label="الإشعارات"><svg><use href="assets/icons/admin-sprite.svg#bell"/></svg><i></i></button><div class="admin-user"><span>OA</span><div><b data-ar="عمر أحمد" data-en="Omar Ahmed">عمر أحمد</b><small data-ar="مدير المتجر" data-en="Store admin">مدير المتجر</small></div></div></div>
+    </header>
+    <main id="admin-content"></main>
+  </div>
+  <div class="admin-overlay" data-close-admin-layer></div>
+  <aside class="admin-detail-drawer" aria-hidden="true" inert><button class="layer-close" data-close-order aria-label="إغلاق تفاصيل الطلب">×</button><div id="order-detail-content"></div></aside>
+  <section class="admin-modal" aria-hidden="true" inert><button class="layer-close" data-close-product-editor aria-label="إغلاق تعديل المنتج">×</button><div id="product-editor-content"></div></section>
+  <aside class="notifications-panel" aria-hidden="true" inert><header><h2 data-ar="الإشعارات" data-en="Notifications">الإشعارات</h2><button class="layer-close" data-close-notifications>×</button></header><div id="notifications-content"></div></aside>
+  <div class="admin-toast" role="status"></div>
+  <script src="admin.js"></script>
+  <script src="admin-extensions.js"></script>
+</body>
+</html>
