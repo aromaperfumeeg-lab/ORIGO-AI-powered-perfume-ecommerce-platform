@@ -1099,6 +1099,7 @@ const state = {
   activeImportDraft: null,
   adminSuggestions: [],
   adminSearchController: null,
+  quickImportImages: [],
   user: null,
   orders: [],
   adminOrders: [],
@@ -2809,9 +2810,8 @@ function renderHomepageCommerce() {
   const newest = $("#new-product-grid");
   if (newest) {
     const products = state.products.map((product, index) => ({ product, score: productDateScore(product, index) })).sort((a, b) => b.score - a.score).slice(0, 12).map(({ product }) => product);
-    newest.innerHTML = products.map((product, index) => productCardMarkup(product, { context: "grid", interactiveShowcase: true, delay: Math.min(index * 45, 180) })).join("");
+    newest.innerHTML = products.map((product, index) => productCardMarkup(product, { context: "grid", delay: Math.min(index * 45, 180) })).join("");
     bindHorizontalRail(newest);
-    window.ORIGOInteractiveCarousel?.enhanceRail(newest);
   }
   const showcase = $("#home-brand-showcases");
   if (showcase) {
@@ -2822,11 +2822,10 @@ function renderHomepageCommerce() {
       const products = homeBrandProducts(brand);
       if (!products.length) return "";
       const banner = configured.find((item) => item.placement === "brand-banner" && ORIGOCatalog.normalize(item.brand || "") === ORIGOCatalog.normalize(brand));
-      return `<section class="home-brand-showcase"><div class="home-section-head"><button data-action="brand-search" data-query="${escapeHTML(brand)}">${state.lang === "ar" ? "عرض كل المنتجات" : "View all products"} ‹</button><div><small>${state.lang === "ar" ? "مختارات العلامة" : "Brand selection"}</small><h2>${escapeHTML(brand)}</h2></div></div>${banner ? `<button class="home-brand-banner" data-action="brand-search" data-query="${escapeHTML(brand)}"><img src="${escapeHTML(banner.url)}" alt="${escapeHTML(state.lang === "ar" ? banner.altAr : banner.altEn)}" loading="lazy"/></button>` : ""}<div class="product-grid horizontal-scroll horizontal-rail" data-horizontal-rail>${products.slice(0, 12).map((product) => productCardMarkup(product, { context: "grid", interactiveShowcase: true })).join("")}</div></section>`;
+      return `<section class="home-brand-showcase"><div class="home-section-head"><button data-action="brand-search" data-query="${escapeHTML(brand)}">${state.lang === "ar" ? "عرض كل المنتجات" : "View all products"} ‹</button><div><small>${state.lang === "ar" ? "مختارات العلامة" : "Brand selection"}</small><h2>${escapeHTML(brand)}</h2></div></div>${banner ? `<button class="home-brand-banner" data-action="brand-search" data-query="${escapeHTML(brand)}"><img src="${escapeHTML(banner.url)}" alt="${escapeHTML(state.lang === "ar" ? banner.altAr : banner.altEn)}" loading="lazy"/></button>` : ""}<div class="product-grid horizontal-scroll horizontal-rail" data-horizontal-rail>${products.slice(0, 12).map((product) => productCardMarkup(product, { context: "grid" })).join("")}</div></section>`;
     }).join("");
     $$('[data-horizontal-rail]', showcase).forEach((rail) => {
       bindHorizontalRail(rail);
-      window.ORIGOInteractiveCarousel?.enhanceRail(rail);
     });
   }
   observeReveals();
@@ -3200,11 +3199,9 @@ function renderProducts(filter = "all") {
   }
   grid.innerHTML = visibleProducts.map((product, index) => productCardMarkup(product, {
     context: "grid",
-    interactiveShowcase: true,
     reveal: true,
     delay: Math.min(index * 70, 280)
   })).join("");
-  window.ORIGOInteractiveCarousel?.enhanceRail(grid);
   observeReveals();
 }
 
@@ -4613,7 +4610,6 @@ function productCardMarkup(product, options = {}) {
   if (product.hoverImage && !media.some((item) => item.url === product.hoverImage)) media.push({ url: product.hoverImage, type: "image" });
   const imageIndex = Math.min(Math.max(0, Number(state.cardImageIndexes[product.id] || 0)), Math.max(0, media.length - 1));
   const mainImage = media[imageIndex]?.url || product.image || "assets/origo-hero.png";
-  const embeddedImageClass = /^data:image\//i.test(mainImage) ? " product-card-primary--embedded" : "";
   const richVariants = [...(Array.isArray(product.variantOptions) ? product.variantOptions : []), ...(Array.isArray(product.variants) ? product.variants.filter((item) => item && typeof item === "object") : [])];
   const selectedVariantId = state.selectedCardVariants[product.id];
   const variant = richVariants.find((item) => String(item.id || item.size) === String(selectedVariantId)) || richVariants[0] || null;
@@ -4632,54 +4628,28 @@ function productCardMarkup(product, options = {}) {
     discount ? [80, `-${discount}%`, "sale"] : null
   ].filter(Boolean).sort((a, b) => b[0] - a[0]);
   const badges = badgeCandidates.filter((item, index, list) => list.findIndex((other) => other[1] === item[1]) === index).slice(0, 2);
-  const notes = productCardAuraNotes(product, isArabic);
-  const performanceMetrics = productCardPerformance(product, isArabic, Boolean(options.interactiveShowcase));
   const saved = state.wishlist.includes(product.id);
-  const compared = state.comparison.includes(product.id);
-  const sizeLabel = variant?.size || (product.sizes || [])[0] || "";
-  const formattedSize = formatProductSize(sizeLabel);
-  const concentrationLabel = product.concentration || product.fragranceType || "EDP";
-  const rawGender = String(product.gender || product.forGender || product.filters?.gender || "").toLowerCase();
-  const genderLabel = /women|female|نسائ/.test(rawGender)
-    ? (isArabic ? "نسائي" : "Women")
-    : /men|male|رجال|رجالي/.test(rawGender)
-      ? (isArabic ? "رجالي" : "Men")
-      : /unisex|both|للجنسين/.test(rawGender)
-        ? (isArabic ? "للجنسين" : "Unisex")
-        : "";
-  const ratingValue = Number(product.averageRating ?? product.ratingAverage ?? product.rating ?? 0);
-  const ratingCount = Number(product.reviewCount ?? product.reviewsCount ?? product.ratingCount ?? 0);
-  const hasRating = Number.isFinite(ratingValue) && ratingValue > 0;
-  const loyaltyPoints = Number(variant?.loyaltyPoints ?? product.loyaltyPoints);
   const delayStyle = Number.isFinite(options.delay) ? ` style="transition-delay:${options.delay}ms"` : "";
-  const context = escapeHTML(options.context || "grid");
   const disabled = interactive ? "" : " disabled tabindex=\"-1\"";
-  const cardComponents = resolveProductCardComponents();
   const favoriteLabel = saved ? translations[state.lang].removeFavorite : translations[state.lang].favorites;
-  const compareLabel = isArabic ? "مقارنة المنتج" : "Compare product";
-  const dotsMarkup = cardComponents.productDots(media.length, imageIndex, product.id, isArabic);
-  return `<article class="product-card perfume-product-card origo-product-card origo-product-card--${context}${options.reveal ? " reveal" : ""}${outOfStock ? " is-out" : ""}${options.compact ? " is-compact" : ""}${options.interactiveShowcase ? " is-interactive-showcase" : ""}" data-id="${escapeHTML(product.id)}" data-aura-state="idle" data-aura-note-count="${notes.length}" data-aura-metric-count="${performanceMetrics.length}" data-visible-note-count="0" data-visible-metric-count="0"${delayStyle}>
-    ${cardComponents.cardEdgeEffects()}
-    <div class="product-image product-card-media product-card-media-swipe" data-product-id="${escapeHTML(product.id)}" role="link" tabindex="${interactive ? "0" : "-1"}" aria-label="${escapeHTML(isArabic ? `عرض تفاصيل ${name}` : `View ${name}`)}">
-      ${cardComponents.perfumeAura()}
-      ${cardComponents.perfumeSmokeAura()}
-      ${cardComponents.noteBubbles(notes, isArabic)}
-      ${cardComponents.performanceBubbles(performanceMetrics, isArabic)}
-      <img class="product-card-primary${embeddedImageClass}" src="${escapeHTML(mainImage)}" alt="${escapeHTML(`${product.brand} ${name}`)}" width="640" height="700" loading="lazy" decoding="async" />
-      <div class="product-card-badges">${badges.map(([, label, kind]) => `<span class="product-badge badge-${kind}">${escapeHTML(label)}</span>`).join("")}</div>
-      ${cardComponents.topActions({ saved, compared, interactive, disabled, favoriteLabel, compareLabel })}
-      ${media.length > 1 ? `<button class="card-image-arrow previous" data-action="card-image" data-id="${escapeHTML(product.id)}" data-change="-1" aria-label="${isArabic ? "الصورة السابقة" : "Previous image"}">‹</button><button class="card-image-arrow next" data-action="card-image" data-id="${escapeHTML(product.id)}" data-change="1" aria-label="${isArabic ? "الصورة التالية" : "Next image"}">›</button>` : ""}
-      ${dotsMarkup}
+  const noteLabels = ((isArabic ? product.notesAr : product.notesEn) || product.notesAr || product.notesEn || []).filter(Boolean).slice(0, 3);
+  return `<article class="product-card${options.reveal ? " reveal" : ""}${outOfStock ? " is-out" : ""}" data-id="${escapeHTML(product.id)}"${delayStyle}>
+    <div class="product-image">
+      ${badges.length ? `<span class="product-badge">${escapeHTML(badges[0][1])}</span>` : ""}
+      <button class="heart-button card-favorite-button${saved ? " active" : ""}"${interactive ? ` data-action="toggle-wishlist"` : disabled} aria-label="${escapeHTML(favoriteLabel)}" aria-pressed="${saved}">${saved ? "♥" : "♡"}</button>
+      <img src="${escapeHTML(mainImage)}" alt="${escapeHTML(`${product.brand || "ORIGO"} ${name}`)}" width="640" height="700" loading="lazy" decoding="async" />
+      <button class="quick-view"${interactive ? ` data-action="quick-view"` : disabled} aria-label="${escapeHTML(isArabic ? `عرض تفاصيل ${name}` : `View ${name}`)}"><span>${escapeHTML(translations[state.lang].quickView)}</span><span aria-hidden="true">＋</span></button>
     </div>
-    ${options.interactiveShowcase && typeof cardComponents.interactiveDetails === "function" ? cardComponents.interactiveDetails(notes, performanceMetrics, isArabic, interactive, disabled) : ""}
-    <div class="product-info product-card-info">
-      <div class="product-card-summary">
-        <div class="product-card-identity"><div class="product-brand">${escapeHTML(product.brand || "ORIGO")}</div><div class="product-card-title-row"><div><h3>${escapeHTML(name || (isArabic ? "منتج جديد" : "New product"))}</h3>${secondaryName && secondaryName !== name ? `<p class="product-card-secondary-name">${escapeHTML(secondaryName)}</p>` : ""}</div><p class="product-card-type">${genderLabel ? `<span>${escapeHTML(genderLabel)}</span><span aria-hidden="true">·</span>` : ""}<bdi dir="ltr">${escapeHTML(concentrationLabel)}</bdi>${formattedSize ? `<span aria-hidden="true">·</span><bdi dir="ltr">${escapeHTML(formattedSize)}</bdi>` : ""}</p>${hasRating ? `<div class="product-card-rating" aria-label="${escapeHTML(isArabic ? `التقييم ${ratingValue.toFixed(1)} من 5` : `Rated ${ratingValue.toFixed(1)} out of 5`)}"><span aria-hidden="true">★★★★★</span><small><bdi dir="ltr">${ratingValue.toFixed(1)}</bdi>${ratingCount > 0 ? ` (${Math.round(ratingCount)})` : ""}</small></div>` : ""}</div></div>
-        <div class="product-card-price-row"><b class="product-price">${formatPrice(price)}</b>${oldPrice > price ? `<span><del>${formatPrice(oldPrice)}</del><em>-${discount}%</em></span>` : ""}${Number.isFinite(loyaltyPoints) && loyaltyPoints > 0 ? `<small>◉ +${Math.round(loyaltyPoints)} ${isArabic ? "نقطة ORIGO" : "ORIGO points"}</small>` : ""}</div>
-      </div>
+    <div class="product-info">
+      <div class="product-brand">${escapeHTML(product.brand || "ORIGO")}</div>
+      <h3>${escapeHTML(name || (isArabic ? "منتج جديد" : "New product"))}</h3>
+      ${secondaryName && secondaryName !== name ? `<p class="product-card-secondary-name">${escapeHTML(secondaryName)}</p>` : ""}
+      <p class="product-notes">${escapeHTML(noteLabels.join(" · "))}</p>
       ${options.meta ? `<p class="product-card-meta">${escapeHTML(options.meta)}</p>` : ""}
-      <div class="product-card-commerce">${cardComponents.addToCartButton({ interactive, disabled, outOfStock, label: translations[state.lang].addToBag, unavailableLabel: isArabic ? "غير متوفر" : "Unavailable" })}</div>
-      ${cardComponents.performanceTrigger(isArabic, interactive, disabled)}
+      <div class="product-bottom">
+        <div><b class="product-price">${formatPrice(price)}</b>${oldPrice > price ? `<del>${formatPrice(oldPrice)}</del>` : ""}</div>
+        <button class="card-add-button"${interactive ? ` data-action="add-to-cart"` : disabled} aria-label="${escapeHTML(translations[state.lang].addToBag)}"${outOfStock ? " disabled" : ""}><span>${escapeHTML(outOfStock ? (isArabic ? "غير متوفر" : "Unavailable") : translations[state.lang].addToBag)}</span><i aria-hidden="true">＋</i></button>
+      </div>
     </div>
   </article>`;
 }
@@ -5247,6 +5217,112 @@ async function loadImportDraft(selection) {
   }
   state.activeImportDraft = product;
   renderImportReview(product);
+}
+
+function renderQuickImportImages() {
+  const holder = $("#quick-image-preview");
+  const extractButton = $("[data-action='extract-product-images']");
+  const clearButton = $("[data-action='clear-product-images']");
+  if (!holder) return;
+  const images = state.quickImportImages || [];
+  holder.hidden = !images.length;
+  holder.innerHTML = images.map((image, index) => `<article>
+    <img src="${escapeHTML(image.dataUrl)}" alt="${escapeHTML(image.name)}"/>
+    <button type="button" data-action="remove-quick-import-image" data-index="${index}" aria-label="${adminCopy("إزالة الصورة", "Remove image")}">×</button>
+  </article>`).join("");
+  if (extractButton) extractButton.disabled = !images.length;
+  if (clearButton) clearButton.hidden = !images.length;
+}
+
+async function addQuickImportImages(fileList) {
+  const files = [...(fileList || [])].filter((file) => /^image\/(?:jpeg|png|webp)$/i.test(file.type));
+  const available = Math.max(0, 6 - (state.quickImportImages || []).length);
+  if (!available || !files.length) return;
+  const section = $(".quick-image-import");
+  const status = $("#quick-image-status");
+  section?.classList.add("extracting");
+  if (status) status.textContent = adminCopy("جارٍ تجهيز الصور ورفع جودتها للاستخراج…", "Preparing images for extraction…");
+  try {
+    const prepared = [];
+    for (const file of files.slice(0, available)) {
+      if (file.size > 10_000_000) throw new Error(adminCopy("حجم الصورة يجب ألا يتجاوز 10 MB", "Each image must be 10 MB or less"));
+      prepared.push({ name: file.name, dataUrl: await optimizeGalleryImage(file) });
+    }
+    state.quickImportImages = [...(state.quickImportImages || []), ...prepared];
+    renderQuickImportImages();
+    if (status) status.textContent = adminCopy(`تم تجهيز ${state.quickImportImages.length} صورة لنفس المنتج.`, `${state.quickImportImages.length} images are ready for one product.`);
+  } catch (error) {
+    if (status) status.textContent = error.message;
+    showToast(error.message);
+  } finally {
+    section?.classList.remove("extracting");
+  }
+}
+
+function clearQuickImportImages() {
+  state.quickImportImages = [];
+  const input = $("#quick-import-images");
+  if (input) input.value = "";
+  const status = $("#quick-image-status");
+  if (status) status.textContent = "";
+  renderQuickImportImages();
+}
+
+async function extractQuickImportProduct() {
+  const images = state.quickImportImages || [];
+  if (!images.length) return;
+  const section = $(".quick-image-import");
+  const status = $("#quick-image-status");
+  const button = $("[data-action='extract-product-images']");
+  section?.classList.add("extracting");
+  if (button) button.disabled = true;
+  if (status) status.textContent = adminCopy("نقرأ الصور، نوحّد المنتج، ونراجع المصادر…", "Reading images, merging the product, and checking sources…");
+  try {
+    const result = await api("/api/catalog/ai-extract-images", {
+      method: "POST",
+      body: JSON.stringify({
+        hint: $("#quick-import-hint")?.value.trim() || $("#web-product-query")?.value.trim() || "",
+        images: images.map((image) => image.dataUrl)
+      })
+    });
+    const extracted = result.data || {};
+    const product = {
+      ...ORIGOCatalog.emptyProduct(),
+      ...extracted,
+      id: `catalog-${Date.now()}`,
+      status: "draft",
+      price: "",
+      size: extracted.sizes?.[0] || "",
+      images: [],
+      mainAccords: (extracted.accordProfile || []).map((item) => item.nameAr || item.nameEn).filter(Boolean),
+      sourceLog: [{
+        provider: `OpenAI image extraction · ${result.model || "AI"}`,
+        url: result.citations?.[0]?.url || "",
+        fields: Object.keys(extracted).filter((key) => !["images"].includes(key)),
+        status: "review",
+        note: adminCopy(`استخراج من ${images.length} صور؛ يتطلب مراجعة المدير`, `Extracted from ${images.length} images; manager review required`),
+        fetchedAt: result.fetchedAt || new Date().toISOString()
+      }, ...(result.citations || []).slice(1, 8).map((citation) => ({
+        provider: citation.title || "Web source",
+        url: citation.url || "",
+        fields: [],
+        status: "reference",
+        note: "Cross-check source",
+        fetchedAt: result.fetchedAt || new Date().toISOString()
+      }))]
+    };
+    ORIGOCatalog.computeConfidence(product);
+    state.activeImportDraft = product;
+    renderImportReview(product);
+    clearQuickImportImages();
+    showToast(adminCopy("تم إنشاء مسودة موحدة؛ راجعها قبل الحفظ", "A merged draft is ready; review it before saving"));
+  } catch (error) {
+    if (status) status.textContent = error.message;
+    showToast(error.message);
+  } finally {
+    section?.classList.remove("extracting");
+    if (button) button.disabled = !(state.quickImportImages || []).length;
+  }
 }
 
 function selectOptions(options, selected) {
@@ -7309,6 +7385,19 @@ document.addEventListener("click", async (event) => {
       $("#import-workspace").innerHTML = `<div class="import-empty"><span>!</span><h3>${adminCopy("تعذر جلب البيانات", "Could not fetch product data")}</h3><p>${adminCopy("جرّب نتيجة أخرى أو أنشئ مسودة يدوية.", "Try another result or create a manual draft.")}</p></div>`;
     });
   }
+  if (action === "extract-product-images") {
+    await extractQuickImportProduct();
+    return;
+  }
+  if (action === "clear-product-images") {
+    clearQuickImportImages();
+    return;
+  }
+  if (action === "remove-quick-import-image") {
+    state.quickImportImages.splice(Number(actionElement.dataset.index), 1);
+    renderQuickImportImages();
+    return;
+  }
   if (action === "new-product") startManualProduct();
   if (action === "restore-product-draft") startManualProduct(true);
   if (action === "product-editor-mode") {
@@ -8103,6 +8192,11 @@ document.addEventListener("error", (event) => {
 }, true);
 
 document.addEventListener("change", async (event) => {
+  if (event.target.id === "quick-import-images") {
+    await addQuickImportImages(event.target.files);
+    event.target.value = "";
+    return;
+  }
   if (event.target.id === "alternatives-import-file") {
     const file = event.target.files?.[0];
     if (!file) return;
