@@ -1779,7 +1779,7 @@ export function getAdminWorkspaceState() {
 export function saveAdminWorkspaceState(payload) {
   const value = payload && typeof payload === "object" ? payload : {};
   const serialized = JSON.stringify(value);
-  if (Buffer.byteLength(serialized, "utf8") > 2_000_000) {
+  if (Buffer.byteLength(serialized, "utf8") > 20_000_000) {
     const error = new Error("ADMIN_STATE_TOO_LARGE");
     error.code = "ADMIN_STATE_TOO_LARGE";
     throw error;
