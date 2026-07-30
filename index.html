@@ -21,19 +21,22 @@
       href="https://fonts.googleapis.com/css2?family=Alexandria:wght@300;400;500;600;700;800&family=DM+Serif+Display&family=Noto+Naskh+Arabic:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?v=21" />
-    <link rel="stylesheet" href="home.css?v=36" />
+    <link rel="stylesheet" href="styles.css?v=19" />
+    <link rel="stylesheet" href="home.css?v=28" />
     <link rel="stylesheet" href="product-detail.css?v=7" />
+    <link rel="stylesheet" href="product-card.css?v=7" />
     <link rel="stylesheet" href="catalog.css?v=1" />
-    <link rel="stylesheet" href="footer.css?v=9" />
+    <link rel="stylesheet" href="footer.css?v=4" />
     <link rel="stylesheet" href="commerce.css?v=1" />
     <link rel="stylesheet" href="account.css?v=2" />
     <link rel="stylesheet" href="fragrance-finder.css?v=1" />
     <link rel="stylesheet" href="alternatives.css?v=1" />
     <link rel="stylesheet" href="performance-insights.css?v=3" />
-<link rel="stylesheet" href="shell.css?v=10" />
-    <link rel="stylesheet" href="appearance.css?v=16" />
+<link rel="stylesheet" href="shell.css?v=7" />
+    <link rel="stylesheet" href="appearance.css?v=10" />
     <link rel="stylesheet" href="notes-admin-fixes.css?v=2" />
+    <link rel="stylesheet" href="components/product-card/perfume-aura.css?v=4" />
+    <link rel="stylesheet" href="components/interactive-product-carousel/interactive-product-carousel.css?v=11" />
   </head>
   <body>
     <div class="announcement" aria-hidden="true"></div>
@@ -56,17 +59,9 @@
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"></path></svg>
               <span class="action-count wishlist-count">0</span>
             </button>
-            <button class="icon-button account-button" data-action="account-menu" aria-label="قائمة الحساب" aria-haspopup="menu" aria-expanded="false" aria-controls="header-account-menu">
+            <button class="icon-button account-button" data-action="account" aria-label="الحساب">
               <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21a7.5 7.5 0 0 1 15 0"></path></svg>
             </button>
-            <div class="header-account-menu" id="header-account-menu" role="menu" hidden>
-              <button type="button" role="menuitem" data-action="account"><i>♙</i><span class="menu-ar">حسابي</span><span class="menu-en">My account</span></button>
-              <button type="button" role="menuitem" data-action="view-orders"><i>▣</i><span class="menu-ar">طلباتي</span><span class="menu-en">My orders</span></button>
-              <button type="button" role="menuitem" data-action="wishlist"><i>♡</i><span class="menu-ar">المفضلة</span><span class="menu-en">Wishlist</span></button>
-              <button type="button" role="menuitem" data-action="theme"><i>◐</i><span class="menu-ar">الوضع الداكن</span><span class="menu-en">Dark mode</span></button>
-              <button type="button" role="menuitem" data-action="language"><i>◎</i><span class="menu-ar">اللغة</span><span class="menu-en">Language</span></button>
-              <button type="button" role="menuitem" data-action="account"><i>⚙</i><span class="menu-ar">الإعدادات</span><span class="menu-en">Settings</span></button>
-            </div>
           </div>
           <button class="header-search" data-action="search" aria-label="بحث">
             <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -79,7 +74,10 @@
         <a class="brand brand-logo-link" href="/" data-action="catalog-home" aria-label="ORIGO home">
           <img data-store-logo data-logo-variant="auto" src="assets/origo-logo.svg" alt="ORIGO" />
         </a>
-        <div class="header-preference-actions" hidden></div>
+        <div class="header-preference-actions">
+          <button class="lang-button" data-action="language" aria-label="Switch to English">English ◎</button>
+          <button class="theme-toggle" data-action="theme" aria-label="تفعيل الوضع المظلم" aria-pressed="false"><span class="sun">☀</span><span class="moon">☾</span></button>
+        </div>
       </div>
       <form class="mobile-header-search" id="mobile-header-search" role="search" hidden>
         <button class="mobile-header-search-submit" type="submit" aria-label="بحث">
@@ -169,9 +167,6 @@
       <section class="brands-route-page" id="brands-page" hidden aria-labelledby="brands-page-title">
         <div class="brands-page-shell" id="brands-page-content"></div>
       </section>
-      <section class="benefits-route-page" id="benefits-page" hidden aria-labelledby="benefits-page-title">
-        <div class="benefits-page-shell" id="benefits-page-content"></div>
-      </section>
 
       <section class="benefit-detail-page" id="benefit-detail-page" hidden aria-labelledby="benefit-detail-title">
         <div class="benefit-detail-shell" id="benefit-detail-content"></div>
@@ -189,12 +184,12 @@
         </section>
 
         <section class="home-brand-directory" aria-labelledby="home-brands-title">
-          <div class="home-section-head"><a href="/brands" data-action="open-brands-page"><span data-i18n="viewAll">عرض الكل</span> <span>‹</span></a><div class="ornament-heading"><h2 id="home-brands-title" data-i18n="navBrands">العلامات التجارية</h2></div></div>
+          <div class="home-section-head"><a href="/perfumes"><span data-i18n="viewAll">عرض الكل</span> <span>‹</span></a><div class="ornament-heading"><h2 id="home-brands-title" data-i18n="navBrands">العلامات التجارية</h2></div></div>
           <div class="brand-carousel-track" id="home-brand-carousel-track" data-brand-marquee aria-live="off"></div>
         </section>
 
         <section class="home-benefits-directory" aria-labelledby="home-benefits-title">
-          <div class="home-section-head"><a href="/benefits" data-action="open-benefits-page"><span data-i18n="viewAll">عرض الكل</span> <span>‹</span></a><div class="ornament-heading"><h2 id="home-benefits-title">مميزاتنا</h2></div></div>
+          <div class="home-section-head"><a href="#home-benefits-track"><span data-i18n="viewAll">عرض الكل</span> <span>‹</span></a><div class="ornament-heading"><h2 id="home-benefits-title">مميزاتنا</h2></div></div>
           <div class="benefit-carousel-track" id="home-benefits-track" data-benefit-marquee aria-live="off"></div>
         </section>
 
@@ -851,30 +846,6 @@
               </div>
               <button class="button burgundy-button" type="submit"><span data-i18n="searchWeb">بحث شامل</span><span>⌕</span></button>
             </form>
-            <section class="quick-image-import" aria-labelledby="quick-image-import-title">
-              <div class="quick-image-import-copy">
-                <span aria-hidden="true">▧</span>
-                <div>
-                  <h3 id="quick-image-import-title">الاستخراج والاستيراد السريع</h3>
-                  <p>ارفع صور المنتج أو لقطات المعلومات، وسننشئ مسودة قابلة للمراجعة دون نشر تلقائي.</p>
-                </div>
-              </div>
-              <label class="quick-image-drop">
-                <input id="quick-import-images" type="file" accept="image/jpeg,image/png,image/webp" multiple />
-                <span>＋</span>
-                <b>اختر الصور من الملفات</b>
-                <small>حتى 6 صور · JPG أو PNG أو WEBP</small>
-              </label>
-              <div class="quick-image-preview" id="quick-image-preview" hidden></div>
-              <div class="quick-image-actions">
-                <input id="quick-import-hint" type="text" maxlength="220" placeholder="اختياري: اسم العطر أو العلامة أو الباركود" />
-                <button class="button burgundy-button" type="button" data-action="extract-product-images" disabled>
-                  <span>استخراج وإنشاء مسودة</span><i>✦</i>
-                </button>
-                <button class="button secondary-button" type="button" data-action="clear-product-images" hidden>مسح الصور</button>
-              </div>
-              <p class="quick-image-status" id="quick-image-status" aria-live="polite"></p>
-            </section>
             <div class="source-note">
               <span>✓</span>
               <p data-i18n="sourceNote">مصادر مهيكلة ومسموحة، وقاعدة مكونات محلية، وبحث OpenAI اختياري بمصادر إنترنت قابلة للمراجعة. يظهر Fragrantica كمرجع يدوي فقط ما لم يتوفر API مصرح به. لن يُحفظ شيء دون مراجعتك.</p>
@@ -1005,7 +976,6 @@
       </section>
     </div>
 
-    <button class="back-to-top" id="back-to-top" type="button" aria-label="العودة إلى أعلى الصفحة" title="العودة إلى أعلى الصفحة"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5.5 11.5 12 5l6.5 6.5M12 5v14"/></svg></button>
     <div class="toast-region" id="toast-region" aria-live="polite"></div>
 
     <script src="fragrance-knowledge.js?v=1"></script>
@@ -1014,7 +984,10 @@
     <script src="fragrance-notes-library.js?v=7"></script>
     <script src="catalog-providers.js?v=6"></script>
     <script src="external-tracking.js?v=1"></script>
-    <script src="app.js?v=57"></script>
+  <script src="components/product-card/perfume-card-components.js?v=3"></script>
+  <script src="components/product-card/perfume-aura-controller.js?v=4"></script>
+  <script src="components/interactive-product-carousel/interactive-product-carousel.js?v=7"></script>
+    <script src="app.js?v=49"></script>
   <script src="alternatives.js?v=1"></script>
   <script src="performance-insights.js?v=2"></script>
   <script src="commerce.js?v=2"></script>

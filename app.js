@@ -1099,7 +1099,6 @@ const state = {
   activeImportDraft: null,
   adminSuggestions: [],
   adminSearchController: null,
-  quickImportImages: [],
   user: null,
   orders: [],
   adminOrders: [],
@@ -1358,10 +1357,7 @@ async function hydrateServer() {
     ]);
     state.publicIntegrations = publicIntegrations || {};
     state.filterDefinitions = filtersResult.filters || [];
-    state.adminWorkspace.settings = mergeStoreSettings({
-      ...state.adminWorkspace.settings,
-      ...(storefrontSettings.settings || {})
-    });
+    state.adminWorkspace.settings = mergeStoreSettings(storefrontSettings.settings || state.adminWorkspace.settings);
     state.serverAvailable = true;
     if (notesState.state && Object.keys(notesState.state).length) {
       window.ORIGOFragranceNotes?.setState(notesState.state);
@@ -1395,7 +1391,6 @@ async function hydrateServer() {
     renderWishlist();
     updateAccountIndicator();
     handleBenefitRoute({ replace: true });
-    handleBenefitsRoute({ replace: true });
     handleNotesRoute({ replace: true });
     handleCatalogRoute({ replace: true });
     handleProductRoute();
@@ -1405,7 +1400,6 @@ async function hydrateServer() {
     renderSiteFooter();
     applyStoreIdentity();
     handleBenefitRoute({ replace: true });
-    handleBenefitsRoute({ replace: true });
     handleCatalogRoute({ replace: true });
     handleProductRoute();
   }
@@ -2161,12 +2155,6 @@ function homepageRailsAdminMarkup() {
       <span><b>${escapeHTML(item.name)}</b><small>${escapeHTML(item.placement || "general")}${item.brand ? ` · ${escapeHTML(item.brand)}` : ""}</small></span>
       <button type="button" data-action="delete-home-media" data-id="${escapeHTML(item.id)}" aria-label="${ar ? "حذف" : "Delete"}">×</button>
       ${isHero ? `<div class="home-hero-slide-fields">
-        <label>${ar ? "اسم الصورة" : "Image name"}<input data-home-media-field="name" data-id="${escapeHTML(item.id)}" value="${escapeHTML(item.name || "")}"/></label>
-        <label>${ar ? "الترتيب" : "Order"}<input type="number" min="1" max="99" data-home-media-field="sortOrder" data-id="${escapeHTML(item.id)}" value="${Number(item.sortOrder || 1)}"/></label>
-        <label>${ar ? "طريقة ملء البنر" : "Banner image fit"}<select data-home-media-field="sizeMode" data-id="${escapeHTML(item.id)}"><option value="default"${!item.sizeMode || item.sizeMode === "default" ? " selected" : ""}>${ar ? "تلقائي (تصميم المتجر)" : "Automatic (store design)"}</option><option value="cover"${item.sizeMode === "cover" ? " selected" : ""}>${ar ? "تغطية كاملة" : "Cover"}</option><option value="contain"${item.sizeMode === "contain" ? " selected" : ""}>${ar ? "إظهار الصورة كاملة" : "Contain"}</option><option value="custom"${item.sizeMode === "custom" ? " selected" : ""}>${ar ? "حجم مخصص" : "Custom size"}</option></select></label>
-        <label>${ar ? "حجم الصورة المخصص %" : "Custom image size %"}<input type="number" min="40" max="200" step="5" data-home-media-field="imageScale" data-id="${escapeHTML(item.id)}" value="${Number(item.imageScale || 100)}"/></label>
-        <label>${ar ? "موضع الصورة" : "Image position"}<select data-home-media-field="imagePosition" data-id="${escapeHTML(item.id)}"><option value="center"${!item.imagePosition || item.imagePosition === "center" ? " selected" : ""}>${ar ? "الوسط" : "Center"}</option><option value="right"${item.imagePosition === "right" ? " selected" : ""}>${ar ? "اليمين" : "Right"}</option><option value="left"${item.imagePosition === "left" ? " selected" : ""}>${ar ? "اليسار" : "Left"}</option><option value="top"${item.imagePosition === "top" ? " selected" : ""}>${ar ? "أعلى" : "Top"}</option><option value="bottom"${item.imagePosition === "bottom" ? " selected" : ""}>${ar ? "أسفل" : "Bottom"}</option></select></label>
-        <label class="admin-toggle-row"><span>${ar ? "عرض الصورة" : "Show image"}</span><input type="checkbox" data-home-media-field="active" data-id="${escapeHTML(item.id)}"${item.active !== false ? " checked" : ""}/></label>
         <label>${ar ? "عنوان الشريحة بالعربية" : "Arabic slide title"}<input data-home-media-field="titleAr" data-id="${escapeHTML(item.id)}" value="${escapeHTML(item.titleAr || "")}"/></label>
         <label>${ar ? "عنوان الشريحة بالإنجليزية" : "English slide title"}<input data-home-media-field="titleEn" data-id="${escapeHTML(item.id)}" value="${escapeHTML(item.titleEn || "")}"/></label>
         <label>${ar ? "الوصف بالعربية" : "Arabic description"}<textarea data-home-media-field="descriptionAr" data-id="${escapeHTML(item.id)}">${escapeHTML(item.descriptionAr || "")}</textarea></label>
@@ -2608,7 +2596,6 @@ function updateLanguage() {
   if (document.body.classList.contains("catalog-route")) renderCatalog({ skeleton: false });
   renderSiteFooter();
   if (document.body.classList.contains("benefit-route")) handleBenefitRoute({ replace: true });
-  if (document.body.classList.contains("benefits-route")) handleBenefitsRoute({ replace: true });
   if ($("#notes-admin-overlay").classList.contains("open")) renderNotesAdmin();
   if ($("#admin-overlay").classList.contains("open")) renderAdminDashboard(state.adminView);
   applyHomepageRailSettings();
@@ -2711,12 +2698,10 @@ function renderBrandCarousel(query = "") {
   const catalogNames = [...ORIGO_PERFUME_BRANDS, ...counts.keys()].filter((brand, index, values) =>
     values.findIndex((candidate) => ORIGOCatalog.normalize(candidate) === ORIGOCatalog.normalize(brand)) === index
   );
-  const mobile = matchMedia("(max-width: 700px)").matches;
   const brands = catalogNames.map((brand) => [brand, counts.get(brand) || 0])
     .filter(([brand]) => !normalized || ORIGOCatalog.normalize(brand).includes(normalized));
-  const visibleBrands = mobile && !normalized ? brands.slice(0, 12) : brands;
   const brandOptions = productOptionItems("brand");
-  const items = visibleBrands.map(([brand, count]) => {
+  const items = brands.map(([brand, count]) => {
     const option = brandOptions.find((item) => [item.value,item.nameAr,item.nameEn].some((value) => normalizeOptionSearch(value) === normalizeOptionSearch(brand)));
     const logo = option?.image || origoBrandLogo(brand);
     const artwork = logo ? `<img src="${escapeHTML(logo)}" alt="" loading="lazy"/>` : `<span aria-hidden="true">${escapeHTML(brand.slice(0, 2).toUpperCase())}</span>`;
@@ -2764,17 +2749,13 @@ function renderHomeHero() {
   const dots = hero?.querySelector(".home-hero-dots");
   if (!hero || !visual || !dots) return;
   const settings = mergeStoreSettings(state.adminWorkspace.settings || {});
-  const media = settings.homeMedia
-    .filter((item) => item.placement === "hero" && item.url && item.active !== false)
-    .sort((a, b) => Number(a.sortOrder || 0) - Number(b.sortOrder || 0));
+  const media = settings.homeMedia.filter((item) => item.placement === "hero" && item.url);
   const slides = media.length ? media : [{ url: "assets/home/hero/hero-main.png", altAr: "مجموعة عطور فاخرة", altEn: "Luxury perfume collection", titleAr: "اكتشف عالم العطور الفاخرة", titleEn: "Discover the world of luxury fragrance", descriptionAr: "نخبة مختارة من أفضل الماركات العالمية", descriptionEn: "A curated selection from leading global brands", buttonAr: "تسوق الآن", buttonEn: "Shop now", href: "#new-arrivals" }];
   homeHeroIndex = Math.min(homeHeroIndex, slides.length - 1);
   const show = (index) => {
     homeHeroIndex = (index + slides.length) % slides.length;
     const item = slides[homeHeroIndex];
     visual.style.backgroundImage = `url("${String(item.url).replace(/["\\]/g, "")}")`;
-    visual.style.backgroundSize = item.sizeMode === "cover" ? "cover" : item.sizeMode === "contain" ? "contain" : item.sizeMode === "custom" ? `${Math.max(40, Math.min(200, Number(item.imageScale || 100)))}% auto` : "";
-    visual.style.backgroundPosition = item.imagePosition && item.imagePosition !== "center" ? item.imagePosition : "";
     visual.setAttribute("aria-label", state.lang === "ar" ? item.altAr || item.name || "بانر دعائي" : item.altEn || item.name || "Campaign banner");
     const title = hero.querySelector(".home-hero-copy h1");
     const description = hero.querySelector(".home-hero-copy>p");
@@ -2828,25 +2809,24 @@ function renderHomepageCommerce() {
   const newest = $("#new-product-grid");
   if (newest) {
     const products = state.products.map((product, index) => ({ product, score: productDateScore(product, index) })).sort((a, b) => b.score - a.score).slice(0, 12).map(({ product }) => product);
-    newest.innerHTML = products.map((product, index) => productCardMarkup(product, { context: "grid", delay: Math.min(index * 45, 180) })).join("");
+    newest.innerHTML = products.map((product, index) => productCardMarkup(product, { context: "grid", interactiveShowcase: true, delay: Math.min(index * 45, 180) })).join("");
     bindHorizontalRail(newest);
+    window.ORIGOInteractiveCarousel?.enhanceRail(newest);
   }
   const showcase = $("#home-brand-showcases");
   if (showcase) {
     const configured = state.adminWorkspace.settings?.homeMedia || [];
     const dataBrands = [...new Set(state.products.map((product) => String(product.brand || "").trim()).filter(Boolean))];
     const ordered = [...ORIGO_PERFUME_BRANDS, ...dataBrands].filter((brand, index, values) => values.findIndex((candidate) => ORIGOCatalog.normalize(candidate) === ORIGOCatalog.normalize(brand)) === index);
-    const mobile = matchMedia("(max-width: 700px)").matches;
-    const visibleBrands = mobile ? ordered.filter((brand) => homeBrandProducts(brand).length).slice(0, 4) : ordered;
-    const productLimit = mobile ? 6 : 12;
-    showcase.innerHTML = visibleBrands.map((brand) => {
+    showcase.innerHTML = ordered.map((brand) => {
       const products = homeBrandProducts(brand);
       if (!products.length) return "";
       const banner = configured.find((item) => item.placement === "brand-banner" && ORIGOCatalog.normalize(item.brand || "") === ORIGOCatalog.normalize(brand));
-      return `<section class="home-brand-showcase"><div class="home-section-head"><button data-action="brand-search" data-query="${escapeHTML(brand)}">${state.lang === "ar" ? "عرض كل المنتجات" : "View all products"} ‹</button><div><small>${state.lang === "ar" ? "مختارات العلامة" : "Brand selection"}</small><h2>${escapeHTML(brand)}</h2></div></div>${banner ? `<button class="home-brand-banner" data-action="brand-search" data-query="${escapeHTML(brand)}"><img src="${escapeHTML(banner.url)}" alt="${escapeHTML(state.lang === "ar" ? banner.altAr : banner.altEn)}" loading="lazy" decoding="async"/></button>` : ""}<div class="product-grid horizontal-scroll horizontal-rail" data-horizontal-rail>${products.slice(0, productLimit).map((product) => productCardMarkup(product, { context: "grid" })).join("")}</div></section>`;
+      return `<section class="home-brand-showcase"><div class="home-section-head"><button data-action="brand-search" data-query="${escapeHTML(brand)}">${state.lang === "ar" ? "عرض كل المنتجات" : "View all products"} ‹</button><div><small>${state.lang === "ar" ? "مختارات العلامة" : "Brand selection"}</small><h2>${escapeHTML(brand)}</h2></div></div>${banner ? `<button class="home-brand-banner" data-action="brand-search" data-query="${escapeHTML(brand)}"><img src="${escapeHTML(banner.url)}" alt="${escapeHTML(state.lang === "ar" ? banner.altAr : banner.altEn)}" loading="lazy"/></button>` : ""}<div class="product-grid horizontal-scroll horizontal-rail" data-horizontal-rail>${products.slice(0, 12).map((product) => productCardMarkup(product, { context: "grid", interactiveShowcase: true })).join("")}</div></section>`;
     }).join("");
     $$('[data-horizontal-rail]', showcase).forEach((rail) => {
       bindHorizontalRail(rail);
+      window.ORIGOInteractiveCarousel?.enhanceRail(rail);
     });
   }
   observeReveals();
@@ -3141,49 +3121,6 @@ function footerBenefitBySlug(slug) {
   return (state.adminWorkspace.settings?.footerBenefits || defaultFooterBenefits).find((item) => item.slug === slug && item.active !== false);
 }
 
-function renderBenefitsPage() {
-  const root = $("#benefits-page-content");
-  if (!root) return;
-  const isArabic = state.lang === "ar";
-  const benefits = activeFooterBenefits();
-  root.innerHTML = `<nav class="benefit-breadcrumb" aria-label="${isArabic ? "مسار الصفحة" : "Breadcrumb"}"><a href="/" data-action="catalog-home">${isArabic ? "الرئيسية" : "Home"}</a><span>‹</span><b>${isArabic ? "مزايا ORIGO" : "ORIGO benefits"}</b></nav>
-    <header><span>ORIGO CARE</span><h1 id="benefits-page-title">${isArabic ? "مزايا وخدمات ORIGO" : "ORIGO benefits & services"}</h1><p>${isArabic ? "اختر الميزة للتعرّف على تفاصيلها وشروطها." : "Choose a benefit to see its details and conditions."}</p></header>
-    <div class="benefits-page-grid">${benefits.map((benefit) => {
-      const title = isArabic ? benefit.titleAr : benefit.titleEn;
-      const description = isArabic ? benefit.shortAr || benefit.descriptionAr : benefit.shortEn || benefit.descriptionEn;
-      return `<a href="/benefits/${escapeHTML(benefit.slug)}" data-action="benefit-link" data-slug="${escapeHTML(benefit.slug)}"><span>${benefit.image ? `<img src="${escapeHTML(benefit.image)}" alt="" loading="lazy"/>` : footerBenefitIcon(benefit.icon, benefit.colors)}</span><div><b>${escapeHTML(title)}</b><small>${escapeHTML(description || "")}</small></div><i>‹</i></a>`;
-    }).join("")}</div>`;
-  document.title = isArabic ? "مزايا ORIGO | ORIGO" : "ORIGO benefits | ORIGO";
-}
-
-function handleBenefitsRoute({ replace = false } = {}) {
-  const active = /^\/benefits\/?$/i.test(location.pathname);
-  const page = $("#benefits-page");
-  if (!page) return false;
-  if (!active) {
-    document.body.classList.remove("benefits-route");
-    page.hidden = true;
-    return false;
-  }
-  document.body.classList.remove("catalog-route", "notes-route", "benefit-route", "brands-route");
-  document.body.classList.add("benefits-route");
-  page.hidden = false;
-  $("#brands-page").hidden = true;
-  $("#catalog-page").hidden = true;
-  $("#notes-library-page").hidden = true;
-  $("#benefit-detail-page").hidden = true;
-  renderBenefitsPage();
-  closeDrawers();
-  $$(".overlay.open").forEach(closeOverlay);
-  if (!replace) window.scrollTo({ top: 0, behavior: "smooth" });
-  return true;
-}
-
-function navigateBenefits() {
-  if (location.pathname !== "/benefits") history.pushState({}, "", "/benefits");
-  handleBenefitsRoute();
-}
-
 function renderBenefitDetail(benefit) {
   const isArabic = state.lang === "ar";
   const title = isArabic ? benefit.titleAr : benefit.titleEn;
@@ -3194,7 +3131,7 @@ function renderBenefitDetail(benefit) {
   const ctaUrl = safePublicHref(benefit.ctaUrl) || "/perfumes";
   const faqs = Array.isArray(benefit.faqs) ? benefit.faqs : [];
   const soft = safeBenefitColor(benefit.colors?.[2], "#f7e8dc");
-  $("#benefit-detail-content").innerHTML = `<nav class="benefit-breadcrumb" aria-label="${isArabic ? "مسار الصفحة" : "Breadcrumb"}"><a href="/" data-action="catalog-home">${isArabic ? "الرئيسية" : "Home"}</a><span>‹</span><a href="/benefits" data-action="open-benefits-page">${isArabic ? "مزايا ORIGO" : "ORIGO benefits"}</a><span>‹</span><b>${escapeHTML(title)}</b></nav>
+  $("#benefit-detail-content").innerHTML = `<nav class="benefit-breadcrumb" aria-label="${isArabic ? "مسار الصفحة" : "Breadcrumb"}"><a href="/" data-action="catalog-home">${isArabic ? "الرئيسية" : "Home"}</a><span>‹</span><a href="#site-footer">${isArabic ? "مزايا ORIGO" : "ORIGO benefits"}</a><span>‹</span><b>${escapeHTML(title)}</b></nav>
     <article class="benefit-detail-hero" style="--benefit-soft:${escapeHTML(soft)}"><div class="benefit-detail-art">${benefit.image ? `<img src="${escapeHTML(benefit.image)}" alt=""/>` : footerBenefitIcon(benefit.icon, benefit.colors)}</div><div class="benefit-detail-copy"><span class="eyebrow">ORIGO CARE</span><h1 id="benefit-detail-title">${escapeHTML(title)}</h1><p>${escapeHTML(description)}</p><a class="benefit-detail-cta" href="${escapeHTML(ctaUrl)}">${escapeHTML(ctaLabel)} <span>←</span></a></div></article>
     <div class="benefit-detail-sections"><section class="benefit-detail-panel"><h2>${isArabic ? "كيف تعمل الخدمة؟" : "How it works"}</h2><ol class="benefit-step-list">${(steps || []).map((step) => `<li>${escapeHTML(step)}</li>`).join("")}</ol></section><section class="benefit-detail-panel"><h2>${isArabic ? "الشروط المهمة" : "Important conditions"}</h2><ul class="benefit-condition-list">${(conditions || []).map((condition) => `<li>${escapeHTML(condition)}</li>`).join("")}</ul></section></div>
     <section class="benefit-faqs"><h2>${isArabic ? "الأسئلة الشائعة" : "Frequently asked questions"}</h2>${faqs.map((faq) => `<details><summary>${escapeHTML(isArabic ? faq.qAr : faq.qEn)}</summary><p>${escapeHTML(isArabic ? faq.aAr : faq.aEn)}</p></details>`).join("")}</section>`;
@@ -3214,11 +3151,10 @@ function handleBenefitRoute({ replace = false } = {}) {
     return false;
   }
   const benefit = footerBenefitBySlug(match[1]);
-  document.body.classList.remove("catalog-route", "notes-route", "benefits-route", "brands-route");
+  document.body.classList.remove("catalog-route", "notes-route");
   document.body.classList.add("benefit-route");
   $("#catalog-page").hidden = true;
   $("#notes-library-page").hidden = true;
-  $("#benefits-page").hidden = true;
   page.hidden = false;
   closeDrawers();
   $$(".overlay.open").forEach(closeOverlay);
@@ -3264,9 +3200,11 @@ function renderProducts(filter = "all") {
   }
   grid.innerHTML = visibleProducts.map((product, index) => productCardMarkup(product, {
     context: "grid",
+    interactiveShowcase: true,
     reveal: true,
     delay: Math.min(index * 70, 280)
   })).join("");
+  window.ORIGOInteractiveCarousel?.enhanceRail(grid);
   observeReveals();
 }
 
@@ -3541,13 +3479,12 @@ function handleBrandsRoute({ replace = false } = {}) {
   const page = $("#brands-page");
   if (!page) return false;
   if (!active) { document.body.classList.remove("brands-route"); page.hidden = true; return false; }
-  document.body.classList.remove("catalog-route", "notes-route", "benefit-route", "benefits-route");
+  document.body.classList.remove("catalog-route", "notes-route", "benefit-route");
   document.body.classList.add("brands-route");
   page.hidden = false;
   $("#catalog-page").hidden = true;
   $("#notes-library-page").hidden = true;
   $("#benefit-detail-page").hidden = true;
-  $("#benefits-page").hidden = true;
   renderBrandsPage();
   closeDrawers();
   if (!replace) window.scrollTo({ top: 0, behavior: "smooth" });
@@ -4676,6 +4613,7 @@ function productCardMarkup(product, options = {}) {
   if (product.hoverImage && !media.some((item) => item.url === product.hoverImage)) media.push({ url: product.hoverImage, type: "image" });
   const imageIndex = Math.min(Math.max(0, Number(state.cardImageIndexes[product.id] || 0)), Math.max(0, media.length - 1));
   const mainImage = media[imageIndex]?.url || product.image || "assets/origo-hero.png";
+  const embeddedImageClass = /^data:image\//i.test(mainImage) ? " product-card-primary--embedded" : "";
   const richVariants = [...(Array.isArray(product.variantOptions) ? product.variantOptions : []), ...(Array.isArray(product.variants) ? product.variants.filter((item) => item && typeof item === "object") : [])];
   const selectedVariantId = state.selectedCardVariants[product.id];
   const variant = richVariants.find((item) => String(item.id || item.size) === String(selectedVariantId)) || richVariants[0] || null;
@@ -4694,28 +4632,54 @@ function productCardMarkup(product, options = {}) {
     discount ? [80, `-${discount}%`, "sale"] : null
   ].filter(Boolean).sort((a, b) => b[0] - a[0]);
   const badges = badgeCandidates.filter((item, index, list) => list.findIndex((other) => other[1] === item[1]) === index).slice(0, 2);
+  const notes = productCardAuraNotes(product, isArabic);
+  const performanceMetrics = productCardPerformance(product, isArabic, Boolean(options.interactiveShowcase));
   const saved = state.wishlist.includes(product.id);
+  const compared = state.comparison.includes(product.id);
+  const sizeLabel = variant?.size || (product.sizes || [])[0] || "";
+  const formattedSize = formatProductSize(sizeLabel);
+  const concentrationLabel = product.concentration || product.fragranceType || "EDP";
+  const rawGender = String(product.gender || product.forGender || product.filters?.gender || "").toLowerCase();
+  const genderLabel = /women|female|نسائ/.test(rawGender)
+    ? (isArabic ? "نسائي" : "Women")
+    : /men|male|رجال|رجالي/.test(rawGender)
+      ? (isArabic ? "رجالي" : "Men")
+      : /unisex|both|للجنسين/.test(rawGender)
+        ? (isArabic ? "للجنسين" : "Unisex")
+        : "";
+  const ratingValue = Number(product.averageRating ?? product.ratingAverage ?? product.rating ?? 0);
+  const ratingCount = Number(product.reviewCount ?? product.reviewsCount ?? product.ratingCount ?? 0);
+  const hasRating = Number.isFinite(ratingValue) && ratingValue > 0;
+  const loyaltyPoints = Number(variant?.loyaltyPoints ?? product.loyaltyPoints);
   const delayStyle = Number.isFinite(options.delay) ? ` style="transition-delay:${options.delay}ms"` : "";
+  const context = escapeHTML(options.context || "grid");
   const disabled = interactive ? "" : " disabled tabindex=\"-1\"";
+  const cardComponents = resolveProductCardComponents();
   const favoriteLabel = saved ? translations[state.lang].removeFavorite : translations[state.lang].favorites;
-  const noteLabels = ((isArabic ? product.notesAr : product.notesEn) || product.notesAr || product.notesEn || []).filter(Boolean).slice(0, 3);
-  return `<article class="product-card${options.reveal ? " reveal" : ""}${outOfStock ? " is-out" : ""}" data-id="${escapeHTML(product.id)}"${delayStyle}>
-    <div class="product-image">
-      ${badges.length ? `<span class="product-badge">${escapeHTML(badges[0][1])}</span>` : ""}
-      <button class="heart-button card-favorite-button${saved ? " active" : ""}"${interactive ? ` data-action="toggle-wishlist"` : disabled} aria-label="${escapeHTML(favoriteLabel)}" aria-pressed="${saved}">${saved ? "♥" : "♡"}</button>
-      <img src="${escapeHTML(mainImage)}" alt="${escapeHTML(`${product.brand || "ORIGO"} ${name}`)}" width="640" height="700" loading="lazy" decoding="async" />
-      <button class="quick-view"${interactive ? ` data-action="quick-view"` : disabled} aria-label="${escapeHTML(isArabic ? `عرض تفاصيل ${name}` : `View ${name}`)}"><span>${escapeHTML(translations[state.lang].quickView)}</span><span aria-hidden="true">＋</span></button>
+  const compareLabel = isArabic ? "مقارنة المنتج" : "Compare product";
+  const dotsMarkup = cardComponents.productDots(media.length, imageIndex, product.id, isArabic);
+  return `<article class="product-card perfume-product-card origo-product-card origo-product-card--${context}${options.reveal ? " reveal" : ""}${outOfStock ? " is-out" : ""}${options.compact ? " is-compact" : ""}${options.interactiveShowcase ? " is-interactive-showcase" : ""}" data-id="${escapeHTML(product.id)}" data-aura-state="idle" data-aura-note-count="${notes.length}" data-aura-metric-count="${performanceMetrics.length}" data-visible-note-count="0" data-visible-metric-count="0"${delayStyle}>
+    ${cardComponents.cardEdgeEffects()}
+    <div class="product-image product-card-media product-card-media-swipe" data-product-id="${escapeHTML(product.id)}" role="link" tabindex="${interactive ? "0" : "-1"}" aria-label="${escapeHTML(isArabic ? `عرض تفاصيل ${name}` : `View ${name}`)}">
+      ${cardComponents.perfumeAura()}
+      ${cardComponents.perfumeSmokeAura()}
+      ${cardComponents.noteBubbles(notes, isArabic)}
+      ${cardComponents.performanceBubbles(performanceMetrics, isArabic)}
+      <img class="product-card-primary${embeddedImageClass}" src="${escapeHTML(mainImage)}" alt="${escapeHTML(`${product.brand} ${name}`)}" width="640" height="700" loading="lazy" decoding="async" />
+      <div class="product-card-badges">${badges.map(([, label, kind]) => `<span class="product-badge badge-${kind}">${escapeHTML(label)}</span>`).join("")}</div>
+      ${cardComponents.topActions({ saved, compared, interactive, disabled, favoriteLabel, compareLabel })}
+      ${media.length > 1 ? `<button class="card-image-arrow previous" data-action="card-image" data-id="${escapeHTML(product.id)}" data-change="-1" aria-label="${isArabic ? "الصورة السابقة" : "Previous image"}">‹</button><button class="card-image-arrow next" data-action="card-image" data-id="${escapeHTML(product.id)}" data-change="1" aria-label="${isArabic ? "الصورة التالية" : "Next image"}">›</button>` : ""}
+      ${dotsMarkup}
     </div>
-    <div class="product-info">
-      <div class="product-brand">${escapeHTML(product.brand || "ORIGO")}</div>
-      <h3>${escapeHTML(name || (isArabic ? "منتج جديد" : "New product"))}</h3>
-      ${secondaryName && secondaryName !== name ? `<p class="product-card-secondary-name">${escapeHTML(secondaryName)}</p>` : ""}
-      <p class="product-notes">${escapeHTML(noteLabels.join(" · "))}</p>
-      ${options.meta ? `<p class="product-card-meta">${escapeHTML(options.meta)}</p>` : ""}
-      <div class="product-bottom">
-        <div><b class="product-price">${formatPrice(price)}</b>${oldPrice > price ? `<del>${formatPrice(oldPrice)}</del>` : ""}</div>
-        <button class="card-add-button"${interactive ? ` data-action="add-to-cart"` : disabled} aria-label="${escapeHTML(translations[state.lang].addToBag)}"${outOfStock ? " disabled" : ""}><span>${escapeHTML(outOfStock ? (isArabic ? "غير متوفر" : "Unavailable") : translations[state.lang].addToBag)}</span><i aria-hidden="true">＋</i></button>
+    ${options.interactiveShowcase && typeof cardComponents.interactiveDetails === "function" ? cardComponents.interactiveDetails(notes, performanceMetrics, isArabic, interactive, disabled) : ""}
+    <div class="product-info product-card-info">
+      <div class="product-card-summary">
+        <div class="product-card-identity"><div class="product-brand">${escapeHTML(product.brand || "ORIGO")}</div><div class="product-card-title-row"><div><h3>${escapeHTML(name || (isArabic ? "منتج جديد" : "New product"))}</h3>${secondaryName && secondaryName !== name ? `<p class="product-card-secondary-name">${escapeHTML(secondaryName)}</p>` : ""}</div><p class="product-card-type">${genderLabel ? `<span>${escapeHTML(genderLabel)}</span><span aria-hidden="true">·</span>` : ""}<bdi dir="ltr">${escapeHTML(concentrationLabel)}</bdi>${formattedSize ? `<span aria-hidden="true">·</span><bdi dir="ltr">${escapeHTML(formattedSize)}</bdi>` : ""}</p>${hasRating ? `<div class="product-card-rating" aria-label="${escapeHTML(isArabic ? `التقييم ${ratingValue.toFixed(1)} من 5` : `Rated ${ratingValue.toFixed(1)} out of 5`)}"><span aria-hidden="true">★★★★★</span><small><bdi dir="ltr">${ratingValue.toFixed(1)}</bdi>${ratingCount > 0 ? ` (${Math.round(ratingCount)})` : ""}</small></div>` : ""}</div></div>
+        <div class="product-card-price-row"><b class="product-price">${formatPrice(price)}</b>${oldPrice > price ? `<span><del>${formatPrice(oldPrice)}</del><em>-${discount}%</em></span>` : ""}${Number.isFinite(loyaltyPoints) && loyaltyPoints > 0 ? `<small>◉ +${Math.round(loyaltyPoints)} ${isArabic ? "نقطة ORIGO" : "ORIGO points"}</small>` : ""}</div>
       </div>
+      ${options.meta ? `<p class="product-card-meta">${escapeHTML(options.meta)}</p>` : ""}
+      <div class="product-card-commerce">${cardComponents.addToCartButton({ interactive, disabled, outOfStock, label: translations[state.lang].addToBag, unavailableLabel: isArabic ? "غير متوفر" : "Unavailable" })}</div>
+      ${cardComponents.performanceTrigger(isArabic, interactive, disabled)}
     </div>
   </article>`;
 }
@@ -5283,112 +5247,6 @@ async function loadImportDraft(selection) {
   }
   state.activeImportDraft = product;
   renderImportReview(product);
-}
-
-function renderQuickImportImages() {
-  const holder = $("#quick-image-preview");
-  const extractButton = $("[data-action='extract-product-images']");
-  const clearButton = $("[data-action='clear-product-images']");
-  if (!holder) return;
-  const images = state.quickImportImages || [];
-  holder.hidden = !images.length;
-  holder.innerHTML = images.map((image, index) => `<article>
-    <img src="${escapeHTML(image.dataUrl)}" alt="${escapeHTML(image.name)}"/>
-    <button type="button" data-action="remove-quick-import-image" data-index="${index}" aria-label="${adminCopy("إزالة الصورة", "Remove image")}">×</button>
-  </article>`).join("");
-  if (extractButton) extractButton.disabled = !images.length;
-  if (clearButton) clearButton.hidden = !images.length;
-}
-
-async function addQuickImportImages(fileList) {
-  const files = [...(fileList || [])].filter((file) => /^image\/(?:jpeg|png|webp)$/i.test(file.type));
-  const available = Math.max(0, 6 - (state.quickImportImages || []).length);
-  if (!available || !files.length) return;
-  const section = $(".quick-image-import");
-  const status = $("#quick-image-status");
-  section?.classList.add("extracting");
-  if (status) status.textContent = adminCopy("جارٍ تجهيز الصور ورفع جودتها للاستخراج…", "Preparing images for extraction…");
-  try {
-    const prepared = [];
-    for (const file of files.slice(0, available)) {
-      if (file.size > 10_000_000) throw new Error(adminCopy("حجم الصورة يجب ألا يتجاوز 10 MB", "Each image must be 10 MB or less"));
-      prepared.push({ name: file.name, dataUrl: await optimizeGalleryImage(file) });
-    }
-    state.quickImportImages = [...(state.quickImportImages || []), ...prepared];
-    renderQuickImportImages();
-    if (status) status.textContent = adminCopy(`تم تجهيز ${state.quickImportImages.length} صورة لنفس المنتج.`, `${state.quickImportImages.length} images are ready for one product.`);
-  } catch (error) {
-    if (status) status.textContent = error.message;
-    showToast(error.message);
-  } finally {
-    section?.classList.remove("extracting");
-  }
-}
-
-function clearQuickImportImages() {
-  state.quickImportImages = [];
-  const input = $("#quick-import-images");
-  if (input) input.value = "";
-  const status = $("#quick-image-status");
-  if (status) status.textContent = "";
-  renderQuickImportImages();
-}
-
-async function extractQuickImportProduct() {
-  const images = state.quickImportImages || [];
-  if (!images.length) return;
-  const section = $(".quick-image-import");
-  const status = $("#quick-image-status");
-  const button = $("[data-action='extract-product-images']");
-  section?.classList.add("extracting");
-  if (button) button.disabled = true;
-  if (status) status.textContent = adminCopy("نقرأ الصور، نوحّد المنتج، ونراجع المصادر…", "Reading images, merging the product, and checking sources…");
-  try {
-    const result = await api("/api/catalog/ai-extract-images", {
-      method: "POST",
-      body: JSON.stringify({
-        hint: $("#quick-import-hint")?.value.trim() || $("#web-product-query")?.value.trim() || "",
-        images: images.map((image) => image.dataUrl)
-      })
-    });
-    const extracted = result.data || {};
-    const product = {
-      ...ORIGOCatalog.emptyProduct(),
-      ...extracted,
-      id: `catalog-${Date.now()}`,
-      status: "draft",
-      price: "",
-      size: extracted.sizes?.[0] || "",
-      images: [],
-      mainAccords: (extracted.accordProfile || []).map((item) => item.nameAr || item.nameEn).filter(Boolean),
-      sourceLog: [{
-        provider: `OpenAI image extraction · ${result.model || "AI"}`,
-        url: result.citations?.[0]?.url || "",
-        fields: Object.keys(extracted).filter((key) => !["images"].includes(key)),
-        status: "review",
-        note: adminCopy(`استخراج من ${images.length} صور؛ يتطلب مراجعة المدير`, `Extracted from ${images.length} images; manager review required`),
-        fetchedAt: result.fetchedAt || new Date().toISOString()
-      }, ...(result.citations || []).slice(1, 8).map((citation) => ({
-        provider: citation.title || "Web source",
-        url: citation.url || "",
-        fields: [],
-        status: "reference",
-        note: "Cross-check source",
-        fetchedAt: result.fetchedAt || new Date().toISOString()
-      }))]
-    };
-    ORIGOCatalog.computeConfidence(product);
-    state.activeImportDraft = product;
-    renderImportReview(product);
-    clearQuickImportImages();
-    showToast(adminCopy("تم إنشاء مسودة موحدة؛ راجعها قبل الحفظ", "A merged draft is ready; review it before saving"));
-  } catch (error) {
-    if (status) status.textContent = error.message;
-    showToast(error.message);
-  } finally {
-    section?.classList.remove("extracting");
-    if (button) button.disabled = !(state.quickImportImages || []).length;
-  }
 }
 
 function selectOptions(options, selected) {
@@ -6518,26 +6376,8 @@ function populateProductOptionDialog(dialog, value = "") {
 
 document.addEventListener("click", async (event) => {
   const actionElement = event.target.closest("[data-action]");
-  const accountMenu = $("#header-account-menu");
-  const accountMenuButton = $("[data-action='account-menu']");
-  if (!actionElement) {
-    if (accountMenu && !accountMenu.hidden) {
-      accountMenu.hidden = true;
-      accountMenuButton?.setAttribute("aria-expanded", "false");
-    }
-    return;
-  }
+  if (!actionElement) return;
   const action = actionElement.dataset.action;
-  if (action === "account-menu") {
-    const opening = accountMenu?.hidden !== false;
-    if (accountMenu) accountMenu.hidden = !opening;
-    actionElement.setAttribute("aria-expanded", String(opening));
-    return;
-  }
-  if (accountMenu && !accountMenu.hidden) {
-    accountMenu.hidden = true;
-    accountMenuButton?.setAttribute("aria-expanded", "false");
-  }
   if (action === "reset-appearance") {
     const form = actionElement.closest("#admin-settings-form");
     if (!form) return;
@@ -6714,7 +6554,6 @@ document.addEventListener("click", async (event) => {
     event.preventDefault();
     history.pushState({}, "", "/");
     handleBenefitRoute();
-    handleBenefitsRoute();
     handleNotesRoute();
     handleCatalogRoute();
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -6722,11 +6561,6 @@ document.addEventListener("click", async (event) => {
   if (action === "benefit-link") {
     event.preventDefault();
     navigateBenefit(actionElement.dataset.slug);
-  }
-  if (action === "open-benefits-page") {
-    event.preventDefault();
-    closeDrawers();
-    navigateBenefits();
   }
   if (action === "catalog-submit-search") {
     state.catalogQuery = $("#catalog-search-input").value.trim();
@@ -7475,19 +7309,6 @@ document.addEventListener("click", async (event) => {
       $("#import-workspace").innerHTML = `<div class="import-empty"><span>!</span><h3>${adminCopy("تعذر جلب البيانات", "Could not fetch product data")}</h3><p>${adminCopy("جرّب نتيجة أخرى أو أنشئ مسودة يدوية.", "Try another result or create a manual draft.")}</p></div>`;
     });
   }
-  if (action === "extract-product-images") {
-    await extractQuickImportProduct();
-    return;
-  }
-  if (action === "clear-product-images") {
-    clearQuickImportImages();
-    return;
-  }
-  if (action === "remove-quick-import-image") {
-    state.quickImportImages.splice(Number(actionElement.dataset.index), 1);
-    renderQuickImportImages();
-    return;
-  }
   if (action === "new-product") startManualProduct();
   if (action === "restore-product-draft") startManualProduct(true);
   if (action === "product-editor-mode") {
@@ -7703,11 +7524,7 @@ document.addEventListener("submit", async (event) => {
     const media = current.homeMedia.map((item) => ({ ...item }));
     event.target.querySelectorAll("[data-home-media-field]").forEach((input) => {
       const item = media.find((candidate) => String(candidate.id) === String(input.dataset.id));
-      if (!item) return;
-      const field = input.dataset.homeMediaField;
-      if (input.type === "checkbox") item[field] = input.checked;
-      else if (input.type === "number") item[field] = Number(input.value);
-      else item[field] = input.value.trim();
+      if (item) item[input.dataset.homeMediaField] = input.value.trim();
     });
     if (files.length) {
       try {
@@ -7724,11 +7541,6 @@ document.addEventListener("submit", async (event) => {
           buttonAr: "تسوق الآن",
           buttonEn: "Shop now",
           href: "#new-arrivals",
-          sizeMode: "default",
-          imageScale: 100,
-          imagePosition: "center",
-          sortOrder: media.length + index + 1,
-          active: true,
           url: await optimizeGalleryImage(file),
           createdAt: new Date().toISOString()
         })));
@@ -8291,11 +8103,6 @@ document.addEventListener("error", (event) => {
 }, true);
 
 document.addEventListener("change", async (event) => {
-  if (event.target.id === "quick-import-images") {
-    await addQuickImportImages(event.target.files);
-    event.target.value = "";
-    return;
-  }
   if (event.target.id === "alternatives-import-file") {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -8542,53 +8349,12 @@ const sectionObserver = new IntersectionObserver((entries) => {
 }, { rootMargin: "-35% 0px -55%", threshold: 0 });
 sections.forEach((section) => sectionObserver.observe(section));
 
-let mobileChromeLastScrollY = Math.max(0, window.scrollY);
-let mobileChromeFrame = 0;
-
-function isPersistentBottomNavigationRoute() {
-  return document.body.classList.contains("commerce-route")
-    || /\/(?:cart|checkout|payment|track(?:ing)?|orders?)(?:\/|$)/i.test(window.location.pathname);
-}
-
-function updateMobileScrollChrome() {
-  mobileChromeFrame = 0;
-  const currentScrollY = Math.max(0, window.scrollY);
-  const delta = currentScrollY - mobileChromeLastScrollY;
-  const isMobile = window.matchMedia("(max-width: 640px)").matches;
-  const nearTop = currentScrollY < 28;
-
-  $(".site-header")?.classList.toggle("compact", currentScrollY > 28);
-
-  if (!isMobile || nearTop) {
-    document.body.classList.remove("mobile-header-condensed", "mobile-nav-hidden");
-  } else if (delta > 3) {
-    document.body.classList.toggle("mobile-header-condensed", currentScrollY > 90);
-    document.body.classList.toggle(
-      "mobile-nav-hidden",
-      currentScrollY > 260 && !isPersistentBottomNavigationRoute()
-    );
-  } else if (delta < -2) {
-    document.body.classList.remove("mobile-header-condensed", "mobile-nav-hidden");
-  }
-
-  if (isPersistentBottomNavigationRoute()) {
-    document.body.classList.remove("mobile-nav-hidden");
-  }
-  mobileChromeLastScrollY = currentScrollY;
-}
-
-function requestMobileScrollChromeUpdate() {
-  if (mobileChromeFrame) return;
-  mobileChromeFrame = window.requestAnimationFrame(updateMobileScrollChrome);
-}
-
-window.addEventListener("scroll", requestMobileScrollChromeUpdate, { passive: true });
-window.addEventListener("resize", requestMobileScrollChromeUpdate, { passive: true });
-updateMobileScrollChrome();
+window.addEventListener("scroll", () => {
+  $(".site-header").classList.toggle("compact", window.scrollY > 28);
+}, { passive: true });
 
 window.addEventListener("popstate", () => {
   handleBenefitRoute();
-  handleBenefitsRoute();
   handleNotesRoute();
   handleBrandsRoute();
   handleCatalogRoute();
@@ -8666,14 +8432,6 @@ function bindHorizontalRail(rail) {
 $$("[data-brand-marquee], [data-benefit-marquee]").forEach(bindBrandMarquee);
 $$('[data-horizontal-rail]').forEach(bindHorizontalRail);
 
-const backToTopButton = $("#back-to-top");
-if (backToTopButton) {
-  const updateBackToTop = () => backToTopButton.classList.toggle("visible", window.scrollY > 420);
-  window.addEventListener("scroll", updateBackToTop, { passive: true });
-  backToTopButton.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
-  updateBackToTop();
-}
-
 window.ORIGOStore = {
   api,
   get state() { return state; },
@@ -8701,7 +8459,6 @@ renderSiteFooter();
 const footerYear = $("#footer-year");
 if (footerYear) footerYear.textContent = String(new Date().getFullYear());
 handleBenefitRoute({ replace: true });
-handleBenefitsRoute({ replace: true });
 handleNotesRoute({ replace: true });
 handleBrandsRoute({ replace: true });
 handleCatalogRoute({ replace: true });
