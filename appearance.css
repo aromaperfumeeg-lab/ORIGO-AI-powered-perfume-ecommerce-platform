@@ -1008,6 +1008,10 @@ body:not(.dark) .origo-footer::before{
 
 body:not(.dark) .origo-footer :where(h2,h3,h4,b,strong){color:var(--origo-text)!important}
 body:not(.dark) .origo-footer :where(p,small,a){color:var(--origo-muted)!important}
+body:not(.dark) .origo-footer .footer-directory :where(p,small,a,button),
+body:not(.dark) .origo-footer .footer-bottom-bar :where(p,small,a){
+  color:#111!important;
+}
 
 button:focus-visible,
 a:focus-visible,
