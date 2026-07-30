@@ -341,12 +341,25 @@ db.exec(`
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
   );
 
+  CREATE TABLE IF NOT EXISTS restock_requests (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    product_id TEXT NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+    user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    channel TEXT NOT NULL CHECK (channel IN ('email', 'whatsapp')),
+    contact TEXT NOT NULL,
+    language TEXT NOT NULL DEFAULT 'ar' CHECK (language IN ('ar', 'en')),
+    status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'notified', 'cancelled')),
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  );
+
   CREATE INDEX IF NOT EXISTS idx_carts_user ON carts(user_id);
   CREATE INDEX IF NOT EXISTS idx_orders_user ON orders(user_id);
   CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status, created_at DESC);
   CREATE INDEX IF NOT EXISTS idx_order_items_order ON order_items(order_id);
   CREATE INDEX IF NOT EXISTS idx_sessions_expiry ON sessions(expires_at);
   CREATE INDEX IF NOT EXISTS idx_order_events_order ON order_events(order_id, created_at DESC);
+  CREATE INDEX IF NOT EXISTS idx_restock_requests_product ON restock_requests(product_id, status, created_at DESC);
   CREATE INDEX IF NOT EXISTS idx_activity_log_created ON activity_log(created_at DESC);
   CREATE INDEX IF NOT EXISTS idx_alternative_matches_product ON alternative_matches(product_id, status, sort_order);
   CREATE INDEX IF NOT EXISTS idx_alternative_matches_reference ON alternative_matches(reference_id, status, sort_order);
@@ -551,6 +564,86 @@ const seedProducts = [
     badgeEn: "SUMMER PICK",
     image: "assets/citrus-veil.svg",
     gender: "unisex", mainIngredients: ["برغموت", "نيرولي", "أرز"], mainAccords: ["حمضي", "منعش", "أخضر", "خشبي"], accordProfile: [{id:"citrus",nameAr:"حمضي",nameEn:"Citrus",color:"#a7bd31",icon:"◉",strength:95},{id:"fresh",nameAr:"منعش",nameEn:"Fresh",color:"#24a7a1",icon:"≈",strength:88},{id:"aromatic",nameAr:"أروماتيك",nameEn:"Aromatic",color:"#4e9274",icon:"♧",strength:65},{id:"woody",nameAr:"خشبي",nameEn:"Woody",color:"#9b6b43",icon:"♢",strength:46}], seasons: ["spring", "summer"], usageTimes: ["day", "daily"], occasions: ["work", "travel", "casual"]
+  },
+  {
+    id: "demo-lattafa-khamrah",
+    sku: "DEMO-LAT-KHA-100",
+    brand: "Lattafa",
+    nameAr: "خمرة",
+    nameEn: "Khamrah",
+    category: "perfume",
+    typeAr: "للجنسين",
+    typeEn: "Unisex",
+    concentration: "EDP",
+    sizes: ["100 ML"],
+    notesAr: ["قرفة", "برغموت", "فانيليا", "عنبر"],
+    notesEn: ["Cinnamon", "Bergamot", "Vanilla", "Amber"],
+    price: 1250,
+    oldPrice: 1790,
+    badgeAr: "الأكثر مبيعًا",
+    badgeEn: "BESTSELLER",
+    image: "assets/products/experimental/lattafa-khamrah.webp",
+    gender: "unisex", mainIngredients: ["قرفة", "برغموت", "فانيليا", "عنبر"], mainAccords: ["دافئ", "حلو", "فانيليا", "عنبري"], accordProfile: [], seasons: ["winter", "autumn"], usageTimes: ["night"], occasions: ["evening", "formal"], performance: { longevity: 9, sillage: 8.5 }, reviewSummary: { average: 4.8, count: 2100 }, salesCount: 4200, createdAt: "2026-07-30T12:01:00.000Z", isNew: true
+  },
+  {
+    id: "demo-lattafa-asad",
+    sku: "DEMO-LAT-ASD-100",
+    brand: "Lattafa",
+    nameAr: "أسد",
+    nameEn: "Asad",
+    category: "perfume",
+    typeAr: "رجالي",
+    typeEn: "Men",
+    concentration: "EDP",
+    sizes: ["100 ML"],
+    notesAr: ["فلفل أسود", "قهوة", "فانيليا", "عنبر"],
+    notesEn: ["Black Pepper", "Coffee", "Vanilla", "Amber"],
+    price: 1180,
+    oldPrice: 1550,
+    badgeAr: "جديد",
+    badgeEn: "NEW",
+    image: "assets/products/experimental/lattafa-asad.webp",
+    gender: "men", mainIngredients: ["فلفل أسود", "قهوة", "فانيليا", "عنبر"], mainAccords: ["حار", "عنبري", "فانيليا", "خشبي"], accordProfile: [], seasons: ["winter", "autumn"], usageTimes: ["night"], occasions: ["evening", "formal"], performance: { longevity: 8, sillage: 8 }, reviewSummary: { average: 4.7, count: 1800 }, salesCount: 3600, createdAt: "2026-07-30T12:00:00.000Z", isNew: true
+  },
+  {
+    id: "demo-xerjoff-naxos",
+    sku: "DEMO-XER-NAX-100",
+    brand: "Xerjoff",
+    nameAr: "ناكسوس",
+    nameEn: "Naxos",
+    category: "perfume",
+    typeAr: "للجنسين",
+    typeEn: "Unisex",
+    concentration: "EDP",
+    sizes: ["100 ML"],
+    notesAr: ["عسل", "تبغ", "لافندر", "فانيليا"],
+    notesEn: ["Honey", "Tobacco", "Lavender", "Vanilla"],
+    price: 9800,
+    oldPrice: null,
+    badgeAr: "جديد",
+    badgeEn: "NEW",
+    image: "assets/products/experimental/xerjoff-naxos.webp",
+    gender: "unisex", mainIngredients: ["عسل", "تبغ", "لافندر", "فانيليا"], mainAccords: ["عسلي", "تبغي", "حلو", "عطري"], accordProfile: [], seasons: ["winter", "autumn", "spring"], usageTimes: ["evening"], occasions: ["formal", "occasions"], performance: { longevity: 8.5, sillage: 8 }, reviewSummary: { average: 4.7, count: 1600 }, salesCount: 2800, createdAt: "2026-07-30T12:04:00.000Z", isNew: true
+  },
+  {
+    id: "demo-initio-oud-for-greatness",
+    sku: "DEMO-INI-OFG-90",
+    brand: "Initio",
+    nameAr: "عود فور جريتنس",
+    nameEn: "Oud for Greatness",
+    category: "perfume",
+    typeAr: "للجنسين",
+    typeEn: "Unisex",
+    concentration: "EDP",
+    sizes: ["90 ML"],
+    notesAr: ["عود", "زعفران", "لافندر", "مسك"],
+    notesEn: ["Oud", "Saffron", "Lavender", "Musk"],
+    price: 12900,
+    oldPrice: null,
+    badgeAr: "جديد",
+    badgeEn: "NEW",
+    image: "assets/products/experimental/initio-oud-for-greatness.webp",
+    gender: "unisex", mainIngredients: ["عود", "زعفران", "لافندر", "مسك"], mainAccords: ["عود", "خشبي", "حار", "عطري"], accordProfile: [], seasons: ["winter", "autumn"], usageTimes: ["night"], occasions: ["formal", "occasions"], performance: { longevity: 9, sillage: 9 }, reviewSummary: { average: 4.9, count: 2200 }, salesCount: 3200, createdAt: "2026-07-30T12:03:00.000Z", isNew: true
   }
 ];
 
@@ -583,10 +676,10 @@ try {
       product.badgeAr,
       product.badgeEn,
       product.image,
-      JSON.stringify({ gender: product.gender, mainIngredients: product.mainIngredients, mainAccords: product.mainAccords, accordProfile: product.accordProfile, seasons: product.seasons, usageTimes: product.usageTimes, occasions: product.occasions })
+      JSON.stringify({ gender: product.gender, mainIngredients: product.mainIngredients, mainAccords: product.mainAccords, accordProfile: product.accordProfile, seasons: product.seasons, usageTimes: product.usageTimes, occasions: product.occasions, performance: product.performance, reviewSummary: product.reviewSummary, salesCount: product.salesCount, createdAt: product.createdAt, isNew: product.isNew })
     );
     const stored = parseJSON(db.prepare("SELECT catalog_json FROM products WHERE id=?").get(product.id)?.catalog_json, {});
-    const defaults = { gender: product.gender, mainIngredients: product.mainIngredients, mainAccords: product.mainAccords, accordProfile: product.accordProfile, seasons: product.seasons, usageTimes: product.usageTimes, occasions: product.occasions };
+    const defaults = { gender: product.gender, mainIngredients: product.mainIngredients, mainAccords: product.mainAccords, accordProfile: product.accordProfile, seasons: product.seasons, usageTimes: product.usageTimes, occasions: product.occasions, performance: product.performance, reviewSummary: product.reviewSummary, salesCount: product.salesCount, createdAt: product.createdAt, isNew: product.isNew };
     const merged = { ...defaults, ...stored };
     for (const [key, value] of Object.entries(defaults)) if (stored[key] == null || (Array.isArray(stored[key]) && !stored[key].length)) merged[key] = value;
     db.prepare("UPDATE products SET catalog_json=? WHERE id=?").run(JSON.stringify(merged), product.id);
@@ -839,6 +932,10 @@ function productFromRow(row, includeMetadata = false) {
     perfumer: metadata.perfumer || "",
     performance: metadata.performance || {},
     occasions: Array.isArray(metadata.occasions) ? metadata.occasions : [],
+    reviewSummary: metadata.reviewSummary && typeof metadata.reviewSummary === "object" ? metadata.reviewSummary : undefined,
+    salesCount: Number(metadata.salesCount || 0),
+    createdAt: metadata.createdAt || row.created_at || "",
+    isNew: Boolean(metadata.isNew),
     mainIngredients: Array.isArray(metadata.mainIngredients) ? metadata.mainIngredients : [],
     accordProfile: Array.isArray(metadata.accordProfile) ? metadata.accordProfile : [],
     profileImages: metadata.profileImages && typeof metadata.profileImages === "object" ? metadata.profileImages : {},
@@ -2225,6 +2322,43 @@ export function createAlternativeRequest({ query, email = "", phone = "", channe
   const result = db.prepare(`INSERT INTO alternative_requests (query,normalized_query,email,phone,channel,language)
     VALUES (?,?,?,?,?,?)`).run(safeQuery, normalizedAlternativeText(safeQuery), clean(email, 250).toLowerCase(), clean(phone, 40), safeChannel, language === "en" ? "en" : "ar");
   return { id: Number(result.lastInsertRowid), status: "new" };
+}
+
+export function createRestockRequest({ productId, userId = null, channel = "email", contact = "", language = "ar" } = {}) {
+  const safeProductId = clean(productId, 160);
+  const product = db.prepare("SELECT id FROM products WHERE id=?").get(safeProductId);
+  if (!product) {
+    const error = new Error("PRODUCT_NOT_FOUND");
+    error.code = "PRODUCT_NOT_FOUND";
+    throw error;
+  }
+  const safeChannel = channel === "whatsapp" ? "whatsapp" : "email";
+  const rawContact = clean(contact, 250);
+  const normalizedContact = safeChannel === "email"
+    ? rawContact.toLowerCase()
+    : rawContact.replace(/[^\d+]/g, "").replace(/(?!^)\+/g, "");
+  const valid = safeChannel === "email"
+    ? /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedContact)
+    : /^\+?\d{8,15}$/.test(normalizedContact);
+  if (!valid) {
+    const error = new Error(safeChannel === "email" ? "INVALID_EMAIL" : "INVALID_PHONE");
+    error.code = error.message;
+    throw error;
+  }
+  const existing = db.prepare(`SELECT id, status FROM restock_requests
+    WHERE product_id=? AND channel=? AND contact=? AND status='pending'
+    ORDER BY id DESC LIMIT 1`).get(safeProductId, safeChannel, normalizedContact);
+  if (existing) return { id: Number(existing.id), status: existing.status, duplicate: true };
+  const result = db.prepare(`INSERT INTO restock_requests
+    (product_id,user_id,channel,contact,language,status)
+    VALUES (?,?,?,?,?,'pending')`).run(
+    safeProductId,
+    Number(userId) || null,
+    safeChannel,
+    normalizedContact,
+    language === "en" ? "en" : "ar"
+  );
+  return { id: Number(result.lastInsertRowid), status: "pending", duplicate: false };
 }
 
 export function recordActivity(userId, action, entityType = "", entityId = "", details = {}) {

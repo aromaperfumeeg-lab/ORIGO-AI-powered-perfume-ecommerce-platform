@@ -85,6 +85,16 @@
 .origo-footer .footer-socials>span[aria-disabled="true"]{filter:grayscale(1);opacity:.34;cursor:not-allowed}
 .origo-footer .footer-socials svg{width:21px!important;height:21px!important;fill:currentColor!important;stroke:none!important}
 .origo-footer .footer-socials .social-youtube{background:#ff0033;color:#fff}.origo-footer .footer-socials .social-facebook{background:#1877f2;color:#fff}.origo-footer .footer-socials .social-tiktok{background:#050505;color:#fff}.origo-footer .footer-socials .social-instagram{background:linear-gradient(135deg,#833ab4,#e1306c 58%,#fcb045);color:#fff}.origo-footer .footer-socials .social-snapchat{background:#fffc00;color:#111}.origo-footer .footer-socials .social-telegram{background:#2aabee;color:#fff}.origo-footer .footer-socials .social-whatsapp{background:#25d366;color:#fff}
+.origo-footer .footer-social-column .footer-newsletter{width:100%;margin:22px 0 0;padding:18px 0 0!important;border-top:1px solid var(--footer-line);text-align:center}
+.origo-footer .footer-social-column .footer-newsletter .footer-spark{display:none}
+.origo-footer .footer-social-column .footer-newsletter h2{margin:0 0 6px!important;font-size:16px!important;line-height:1.45!important}
+.origo-footer .footer-social-column .footer-newsletter>p{margin:0 0 12px!important;font-size:11px!important;line-height:1.65!important}
+.origo-footer .footer-social-column #newsletter-form{gap:8px}
+.origo-footer .footer-social-column .footer-email-field{height:42px;padding:0 10px;border-radius:9px}
+.origo-footer .footer-social-column .footer-email-field span{font-size:16px}
+.origo-footer .footer-social-column .footer-email-field input{font-size:11px}
+.origo-footer .footer-social-column #newsletter-form>button{min-height:42px;padding:8px 12px;border-radius:9px;font-size:13px;gap:10px}
+.origo-footer .footer-social-column #newsletter-status{min-height:14px;font-size:10px}
 
 .origo-footer .footer-bottom-bar{display:flex!important;align-items:center!important;justify-content:center!important;min-height:44px!important;padding:10px 24px!important;border-top:1px solid var(--footer-line)!important;background:var(--footer-panel)!important;color:var(--footer-text)!important}
 .origo-footer .footer-bottom-bar p{margin:0!important;font-size:13px!important;text-align:center}

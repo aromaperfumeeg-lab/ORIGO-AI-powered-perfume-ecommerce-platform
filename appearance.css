@@ -820,7 +820,131 @@ body:not(.dark) .site-header .header-commerce-actions :is(.wishlist-button,.cart
   }
 }
 
+/* Product-card controls always stay inside the product image surface. */
+#storefront-main .product-card .product-image{
+  position:relative!important;
+  isolation:isolate!important;
+  overflow:hidden!important;
+}
+#storefront-main .product-card .product-image>img{
+  position:relative;
+  z-index:1;
+}
+#storefront-main .product-card .product-image>.product-badge{
+  position:absolute!important;
+  z-index:6!important;
+  top:10px!important;
+  right:auto!important;
+  bottom:auto!important;
+  left:10px!important;
+  max-width:calc(100% - 64px);
+  box-sizing:border-box;
+}
+#storefront-main .product-card .product-image>.heart-button{
+  position:absolute!important;
+  z-index:7!important;
+  top:10px!important;
+  right:10px!important;
+  bottom:auto!important;
+  left:auto!important;
+  box-sizing:border-box;
+}
+#storefront-main .product-card .product-image>.home-compare-action{
+  position:absolute!important;
+  z-index:7!important;
+  top:auto!important;
+  right:auto!important;
+  bottom:10px!important;
+  left:10px!important;
+  box-sizing:border-box;
+}
+
+@media(max-width:640px){
+  #storefront-main .product-card .product-image>.product-badge{
+    top:7px!important;
+    left:7px!important;
+  }
+  #storefront-main .product-card .product-image>.heart-button{
+    top:7px!important;
+    right:7px!important;
+  }
+  #storefront-main .product-card .product-image>.home-compare-action{
+    bottom:7px!important;
+    left:7px!important;
+  }
+}
+
 .site-header .header-commerce-actions{position:relative}
+
+/* Keep every commerce icon optically equal and prevent count badges overlapping. */
+.site-header .header-commerce-actions>button,
+body:not(.dark) .site-header .header-commerce-actions>button{
+  width:40px;
+  min-width:40px;
+  height:40px;
+  padding:0;
+  display:grid;
+  place-items:center;
+  overflow:visible;
+}
+.site-header .header-commerce-actions>button>svg,
+body:not(.dark) .site-header .header-commerce-actions>button>svg,
+.site-header .header-commerce-actions>button>.origo-lux-icon{
+  width:22px;
+  height:22px;
+  flex:0 0 22px;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:1.7;
+}
+.site-header .header-commerce-actions>button>.action-count,
+body:not(.dark) .site-header .header-commerce-actions>button>.action-count{
+  inset-block-start:-3px;
+  inset-inline-end:-3px;
+  width:auto!important;
+  min-width:18px;
+  max-width:none;
+  height:18px;
+  padding:0 4px;
+  border:2px solid #fff;
+  font-size:9px;
+  line-height:14px;
+}
+@media(max-width:700px){
+  .site-header .header-commerce-actions{
+    grid-template-columns:repeat(4,27px);
+    gap:1px;
+  }
+  .site-header .header-commerce-actions>button,
+  body:not(.dark) .site-header .header-commerce-actions>button{
+    width:27px;
+    min-width:27px;
+    height:36px;
+  }
+  .site-header .header-commerce-actions>button>svg,
+  body:not(.dark) .site-header .header-commerce-actions>button>svg,
+  .site-header .header-commerce-actions>button>.origo-lux-icon{
+    width:20px;
+    height:20px;
+    flex-basis:20px;
+  }
+  .site-header .header-commerce-actions>button>.action-count,
+  body:not(.dark) .site-header .header-commerce-actions>button>.action-count{
+    inset-block-start:-1px;
+    inset-inline-end:-2px;
+    width:auto!important;
+    min-width:16px;
+    max-width:none;
+    height:16px;
+    padding:0 3px;
+    border-width:2px;
+    font-size:7px;
+    line-height:12px;
+  }
+  body.mobile-header-condensed .site-header .header-commerce-actions{
+    grid-template-columns:repeat(2,27px);
+  }
+}
 .site-header .header-account-menu{
   position:absolute;
   z-index:90;
@@ -2325,5 +2449,138 @@ body:not(.dark) :where(
     background-image: none !important;
     -webkit-backdrop-filter: none !important;
     backdrop-filter: none !important;
+  }
+}
+
+/* Final header icon scale: consistent optical size across every header control. */
+.site-header{
+  --origo-header-control-size:40px;
+  --origo-header-icon-size:22px;
+  --origo-header-nav-icon-size:17px;
+  --origo-header-chevron-size:13px;
+}
+.site-header :is(.header-commerce-actions>button,.header-preference-actions>button){
+  min-height:var(--origo-header-control-size);
+}
+.site-header :is(
+  .header-commerce-actions>button>svg,
+  .header-commerce-actions>button>.origo-lux-icon,
+  .header-search>svg,
+  .header-search>.origo-lux-icon
+){
+  width:var(--origo-header-icon-size)!important;
+  height:var(--origo-header-icon-size)!important;
+  flex:0 0 var(--origo-header-icon-size)!important;
+}
+.site-header .mobile-menu-button>.origo-lux-icon,
+.site-header .header-preference-actions .theme-toggle .origo-lux-icon{
+  width:20px!important;
+  height:20px!important;
+  flex:0 0 20px!important;
+}
+.site-header .category-nav .nav-icon{
+  width:20px;
+  min-width:20px;
+  height:20px;
+  display:inline-grid;
+  place-items:center;
+  font-size:var(--origo-header-nav-icon-size)!important;
+  line-height:1;
+}
+.site-header .category-nav .nav-icon>.origo-lux-icon{
+  width:var(--origo-header-nav-icon-size)!important;
+  height:var(--origo-header-nav-icon-size)!important;
+  flex:0 0 var(--origo-header-nav-icon-size)!important;
+}
+.site-header .category-nav .brands-nav>button>i{
+  width:var(--origo-header-chevron-size);
+  min-width:var(--origo-header-chevron-size);
+  height:var(--origo-header-chevron-size);
+  display:grid;
+  place-items:center;
+  font-size:var(--origo-header-chevron-size);
+  line-height:1;
+}
+.site-header .category-nav .brands-nav>button>i>.origo-lux-icon{
+  width:var(--origo-header-chevron-size)!important;
+  height:var(--origo-header-chevron-size)!important;
+}
+.site-header .mega-dropdown>button>i,
+.site-header .header-account-menu>button>i{
+  width:20px;
+  min-width:20px;
+  height:20px;
+  display:grid;
+  place-items:center;
+  font-size:16px;
+  line-height:1;
+  font-style:normal;
+}
+@media(max-width:700px){
+  .site-header{
+    --origo-header-control-size:36px;
+    --origo-header-icon-size:20px;
+  }
+  .site-header .mobile-menu-button{
+    width:36px!important;
+    min-width:36px!important;
+    height:36px!important;
+  }
+  .site-header .mobile-menu-button>.origo-lux-icon,
+  .site-header .header-preference-actions .theme-toggle .origo-lux-icon{
+    width:20px!important;
+    height:20px!important;
+  }
+}
+
+/* Mobile logo is anchored to the viewport center and is never cropped. */
+@media(max-width:700px){
+  .site-header .header-main,
+  .site-header.compact .header-main,
+  body.mobile-header-condensed .site-header .header-main,
+  body.mobile-header-condensed .site-header.compact .header-main{
+    position:relative!important;
+    grid-template-columns:40px minmax(0,1fr) 112px!important;
+    grid-template-areas:"menu spacer commerce"!important;
+    overflow:visible!important;
+  }
+  .site-header .header-preference-actions{
+    display:none!important;
+  }
+  .site-header .header-main>.brand,
+  .site-header.compact .header-main>.brand,
+  body.mobile-header-condensed .site-header .header-main>.brand,
+  body.mobile-header-condensed .site-header.compact .header-main>.brand{
+    position:absolute!important;
+    z-index:6!important;
+    top:50%!important;
+    left:50%!important;
+    right:auto!important;
+    width:clamp(118px,35vw,142px)!important;
+    min-width:0!important;
+    height:55px!important;
+    margin:0!important;
+    padding:0!important;
+    display:grid!important;
+    place-items:center!important;
+    overflow:visible!important;
+    opacity:1!important;
+    pointer-events:auto!important;
+    transform:translate(-50%,-50%)!important;
+  }
+  .site-header .header-main>.brand img,
+  .site-header.compact .header-main>.brand img,
+  body.mobile-header-condensed .site-header .header-main>.brand img{
+    width:100%!important;
+    max-width:none!important;
+    height:100%!important;
+    max-height:none!important;
+    display:block!important;
+    object-fit:contain!important;
+    object-position:center!important;
+    padding:2px 0!important;
+    box-sizing:border-box!important;
+    overflow:visible!important;
+    clip-path:none!important;
   }
 }

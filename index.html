@@ -8,28 +8,158 @@
         window.location.replace("http://127.0.0.1:4173/");
       }
     </script>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.05" />
     <meta name="theme-color" content="#6d0d24" />
     <meta
       name="description"
       content="ORIGO — متجر ومنصة عربية لاكتشاف العطور، النوتات، البدائل، والمقارنات."
     />
     <title>ORIGO | أصل الحكاية العطرية</title>
+    <style>
+      body.is-loading{overflow:hidden}
+      .origo-page-loader{
+        position:fixed;
+        inset:0;
+        z-index:2147483647;
+        display:grid;
+        place-items:center;
+        background:#fffdf9;
+        opacity:1;
+        visibility:visible;
+        transition:opacity .35s ease,visibility .35s ease;
+      }
+      .origo-page-loader.is-complete{opacity:0;visibility:hidden;pointer-events:none}
+      .origo-page-loader__content{
+        display:grid;
+        place-items:center;
+        gap:22px;
+      }
+      .origo-page-loader__logo{
+        width:clamp(170px,32vw,255px);
+        height:auto;
+        display:block;
+      }
+      .origo-page-loader__progress{
+        position:relative;
+        width:76px;
+        height:76px;
+        display:grid;
+        place-items:center;
+      }
+      .origo-page-loader__progress svg{
+        position:absolute;
+        inset:0;
+        width:100%;
+        height:100%;
+        overflow:visible;
+        transform:rotate(-90deg);
+      }
+      .origo-page-loader__track,
+      .origo-page-loader__value{fill:none;stroke-width:3}
+      .origo-page-loader__track{stroke:rgba(109,13,36,.12)}
+      .origo-page-loader__value{
+        stroke:#8a0a27;
+        stroke-linecap:round;
+        stroke-dasharray:213.63;
+        stroke-dashoffset:calc(213.63 - (213.63 * var(--loader-progress,0) / 100));
+        transition:stroke-dashoffset .18s linear;
+      }
+      .origo-page-loader__progress::after{
+        content:"";
+        position:absolute;
+        inset:4px;
+        border-radius:50%;
+        border-top:1px solid rgba(211,161,60,.8);
+        animation:origo-loader-spin 1.25s linear infinite;
+      }
+      .origo-page-loader__percent{
+        position:relative;
+        color:#720019;
+        font:700 14px/1 "Segoe UI",Tahoma,sans-serif;
+        direction:ltr;
+      }
+      @keyframes origo-loader-spin{to{transform:rotate(360deg)}}
+      @media(prefers-reduced-motion:reduce){
+        .origo-page-loader,.origo-page-loader__value{transition-duration:.12s}
+        .origo-page-loader__progress::after{animation:none}
+      }
+    </style>
     <link rel="stylesheet" href="styles.css?v=23" />
-    <link rel="stylesheet" href="home.css?v=41" />
-    <link rel="stylesheet" href="product-detail.css?v=7" media="print" onload="this.media='all'" />
+    <link rel="stylesheet" href="home.css?v=46" />
+    <link rel="stylesheet" href="product-detail.css?v=8" media="print" onload="this.media='all'" />
     <link rel="stylesheet" href="catalog.css?v=1" media="print" onload="this.media='all'" />
-    <link rel="stylesheet" href="footer.css?v=15" />
+    <link rel="stylesheet" href="footer.css?v=16" />
     <link rel="stylesheet" href="commerce.css?v=1" media="print" onload="this.media='all'" />
     <link rel="stylesheet" href="account.css?v=2" media="print" onload="this.media='all'" />
     <link rel="stylesheet" href="fragrance-finder.css?v=1" media="print" onload="this.media='all'" />
     <link rel="stylesheet" href="alternatives.css?v=1" media="print" onload="this.media='all'" />
     <link rel="stylesheet" href="performance-insights.css?v=3" media="print" onload="this.media='all'" />
 <link rel="stylesheet" href="shell.css?v=10" />
-    <link rel="stylesheet" href="appearance.css?v=16" />
+    <link rel="stylesheet" href="appearance.css?v=21" />
     <link rel="stylesheet" href="notes-admin-fixes.css?v=2" media="print" onload="this.media='all'" />
   </head>
-  <body>
+  <body class="is-loading">
+    <div class="origo-page-loader" id="origo-page-loader" role="status" aria-live="polite" aria-label="جارٍ تحميل متجر ORIGO">
+      <div class="origo-page-loader__content">
+        <img class="origo-page-loader__logo" src="assets/origo-logo.svg" alt="ORIGO" />
+        <div class="origo-page-loader__progress" aria-hidden="true">
+          <svg viewBox="0 0 76 76">
+            <circle class="origo-page-loader__track" cx="38" cy="38" r="34"></circle>
+            <circle class="origo-page-loader__value" cx="38" cy="38" r="34"></circle>
+          </svg>
+          <span class="origo-page-loader__percent" id="origo-page-loader-percent">0%</span>
+        </div>
+      </div>
+    </div>
+    <noscript><style>.origo-page-loader{display:none!important}body.is-loading{overflow:auto}</style></noscript>
+    <script>
+      (() => {
+        const loader = document.getElementById("origo-page-loader");
+        const percent = document.getElementById("origo-page-loader-percent");
+        if (!loader || !percent) return;
+
+        let value = 0;
+        let target = 18;
+        let finished = false;
+        const startedAt = Date.now();
+        const minimumVisibleTime = 520;
+
+        const paint = () => {
+          loader.style.setProperty("--loader-progress", String(value));
+          percent.textContent = `${Math.round(value)}%`;
+          loader.setAttribute("aria-label", `جارٍ تحميل متجر ORIGO — ${Math.round(value)}%`);
+        };
+
+        const complete = () => {
+          if (finished) return;
+          finished = true;
+          target = 100;
+        };
+
+        const timer = window.setInterval(() => {
+          const step = target === 100 ? 4 : Math.max(.35, (target - value) * .09);
+          value = Math.min(target, value + step);
+          if (target === 100 && value >= 99.5) {
+            value = 100;
+            paint();
+            window.clearInterval(timer);
+            const remaining = Math.max(0, minimumVisibleTime - (Date.now() - startedAt));
+            window.setTimeout(() => {
+              loader.classList.add("is-complete");
+              document.body.classList.remove("is-loading");
+              window.setTimeout(() => loader.remove(), 380);
+            }, remaining);
+            return;
+          }
+          paint();
+        }, 45);
+
+        paint();
+        document.addEventListener("DOMContentLoaded", () => { target = Math.max(target, 74); }, { once: true });
+        window.addEventListener("load", complete, { once: true });
+        window.setTimeout(complete, 8000);
+      })();
+    </script>
     <div class="announcement" aria-hidden="true"></div>
 
     <header class="site-header" id="top">
@@ -193,6 +323,28 @@
         <section class="home-benefits-directory" aria-labelledby="home-benefits-title">
           <div class="home-section-head"><a href="/benefits" data-action="open-benefits-page"><span data-i18n="viewAll">عرض الكل</span> <span>‹</span></a><div class="ornament-heading"><h2 id="home-benefits-title">مميزاتنا</h2></div></div>
           <div class="benefit-carousel-track" id="home-benefits-track" data-benefit-marquee aria-live="off"></div>
+        </section>
+
+        <section class="home-gender-section" aria-labelledby="home-gender-title">
+          <div class="gender-section-title">
+            <span aria-hidden="true"></span>
+            <div><i aria-hidden="true">♢</i><h2 id="home-gender-title">تسوّق حسب الجنس</h2></div>
+            <span aria-hidden="true"></span>
+          </div>
+          <div class="home-gender-grid">
+            <a class="home-gender-card gender-men" href="/perfumes?quick=men" data-action="home-gender-filter" data-gender="men">
+              <span class="gender-card-art"><img src="assets/home/gender/gender-art-men.webp" width="464" height="571" loading="lazy" decoding="async" fetchpriority="low" alt="مجموعة العطور الرجالية"/></span>
+              <span class="gender-card-copy"><b>للرجال</b><small>عطور تعكس القوة والأناقة والثقة</small></span>
+            </a>
+            <a class="home-gender-card gender-women" href="/perfumes?quick=women" data-action="home-gender-filter" data-gender="women">
+              <span class="gender-card-art"><img src="assets/home/gender/gender-art-women.webp" width="461" height="571" loading="lazy" decoding="async" fetchpriority="low" alt="مجموعة العطور النسائية"/></span>
+              <span class="gender-card-copy"><b>للنساء</b><small>عطور تمنحك الجمال والجاذبية</small></span>
+            </a>
+            <a class="home-gender-card gender-unisex" href="/perfumes?quick=unisex" data-action="home-gender-filter" data-gender="unisex">
+              <span class="gender-card-art"><img src="assets/home/gender/gender-art-unisex.webp" width="464" height="571" loading="lazy" decoding="async" fetchpriority="low" alt="مجموعة عطور للجنسين"/></span>
+              <span class="gender-card-copy"><b>للجنسين</b><small>عطور تناسب الجميع بلا حدود</small></span>
+            </a>
+          </div>
         </section>
 
         <section class="home-best-sellers home-new-arrivals" id="new-arrivals" aria-labelledby="new-arrivals-title"><div class="home-section-head"><a href="/perfumes?sort=newest"><span data-i18n="viewAll">عرض باقي المنتجات الحديثة</span> <span>‹</span></a><div class="ornament-heading"><span></span><h2 id="new-arrivals-title">المنتجات الحديثة</h2><span></span></div></div><div class="home-products-wrap"><div class="product-grid horizontal-scroll horizontal-rail" id="new-product-grid" data-horizontal-rail></div></div></section>
@@ -607,18 +759,6 @@
     </div>
 
     <footer class="origo-footer" id="site-footer">
-      <div class="footer-top-grid">
-        <section class="footer-newsletter" aria-labelledby="footer-newsletter-title">
-          <span class="footer-spark" aria-hidden="true">✦</span><h2 id="footer-newsletter-title">اشترك في نشرتنا البريدية</h2><p id="footer-newsletter-copy">كن أول من يعرف عن العروض والمنتجات الجديدة</p>
-          <form id="newsletter-form" novalidate>
-            <label for="footer-email" class="sr-only">البريد الإلكتروني</label>
-            <div class="footer-email-field"><span aria-hidden="true">✉</span><input id="footer-email" name="email" type="email" autocomplete="email" required placeholder="أدخل بريدك الإلكتروني" /></div>
-            <button type="submit"><span>اشترك الآن</span><i aria-hidden="true">←</i></button>
-            <small id="newsletter-status" aria-live="polite"></small>
-          </form>
-        </section>
-      </div>
-
       <div class="footer-directory">
         <section class="footer-column"><h3>تسوق</h3><a href="/perfumes?quick=men">العطور للرجال <span>♙</span></a><a href="/perfumes?quick=women">العطور للنساء <span>♙</span></a><a href="/perfumes?quick=unisex">العطور للجنسين <span>♙</span></a><a href="/alternatives" data-action="open-alternatives">البدائل <span>⇄</span></a><a href="/search?q=عطور+شرقية">العطور الشرقية <span>♙</span></a><a href="/search?q=عطور+عربية">العطور العربية <span>♙</span></a><a href="/perfumes?quick=sale">العروض <span>‹</span></a><a href="/perfumes?quick=new">الجديد <span>‹</span></a></section>
         <section class="footer-column"><h3>ماركات</h3><div class="footer-brand-list" id="footer-brand-links"><button data-action="brand-search" data-query="ORIGO">ORIGO</button></div><a class="footer-all-link" href="/brands" data-action="open-brands-page">عرض جميع الماركات <span>▦</span></a></section>
@@ -635,7 +775,19 @@
             <div class="footer-app-links" id="footer-app-links"><small>التطبيق قريبًا</small></div>
           </div>
         </section>
-        <section class="footer-app footer-social-column footer-column"><h3>تابعنا</h3><div class="footer-socials" id="footer-socials" aria-label="شبكات ORIGO الاجتماعية"></div></section>
+        <section class="footer-app footer-social-column footer-column">
+          <h3>تابعنا</h3>
+          <div class="footer-socials" id="footer-socials" aria-label="شبكات ORIGO الاجتماعية"></div>
+          <div class="footer-newsletter" aria-labelledby="footer-newsletter-title">
+            <span class="footer-spark" aria-hidden="true">✦</span><h2 id="footer-newsletter-title">اشترك في نشرتنا البريدية</h2><p id="footer-newsletter-copy">كن أول من يعرف عن العروض والمنتجات الجديدة</p>
+            <form id="newsletter-form" novalidate>
+              <label for="footer-email" class="sr-only">البريد الإلكتروني</label>
+              <div class="footer-email-field"><span aria-hidden="true">✉</span><input id="footer-email" name="email" type="email" autocomplete="email" required placeholder="أدخل بريدك الإلكتروني" /></div>
+              <button type="submit"><span>اشترك الآن</span><i aria-hidden="true">←</i></button>
+              <small id="newsletter-status" aria-live="polite"></small>
+            </form>
+          </div>
+        </section>
       </div>
 
       <div class="footer-bottom-bar"><p>© <span id="footer-year">2026</span> ORIGO. جميع الحقوق محفوظة.</p></div>
@@ -992,7 +1144,7 @@
     <script src="fragrance-notes-library.js?v=7"></script>
     <script src="catalog-providers.js?v=6"></script>
     <script src="external-tracking.js?v=1"></script>
-    <script src="app.js?v=64"></script>
+    <script src="app.js?v=69"></script>
     <script src="deferred-modules.js?v=1"></script>
   </body>
 </html>

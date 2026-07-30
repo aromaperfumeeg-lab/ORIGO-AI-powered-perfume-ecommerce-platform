@@ -2648,7 +2648,24 @@ function localizeStaticStorefront() {
   setText("#new-arrivals-title", "المنتجات الحديثة", "New arrivals");
   setText(".home-new-arrivals .home-section-head>a span:first-child", "عرض باقي المنتجات الحديثة", "View all new arrivals");
   setText("#home-benefits-title", "مميزاتنا", "Our benefits");
+  setText("#home-gender-title", "تسوّق حسب الجنس", "Shop by gender");
   renderHomeBenefitsMarquee();
+  const genderCards = [
+    ["للرجال", "عطور تعكس القوة والأناقة والثقة", "Men", "Fragrances of strength, elegance, and confidence"],
+    ["للنساء", "عطور تمنحك الجمال والجاذبية", "Women", "Fragrances of beauty and allure"],
+    ["للجنسين", "عطور تناسب الجميع بلا حدود", "Unisex", "Fragrances made for everyone"]
+  ];
+  $$(".home-gender-card").forEach((card, index) => {
+    const copy = genderCards[index];
+    if (!copy) return;
+    const title = $(".gender-card-copy b", card);
+    const description = $(".gender-card-copy small", card);
+    const image = $(".gender-card-art img", card);
+    if (title) title.textContent = ar ? copy[0] : copy[2];
+    if (description) description.textContent = ar ? copy[1] : copy[3];
+    if (image) image.alt = ar ? `مجموعة عطور ${copy[0]}` : `${copy[2]} fragrance collection`;
+    card.setAttribute("aria-label", ar ? `تسوق عطور ${copy[0]}` : `Shop ${copy[2].toLowerCase()} fragrances`);
+  });
   const genders = [
     ["للرجال", "عطور تعكس القوة والأناقة والثقة", "Men", "Fragrances of strength, elegance, and confidence"],
     ["للنساء", "عطور تجمع بين الأنوثة والرقي والجاذبية", "Women", "Fragrances of femininity, refinement, and allure"],
@@ -2834,7 +2851,8 @@ function renderHomepageCommerce() {
   renderHomeBenefitsMarquee();
   const newest = $("#new-product-grid");
   if (newest) {
-    const products = state.products.map((product, index) => ({ product, score: productDateScore(product, index) })).sort((a, b) => b.score - a.score).slice(0, 12).map(({ product }) => product);
+    const homepageProductLimit = matchMedia("(max-width: 640px)").matches ? 2 : 12;
+    const products = state.products.map((product, index) => ({ product, score: productDateScore(product, index) })).sort((a, b) => b.score - a.score).slice(0, homepageProductLimit).map(({ product }) => product);
     newest.innerHTML = products.map((product, index) => productCardMarkup(product, { context: "grid", delay: Math.min(index * 45, 180) })).join("");
     bindHorizontalRail(newest);
   }
@@ -3264,7 +3282,7 @@ function renderProducts(filter = "all") {
       ...(product.notesEn || [])
     ].join(" ")).includes(search))
     .sort((a, b) => productSalesScore(b) - productSalesScore(a))
-    .slice(0, 12);
+    .slice(0, matchMedia("(max-width: 640px)").matches ? 2 : 12);
   if (!visibleProducts.length) {
     grid.innerHTML = `
       <div class="product-grid-empty">
@@ -4523,17 +4541,42 @@ function productStructuredData(product, media) {
   node.textContent = JSON.stringify([schema, breadcrumbs]);
 }
 
+function performanceScoreOutOfTen(value, product, kind) {
+  const numeric = Number(value);
+  if (Number.isFinite(numeric) && numeric > 0) {
+    return Math.min(10, Math.max(0, numeric <= 5 ? numeric * 2 : numeric));
+  }
+  const concentration = String(product?.concentration || "").toLowerCase();
+  if (concentration.includes("parfum") || concentration.includes("extrait")) return kind === "sillage" ? 8 : 8.5;
+  if (concentration.includes("edp") || concentration.includes("eau de parfum")) return kind === "sillage" ? 7.5 : 8;
+  if (concentration.includes("edt") || concentration.includes("eau de toilette")) return kind === "sillage" ? 6.5 : 6;
+  return 7;
+}
+
+function formatPerformanceScore(value) {
+  return Number.isInteger(value) ? String(value) : value.toFixed(1);
+}
+
+function performanceScoreMarkup(value, product, kind, label) {
+  const score = performanceScoreOutOfTen(value, product, kind);
+  const percentage = Math.round(score * 10);
+  return `<span class="performance-score" role="img" aria-label="${escapeHTML(label)}: ${formatPerformanceScore(score)} ${state.lang === "ar" ? "من 10" : "out of 10"}"><span class="performance-score-track" aria-hidden="true"><i style="width:${percentage}%"></i></span><b dir="ltr">${formatPerformanceScore(score)}/10</b></span>`;
+}
+
 function productPerformanceMarkup(product) {
   const performance = product.performance || {};
   const insights = product.insights || {};
   const values = [
-    ["◷", "الثبات", "Longevity", performance.longevity ?? insights.longevity],
-    ["◉", "الفوحان", "Sillage", performance.sillage ?? performance.projection ?? insights.sillage],
-    ["❧", "الموسم", "Season", (product.seasons || []).join(" · ")],
-    ["◇", "الاستخدام", "Occasion", (product.occasions || []).join(" · ")]
+    ["◷", "الثبات", "Longevity", performance.longevity ?? insights.longevity, "longevity"],
+    ["◉", "الفوحان", "Sillage", performance.sillage ?? performance.projection ?? insights.sillage, "sillage"],
+    ["❧", "الموسم", "Season", (product.seasons || []).join(" · "), ""],
+    ["◇", "الاستخدام", "Occasion", (product.occasions || []).join(" · "), ""]
   ].filter((item) => item[3] !== undefined && item[3] !== null && item[3] !== "");
   if (!values.length) return "";
-  return `<section class="pdp-performance" aria-labelledby="pdp-performance-title"><div class="pdp-section-heading"><span>EDITORIAL</span><h2 id="pdp-performance-title">${state.lang === "ar" ? "ملخص الأداء التحريري" : "Editorial performance"}</h2><p>${state.lang === "ar" ? "بيانات يقدمها فريق المنتج وليست تصويتًا مجتمعيًا." : "Product-team data, not community voting."}</p></div><div>${values.map(([icon, ar, en, value]) => `<article><i>${icon}</i><small>${state.lang === "ar" ? ar : en}</small><b>${escapeHTML(typeof value === "number" ? `${value}/5` : value)}</b></article>`).join("")}</div></section>`;
+  return `<section class="pdp-performance" aria-labelledby="pdp-performance-title"><div class="pdp-section-heading"><span>EDITORIAL</span><h2 id="pdp-performance-title">${state.lang === "ar" ? "ملخص الأداء التحريري" : "Editorial performance"}</h2><p>${state.lang === "ar" ? "بيانات يقدمها فريق المنتج وليست تصويتًا مجتمعيًا." : "Product-team data, not community voting."}</p></div><div>${values.map(([icon, ar, en, value, kind]) => {
+    const label = state.lang === "ar" ? ar : en;
+    return `<article><i>${icon}</i><small>${label}</small>${kind ? performanceScoreMarkup(value, product, kind, label) : `<b>${escapeHTML(value)}</b>`}</article>`;
+  }).join("")}</div></section>`;
 }
 
 function productCardGenderLabel(product, isArabic = state.lang === "ar") {
@@ -4740,7 +4783,7 @@ function productCardMarkup(product, options = {}) {
       </div>
       <div class="product-bottom">
         <div><b class="product-price">${formatPrice(price)}</b>${oldPrice > price ? `<del>${formatPrice(oldPrice)}</del>` : ""}</div>
-        <button class="card-add-button"${interactive ? ` data-action="add-to-cart"` : disabled} aria-label="${escapeHTML(translations[state.lang].addToBag)}"${outOfStock ? " disabled" : ""}><span>${escapeHTML(outOfStock ? (isArabic ? "غير متوفر" : "Unavailable") : translations[state.lang].addToBag)}</span><i aria-hidden="true">＋</i></button>
+        <button class="card-add-button"${interactive ? ` data-action="add-to-cart"` : disabled} aria-label="${escapeHTML(translations[state.lang].addToBag)}"${outOfStock ? " disabled" : ""}><span>${escapeHTML(outOfStock ? (isArabic ? "غير متوفر" : "Unavailable") : translations[state.lang].addToBag)}</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h16l-1.2 12H5.2L4 8Z"></path><path d="M8 9V6a4 4 0 0 1 8 0v3"></path></svg></button>
       </div>
     </div>
   </article>`;
@@ -4787,6 +4830,24 @@ function showProductDetails(product, shouldOpen = true) {
   const family = isArabic ? product.familyAr : product.familyEn;
   const discount = product.oldPrice > product.price ? Math.round((1 - product.price / product.oldPrice) * 100) : 0;
   const taxRate = Number(state.adminWorkspace.settings?.taxRate || 0);
+  const restockEmail = state.user?.email || "";
+  const restockPhone = state.user?.phone || "";
+  const restockMarkup = available ? "" : `
+    <section class="pdp-restock-card" id="pdp-restock-card" aria-labelledby="pdp-restock-title">
+      <header><span aria-hidden="true">♧</span><div><strong id="pdp-restock-title">${isArabic ? "غير متوفر حاليًا" : "Currently unavailable"}</strong><p>${isArabic ? "سنعلمك فور عودة هذا المنتج إلى المخزون." : "We will let you know as soon as this product is back in stock."}</p></div></header>
+      <form id="pdp-restock-form" data-product-id="${escapeHTML(product.id)}" data-channel="email" data-email="${escapeHTML(restockEmail)}" data-phone="${escapeHTML(restockPhone)}" novalidate>
+        <div class="pdp-restock-channels" aria-label="${isArabic ? "وسيلة الإشعار" : "Notification channel"}">
+          <button type="button" data-action="restock-channel" data-channel="whatsapp" aria-pressed="false"><span aria-hidden="true">◉</span>${isArabic ? "أخبرني عبر واتساب" : "Notify me on WhatsApp"}</button>
+          <button type="button" class="active" data-action="restock-channel" data-channel="email" aria-pressed="true"><span aria-hidden="true">✉</span>${isArabic ? "أخبرني عبر البريد" : "Notify me by email"}</button>
+        </div>
+        <div class="pdp-restock-entry">
+          <label class="sr-only" for="pdp-restock-contact">${isArabic ? "البريد الإلكتروني" : "Email address"}</label>
+          <input id="pdp-restock-contact" name="contact" type="email" inputmode="email" autocomplete="email" value="${escapeHTML(restockEmail)}" placeholder="${isArabic ? "أدخل بريدك الإلكتروني" : "Enter your email address"}" required />
+          <button type="submit"><span>${isArabic ? "تأكيد التنبيه" : "Confirm alert"}</span><i aria-hidden="true">←</i></button>
+        </div>
+        <small id="pdp-restock-status" role="status" aria-live="polite"></small>
+      </form>
+    </section>`;
 
   $("#product-dialog-content").innerHTML = `
     <main class="pdp-page" aria-labelledby="product-dialog-title">
@@ -4803,9 +4864,10 @@ function showProductDetails(product, shouldOpen = true) {
           <div class="pdp-tags"><span>${catalogGender(product) === "women" ? "♀" : catalogGender(product) === "men" ? "♂" : "⚥"} ${escapeHTML(isArabic ? product.type || (catalogGender(product) === "women" ? "للنساء" : catalogGender(product) === "men" ? "للرجال" : "للجنسين") : product.typeEn || product.type || catalogGender(product))}</span>${product.concentration ? `<span>${escapeHTML(product.concentration)}</span>` : ""}${product.sku ? `<span>SKU ${escapeHTML(product.sku)}</span>` : ""}</div>
           <div class="pdp-price"><b>${formatPrice(product.price)}</b>${product.oldPrice ? `<del>${formatPrice(product.oldPrice)}</del>` : ""}${discount ? `<em>-${discount}%</em>` : ""}<small>${taxRate ? (isArabic ? `شامل ضريبة القيمة المضافة ${taxRate}%` : `VAT ${taxRate}% included`) : ""}</small></div>
           ${sizes[0] ? `<p class="pdp-fixed-size">${isArabic ? "الحجم" : "Size"}: <b><bdi dir="ltr">${escapeHTML(formatProductSize(sizes[0]))}</bdi></b></p>` : ""}
-          <div class="pdp-stock ${available ? "available" : "unavailable"}"><i></i><span>${available ? (isArabic ? "متوفر للطلب" : "Available to order") : (isArabic ? "غير متوفر حاليًا" : "Currently unavailable")}</span></div>
+          ${available ? `<div class="pdp-stock available"><i></i><span>${isArabic ? "متوفر للطلب" : "Available to order"}</span></div>
           <div class="pdp-quantity"><span>${isArabic ? "الكمية" : "Quantity"}</span><div><button data-action="detail-quantity" data-change="-1" aria-label="${isArabic ? "تقليل الكمية" : "Decrease quantity"}">−</button><b>${state.activeProductQuantity}</b><button data-action="detail-quantity" data-change="1" aria-label="${isArabic ? "زيادة الكمية" : "Increase quantity"}">＋</button></div></div>
-          <div class="pdp-actions"><button class="pdp-add" data-action="product-detail-add" data-id="${escapeHTML(product.id)}"${available ? "" : " disabled"}><span>♧</span>${translations[state.lang].addToBag}</button><button class="pdp-favorite ${isSaved ? "active" : ""}" data-action="quick-view-wishlist" data-id="${escapeHTML(product.id)}"><span>${isSaved ? "♥" : "♡"}</span>${isSaved ? (isArabic ? "محفوظ في المفضلة" : "Saved") : (isArabic ? "أضف إلى المفضلة" : "Add to wishlist")}</button></div>
+          <div class="pdp-actions"><button class="pdp-add" data-action="product-detail-add" data-id="${escapeHTML(product.id)}"><span>♧</span>${translations[state.lang].addToBag}</button><button class="pdp-favorite ${isSaved ? "active" : ""}" data-action="quick-view-wishlist" data-id="${escapeHTML(product.id)}"><span>${isSaved ? "♥" : "♡"}</span>${isSaved ? (isArabic ? "محفوظ في المفضلة" : "Saved") : (isArabic ? "أضف إلى المفضلة" : "Add to wishlist")}</button></div>` : `${restockMarkup}
+          <div class="pdp-actions pdp-unavailable-actions"><button class="pdp-favorite ${isSaved ? "active" : ""}" data-action="quick-view-wishlist" data-id="${escapeHTML(product.id)}"><span>${isSaved ? "♥" : "♡"}</span>${isArabic ? "المفضلة" : "Wishlist"}</button><button class="pdp-compare ${state.comparison.includes(product.id) ? "active" : ""}" data-action="toggle-product-compare" data-id="${escapeHTML(product.id)}" aria-pressed="${state.comparison.includes(product.id)}"><span>⚖</span>${isArabic ? "مقارنة" : "Compare"}</button></div>`}
           <div class="pdp-benefits"><span><i>✓</i>${isArabic ? "منتج أصلي 100%" : "100% authentic"}</span><span><i>◉</i>${isArabic ? "الدفع عند الاستلام" : "Cash on delivery"}</span></div>
         </aside>
       </section>
@@ -4815,7 +4877,7 @@ function showProductDetails(product, shouldOpen = true) {
       ${window.ORIGOAlternatives?.productPanel?.(product.id) || ""}
       ${related.length ? `<section class="pdp-recommendations"><div class="pdp-section-heading"><span>DISCOVER</span><h2>${isArabic ? "عطور قد تعجبك" : "You may also like"}</h2><p>${isArabic ? "مرتبة حسب تشابه النوتات والعائلة والنوع والسعر — بلا نتائج عشوائية." : "Ranked by notes, family, gender and price — never random."}</p></div><div class="pdp-products-row">${related.map(({ item, shared, score }) => productCardMarkup(item, `${score}% ${isArabic ? "تشابه" : "match"}${shared.length ? ` · ${shared.slice(0, 2).join("، ")}` : ""}`)).join("")}</div></section>` : ""}
       ${recent.length ? `<section class="pdp-recommendations recently"><div class="pdp-section-heading"><span>RECENT</span><h2>${isArabic ? "شوهد مؤخرًا" : "Recently viewed"}</h2></div><div class="pdp-products-row">${recent.map((item) => productCardMarkup(item)).join("")}</div></section>` : ""}
-      <div class="pdp-mobile-cart"><div><small>${sizes[0] ? escapeHTML(sizes[0]) : escapeHTML(product.concentration || "")}</small><b>${formatPrice(product.price)}</b></div><button data-action="product-detail-add" data-id="${escapeHTML(product.id)}"${available ? "" : " disabled"}>${translations[state.lang].addToBag}</button></div>
+      <div class="pdp-mobile-cart${available ? "" : " is-restock"}">${available ? `<div><small>${sizes[0] ? escapeHTML(sizes[0]) : escapeHTML(product.concentration || "")}</small><b>${formatPrice(product.price)}</b></div><button data-action="product-detail-add" data-id="${escapeHTML(product.id)}">${translations[state.lang].addToBag}</button>` : `<button data-action="focus-restock" data-id="${escapeHTML(product.id)}"><span aria-hidden="true">♧</span>${isArabic ? "أخبرني عند توفر المنتج" : "Notify me when available"}</button>`}</div>
     </main>`;
   $("#product-dialog-content").querySelectorAll("img").forEach((image) => image.addEventListener("error", () => (image.src = "assets/origo-hero.png"), { once: true }));
   rememberProduct(product.id);
@@ -5098,7 +5160,10 @@ function openProductComparison() {
       : (Array.isArray(product.featuredNotes) ? product.featuredNotes : []);
     const notes = rawNotes.slice(0, 3);
     const image = productMedia(product)[0]?.url || product.image || "assets/origo-hero.png";
-    return `<article data-comparison-product="${escapeHTML(product.id)}"><button type="button" data-action="remove-product-comparison" data-id="${escapeHTML(product.id)}" aria-label="${ar ? "إزالة من المقارنة" : "Remove from comparison"}">×</button><img src="${escapeHTML(image)}" alt="${escapeHTML(localizedProductName(product))}"/><small>${escapeHTML(product.brand || "ORIGO")}</small><h3>${escapeHTML(localizedProductName(product))}</h3><b class="comparison-price">${formatPrice(product.price)}</b><dl><div><dt>${ar ? "الجنس" : "Gender"}</dt><dd>${escapeHTML(productCardGenderLabel(product, ar))}</dd></div><div><dt>${ar ? "الحجم" : "Size"}</dt><dd dir="ltr">${escapeHTML(formatProductSize(product.size || product.sizes?.[0] || "—"))}</dd></div><div><dt>${ar ? "النوتات" : "Notes"}</dt><dd>${escapeHTML(notes.join(" · ") || "—")}</dd></div></dl><button type="button" class="burgundy-button" data-action="open-product" data-id="${escapeHTML(product.id)}">${ar ? "عرض المنتج" : "View product"}</button></article>`;
+    const performance = product.performance || {};
+    const longevity = performance.longevity ?? product.insights?.longevity;
+    const sillage = performance.sillage ?? performance.projection ?? product.insights?.sillage;
+    return `<article data-comparison-product="${escapeHTML(product.id)}"><button type="button" data-action="remove-product-comparison" data-id="${escapeHTML(product.id)}" aria-label="${ar ? "إزالة من المقارنة" : "Remove from comparison"}">×</button><img src="${escapeHTML(image)}" alt="${escapeHTML(localizedProductName(product))}"/><small>${escapeHTML(product.brand || "ORIGO")}</small><h3>${escapeHTML(localizedProductName(product))}</h3><b class="comparison-price">${formatPrice(product.price)}</b><dl><div><dt>${ar ? "الجنس" : "Gender"}</dt><dd>${escapeHTML(productCardGenderLabel(product, ar))}</dd></div><div><dt>${ar ? "الحجم" : "Size"}</dt><dd dir="ltr">${escapeHTML(formatProductSize(product.size || product.sizes?.[0] || "—"))}</dd></div><div><dt>${ar ? "الثبات" : "Longevity"}</dt><dd>${performanceScoreMarkup(longevity, product, "longevity", ar ? "الثبات" : "Longevity")}</dd></div><div><dt>${ar ? "الفوحان" : "Sillage"}</dt><dd>${performanceScoreMarkup(sillage, product, "sillage", ar ? "الفوحان" : "Sillage")}</dd></div><div><dt>${ar ? "النوتات" : "Notes"}</dt><dd>${escapeHTML(notes.join(" · ") || "—")}</dd></div></dl><button type="button" class="burgundy-button" data-action="open-product" data-id="${escapeHTML(product.id)}">${ar ? "عرض المنتج" : "View product"}</button></article>`;
   }).join("")}</div></div>`;
   if (typeof dialog.showModal === "function") dialog.showModal();
   else dialog.setAttribute("open", "");
@@ -5113,7 +5178,7 @@ function toggleProductComparison(productId) {
     return;
   }
   persist();
-  $$(`.product-card[data-id="${CSS.escape(productId)}"] .card-compare-button`).forEach((button) => {
+  $$(`.product-card[data-id="${CSS.escape(productId)}"] .card-compare-button, .pdp-compare[data-id="${CSS.escape(productId)}"]`).forEach((button) => {
     const active = state.comparison.includes(productId);
     button.classList.toggle("active", active);
     button.setAttribute("aria-pressed", String(active));
@@ -6736,6 +6801,10 @@ document.addEventListener("click", async (event) => {
     handleCatalogRoute();
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
+  if (action === "home-gender-filter") {
+    event.preventDefault();
+    navigateCatalog({ gender: actionElement.dataset.gender || "unisex" });
+  }
   if (action === "benefit-link") {
     event.preventDefault();
     navigateBenefit(actionElement.dataset.slug);
@@ -7266,7 +7335,8 @@ document.addEventListener("click", async (event) => {
     toggleWishlist(actionElement.closest(".product-card").dataset.id);
   }
   if (action === "toggle-product-compare") {
-    toggleProductComparison(actionElement.closest(".product-card").dataset.id);
+    const productId = actionElement.dataset.id || actionElement.closest(".product-card")?.dataset.id;
+    if (productId) toggleProductComparison(productId);
   }
   if (action === "close-product-comparison") {
     const dialog = actionElement.closest("dialog");
@@ -7322,6 +7392,42 @@ document.addEventListener("click", async (event) => {
     showProductDetails(getProduct(state.activeProductId), false);
   }
   if (action === "product-zoom") actionElement.closest(".pdp-main-image")?.classList.toggle("zoomed");
+  if (action === "restock-channel") {
+    const form = actionElement.closest("#pdp-restock-form");
+    const input = form?.querySelector("#pdp-restock-contact");
+    const channel = actionElement.dataset.channel === "whatsapp" ? "whatsapp" : "email";
+    if (form && input) {
+      form.dataset.channel = channel;
+      form.dataset.status = "";
+      form.querySelectorAll("[data-action='restock-channel']").forEach((button) => {
+        const selected = button === actionElement;
+        button.classList.toggle("active", selected);
+        button.setAttribute("aria-pressed", String(selected));
+      });
+      const isWhatsApp = channel === "whatsapp";
+      input.type = isWhatsApp ? "tel" : "email";
+      input.inputMode = isWhatsApp ? "tel" : "email";
+      input.autocomplete = isWhatsApp ? "tel" : "email";
+      input.pattern = isWhatsApp ? "\\+?[0-9\\s()\\-]{8,20}" : "";
+      input.placeholder = isWhatsApp
+        ? (state.lang === "ar" ? "رقم واتساب مع كود الدولة" : "WhatsApp number with country code")
+        : (state.lang === "ar" ? "أدخل بريدك الإلكتروني" : "Enter your email address");
+      input.value = isWhatsApp ? (form.dataset.phone || "") : (form.dataset.email || "");
+      const label = form.querySelector("label[for='pdp-restock-contact']");
+      if (label) label.textContent = isWhatsApp
+        ? (state.lang === "ar" ? "رقم واتساب" : "WhatsApp number")
+        : (state.lang === "ar" ? "البريد الإلكتروني" : "Email address");
+      const status = form.querySelector("#pdp-restock-status");
+      if (status) status.textContent = "";
+      input.focus();
+    }
+  }
+  if (action === "focus-restock") {
+    const card = $("#pdp-restock-card");
+    const input = $("#pdp-restock-contact");
+    card?.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "center" });
+    setTimeout(() => input?.focus(), 260);
+  }
   if (action === "pdp-profile-section") {
     const section = actionElement.closest(".pdp-profile-section");
     const accordion = section?.closest(".pdp-profile-accordions");
@@ -8096,6 +8202,51 @@ document.addEventListener("submit", async (event) => {
     }
     return;
   }
+  if (event.target.id === "pdp-restock-form") {
+    const form = event.target;
+    const input = form.elements.contact;
+    const button = form.querySelector("[type='submit']");
+    const buttonLabel = button.querySelector("span");
+    const status = form.querySelector("#pdp-restock-status");
+    const channel = form.dataset.channel === "whatsapp" ? "whatsapp" : "email";
+    if (!form.checkValidity()) {
+      form.dataset.status = "error";
+      status.textContent = state.lang === "ar"
+        ? (channel === "whatsapp" ? "أدخل رقم واتساب صحيحًا." : "أدخل بريدًا إلكترونيًا صحيحًا.")
+        : (channel === "whatsapp" ? "Enter a valid WhatsApp number." : "Enter a valid email address.");
+      form.reportValidity();
+      return;
+    }
+    form.dataset.status = "loading";
+    button.disabled = true;
+    buttonLabel.textContent = state.lang === "ar" ? "جارٍ التسجيل..." : "Registering...";
+    status.textContent = "";
+    try {
+      const result = await api("/api/restock-requests", {
+        method: "POST",
+        body: JSON.stringify({
+          productId: form.dataset.productId,
+          channel,
+          contact: input.value.trim(),
+          language: state.lang
+        })
+      });
+      form.dataset.status = "success";
+      input.readOnly = true;
+      form.querySelectorAll("[data-action='restock-channel']").forEach((item) => (item.disabled = true));
+      buttonLabel.textContent = state.lang === "ar" ? "تم تسجيل التنبيه" : "Alert registered";
+      status.textContent = result.request?.duplicate
+        ? (state.lang === "ar" ? "طلبك مسجل بالفعل، وسنخبرك فور توفر المنتج." : "You are already registered; we will notify you when it is available.")
+        : (state.lang === "ar" ? "تم بنجاح. سنخبرك فور عودة المنتج للمخزون." : "Done. We will notify you when the product is back.");
+      showToast(state.lang === "ar" ? "تم تفعيل إشعار عودة المنتج" : "Back-in-stock alert activated");
+    } catch (requestError) {
+      form.dataset.status = "error";
+      status.textContent = requestError.message;
+      button.disabled = false;
+      buttonLabel.textContent = state.lang === "ar" ? "تأكيد التنبيه" : "Confirm alert";
+    }
+    return;
+  }
   if (event.target.id === "newsletter-form") {
     const form = event.target;
     const button = form.querySelector("button[type='submit']");
@@ -8619,33 +8770,93 @@ function bindBrandMarquee(brandTrack) {
   let brandMoved = false;
   let brandStartX = 0;
   let brandStartScroll = 0;
+  let brandPointerId = null;
+  let brandAnimation = null;
+  let brandAnimationStartTime = 0;
+  let brandAnimationDuration = 0;
+  let brandLoopWidth = 0;
+  let brandResumeTimer = 0;
+
+  const marqueeAnimation = () => {
+    const content = brandTrack.querySelector(".brand-marquee-content");
+    if (!content) return null;
+    const animation = content.getAnimations?.().find((item) => {
+      const name = String(item.animationName || "");
+      return name.includes("origoBrandMarquee") || name.includes("origoBenefitMarquee");
+    }) || content.getAnimations?.()[0] || null;
+    return { animation, content };
+  };
+
+  const moveAnimationBy = (delta, startTime = null) => {
+    if (!brandAnimation || !brandAnimationDuration || !brandLoopWidth) return false;
+    const rtlMultiplier = document.documentElement.dir === "rtl" ? 1 : -1;
+    const origin = startTime == null ? Number(brandAnimation.currentTime || 0) : startTime;
+    const nextTime = origin + rtlMultiplier * (delta / brandLoopWidth) * brandAnimationDuration;
+    brandAnimation.currentTime = ((nextTime % brandAnimationDuration) + brandAnimationDuration) % brandAnimationDuration;
+    return true;
+  };
+
+  const pauseForInteraction = () => {
+    window.clearTimeout(brandResumeTimer);
+    const motion = marqueeAnimation();
+    brandAnimation = motion?.animation || null;
+    brandLoopWidth = motion?.content ? motion.content.scrollWidth / 2 : 0;
+    if (!brandAnimation) return;
+    const timing = brandAnimation.effect?.getComputedTiming?.();
+    brandAnimationDuration = Number(timing?.duration || 0);
+    brandAnimation.pause();
+    brandAnimationStartTime = Number(brandAnimation.currentTime || 0);
+  };
+
+  const resumeAfterInteraction = () => {
+    const animationToResume = brandAnimation;
+    brandResumeTimer = window.setTimeout(() => {
+      brandTrack.classList.remove("is-interacting", "is-dragging");
+      animationToResume?.play?.();
+    }, 140);
+  };
+
   brandTrack.addEventListener("wheel", (event) => {
     const horizontalDelta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : (event.shiftKey ? event.deltaY : 0);
     if (!horizontalDelta) return;
     event.preventDefault();
-    brandTrack.scrollLeft += horizontalDelta;
+    brandTrack.classList.add("is-interacting");
+    pauseForInteraction();
+    if (!moveAnimationBy(-horizontalDelta * 1.35)) brandTrack.scrollLeft += horizontalDelta;
+    resumeAfterInteraction();
   }, { passive: false });
   brandTrack.addEventListener("pointerdown", (event) => {
     if (event.pointerType === "mouse" && event.button !== 0) return;
     brandDragging = true;
     brandMoved = false;
-    brandTrack.classList.add("is-interacting");
+    brandPointerId = event.pointerId;
+    brandTrack.classList.add("is-interacting", "is-dragging");
     brandStartX = event.clientX;
     brandStartScroll = brandTrack.scrollLeft;
+    pauseForInteraction();
     brandTrack.setPointerCapture?.(event.pointerId);
   });
   brandTrack.addEventListener("pointermove", (event) => {
     if (!brandDragging) return;
     const delta = event.clientX - brandStartX;
-    if (Math.abs(delta) > 6) brandMoved = true;
-    brandTrack.scrollLeft = brandStartScroll - delta;
+    if (Math.abs(delta) > 5) {
+      brandMoved = true;
+      event.preventDefault();
+    }
+    if (!moveAnimationBy(delta, brandAnimationStartTime)) brandTrack.scrollLeft = brandStartScroll - delta;
   });
-  const stopBrandDrag = () => {
+  const stopBrandDrag = (event) => {
+    if (!brandDragging) return;
     brandDragging = false;
-    window.setTimeout(() => brandTrack.classList.remove("is-interacting"), 240);
+    if (brandPointerId != null && brandTrack.hasPointerCapture?.(brandPointerId)) {
+      brandTrack.releasePointerCapture?.(brandPointerId);
+    }
+    brandPointerId = null;
+    resumeAfterInteraction();
   };
   brandTrack.addEventListener("pointerup", stopBrandDrag);
   brandTrack.addEventListener("pointercancel", stopBrandDrag);
+  brandTrack.addEventListener("lostpointercapture", stopBrandDrag);
   brandTrack.addEventListener("click", (event) => {
     if (brandMoved) {
       event.preventDefault();

@@ -14,6 +14,7 @@ import {
   createOrder,
   createSession,
   createPasswordResetChallenge,
+  createRestockRequest,
   createUser,
   cancelPasswordResetChallenge,
   consumePasswordResetChallenge,
@@ -764,6 +765,33 @@ async function handleAPI(request, response, url, origin) {
 
   if (url.pathname === "/api/products" && request.method === "GET") {
     return jsonResponse(response, 200, { products: listProducts() }, origin);
+  }
+
+  if (url.pathname === "/api/restock-requests" && request.method === "POST") {
+    const ip = String(request.headers["x-forwarded-for"] || request.socket.remoteAddress || "").split(",")[0].trim();
+    if (!allowPerformanceRequest(`restock:${ip}`, 8, 60_000)) {
+      return jsonResponse(response, 429, { error: "طلبات كثيرة جدًا. حاول بعد دقيقة.", code: "RATE_LIMITED" }, origin);
+    }
+    try {
+      const body = await readJSONBody(request);
+      const user = requestUser(request);
+      const requestRecord = createRestockRequest({
+        productId: body.productId,
+        userId: user?.id || null,
+        channel: body.channel,
+        contact: body.contact,
+        language: body.language
+      });
+      return jsonResponse(response, requestRecord.duplicate ? 200 : 201, { request: requestRecord }, origin);
+    } catch (error) {
+      const status = error.code === "PRODUCT_NOT_FOUND" ? 404 : 400;
+      const messages = {
+        PRODUCT_NOT_FOUND: "المنتج غير موجود.",
+        INVALID_EMAIL: "يرجى إدخال بريد إلكتروني صحيح.",
+        INVALID_PHONE: "يرجى إدخال رقم واتساب صحيحًا مع كود الدولة."
+      };
+      return jsonResponse(response, status, { error: messages[error.code] || "تعذر تسجيل طلب التنبيه.", code: error.code || "RESTOCK_REQUEST_FAILED" }, origin);
+    }
   }
 
   const productPerformanceMatch = url.pathname.match(/^\/api\/products\/([^/]+)\/performance$/);
