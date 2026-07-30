@@ -1358,7 +1358,10 @@ async function hydrateServer() {
     ]);
     state.publicIntegrations = publicIntegrations || {};
     state.filterDefinitions = filtersResult.filters || [];
-    state.adminWorkspace.settings = mergeStoreSettings(storefrontSettings.settings || state.adminWorkspace.settings);
+    state.adminWorkspace.settings = mergeStoreSettings({
+      ...state.adminWorkspace.settings,
+      ...(storefrontSettings.settings || {})
+    });
     state.serverAvailable = true;
     if (notesState.state && Object.keys(notesState.state).length) {
       window.ORIGOFragranceNotes?.setState(notesState.state);
