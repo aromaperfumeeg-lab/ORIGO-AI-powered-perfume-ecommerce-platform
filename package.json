@@ -1,9 +1,18 @@
 {
-  "name": "origo-luxury-store",
-  "version": "1.0.0",
+  "name": "origo-store",
   "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "start": "node server.mjs",
-    "test": "node tests.mjs"
+    "build": "echo ORIGO does not require a build step.",
+    "build:knowledge": "node scripts/build-fragrance-knowledge.mjs",
+    "check:i18n": "node scripts/check-i18n.mjs",
+    "test": "node --test --test-isolation=none"
+  },
+  "dependencies": {
+    "sql.js": "^1.13.0"
   }
 }
