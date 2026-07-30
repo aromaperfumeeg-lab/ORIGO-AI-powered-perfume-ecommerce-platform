@@ -25,7 +25,7 @@
     <link rel="stylesheet" href="home.css?v=36" />
     <link rel="stylesheet" href="product-detail.css?v=7" />
     <link rel="stylesheet" href="catalog.css?v=1" />
-    <link rel="stylesheet" href="footer.css?v=8" />
+    <link rel="stylesheet" href="footer.css?v=9" />
     <link rel="stylesheet" href="commerce.css?v=1" />
     <link rel="stylesheet" href="account.css?v=2" />
     <link rel="stylesheet" href="fragrance-finder.css?v=1" />
@@ -169,6 +169,9 @@
       <section class="brands-route-page" id="brands-page" hidden aria-labelledby="brands-page-title">
         <div class="brands-page-shell" id="brands-page-content"></div>
       </section>
+      <section class="benefits-route-page" id="benefits-page" hidden aria-labelledby="benefits-page-title">
+        <div class="benefits-page-shell" id="benefits-page-content"></div>
+      </section>
 
       <section class="benefit-detail-page" id="benefit-detail-page" hidden aria-labelledby="benefit-detail-title">
         <div class="benefit-detail-shell" id="benefit-detail-content"></div>
@@ -186,12 +189,12 @@
         </section>
 
         <section class="home-brand-directory" aria-labelledby="home-brands-title">
-          <div class="home-section-head"><a href="/perfumes"><span data-i18n="viewAll">عرض الكل</span> <span>‹</span></a><div class="ornament-heading"><h2 id="home-brands-title" data-i18n="navBrands">العلامات التجارية</h2></div></div>
+          <div class="home-section-head"><a href="/brands" data-action="open-brands-page"><span data-i18n="viewAll">عرض الكل</span> <span>‹</span></a><div class="ornament-heading"><h2 id="home-brands-title" data-i18n="navBrands">العلامات التجارية</h2></div></div>
           <div class="brand-carousel-track" id="home-brand-carousel-track" data-brand-marquee aria-live="off"></div>
         </section>
 
         <section class="home-benefits-directory" aria-labelledby="home-benefits-title">
-          <div class="home-section-head"><a href="#home-benefits-track"><span data-i18n="viewAll">عرض الكل</span> <span>‹</span></a><div class="ornament-heading"><h2 id="home-benefits-title">مميزاتنا</h2></div></div>
+          <div class="home-section-head"><a href="/benefits" data-action="open-benefits-page"><span data-i18n="viewAll">عرض الكل</span> <span>‹</span></a><div class="ornament-heading"><h2 id="home-benefits-title">مميزاتنا</h2></div></div>
           <div class="benefit-carousel-track" id="home-benefits-track" data-benefit-marquee aria-live="off"></div>
         </section>
 
@@ -1011,7 +1014,7 @@
     <script src="fragrance-notes-library.js?v=7"></script>
     <script src="catalog-providers.js?v=6"></script>
     <script src="external-tracking.js?v=1"></script>
-    <script src="app.js?v=54"></script>
+    <script src="app.js?v=55"></script>
   <script src="alternatives.js?v=1"></script>
   <script src="performance-insights.js?v=2"></script>
   <script src="commerce.js?v=2"></script>

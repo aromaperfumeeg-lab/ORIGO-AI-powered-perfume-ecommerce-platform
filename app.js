@@ -1392,6 +1392,7 @@ async function hydrateServer() {
     renderWishlist();
     updateAccountIndicator();
     handleBenefitRoute({ replace: true });
+    handleBenefitsRoute({ replace: true });
     handleNotesRoute({ replace: true });
     handleCatalogRoute({ replace: true });
     handleProductRoute();
@@ -1401,6 +1402,7 @@ async function hydrateServer() {
     renderSiteFooter();
     applyStoreIdentity();
     handleBenefitRoute({ replace: true });
+    handleBenefitsRoute({ replace: true });
     handleCatalogRoute({ replace: true });
     handleProductRoute();
   }
@@ -2597,6 +2599,7 @@ function updateLanguage() {
   if (document.body.classList.contains("catalog-route")) renderCatalog({ skeleton: false });
   renderSiteFooter();
   if (document.body.classList.contains("benefit-route")) handleBenefitRoute({ replace: true });
+  if (document.body.classList.contains("benefits-route")) handleBenefitsRoute({ replace: true });
   if ($("#notes-admin-overlay").classList.contains("open")) renderNotesAdmin();
   if ($("#admin-overlay").classList.contains("open")) renderAdminDashboard(state.adminView);
   applyHomepageRailSettings();
@@ -3125,6 +3128,49 @@ function footerBenefitBySlug(slug) {
   return (state.adminWorkspace.settings?.footerBenefits || defaultFooterBenefits).find((item) => item.slug === slug && item.active !== false);
 }
 
+function renderBenefitsPage() {
+  const root = $("#benefits-page-content");
+  if (!root) return;
+  const isArabic = state.lang === "ar";
+  const benefits = activeFooterBenefits();
+  root.innerHTML = `<nav class="benefit-breadcrumb" aria-label="${isArabic ? "مسار الصفحة" : "Breadcrumb"}"><a href="/" data-action="catalog-home">${isArabic ? "الرئيسية" : "Home"}</a><span>‹</span><b>${isArabic ? "مزايا ORIGO" : "ORIGO benefits"}</b></nav>
+    <header><span>ORIGO CARE</span><h1 id="benefits-page-title">${isArabic ? "مزايا وخدمات ORIGO" : "ORIGO benefits & services"}</h1><p>${isArabic ? "اختر الميزة للتعرّف على تفاصيلها وشروطها." : "Choose a benefit to see its details and conditions."}</p></header>
+    <div class="benefits-page-grid">${benefits.map((benefit) => {
+      const title = isArabic ? benefit.titleAr : benefit.titleEn;
+      const description = isArabic ? benefit.shortAr || benefit.descriptionAr : benefit.shortEn || benefit.descriptionEn;
+      return `<a href="/benefits/${escapeHTML(benefit.slug)}" data-action="benefit-link" data-slug="${escapeHTML(benefit.slug)}"><span>${benefit.image ? `<img src="${escapeHTML(benefit.image)}" alt="" loading="lazy"/>` : footerBenefitIcon(benefit.icon, benefit.colors)}</span><div><b>${escapeHTML(title)}</b><small>${escapeHTML(description || "")}</small></div><i>‹</i></a>`;
+    }).join("")}</div>`;
+  document.title = isArabic ? "مزايا ORIGO | ORIGO" : "ORIGO benefits | ORIGO";
+}
+
+function handleBenefitsRoute({ replace = false } = {}) {
+  const active = /^\/benefits\/?$/i.test(location.pathname);
+  const page = $("#benefits-page");
+  if (!page) return false;
+  if (!active) {
+    document.body.classList.remove("benefits-route");
+    page.hidden = true;
+    return false;
+  }
+  document.body.classList.remove("catalog-route", "notes-route", "benefit-route", "brands-route");
+  document.body.classList.add("benefits-route");
+  page.hidden = false;
+  $("#brands-page").hidden = true;
+  $("#catalog-page").hidden = true;
+  $("#notes-library-page").hidden = true;
+  $("#benefit-detail-page").hidden = true;
+  renderBenefitsPage();
+  closeDrawers();
+  $$(".overlay.open").forEach(closeOverlay);
+  if (!replace) window.scrollTo({ top: 0, behavior: "smooth" });
+  return true;
+}
+
+function navigateBenefits() {
+  if (location.pathname !== "/benefits") history.pushState({}, "", "/benefits");
+  handleBenefitsRoute();
+}
+
 function renderBenefitDetail(benefit) {
   const isArabic = state.lang === "ar";
   const title = isArabic ? benefit.titleAr : benefit.titleEn;
@@ -3135,7 +3181,7 @@ function renderBenefitDetail(benefit) {
   const ctaUrl = safePublicHref(benefit.ctaUrl) || "/perfumes";
   const faqs = Array.isArray(benefit.faqs) ? benefit.faqs : [];
   const soft = safeBenefitColor(benefit.colors?.[2], "#f7e8dc");
-  $("#benefit-detail-content").innerHTML = `<nav class="benefit-breadcrumb" aria-label="${isArabic ? "مسار الصفحة" : "Breadcrumb"}"><a href="/" data-action="catalog-home">${isArabic ? "الرئيسية" : "Home"}</a><span>‹</span><a href="#site-footer">${isArabic ? "مزايا ORIGO" : "ORIGO benefits"}</a><span>‹</span><b>${escapeHTML(title)}</b></nav>
+  $("#benefit-detail-content").innerHTML = `<nav class="benefit-breadcrumb" aria-label="${isArabic ? "مسار الصفحة" : "Breadcrumb"}"><a href="/" data-action="catalog-home">${isArabic ? "الرئيسية" : "Home"}</a><span>‹</span><a href="/benefits" data-action="open-benefits-page">${isArabic ? "مزايا ORIGO" : "ORIGO benefits"}</a><span>‹</span><b>${escapeHTML(title)}</b></nav>
     <article class="benefit-detail-hero" style="--benefit-soft:${escapeHTML(soft)}"><div class="benefit-detail-art">${benefit.image ? `<img src="${escapeHTML(benefit.image)}" alt=""/>` : footerBenefitIcon(benefit.icon, benefit.colors)}</div><div class="benefit-detail-copy"><span class="eyebrow">ORIGO CARE</span><h1 id="benefit-detail-title">${escapeHTML(title)}</h1><p>${escapeHTML(description)}</p><a class="benefit-detail-cta" href="${escapeHTML(ctaUrl)}">${escapeHTML(ctaLabel)} <span>←</span></a></div></article>
     <div class="benefit-detail-sections"><section class="benefit-detail-panel"><h2>${isArabic ? "كيف تعمل الخدمة؟" : "How it works"}</h2><ol class="benefit-step-list">${(steps || []).map((step) => `<li>${escapeHTML(step)}</li>`).join("")}</ol></section><section class="benefit-detail-panel"><h2>${isArabic ? "الشروط المهمة" : "Important conditions"}</h2><ul class="benefit-condition-list">${(conditions || []).map((condition) => `<li>${escapeHTML(condition)}</li>`).join("")}</ul></section></div>
     <section class="benefit-faqs"><h2>${isArabic ? "الأسئلة الشائعة" : "Frequently asked questions"}</h2>${faqs.map((faq) => `<details><summary>${escapeHTML(isArabic ? faq.qAr : faq.qEn)}</summary><p>${escapeHTML(isArabic ? faq.aAr : faq.aEn)}</p></details>`).join("")}</section>`;
@@ -3155,10 +3201,11 @@ function handleBenefitRoute({ replace = false } = {}) {
     return false;
   }
   const benefit = footerBenefitBySlug(match[1]);
-  document.body.classList.remove("catalog-route", "notes-route");
+  document.body.classList.remove("catalog-route", "notes-route", "benefits-route", "brands-route");
   document.body.classList.add("benefit-route");
   $("#catalog-page").hidden = true;
   $("#notes-library-page").hidden = true;
+  $("#benefits-page").hidden = true;
   page.hidden = false;
   closeDrawers();
   $$(".overlay.open").forEach(closeOverlay);
@@ -3481,12 +3528,13 @@ function handleBrandsRoute({ replace = false } = {}) {
   const page = $("#brands-page");
   if (!page) return false;
   if (!active) { document.body.classList.remove("brands-route"); page.hidden = true; return false; }
-  document.body.classList.remove("catalog-route", "notes-route", "benefit-route");
+  document.body.classList.remove("catalog-route", "notes-route", "benefit-route", "benefits-route");
   document.body.classList.add("brands-route");
   page.hidden = false;
   $("#catalog-page").hidden = true;
   $("#notes-library-page").hidden = true;
   $("#benefit-detail-page").hidden = true;
+  $("#benefits-page").hidden = true;
   renderBrandsPage();
   closeDrawers();
   if (!replace) window.scrollTo({ top: 0, behavior: "smooth" });
@@ -6653,6 +6701,7 @@ document.addEventListener("click", async (event) => {
     event.preventDefault();
     history.pushState({}, "", "/");
     handleBenefitRoute();
+    handleBenefitsRoute();
     handleNotesRoute();
     handleCatalogRoute();
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -6660,6 +6709,11 @@ document.addEventListener("click", async (event) => {
   if (action === "benefit-link") {
     event.preventDefault();
     navigateBenefit(actionElement.dataset.slug);
+  }
+  if (action === "open-benefits-page") {
+    event.preventDefault();
+    closeDrawers();
+    navigateBenefits();
   }
   if (action === "catalog-submit-search") {
     state.catalogQuery = $("#catalog-search-input").value.trim();
@@ -8512,6 +8566,7 @@ updateMobileScrollChrome();
 
 window.addEventListener("popstate", () => {
   handleBenefitRoute();
+  handleBenefitsRoute();
   handleNotesRoute();
   handleBrandsRoute();
   handleCatalogRoute();
@@ -8624,6 +8679,7 @@ renderSiteFooter();
 const footerYear = $("#footer-year");
 if (footerYear) footerYear.textContent = String(new Date().getFullYear());
 handleBenefitRoute({ replace: true });
+handleBenefitsRoute({ replace: true });
 handleNotesRoute({ replace: true });
 handleBrandsRoute({ replace: true });
 handleCatalogRoute({ replace: true });

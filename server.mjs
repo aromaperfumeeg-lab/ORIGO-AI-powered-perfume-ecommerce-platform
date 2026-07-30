@@ -1738,7 +1738,7 @@ async function handleAPI(request, response, url, origin) {
 
 async function serveStatic(request, response, url) {
   const isNotesRoute = /^\/notes(?:\/[a-z0-9-]+)?\/?$/i.test(url.pathname);
-  const isBenefitRoute = /^\/benefits\/[a-z0-9-]+\/?$/i.test(url.pathname);
+  const isBenefitRoute = /^\/benefits(?:\/[a-z0-9-]+)?\/?$/i.test(url.pathname);
   const isStorefrontRoute = /^\/(perfumes|search)\/?$/i.test(url.pathname);
   const isCommerceRoute = /^\/(checkout|order\/[^/]+|feedback\/[^/]+|feedback-insights|account(?:\/.*)?|fragrance-finder\/[a-z-]+|alternatives(?:\/compare\/[^/]+)?)\/?$/i.test(url.pathname);
   const pathname = decodeURIComponent(url.pathname === "/" || isNotesRoute || isBenefitRoute || isStorefrontRoute || isCommerceRoute ? "/index.html" : url.pathname);
