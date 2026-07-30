@@ -15,11 +15,11 @@
       content="ORIGO — متجر ومنصة عربية لاكتشاف العطور، النوتات، البدائل، والمقارنات."
     />
     <title>ORIGO | أصل الحكاية العطرية</title>
-    <link rel="stylesheet" href="styles.css?v=21" />
-    <link rel="stylesheet" href="home.css?v=37" />
+    <link rel="stylesheet" href="styles.css?v=22" />
+    <link rel="stylesheet" href="home.css?v=39" />
     <link rel="stylesheet" href="product-detail.css?v=7" media="print" onload="this.media='all'" />
     <link rel="stylesheet" href="catalog.css?v=1" media="print" onload="this.media='all'" />
-    <link rel="stylesheet" href="footer.css?v=11" />
+    <link rel="stylesheet" href="footer.css?v=12" />
     <link rel="stylesheet" href="commerce.css?v=1" media="print" onload="this.media='all'" />
     <link rel="stylesheet" href="account.css?v=2" media="print" onload="this.media='all'" />
     <link rel="stylesheet" href="fragrance-finder.css?v=1" media="print" onload="this.media='all'" />
@@ -594,27 +594,23 @@
     </div>
 
     <footer class="origo-footer" id="site-footer">
+      <div class="footer-top-grid">
+        <section class="footer-newsletter" aria-labelledby="footer-newsletter-title">
+          <span class="footer-spark" aria-hidden="true">✦</span><h2 id="footer-newsletter-title">اشترك في نشرتنا البريدية</h2><p id="footer-newsletter-copy">كن أول من يعرف عن العروض والمنتجات الجديدة</p>
+          <form id="newsletter-form" novalidate>
+            <label for="footer-email" class="sr-only">البريد الإلكتروني</label>
+            <div class="footer-email-field"><span aria-hidden="true">✉</span><input id="footer-email" name="email" type="email" autocomplete="email" required placeholder="أدخل بريدك الإلكتروني" /></div>
+            <button type="submit"><span>اشترك الآن</span><i aria-hidden="true">←</i></button>
+            <small id="newsletter-status" aria-live="polite"></small>
+          </form>
+        </section>
+      </div>
+
       <div class="footer-directory">
         <section class="footer-column"><h3>تسوق</h3><a href="/perfumes?quick=men">العطور للرجال <span>♙</span></a><a href="/perfumes?quick=women">العطور للنساء <span>♙</span></a><a href="/perfumes?quick=unisex">العطور للجنسين <span>♙</span></a><a href="/alternatives" data-action="open-alternatives">البدائل <span>⇄</span></a><a href="/search?q=عطور+شرقية">العطور الشرقية <span>♙</span></a><a href="/search?q=عطور+عربية">العطور العربية <span>♙</span></a><a href="/perfumes?quick=sale">العروض <span>‹</span></a><a href="/perfumes?quick=new">الجديد <span>‹</span></a></section>
         <section class="footer-column"><h3>ماركات</h3><div class="footer-brand-list" id="footer-brand-links"><button data-action="brand-search" data-query="ORIGO">ORIGO</button></div><a class="footer-all-link" href="/perfumes">عرض جميع الماركات <span>▦</span></a></section>
         <section class="footer-column"><h3>معلومات</h3><a href="/#home-hero">عن أوريجو <span>ⓘ</span></a><a href="/benefits/customer-service">الأسئلة الشائعة <span>?</span></a><a href="/benefits/customer-service">سياسة الشحن والتوصيل <span>▱</span></a><a href="/benefits/easy-returns">سياسة الاسترجاع <span>↶</span></a><a id="footer-privacy-link" href="mailto:support@origoscents.com?subject=سياسة الخصوصية">سياسة الخصوصية <span>♢</span></a><a id="footer-terms-link" href="mailto:support@origoscents.com?subject=الشروط والأحكام">الشروط والأحكام <span>▣</span></a><button data-action="account">تتبع الطلب <span>◇</span></button></section>
-        <section class="footer-contact footer-column">
-          <h3>تواصل معنا</h3>
-          <a id="footer-support-email" href="mailto:support@origoscents.com"><span>✉</span><b dir="ltr">support@origoscents.com</b></a>
-          <a id="footer-support-whatsapp" class="footer-whatsapp-link" href="#" target="_blank" rel="noopener noreferrer" hidden><span>◉</span><b>واتساب</b></a>
-          <p><span>◷</span><b id="footer-support-hours">من السبت إلى الخميس<br />9:00 صباحًا – 11:00 مساءً</b></p>
-          <section class="footer-newsletter footer-contact-newsletter" aria-labelledby="footer-newsletter-title">
-            <h2 id="footer-newsletter-title">اشترك في نشرتنا البريدية</h2>
-            <p id="footer-newsletter-copy">كن أول من يعرف عن العروض والمنتجات الجديدة</p>
-            <form id="newsletter-form" novalidate>
-              <label for="footer-email" class="sr-only">البريد الإلكتروني</label>
-              <div class="footer-email-field"><span aria-hidden="true">✉</span><input id="footer-email" name="email" type="email" autocomplete="email" required placeholder="أدخل بريدك الإلكتروني" /></div>
-              <button type="submit"><span>اشترك الآن</span><i aria-hidden="true">←</i></button>
-              <small id="newsletter-status" aria-live="polite"></small>
-            </form>
-          </section>
-          <small id="footer-support-note">نجيب الرسائل خلال ساعات العمل الرسمية.</small>
-        </section>
+        <section class="footer-contact footer-column"><h3>تواصل معنا</h3><a id="footer-support-email" href="mailto:support@origoscents.com"><span>✉</span><b dir="ltr">support@origoscents.com</b></a><a id="footer-support-whatsapp" class="footer-whatsapp-link" href="#" target="_blank" rel="noopener noreferrer" hidden><span>◉</span><b>واتساب</b></a><p><span>◷</span><b id="footer-support-hours">من السبت إلى الخميس<br />9:00 صباحًا – 11:00 مساءً</b></p><small id="footer-support-note">نجيب الرسائل خلال ساعات العمل الرسمية.</small></section>
         <section class="footer-app footer-column"><h3>حمل التطبيق</h3><p>تسوق أسهل وأسرع<br />مع تطبيق أوريجو</p><div class="footer-app-links" id="footer-app-links"><small>التطبيق قريبًا</small></div><h3>تابعنا</h3><div class="footer-socials" id="footer-socials" aria-label="شبكات ORIGO الاجتماعية"></div></section>
       </div>
 
@@ -972,7 +968,7 @@
     <script src="fragrance-notes-library.js?v=7"></script>
     <script src="catalog-providers.js?v=6"></script>
     <script src="external-tracking.js?v=1"></script>
-    <script src="app.js?v=58"></script>
+    <script src="app.js?v=59"></script>
     <script src="deferred-modules.js?v=1"></script>
   </body>
 </html>

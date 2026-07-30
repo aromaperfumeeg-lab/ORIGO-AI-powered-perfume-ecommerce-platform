@@ -22,7 +22,6 @@
   grid-template-areas:"newsletter";gap:0!important;padding:22px 28px 24px!important;
   border-bottom:1px solid var(--footer-line);background:linear-gradient(145deg,#fffdfa 0%,#fff 48%,#fff9f4 100%)!important;
 }
-.origo-footer .footer-newsletter-after-service{border-top:1px solid var(--footer-line);border-bottom:0}
 .footer-brand-story{grid-area:story;display:grid;grid-template-columns:minmax(148px,.85fr) minmax(175px,1fr);gap:22px;align-items:center;padding-inline-end:26px;border-inline-end:1px solid var(--footer-line)}
 .footer-story-image{height:258px;border-radius:17px;overflow:hidden;background:#f4e7dc;box-shadow:inset 0 0 0 1px rgba(123,10,32,.06)}
 .footer-story-image img{display:block;width:100%;height:100%;object-fit:cover;object-position:52% 50%;transform:scale(1.03)}
@@ -71,15 +70,6 @@
 .origo-footer .footer-contact p{display:flex;align-items:flex-start;justify-content:center;gap:15px;margin:24px 0!important;color:var(--footer-text)!important;font-size:13px!important;line-height:2!important;text-align:start}
 .origo-footer .footer-contact p span{color:var(--footer-burgundy);font-size:22px}
 .origo-footer .footer-contact>small{display:block;margin-top:auto;color:var(--footer-burgundy)!important;font-size:11px;line-height:1.8;text-align:center}
-.origo-footer .footer-contact-newsletter{width:100%;margin:0 0 20px;padding:18px 0!important;border-top:1px solid var(--footer-line);border-bottom:1px solid var(--footer-line)}
-.origo-footer .footer-contact-newsletter h2{margin-bottom:5px!important;font-size:15px!important;line-height:1.5!important}
-.origo-footer .footer-contact .footer-contact-newsletter>p{display:block;margin:0 0 12px!important;font-size:10px!important;line-height:1.7!important;text-align:center}
-.origo-footer .footer-contact-newsletter #newsletter-form{gap:8px}
-.origo-footer .footer-contact-newsletter .footer-email-field{height:42px;padding:0 10px;border-radius:9px}
-.origo-footer .footer-contact-newsletter .footer-email-field span{font-size:16px}
-.origo-footer .footer-contact-newsletter .footer-email-field input{font-size:10px}
-.origo-footer .footer-contact-newsletter #newsletter-form>button{min-height:42px;padding:8px 10px;border-radius:9px;gap:9px;font-size:12px;box-shadow:0 5px 12px rgba(123,10,32,.13)}
-.origo-footer .footer-contact-newsletter #newsletter-status{min-height:12px;font-size:9px}
 .origo-footer .footer-app>p{margin:0 0 14px!important;color:var(--footer-text)!important;font-size:13px!important;line-height:1.9;text-align:center}
 .footer-app-links{display:grid;gap:8px;margin-bottom:20px}
 .footer-app-links>small{display:block;width:max-content;max-width:100%;margin:0 auto;padding:9px 16px;border:1px solid #cfa29b;border-radius:10px;color:var(--footer-burgundy);text-align:center}

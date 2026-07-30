@@ -4690,19 +4690,28 @@ function productCardMarkup(product, options = {}) {
   const isNew = Boolean(product.isNew) || /new|جديد|وصل حديثا/.test(normalizedBadge);
   const badgeCandidates = [
     outOfStock ? [100, isArabic ? "نفد المخزون" : "OUT OF STOCK", "stock"] : null,
-    isNew ? [90, isArabic ? "جديد" : "NEW", "new"] : null,
-    discount ? [80, `-${discount}%`, "sale"] : null
+    discount ? [90, isArabic ? `خصم ${discount}%` : `${discount}% OFF`, "sale"] : null,
+    isNew ? [80, isArabic ? "جديد" : "NEW", "new"] : null
   ].filter(Boolean).sort((a, b) => b[0] - a[0]);
   const badges = badgeCandidates.filter((item, index, list) => list.findIndex((other) => other[1] === item[1]) === index).slice(0, 2);
   const saved = state.wishlist.includes(product.id);
+  const compared = state.comparison.includes(product.id);
+  const rating = catalogRating(product);
+  const reviewCount = Number(product.reviewSummary?.count || product.insights?.reviews || product.reviewsCount || 0);
+  const genderLabel = productCardGenderLabel(product, isArabic);
+  const sizeLabel = formatProductSize(variant?.size || product.size || product.sizes?.[0] || "");
+  const compareLabel = compared
+    ? (isArabic ? "إزالة من المقارنة" : "Remove from comparison")
+    : (isArabic ? "إضافة إلى المقارنة" : "Add to comparison");
   const delayStyle = Number.isFinite(options.delay) ? ` style="transition-delay:${options.delay}ms"` : "";
   const disabled = interactive ? "" : " disabled tabindex=\"-1\"";
   const favoriteLabel = saved ? translations[state.lang].removeFavorite : translations[state.lang].favorites;
   const noteLabels = ((isArabic ? product.notesAr : product.notesEn) || product.notesAr || product.notesEn || []).filter(Boolean).slice(0, 3);
   return `<article class="product-card${options.reveal ? " reveal" : ""}${outOfStock ? " is-out" : ""}" data-id="${escapeHTML(product.id)}"${delayStyle}>
     <div class="product-image">
-      ${badges.length ? `<span class="product-badge">${escapeHTML(badges[0][1])}</span>` : ""}
+      ${badges.length ? `<span class="product-badge" data-badge-kind="${escapeHTML(badges[0][2])}">${escapeHTML(badges[0][1])}</span>` : ""}
       <button class="heart-button card-favorite-button${saved ? " active" : ""}"${interactive ? ` data-action="toggle-wishlist"` : disabled} aria-label="${escapeHTML(favoriteLabel)}" aria-pressed="${saved}">${saved ? "♥" : "♡"}</button>
+      <button class="home-compare-action card-compare-button${compared ? " active" : ""}"${interactive ? ` data-action="toggle-product-compare"` : disabled} aria-label="${escapeHTML(compareLabel)}" aria-pressed="${compared}"><span aria-hidden="true">⇄</span></button>
       <img src="${escapeHTML(mainImage)}" alt="${escapeHTML(`${product.brand || "ORIGO"} ${name}`)}" width="640" height="700" loading="lazy" decoding="async" />
       <button class="quick-view"${interactive ? ` data-action="quick-view"` : disabled} aria-label="${escapeHTML(isArabic ? `عرض تفاصيل ${name}` : `View ${name}`)}"><span>${escapeHTML(translations[state.lang].quickView)}</span><span aria-hidden="true">＋</span></button>
     </div>
@@ -4712,6 +4721,10 @@ function productCardMarkup(product, options = {}) {
       ${secondaryName && secondaryName !== name ? `<p class="product-card-secondary-name">${escapeHTML(secondaryName)}</p>` : ""}
       <p class="product-notes">${escapeHTML(noteLabels.join(" · "))}</p>
       ${options.meta ? `<p class="product-card-meta">${escapeHTML(options.meta)}</p>` : ""}
+      <div class="home-product-compact-meta">
+        <span class="home-product-type">${escapeHTML(genderLabel)}${sizeLabel ? ` <i aria-hidden="true">|</i> <bdi dir="ltr">${escapeHTML(sizeLabel)}</bdi>` : ""}</span>
+        <span class="home-product-rating"><b><i aria-hidden="true">★</i> ${rating > 0 ? rating.toFixed(1) : "—"}</b><small>${reviewCount.toLocaleString(isArabic ? "ar-EG" : "en-US")} ${isArabic ? "تقييم" : reviewCount === 1 ? "review" : "reviews"}</small></span>
+      </div>
       <div class="product-bottom">
         <div><b class="product-price">${formatPrice(price)}</b>${oldPrice > price ? `<del>${formatPrice(oldPrice)}</del>` : ""}</div>
         <button class="card-add-button"${interactive ? ` data-action="add-to-cart"` : disabled} aria-label="${escapeHTML(translations[state.lang].addToBag)}"${outOfStock ? " disabled" : ""}><span>${escapeHTML(outOfStock ? (isArabic ? "غير متوفر" : "Unavailable") : translations[state.lang].addToBag)}</span><i aria-hidden="true">＋</i></button>

@@ -945,6 +945,11 @@ h2 em {
   display: none;
 }
 
+.home-compare-action,
+.home-product-compact-meta {
+  display: none;
+}
+
 .product-image {
   position: relative;
   aspect-ratio: .82;
