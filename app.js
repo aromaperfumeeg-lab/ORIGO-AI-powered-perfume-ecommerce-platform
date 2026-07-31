@@ -959,7 +959,7 @@ const defaultStoreSettings = {
     categories: { enabled: true, order: 3, titleAr: "تسوق حسب الفئة", titleEn: "Shop by category" },
     brands: { enabled: true, order: 4, titleAr: "العلامات التجارية", titleEn: "Brands", speed: 34 }
   },
-  homeHero: { intervalSeconds: 2.5 },
+  homeHero: { intervalSeconds: 3 },
   homeMedia: [],
   categoryIcons: {},
   homeBenefitIcons: {},
@@ -1979,6 +1979,36 @@ function genericEntityMarkup(view) {
     <button class="admin-add-entity-card" data-action="admin-create-entity" data-view="${view}"><span>＋</span><b>${state.lang === "ar" ? "إضافة سجل جديد" : "Add new record"}</b><small>${state.lang === "ar" ? "يحفظ محليًا وجاهز للربط مع API" : "Saved locally and API-ready"}</small></button></section>`;
 }
 
+function bannerHeroSliderMarkup() {
+  const settings = mergeStoreSettings(state.adminWorkspace.settings || {});
+  const slides = settings.homeMedia.filter((item) => item.placement === "hero");
+  const cards = slides.map((item) => `<article class="banner-slider-card">
+    <img src="${escapeHTML(item.url)}" alt="${escapeHTML(item.altAr || item.name || "صورة بنر")}"/>
+    <div class="banner-slider-card-head"><span><b>${escapeHTML(item.name || "صورة بنر")}</b><small>${item.active !== false ? "ظاهرة في المتجر" : "مخفية"}</small></span><button type="button" data-action="delete-home-media" data-id="${escapeHTML(item.id)}" aria-label="حذف الصورة">×</button></div>
+    <div class="banner-slider-fields">
+      <label>اسم الصورة<input data-home-media-field="name" data-id="${escapeHTML(item.id)}" value="${escapeHTML(item.name || "")}"/></label>
+      <label>الترتيب<input type="number" min="1" max="99" data-home-media-field="sortOrder" data-id="${escapeHTML(item.id)}" value="${Number(item.sortOrder || 1)}"/></label>
+      <label>العنوان<input data-home-media-field="titleAr" data-id="${escapeHTML(item.id)}" value="${escapeHTML(item.titleAr || "")}"/></label>
+      <label>الوصف<input data-home-media-field="descriptionAr" data-id="${escapeHTML(item.id)}" value="${escapeHTML(item.descriptionAr || "")}"/></label>
+      <label>نص الزر<input data-home-media-field="buttonAr" data-id="${escapeHTML(item.id)}" value="${escapeHTML(item.buttonAr || "تسوق الآن")}"/></label>
+      <label>رابط الزر<input dir="ltr" data-home-media-field="href" data-id="${escapeHTML(item.id)}" value="${escapeHTML(item.href || "#new-arrivals")}"/></label>
+      <label>ملء الصورة<select data-home-media-field="sizeMode" data-id="${escapeHTML(item.id)}"><option value="default"${!item.sizeMode || item.sizeMode === "default" ? " selected" : ""}>تلقائي</option><option value="cover"${item.sizeMode === "cover" ? " selected" : ""}>تغطية كاملة</option><option value="contain"${item.sizeMode === "contain" ? " selected" : ""}>الصورة كاملة</option></select></label>
+      <label class="banner-slider-active"><span>عرض الصورة</span><input type="checkbox" data-home-media-field="active" data-id="${escapeHTML(item.id)}"${item.active !== false ? " checked" : ""}/></label>
+    </div>
+  </article>`).join("");
+  return `<form id="admin-banner-slider-settings" class="banner-slider-admin">
+    <header><div><span>▧</span><div><h3>سلايدر البنر الرئيسي</h3><p>ارفع عدة صور للواجهة الرئيسية؛ يتم الانتقال بينها تلقائيًا كل 3 ثوانٍ.</p></div></div><b>${slides.filter((item) => item.active !== false).length} صور نشطة</b></header>
+    <div class="banner-slider-controls">
+      <label>زمن التبديل بالثواني<input name="heroIntervalSeconds" type="number" min="1" max="30" step="0.5" value="${Number(settings.homeHero.intervalSeconds || 3)}"/></label>
+      <label class="banner-slider-upload">إضافة صور جديدة<input name="mediaFile" type="file" multiple accept="image/png,image/jpeg,image/webp,image/avif"/></label>
+      <label>العنوان الافتراضي للصور الجديدة<input name="mediaTitleAr" placeholder="اكتشف عالم العطور الفاخرة"/></label>
+      <label>الوصف الافتراضي<input name="mediaDescriptionAr" placeholder="نخبة مختارة من أفضل الماركات"/></label>
+      <button class="button burgundy-button" type="submit">حفظ السلايدر</button>
+    </div>
+    <div class="banner-slider-library">${cards || `<div class="banner-slider-empty"><img src="assets/home/hero/hero-main.png" alt="البنر الافتراضي"/><span><b>الصورة الافتراضية مستخدمة الآن</b><small>اختر عدة صور من جهازك لإضافة شرائح متغيرة.</small></span></div>`}</div>
+  </form>`;
+}
+
 function bannersViewMarkup() {
   const banners = state.adminWorkspace.banners || defaultAdminWorkspace.banners;
   const active = banners.filter((item) => item.status === "active").length;
@@ -1993,6 +2023,7 @@ function bannersViewMarkup() {
       <article><span class="green">✓</span><div><small>نشطة الآن</small><b>${active || 16}</b><em>بنر</em></div></article>
       <article><span class="red">▧</span><div><small>إجمالي البنرات</small><b>${Math.max(24, banners.length)}</b><em>بنر</em></div></article>
     </div>
+    ${bannerHeroSliderMarkup()}
     <div class="banner-table-card">
       <div class="banner-filters">
         <label class="banner-search">⌕<input id="banner-search" type="search" placeholder="ابحث عن بنر..." /></label>
@@ -3069,7 +3100,7 @@ function renderHomeHero() {
     });
   }
   clearInterval(homeHeroTimer);
-  const intervalMs = Math.max(1000, Math.min(30000, Number(settings.homeHero.intervalSeconds || 2.5) * 1000));
+  const intervalMs = Math.max(1000, Math.min(30000, Number(settings.homeHero.intervalSeconds || 3) * 1000));
   if (slides.length > 1 && !matchMedia("(prefers-reduced-motion: reduce)").matches) homeHeroTimer = setInterval(() => show(homeHeroIndex + 1), intervalMs);
   show(homeHeroIndex);
 }
@@ -6884,7 +6915,7 @@ document.addEventListener("click", async (event) => {
     settings.homeMedia = settings.homeMedia.filter((item) => String(item.id) !== String(actionElement.dataset.id));
     state.adminWorkspace.settings = settings;
     saveAdminWorkspace("homepage");
-    renderAdminDashboard("homepage");
+    renderAdminDashboard(state.adminView === "content" ? "content" : "homepage");
     showToast(adminCopy("تم حذف الوسائط", "Media removed"));
     return;
   }
@@ -8103,16 +8134,16 @@ document.addEventListener("submit", async (event) => {
     showToast(adminCopy("تم حفظ السجل الجديد", "New record saved"));
     return;
   }
-  if (event.target.id === "admin-homepage-rails") {
+  if (event.target.id === "admin-homepage-rails" || event.target.id === "admin-banner-slider-settings") {
     const data = new FormData(event.target);
     const current = mergeStoreSettings(state.adminWorkspace.settings || {});
-    const nextRails = Object.fromEntries(Object.keys(current.homepageRails).map((key) => [key, {
+    const nextRails = event.target.id === "admin-homepage-rails" ? Object.fromEntries(Object.keys(current.homepageRails).map((key) => [key, {
       ...current.homepageRails[key], enabled: data.has(`${key}.enabled`),
       titleAr: String(data.get(`${key}.titleAr`) || "").trim(), titleEn: String(data.get(`${key}.titleEn`) || "").trim(),
       order: Math.max(1, Math.min(10, Number(data.get(`${key}.order`) || 1))),
       ...(key === "brands" ? { speed: Math.max(12, Math.min(120, Number(data.get("brands.speed") || 34))) } : {}),
       ...(key === "benefits" ? { speed: Math.max(6, Math.min(120, Number(data.get("benefits.speed") || 18))) } : {})
-    }]));
+    }])) : current.homepageRails;
     const files = [...(event.target.elements.mediaFile?.files || [])];
     const media = current.homeMedia.map((item) => ({ ...item }));
     event.target.querySelectorAll("[data-home-media-field]").forEach((input) => {
@@ -8149,13 +8180,13 @@ document.addEventListener("submit", async (event) => {
         media.push(...uploaded);
       } catch (error) { showToast(adminCopy("تعذر معالجة الصورة", "Could not process image")); return; }
     }
-    const intervalSeconds = Math.max(1, Math.min(30, Number(data.get("heroIntervalSeconds") || 2.5)));
+    const intervalSeconds = Math.max(1, Math.min(30, Number(data.get("heroIntervalSeconds") || 3)));
     state.adminWorkspace.settings = mergeStoreSettings({ ...current, homepageRails: nextRails, homeHero: { ...current.homeHero, intervalSeconds }, homeMedia: media });
     saveAdminWorkspace("homepage");
     applyHomepageRailSettings();
     renderHomeHero();
     renderHomepageCommerce();
-    renderAdminDashboard("homepage");
+    renderAdminDashboard(event.target.id === "admin-banner-slider-settings" ? "content" : "homepage");
     showToast(adminCopy(files.length ? `تمت إضافة ${files.length} صورة وحفظ البنر` : "تم حفظ إعدادات البنر", files.length ? `${files.length} banner images added and saved` : "Banner settings saved"));
     return;
   }

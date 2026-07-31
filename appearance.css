@@ -1257,6 +1257,14 @@ body:not(.dark) .origo-footer .footer-bottom-bar :where(p,small,a){
   color:#111!important;
 }
 
+/* Keep primary footer actions readable after the broad light-theme text override. */
+body:not(.dark) .origo-footer .footer-directory #newsletter-form > button,
+body:not(.dark) .origo-footer .footer-directory #newsletter-form > button :where(span,i),
+body:not(.dark) .origo-footer .footer-directory .footer-app-links > a,
+body:not(.dark) .origo-footer .footer-directory .footer-app-links > a :where(span,b,strong,small){
+  color:#fff!important;
+}
+
 button:focus-visible,
 a:focus-visible,
 input:focus-visible,
