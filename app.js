@@ -1037,8 +1037,14 @@ const defaultAdminWorkspace = {
     { id: "cmp-2", name: "Summer Citrus", channel: "TikTok Ads", budget: 6400, revenue: 19100, status: "active" }
   ],
   coupons: [
-    { id: "ORIGO10", name: "ORIGO10", type: "10%", uses: 42, status: "active" },
-    { id: "WELCOME", name: "WELCOME", type: "150 EGP", uses: 18, status: "scheduled" }
+    { id: "ORIGO15", name: "خصم 15% على جميع الطلبات", kind: "percent", value: "15%", saved: "500 EGP", uses: 128, limit: 500, category: "عطور", created: "2024/05/20", status: "active" },
+    { id: "ORIGO30", name: "خصم 30 جنيه", kind: "fixed", value: "30 EGP", saved: "300 EGP", uses: 75, limit: 200, category: "العناية الشخصية", created: "2024/05/18", status: "active" },
+    { id: "SHIP10", name: "خصم 10% على الشحن", kind: "percent", value: "10%", saved: "0 EGP", uses: 210, limit: 1000, category: "الشحن", created: "2024/05/17", status: "active" },
+    { id: "WEEKEND20", name: "عرض نهاية الأسبوع", kind: "percent", value: "20%", saved: "400 EGP", uses: 45, limit: 200, category: "عطور", created: "2024/05/15", status: "ending" },
+    { id: "RAMADAN25", name: "خصم رمضان", kind: "fixed", value: "25 EGP", saved: "250 EGP", uses: 200, limit: 200, category: "البخور والعطور المنزلية", created: "2024/05/10", status: "expired" },
+    { id: "FREESHIP", name: "شحن مجاني", kind: "shipping", value: "شحن مجاني", saved: "0 EGP", uses: 0, limit: 150, category: "الشحن", created: "2024/05/08", status: "inactive" },
+    { id: "BIG100", name: "خصم 100 جنيه للطلبات الكبيرة", kind: "fixed", value: "100 EGP", saved: "1000 EGP", uses: 36, limit: 300, category: "أخرى", created: "2024/05/05", status: "active" },
+    { id: "PERFUME12", name: "خصم 12% على العطور", kind: "percent", value: "12%", saved: "600 EGP", uses: 89, limit: 500, category: "عطور", created: "2024/05/01", status: "ending" }
   ],
   suppliers: [
     { id: "sup-1", name: "Maison Distribution", contact: "+20 100 000 1122", products: 3, status: "active" },
@@ -1060,6 +1066,14 @@ const defaultAdminWorkspace = {
   tickets: [
     { id: "TKT-208", name: "تغيير عنوان الشحن", customer: "سارة أحمد", priority: "high", status: "open" },
     { id: "TKT-207", name: "استفسار عن الثبات", customer: "عمر خالد", priority: "normal", status: "waiting" }
+  ],
+  banners: [
+    { id: "bnr-1", title: "عرض الصيف", subtitle: "خصم حتى 30% على العطور", placement: "الصفحة الرئيسية", position: "سلايدر رئيسي", type: "image", start: "2024/05/10", end: "2024/06/10", clicks: 12450, status: "active", tone: "wine" },
+    { id: "bnr-2", title: "وصل حديثاً", subtitle: "اكتشف أحدث العطور", placement: "الصفحة الرئيسية", position: "بنر تحت السلايدر", type: "image", start: "2024/05/05", end: "2024/05/25", clicks: 8230, status: "active", tone: "sand" },
+    { id: "bnr-3", title: "عطور رجالية مميزة", subtitle: "تشكيلة فاخرة للرجال", placement: "صفحة العطور", position: "أعلى الصفحة", type: "image", start: "2024/05/01", end: "2024/05/31", clicks: 6780, status: "active", tone: "charcoal" },
+    { id: "bnr-4", title: "عناية ببشرتك", subtitle: "منتجات أصلية 100%", placement: "صفحة العناية بالبشرة", position: "بنر علوي", type: "image", start: "2024/05/08", end: "2024/06/08", clicks: 5190, status: "active", tone: "rose" },
+    { id: "bnr-5", title: "عطور شرقية فاخرة", subtitle: "اكتشف روائح الشرق", placement: "الصفحة الرئيسية", position: "سلايدر رئيسي", type: "video", start: "2024/04/15", end: "2024/04/30", clicks: 0, status: "expired", tone: "gold" },
+    { id: "bnr-6", title: "شحن مجاني", subtitle: "للطلبات فوق 1000 جنيه", placement: "سلة التسوق", position: "بنر جانبي", type: "image", start: "2024/04/01", end: "2024/04/14", clicks: 0, status: "expired", tone: "silver" }
   ],
   team: [
     { id: "staff-1", name: "ORIGO Owner", role: "Owner", lastLogin: "الآن", status: "active" },
@@ -1111,6 +1125,7 @@ const state = {
   publicIntegrations: {},
   integrationStatus: {},
   resetChannels: { email: false, whatsapp: false, sms: false },
+  passwordResetFlow: { requestId: "", identifier: "", channel: "email", code: "", attempts: 0, expiresAt: 0 },
   filterDefinitions: [],
   productOptions: [],
   activeDynamicFilters: {},
@@ -1158,11 +1173,11 @@ function sectionPermission(sectionId) {
   return {
     orders: "orders:view", products: "catalog:view", inventory: "inventory",
     customers: "customers", notes: "catalog:view", categories: "catalog:view", "product-options": "catalog:view",
-    alternatives: "catalog:view", performance: "catalog:view",
+    alternatives: "catalog:view", performance: "catalog:view", brands: "catalog:view",
     suppliers: "purchases", purchases: "purchases", marketing: "marketing", homepage: "content",
     coupons: "coupons", content: "content", reviews: "reviews",
     accounting: "accounting", shipping: "shipping", reports: "reports:view",
-    support: "support", team: "users", settings: "settings"
+    support: "support", team: "users", settings: "settings", activity: "settings", "ui-states": "settings"
   }[sectionId] || "staff";
 }
 
@@ -1174,6 +1189,7 @@ const adminSections = [
   { groupAr: "العمليات", groupEn: "OPERATIONS", id: "customers", icon: "♙", ar: "العملاء", en: "Customers", descriptionAr: "ملفات العملاء والمشتريات والشرائح والولاء.", descriptionEn: "Customer profiles, segments, orders, and loyalty." },
   { groupAr: "الكتالوج", groupEn: "CATALOG", id: "notes", icon: "✿", ar: "مكتبة المكونات", en: "Notes library", descriptionAr: "العائلات والمرادفات والصور والربط التلقائي.", descriptionEn: "Fragrance families, aliases, imagery, and matching." },
   { groupAr: "الكتالوج", groupEn: "CATALOG", id: "categories", icon: "⌘", ar: "التصنيفات والفلاتر", en: "Categories & filters", descriptionAr: "تصنيفات ومجموعات ووسوم وخصائص ديناميكية.", descriptionEn: "Dynamic categories, collections, tags, and attributes." },
+  { groupAr: "الكتالوج", groupEn: "CATALOG", id: "brands", icon: "⌑", ar: "العلامات التجارية", en: "Brands", descriptionAr: "إدارة العلامات والشعارات وبلد المنشأ وتوزيعها على الأقسام.", descriptionEn: "Manage brands, logos, origin countries, and department placement." },
   { groupAr: "الكتالوج", groupEn: "CATALOG", id: "product-options", icon: "⚙", ar: "خصائص وخيارات المنتجات", en: "Product options", descriptionAr: "إدارة الخيارات الثنائية اللغة المستخدمة في نموذج المنتج.", descriptionEn: "Manage bilingual values used by the product editor." },
   { groupAr: "الكتالوج", groupEn: "CATALOG", id: "alternatives", icon: "⇄", ar: "إدارة البدائل", en: "Alternatives", descriptionAr: "العطور المرجعية ونسب التشابه وظهور البدائل في الصفحة الرئيسية.", descriptionEn: "Reference fragrances, match scores, and homepage placement." },
   { groupAr: "الكتالوج", groupEn: "CATALOG", id: "performance", icon: "◉", ar: "مؤشرات أداء المنتجات", en: "Product performance", descriptionAr: "مصادر التقييم ومؤشرات العطور وأصوات المشترين الموثقين.", descriptionEn: "Rating sources, fragrance insights, and verified-purchase votes." },
@@ -1189,7 +1205,9 @@ const adminSections = [
   { groupAr: "المالية", groupEn: "FINANCE", id: "reports", icon: "▥", ar: "التقارير والتحليلات", en: "Reports", descriptionAr: "تقارير قابلة للفلترة والتصدير لكل عمليات المتجر.", descriptionEn: "Filterable and exportable business reports." },
   { groupAr: "الإدارة", groupEn: "MANAGEMENT", id: "support", icon: "◌", ar: "خدمة العملاء", en: "Customer support", descriptionAr: "التذاكر والشكاوى وسجل التواصل.", descriptionEn: "Tickets, complaints, and communication history." },
   { groupAr: "الإدارة", groupEn: "MANAGEMENT", id: "team", icon: "♟", ar: "الفريق والصلاحيات", en: "Team & roles", descriptionAr: "الأدوار والصلاحيات وسجل نشاط الموظفين.", descriptionEn: "Roles, permissions, and staff activity." },
-  { groupAr: "الإدارة", groupEn: "MANAGEMENT", id: "settings", icon: "⚙", ar: "الإعدادات", en: "Settings", descriptionAr: "إعدادات المتجر والأمان وSEO والإشعارات.", descriptionEn: "Store, security, SEO, and notification settings." }
+  { groupAr: "الإدارة", groupEn: "MANAGEMENT", id: "settings", icon: "⚙", ar: "الإعدادات", en: "Settings", descriptionAr: "إعدادات المتجر والأمان وSEO والإشعارات.", descriptionEn: "Store, security, SEO, and notification settings." },
+  { groupAr: "الإدارة", groupEn: "MANAGEMENT", id: "activity", icon: "◷", ar: "سجل النشاط والأمان", en: "Activity & security", descriptionAr: "تتبع العمليات ومحاولات الدخول والأحداث الأمنية.", descriptionEn: "Audit operations, sign-ins, and security events." },
+  { groupAr: "الإدارة", groupEn: "MANAGEMENT", id: "ui-states", icon: "◈", ar: "حالات النظام", en: "System states", descriptionAr: "معاينة حالات التفاعل والنوافذ المنبثقة الموحدة.", descriptionEn: "Reusable interaction states and modal patterns." }
 ];
 
 const staffRoleDefinitions = [
@@ -1666,6 +1684,20 @@ function overviewMarkup() {
     </section>`;
 }
 
+function operationalAdminMarkup(kind = "overview") {
+  const orders = state.adminOrders.length ? state.adminOrders : Array.from({length:10},(_,i)=>({id:i+1,orderNumber:`ORD-${1001+i}`,customerName:["أحمد محمد","سارة علي","محمد خالد","نورا حسن","عمرو طارق","هدى محمود","ياسر إبراهيم","منة الله","فاطمة الزهراء","علي رضوان"][i],phone:`01${String(12345678+i).padStart(9,"0")}`,total:[2450,1890,950,3250,1150,780,2990,560,1620,4200][i],status:["completed","shipped","processing","shipped","completed","cancelled","shipped","completed","processing","shipped"][i],paymentMethod:i%3===1?"فيزا / ماستركارد":i%3===2?"فودافون كاش":"الدفع عند الاستلام",createdAt:`2024-07-${String(10-Math.floor(i/3)).padStart(2,"0")}T${String(10+i).padStart(2,"0")}:30:00`}));
+  const customers = customerRows().length ? customerRows() : orders.map((o,i)=>({id:`CUST-${1001+i}`,name:o.customerName,phone:o.phone,email:["ahmed.m@email.com","sara.h@email.com","mohamed.k@email.com","nora.h@email.com","amr.t@email.com","hoda.y@email.com","yasser.a@email.com","menna.s@email.com","fatma.m@email.com","ali.r@email.com"][i],city:["القاهرة","الجيزة","الإسكندرية","القاهرة","الشرقية"][i%5],orders:[5,3,7,2,4,1,6,2,3,8][i],total:o.total,lastOrder:o.createdAt}));
+  const filterTitle = kind === "orders" ? "حالة الطلب" : kind === "customers" ? "الجنس" : "الأقسام";
+  const sideOptions = kind === "orders" ? [["جميع الطلبات",128],["قيد المعالجة",42],["قيد الشحن",36],["تم الشحن",18],["تم التسليم",24],["ملغي",15]] : kind === "customers" ? [["كل العملاء",2543],["ذكر",1542],["أنثى",1001],["نشط",2301],["غير نشط",146],["محظور",96]] : [["جميع الأقسام",10],["جميع الماركات",125],["جميع الاستخدامات",12],["جميع فئات السعر",8]];
+  const filters = `<aside class="ops-filter-panel"><label class="ops-filter-master"><input type="checkbox" checked/><i></i>تفعيل الفلاتر في المتجر</label><h3>معاينة الفلاتر في المتجر</h3><div class="ops-phone-preview"><header><b>10:30</b><span>▮▮ ◉</span></header><h4>تصفية النتائج ☷</h4><section><b>${filterTitle}</b>${sideOptions.map(([label,count],i)=>`<label><span>${label}</span><small>(${count})</small><input type="checkbox"${i===0?" checked":""}/></label>`).join("")}<button>عرض المزيد</button></section><section><b>${kind==="customers"?"المدينة":"القيمة الإجمالية"}</b><div class="ops-range"><input value="0"/><input value="${kind==="customers"?"القاهرة":"100,000+"}"/></div><input type="range" value="80"/></section><button class="primary">عرض ${kind==="overview"?489:2543} ${kind==="customers"?"عميل":kind==="orders"?"طلب":"منتج"}</button></div><div class="ops-tip"><b>ⓘ نصيحة ذكية</b><p>استخدم الفلاتر الذكية للوصول بسرعة إلى البيانات التي تحتاج انتباهك.</p></div></aside>`;
+  if (kind === "orders") return `<section class="ops-console" dir="rtl">${filters}<main><header class="ops-view-head"><div><h2>إدارة الطلبات</h2><p>الرئيسية ‹ الطلبات</p></div><div class="ops-view-controls"><select><option>جميع الطلبات</option></select><button>▣</button><button class="active">▤</button></div></header><div class="ops-order-stats">${[["ملغي",146],["تم التسليم",2301],["تم الشحن",42],["قيد الشحن",36],["قيد المعالجة",42],["إجمالي الطلبات",2543]].map(([l,v])=>`<article><small>${l}</small><b>${v.toLocaleString()}</b></article>`).join("")}</div>${opsToolbar("طلب")}<div class="ops-data-table"><table><thead><tr><th>رقم الطلب</th><th>العميل</th><th>التاريخ</th><th>القيمة الإجمالية</th><th>طريقة الدفع</th><th>حالة الطلب</th><th>الإجراءات</th></tr></thead><tbody>${orders.slice(0,10).map(o=>`<tr><td><b class="ops-id">#${o.orderNumber}</b></td><td><b>${escapeHTML(o.customerName)}</b><small>${escapeHTML(o.phone||"")}</small></td><td>${new Date(o.createdAt).toLocaleDateString("ar-EG")}<small>${new Date(o.createdAt).toLocaleTimeString("ar-EG",{hour:"2-digit",minute:"2-digit"})}</small></td><td><b>${formatPrice(o.total)}</b></td><td>${escapeHTML(o.paymentMethod||"الدفع عند الاستلام")}</td><td><span class="ops-status ${o.status}">${adminStatusLabel(o.status)}</span></td><td><button>◉</button><button>⋮</button></td></tr>`).join("")}</tbody></table>${opsPagination("طلب")}</div></main></section>`;
+  if (kind === "customers") return `<section class="ops-console" dir="rtl">${filters}<main><header class="ops-view-head"><div><h2>إدارة العملاء</h2><p>الرئيسية ‹ العملاء</p></div><div class="ops-view-controls"><select><option>العملاء</option></select><button>▣</button><button class="active">▤</button></div></header><div class="ops-customer-stats">${[["إجمالي المبيعات","1,245,890"],["متوسط الطلبات للعميل","1.8"],["العملاء النشطون","2,301"],["عملاء جدد (7 يوم)","198"],["إجمالي العملاء","2,543"]].map(([l,v])=>`<article><small>${l}</small><b>${v}</b></article>`).join("")}</div>${opsToolbar("عميل")}<div class="ops-data-table"><table><thead><tr><th>رقم العميل</th><th>الاسم</th><th>البريد الإلكتروني</th><th>الهاتف</th><th>المدينة</th><th>عدد الطلبات</th><th>إجمالي المشتريات</th><th>تاريخ التسجيل</th><th>الإجراءات</th></tr></thead><tbody>${customers.slice(0,10).map(c=>`<tr><td><b class="ops-id">#${c.id}</b></td><td><b>${escapeHTML(c.name)}</b></td><td dir="ltr">${escapeHTML(c.email||"")}</td><td dir="ltr">${escapeHTML(c.phone||"")}</td><td>${escapeHTML(c.city||"القاهرة")}</td><td>${c.orders}</td><td>${formatPrice(c.total)}</td><td>${new Date(c.lastOrder).toLocaleDateString("ar-EG")}</td><td><button>✉</button><button>◉</button><button>⋮</button></td></tr>`).join("")}</tbody></table>${opsPagination("عميل")}</div></main></section>`;
+  return `<section class="ops-console ops-overview" dir="rtl">${filters}<main><header class="ops-view-head"><div><h2>لوحة التحكم</h2><p>الرئيسية ‹ لوحة التحكم</p></div></header><div class="ops-dashboard-kpis">${[["إجمالي المبيعات","256,890","↗ 12.5%"],["عدد الطلبات","1,245","↗ 48.2%"],["العملاء الجدد","892","↗ 45.2%"],["زيارات المتجر","48,762","↗ 49.7%"],["عدد المنتجات","2,301",""]].map(([l,v,t])=>`<article><small>${l}</small><b>${v}</b><em>${t}</em></article>`).join("")}</div><div class="ops-charts"><article><h3>طلبات حسب الحالة</h3><div class="ops-donut"><b>1,245<small>إجمالي الطلبات</small></b></div><ul><li>تم التسليم 65%</li><li>قيد الشحن 18%</li><li>قيد المعالجة 10%</li><li>ملغي 4%</li></ul></article><article><h3>مبيعات آخر 7 أيام</h3><div class="ops-line-chart">${[18,35,47,45,65,72,94,70,58].map(v=>`<i style="--v:${v}%"></i>`).join("")}</div></article></div><div class="ops-lower-grids"><article><h3>أفضل المنتجات مبيعاً</h3>${state.products.slice(0,5).map((p,i)=>`<p><img src="${escapeHTML(p.image)}"/><b>${escapeHTML(p.nameAr||p.nameEn)}</b><span>${156-i*17}</span><em>${formatPrice(78000-i*11000)}</em></p>`).join("")}</article><article><h3>أحدث الطلبات</h3>${orders.slice(0,5).map(o=>`<p><b class="ops-id">#${o.orderNumber}</b><span>${formatPrice(o.total)}</span><em class="ops-status ${o.status}">${adminStatusLabel(o.status)}</em></p>`).join("")}</article></div></main></section>`;
+}
+
+function opsToolbar(noun) { return `<div class="ops-toolbar"><select><option>10 لكل صفحة</option></select><label>⌕<input placeholder="بحث عن ${noun}..."/></label><button>▽ المزيد من الفلاتر</button><button>تصدير⌄</button></div>`; }
+function opsPagination(noun) { return `<footer class="ops-pagination"><span>عرض 1 إلى 10 من 2,543 ${noun}</span><div><button>‹</button><button class="active">1</button><button>2</button><button>3</button><button>4</button><button>5</button><button>…</button><button>255</button><button>›</button></div></footer>`; }
+
 function adminTable(headers, rows, emptyText) {
   return `<div class="admin-data-table"><table><thead><tr>${headers.map((header) => `<th>${escapeHTML(header)}</th>`).join("")}</tr></thead>
     <tbody>${rows.length ? rows.join("") : `<tr><td colspan="${headers.length}"><div class="admin-table-empty">◇<b>${escapeHTML(emptyText)}</b></div></td></tr>`}</tbody></table></div>`;
@@ -1857,6 +1889,54 @@ function teamViewMarkup() {
   </section>`;
 }
 
+function rolesDashboardMarkup() {
+  const roles = [["المدير العام (المالك)","صلاحيات كاملة على جميع أقسام النظام","♛",1],["مدير المتجر","إدارة العمليات والطلبات والعملاء","▦",1],["مسؤول المنتجات","إدارة المنتجات والمخزون والتصنيفات","◇",2],["مسؤول الطلبات","إدارة الطلبات والشحن والإرجاع","▣",3],["خدمة العملاء","الرد على العملاء وتذاكر الدعم","♧",2],["المحاسب","التقارير المالية والفواتير والمدفوعات","▤",1],["مشرف المحتوى","إدارة المحتوى والبنرات والصفحات","✎",1]];
+  const sections = ["لوحة التحكم","الطلبات","العملاء","المنتجات","المخزون","العروض والقسائم","التقارير","الإعدادات","الصلاحيات والمستخدمين","سجل النشاط"];
+  return `<section class="roles-dashboard" dir="rtl"><div class="roles-kpis"><article><span>♙</span><div><small>إجمالي المستخدمين</small><b>${Math.max(15,state.adminStaff.length)}</b><em>نشط: 12 | غير نشط: 3</em></div></article><article><span>♜</span><div><small>إجمالي الأدوار</small><b>6</b><em>أدوار مخصصة</em></div></article><article><span>▧</span><div><small>السياسات المفعلة</small><b>24</b><em>سياسة صلاحية</em></div></article><article><span>♙</span><div><small>آخر تحديث للصلاحيات</small><b>2024-05-19</b><em>منذ ساعتين</em></div></article></div><nav class="roles-tabs"><button>المستخدمون</button><button class="active">الأدوار والصلاحيات</button><button>سجل التغييرات</button></nav><div class="roles-layout"><aside class="roles-list"><header><h3>الأدوار</h3><button data-action="create-role">＋ إضافة دور جديد</button></header>${roles.map(([name,desc,icon,count],index)=>`<button class="role-list-item ${index===1?"active":""}"><i>${icon}</i><span><b>${name}</b><small>${desc}</small></span><em>${count}</em></button>`).join("")}</aside><main class="permissions-panel"><header><span>▦</span><div><h3>صلاحيات الدور: مدير المتجر</h3><p>يمكن لهذا الدور إدارة العمليات اليومية مثل الطلبات، العملاء، التقارير، العروض، والقسائم.</p></div></header><nav><button class="active">الصلاحيات العامة</button><button>الصلاحيات حسب القسم</button><button>تقييد الوصول</button></nav><div class="permissions-table-scroll"><table><thead><tr><th>الأقسام</th><th>عرض</th><th>إضافة</th><th>تعديل</th><th>حذف</th><th>تصدير</th><th>اعتماد / نشر</th></tr></thead><tbody>${sections.map((section,row)=>`<tr><th>${["⌂","▣","♙","◇","▦","⌑","▥","⚙","♙","◷"][row]} ${section}</th>${Array.from({length:6},(_,col)=>{const allowed=row<7&&(col<4||(row===1&&col===5));return `<td><button type="button" class="permission-toggle ${allowed?"allowed":"blocked"}">${allowed?"✓":"⊘"}</button></td>`}).join("")}</tr>`).join("")}</tbody></table></div><footer><div><span>✓ مسموح</span><span>⊘ غير مسموح</span></div><button data-action="reset-role-permissions">إعادة تعيين للصلاحيات الافتراضية</button><button class="primary" data-action="save-role-permissions">حفظ التغييرات</button></footer></main><aside class="role-details"><h3>معلومات الدور</h3><dl><dt>اسم الدور</dt><dd>مدير المتجر</dd><dt>الوصف</dt><dd>يمكنه إدارة العمليات اليومية مثل الطلبات، العملاء، التقارير، العروض والقسائم.</dd><dt>عدد المستخدمين</dt><dd>1 مستخدم</dd><dt>تاريخ الإنشاء</dt><dd>2024-04-10</dd><dt>آخر تحديث</dt><dd>2024-05-18 14:30</dd><dt>الحالة</dt><dd><span>نشط</span></dd></dl><h3>خيارات سريعة</h3><button data-action="edit-role">✎ تعديل معلومات الدور</button><button data-action="copy-role">▣ نسخ الدور</button><button class="danger" data-action="delete-role">♲ حذف الدور</button></aside></div></section>`;
+}
+
+document.addEventListener("click", (event) => {
+  const toggle = event.target.closest(".permission-toggle");
+  if (!toggle) return;
+  const allowed = toggle.classList.toggle("allowed");
+  toggle.classList.toggle("blocked", !allowed);
+  toggle.textContent = allowed ? "✓" : "⊘";
+});
+
+function activitySecurityMarkup() {
+  const sample = [
+    ["2024-05-19","10:30:25 ص","أحمد محمد","المدير العام","تعديل منتج","تعديل سعر منتج 100ml - 160R - EDP","Windows / Chrome","41.36.25.10","success"],
+    ["2024-05-19","09:15:10 ص","سارة علي","مدير المتجر","تحديث طلب","تغيير حالة الطلب #10524 من قيد الشحن إلى تم التسليم","Windows / Firefox","197.45.12.33","success"],
+    ["2024-05-19","08:40:05 ص","محمد خالد","مسؤول المنتجات","إضافة منتج","إضافة منتج جديد Lattafa Khamrah 100ml","Windows / Chrome","41.36.25.10","success"],
+    ["2024-05-19","03:22:18 ص","نادية حسن","خدمة العملاء","تعديل عميل","تعديل بيانات العميل محمد أحمد","Android / Mobile Chrome","197.45.12.33","success"],
+    ["2024-05-18","11:05:33 م","علي يوسف","مسؤول الطلبات","حذف","حذف الطلب #10218","Windows / Edge","185.77.61.22","success"],
+    ["2024-05-18","04:12:09 م","مستخدم غير معروف","—","تسجيل دخول","محاولة دخول من جهاز غير معروف","iPhone / Safari","185.77.61.22","warning"],
+    ["2024-05-18","02:33:47 م","مستخدم غير معروف","—","تسجيل دخول","محاولة دخول بكلمة مرور خاطئة","Windows / Chrome","185.77.61.22","failed"],
+    ["2024-05-17","10:20:18 م","أحمد محمد","المدير العام","تصدير تقرير","تصدير تقرير المبيعات (PDF)","Windows / Chrome","41.36.25.10","success"],
+    ["2024-05-17","09:10:05 م","هبة سعيد","مدير المحتوى","تعديل محتوى","تعديل محتوى صفحة من نحن","Windows / Chrome","197.45.12.33","success"]
+  ];
+  const live = (state.adminActivity || []).slice(0,5).map((entry) => [String(entry.createdAt || "").slice(0,10),String(entry.createdAt || "").slice(11,19),entry.userName || entry.userEmail || "System","إدارة",entry.action || "عملية",entry.details || "عملية إدارية مسجلة","Web",entry.ip || "—","success"]);
+  const rows = [...live,...sample];
+  const resultLabel = {success:"نجاح",warning:"تحذير",failed:"فشل"};
+  return `<section class="activity-security" dir="rtl"><div class="activity-kpis"><article><span>♙</span><div><small>آخر دخول للمسؤولين</small><b>منذ 10 دقائق</b><em>أحمد محمد</em></div></article><article><span>♜</span><div><small>محاولات فاشلة</small><b>12</b><em>محاولة</em></div></article><article><span>▥</span><div><small>هذا الشهر</small><b>1,782</b><em>عملية</em></div></article><article><span>↗</span><div><small>هذا الأسبوع</small><b>548</b><em>عملية</em></div></article><article><span>▣</span><div><small>اليوم</small><b>96</b><em>عملية</em></div></article><article><span>▧</span><div><small>إجمالي العمليات</small><b>1,248</b><em>عملية</em></div></article></div><div class="activity-toolbar"><label>▣<input value="2024-05-10 - 2024-05-19" readonly/></label><select id="activity-user-filter"><option value="">كل المستخدمين</option>${[...new Set(rows.map(r=>r[2]))].map(x=>`<option>${x}</option>`).join("")}</select><select id="activity-type-filter"><option value="">كل العمليات</option>${[...new Set(rows.map(r=>r[4]))].map(x=>`<option>${x}</option>`).join("")}</select><select id="activity-result-filter"><option value="">كل النتائج</option><option value="success">نجاح</option><option value="warning">تحذير</option><option value="failed">فشل</option></select><label class="activity-search">⌕<input id="activity-search" placeholder="بحث في السجل..."/></label><button data-action="export-activity">⇩ تصدير</button></div><div class="activity-layout"><div class="activity-table-card"><div class="activity-table-scroll"><table><thead><tr><th>الوقت والتاريخ</th><th>المستخدم</th><th>العملية</th><th>التفاصيل</th><th>الجهة / الجهاز</th><th>IP</th><th>النتيجة</th></tr></thead><tbody>${rows.map(r=>`<tr data-activity-row data-user="${escapeHTML(r[2])}" data-type="${escapeHTML(r[4])}" data-result="${r[8]}" data-search="${escapeHTML(r.join(" "))}"><td><b>${r[0]}</b><small>${r[1]}</small></td><td><b>${escapeHTML(r[2])}</b><small>${escapeHTML(r[3])}</small></td><td><b>${escapeHTML(r[4])}</b></td><td>${escapeHTML(r[5])}</td><td>${escapeHTML(r[6])}</td><td dir="ltr">${r[7]}</td><td><span class="activity-result ${r[8]}">${resultLabel[r[8]]}</span></td></tr>`).join("")}</tbody></table></div><footer><span>عرض 1 إلى ${Math.min(10,rows.length)} من 1,248 عملية</span><div><button>‹‹</button><button>‹</button><button class="active">1</button><button>2</button><button>3</button><button>4</button><button>5</button><button>…</button><button>125</button><button>›</button></div></footer></div><aside class="activity-filter-panel"><h3>تصفية السجل</h3><label>الفترة الزمنية<select><option>نطاق مخصص</option></select></label><label>من<input type="date" value="2024-05-10"/></label><label>إلى<input type="date" value="2024-05-19"/></label><label>المستخدم<select><option>كل المستخدمين</option></select></label><label>نوع العملية<select><option>كل العمليات</option></select></label><label>النتيجة<select><option>كل النتائج</option></select></label><label>الجهاز<select><option>كل الأجهزة</option></select></label><button class="primary" data-action="apply-activity-filters">تطبيق الفلاتر</button><button data-action="reset-activity-filters">إعادة تعيين</button></aside></div><footer class="activity-security-note">♜ يتم تسجيل جميع العمليات المهمة تلقائياً لضمان الأمان والشفافية. يحتفظ بالسجل لمدة 12 شهراً.</footer></section>`;
+}
+
+function initializeActivitySecurity() {
+  const root = $(".activity-security"); if (!root) return;
+  const filter = () => { const q=String($("#activity-search")?.value||"").toLowerCase(),u=$("#activity-user-filter")?.value||"",t=$("#activity-type-filter")?.value||"",r=$("#activity-result-filter")?.value||""; $$('[data-activity-row]',root).forEach(row=>row.hidden=!((!q||row.dataset.search.toLowerCase().includes(q))&&(!u||row.dataset.user===u)&&(!t||row.dataset.type===t)&&(!r||row.dataset.result===r))); };
+  $("#activity-search")?.addEventListener("input",filter); $("#activity-user-filter")?.addEventListener("change",filter); $("#activity-type-filter")?.addEventListener("change",filter); $("#activity-result-filter")?.addEventListener("change",filter);
+}
+
+function brandsManagementMarkup() {
+  const source = state.products.reduce((map, product) => { const brand=String(product.brand||"ORIGO"); const row=map.get(brand)||{name:brand,count:0,sales:0}; row.count+=1; row.sales+=Number(product.price||0)*((String(product.id).length%9)+4); map.set(brand,row); return map; },new Map());
+  const defaults = [["لطافة","Lattafa","الإمارات","🇦🇪",320,2450800,"luxury"],["ديور","Dior","فرنسا","🇫🇷",284,1980450,"high"],["شانيل","Chanel","فرنسا","🇫🇷",256,1765300,"luxury"],["أرماف","Armaf","الإمارات","🇦🇪",210,1250900,"high"],["توم فورد","Tom Ford","أمريكا","🇺🇸",180,980600,"medium"],["كريد","Creed","فرنسا","🇫🇷",165,845700,"medium"],["إيف سان لوران","Yves Saint Laurent","فرنسا","🇫🇷",142,720150,"high"],["باكو رابان","Paco Rabanne","إسبانيا","🇪🇸",92,610500,"medium"]];
+  const brands = defaults.map((row)=>{const live=source.get(row[1])||source.get(row[0]); return live?[row[0],row[1],row[2],row[3],Math.max(row[4],live.count),Math.max(row[5],live.sales),row[6]]:row;});
+  const categories=[["العطور",128,"♙"],["العناية بالبشرة",86,"▱"],["العناية بالجسم",64,"▯"],["العناية بالشعر",52,"♧"],["البخور والعطور المنزلية",34,"⌂"],["الهدايا والمجموعات",28,"♢"]];
+  return `<section class="brands-management" dir="rtl"><div class="brands-kpis"><article><span>▱</span><div><small>إجمالي المبيعات</small><b>12,845,750</b><em>EGP</em></div></article><article><span>◇</span><div><small>إجمالي المنتجات</small><b>3,458</b><em>منتج</em></div></article><article><span>⌑</span><div><small>علامات نشطة</small><b>112</b><em>نشطة</em></div></article><article><span>◇</span><div><small>إجمالي العلامات التجارية</small><b>128</b><em>علامة</em></div></article></div><nav class="brand-department-tabs">${categories.map(([name,,icon],i)=>`<button class="${i===0?"active":""}">${icon} ${name}</button>`).join("")}</nav><div class="brands-layout"><main class="brands-table-card"><header><div><h3>العلامات التجارية في قسم العطور</h3><p>إدارة جميع العلامات التجارية الخاصة بالعطور</p></div><label>⌕<input id="brand-search" placeholder="ابحث عن علامة تجارية..."/></label><button>تصفية⌄</button><button data-action="export-brands">تصدير⌄</button></header><div class="brands-table-scroll"><table><thead><tr><th>الشعار</th><th>اسم العلامة التجارية</th><th>بلد المنشأ</th><th>مستوى السعر</th><th>عدد المنتجات</th><th>إجمالي المبيعات</th><th>الحالة</th><th>الإجراءات</th></tr></thead><tbody>${brands.map(([ar,en,country,flag,count,sales,level])=>`<tr data-brand-row data-search="${escapeHTML(`${ar} ${en} ${country}`)}"><td><div class="brand-logo ${level}">${escapeHTML(en)}</div></td><td><b>${ar}</b><small>${en}</small></td><td>${flag} ${country}</td><td><span class="brand-level ${level}">${level==="luxury"?"فاخر":level==="high"?"مرتفع":"متوسط"}</span></td><td>${count}</td><td>${Number(sales).toLocaleString("en-US")} EGP</td><td><span class="brand-active">● نشطة</span></td><td><button data-action="edit-brand">✎</button><button>•••</button></td></tr>`).join("")}</tbody></table></div><footer class="brands-pagination"><span>عرض 1 إلى 8 من 128 علامة تجارية</span><div><button>السابق</button><button class="active">1</button><button>2</button><button>3</button><button>…</button><button>16</button><button>التالي</button></div><select><option>عرض 8</option><option>عرض 25</option></select></footer></main><aside class="brand-categories"><h3>الأقسام</h3>${categories.map(([name,count,icon],i)=>`<button class="${i===0?"active":""}"><i>${icon}</i><span>${name}</span><b>${count}</b></button>`).join("")}<div><b>ⓘ معلومة</b><p>كل قسم له مجموعة مستقلة من العلامات التجارية. العلامات التجارية في كل قسم لا تؤثر على الأقسام الأخرى.</p></div></aside></div></section>`;
+}
+
+function initializeBrandsManagement() { const input=$("#brand-search"); input?.addEventListener("input",()=>{const q=input.value.toLowerCase(); $$('[data-brand-row]').forEach(row=>row.hidden=!row.dataset.search.toLowerCase().includes(q));}); }
+
 function notesViewMarkup() {
   const library = window.ORIGOFragranceNotes;
   return `<section class="admin-feature-hero notes-feature"><div><span class="eyebrow">FRAGRANCE NOTES LIBRARY</span>
@@ -1897,6 +1977,88 @@ function genericEntityMarkup(view) {
     <footer>${item.amount != null ? `<b>${formatPrice(item.amount)}</b>` : item.fee != null ? `<b>${formatPrice(item.fee)}</b>` : item.budget != null ? `<b>${formatPrice(item.budget)}</b>` : `<b>${escapeHTML(item.id || "")}</b>`}
       <span class="admin-table-actions"><button data-action="admin-edit-entity" data-view="${view}" data-id="${escapeHTML(item.id || "")}">${state.lang === "ar" ? "تعديل" : "Edit"}</button><button class="danger" data-action="admin-delete-entity" data-view="${view}" data-id="${escapeHTML(item.id || "")}">${state.lang === "ar" ? "حذف" : "Delete"}</button></span></footer></article>`).join("")}
     <button class="admin-add-entity-card" data-action="admin-create-entity" data-view="${view}"><span>＋</span><b>${state.lang === "ar" ? "إضافة سجل جديد" : "Add new record"}</b><small>${state.lang === "ar" ? "يحفظ محليًا وجاهز للربط مع API" : "Saved locally and API-ready"}</small></button></section>`;
+}
+
+function bannersViewMarkup() {
+  const banners = state.adminWorkspace.banners || defaultAdminWorkspace.banners;
+  const active = banners.filter((item) => item.status === "active").length;
+  const expired = banners.filter((item) => item.status === "expired").length;
+  const scheduled = banners.filter((item) => item.status === "scheduled").length;
+  const clicks = banners.reduce((sum, item) => sum + Number(item.clicks || 0), 0);
+  return `<section class="banner-manager" dir="rtl">
+    <div class="banner-kpis">
+      <article><span class="blue">⌁</span><div><small>إجمالي النقرات</small><b>${clicks.toLocaleString("en-US")}</b><em>نقرة</em></div></article>
+      <article><span class="violet">▣</span><div><small>مجدولة</small><b>${scheduled || 3}</b><em>بنرات</em></div></article>
+      <article><span class="amber">◷</span><div><small>منتهية</small><b>${expired || 5}</b><em>بنرات</em></div></article>
+      <article><span class="green">✓</span><div><small>نشطة الآن</small><b>${active || 16}</b><em>بنر</em></div></article>
+      <article><span class="red">▧</span><div><small>إجمالي البنرات</small><b>${Math.max(24, banners.length)}</b><em>بنر</em></div></article>
+    </div>
+    <div class="banner-table-card">
+      <div class="banner-filters">
+        <label class="banner-search">⌕<input id="banner-search" type="search" placeholder="ابحث عن بنر..." /></label>
+        <label><span>النوع</span><select id="banner-type-filter"><option value="">الكل</option><option value="image">صورة</option><option value="video">فيديو</option></select></label>
+        <label><span>الموقع/الصفحة</span><select id="banner-place-filter"><option value="">الكل</option><option>الصفحة الرئيسية</option><option>صفحة العطور</option><option>صفحة العناية بالبشرة</option><option>سلة التسوق</option></select></label>
+        <label><span>الفترة</span><button type="button">▣ &nbsp; من &nbsp; - &nbsp; إلى</button></label>
+        <button class="banner-more-filter" type="button">▽ &nbsp; فلتر أكثر</button>
+      </div>
+      <div class="banner-table-scroll"><table class="banner-table"><thead><tr><th>البنر</th><th>العنوان</th><th>الموقع/الصفحة</th><th>نوع البنر</th><th>فترة العرض</th><th>النقرات</th><th>الإجراءات</th></tr></thead>
+      <tbody>${banners.map((item) => `<tr data-banner-row data-type="${item.type}" data-place="${escapeHTML(item.placement)}" data-search="${escapeHTML(`${item.title} ${item.subtitle}`)}">
+        <td><div class="banner-preview ${item.tone}"><span>${item.title}</span><small>${item.subtitle}</small>${item.type === "video" ? `<i>▶</i>` : ""}</div></td>
+        <td><b>${escapeHTML(item.title)}</b><small>${escapeHTML(item.subtitle)}</small></td>
+        <td><b>${escapeHTML(item.placement)}</b><small>${escapeHTML(item.position)}</small></td>
+        <td><span class="banner-type ${item.type}">${item.type === "video" ? "فيديو" : "صورة"}</span></td>
+        <td><span class="banner-dates">${escapeHTML(item.start)}<i>إلى</i>${escapeHTML(item.end)}</span></td>
+        <td>${Number(item.clicks || 0).toLocaleString("en-US")}</td>
+        <td><div class="banner-row-actions"><label class="banner-switch"><input type="checkbox" data-action="toggle-banner" data-id="${item.id}" ${item.status === "active" ? "checked" : ""}/><i></i></label><button data-action="edit-banner" data-id="${item.id}">✎</button><button data-action="banner-stats" data-id="${item.id}">▥</button><button>•••</button></div></td>
+      </tr>`).join("")}</tbody></table></div>
+      <footer class="banner-pagination"><span>عرض 1 إلى ${banners.length} من 24 بنر</span><div><button>السابق</button><button class="active">1</button><button>2</button><button>3</button><button>…</button><button>التالي</button></div><label>عرض <select><option>10</option><option>20</option></select></label></footer>
+    </div>
+  </section>`;
+}
+
+function initializeBannerManager() {
+  const root = $(".banner-manager");
+  if (!root) return;
+  const applyFilters = () => {
+    const query = String($("#banner-search")?.value || "").trim().toLocaleLowerCase("ar");
+    const type = $("#banner-type-filter")?.value || "";
+    const place = $("#banner-place-filter")?.value || "";
+    $$('[data-banner-row]', root).forEach((row) => {
+      const matches = (!query || row.dataset.search.toLocaleLowerCase("ar").includes(query))
+        && (!type || row.dataset.type === type) && (!place || row.dataset.place === place);
+      row.hidden = !matches;
+    });
+  };
+  $("#banner-search")?.addEventListener("input", applyFilters);
+  $("#banner-type-filter")?.addEventListener("change", applyFilters);
+  $("#banner-place-filter")?.addEventListener("change", applyFilters);
+}
+
+function couponsViewMarkup() {
+  const coupons = state.adminWorkspace.coupons || defaultAdminWorkspace.coupons;
+  const active = coupons.filter((item) => item.status === "active").length;
+  const categories = ["كل الكوبونات", "عطور", "العناية الشخصية", "البخور والعطور المنزلية", "الشحن", "أخرى"];
+  const statusLabel = { active: "نشط", ending: "ينتهي قريباً", expired: "منتهي", inactive: "غير نشط", scheduled: "مجدول" };
+  const kindLabel = { percent: "نسبة مئوية", fixed: "قيمة ثابتة", shipping: "شحن مجاني" };
+  return `<section class="coupon-manager" dir="rtl">
+    <div class="coupon-kpis">
+      <article><span class="money">▱</span><div><small>إجمالي الخصم المقدم</small><b>245,680</b><em>EGP</em></div></article>
+      <article><span class="calendar">▣</span><div><small>تنتهي قريباً</small><b>11</b><em>كوبون</em></div></article>
+      <article><span class="ticket">▭</span><div><small>كوبونات نشطة</small><b>${Math.max(58, active)}</b><em>كوبون</em></div></article>
+      <article><span class="percent">%</span><div><small>إجمالي الكوبونات</small><b>136</b><em>كوبون</em></div></article>
+    </div>
+    <div class="coupon-layout"><div class="coupon-table-card">
+      <div class="coupon-filters"><label class="coupon-search">⌕<input id="coupon-search" type="search" placeholder="ابحث عن كوبون..." /></label><button>☷ فلتر أكثر</button><label><span>تاريخ الإنشاء</span><button>▣ &nbsp; من &nbsp; - &nbsp; إلى</button></label><label><span>طريقة الخصم</span><select id="coupon-kind-filter"><option value="">الكل</option><option value="percent">نسبة مئوية</option><option value="fixed">قيمة ثابتة</option><option value="shipping">شحن مجاني</option></select></label><label><span>نوع الخصم</span><select><option>الكل</option></select></label><label><span>حالة الكوبون</span><select id="coupon-status-filter"><option value="">الكل</option><option value="active">نشط</option><option value="ending">ينتهي قريباً</option><option value="expired">منتهي</option><option value="inactive">غير نشط</option></select></label></div>
+      <div class="coupon-table-scroll"><table class="coupon-table"><thead><tr><th>الكود</th><th>اسم الكوبون</th><th>نوع الخصم</th><th>قيمة الخصم</th><th>قيمة الخصم</th><th>الحد الأدنى للطلب</th><th>الحالة</th><th>تاريخ الإنشاء</th><th>الإجراءات</th></tr></thead><tbody>${coupons.map((item) => `<tr data-coupon-row data-kind="${item.kind}" data-status="${item.status}" data-search="${escapeHTML(`${item.id} ${item.name}`)}"><td><code>${item.id}</code></td><td><b>${escapeHTML(item.name)}</b></td><td><span class="coupon-kind ${item.kind}">${kindLabel[item.kind]}</span></td><td><b>${item.value}</b></td><td>${item.saved}</td><td>${item.uses} / ${item.limit}</td><td><span class="coupon-status ${item.status}">● ${statusLabel[item.status]}</span></td><td>${item.created}</td><td><div class="coupon-actions"><button>▥</button><button data-action="copy-coupon" data-code="${item.id}">▣</button><button data-action="edit-coupon" data-id="${item.id}">✎</button><button>•••</button></div></td></tr>`).join("")}</tbody></table></div>
+      <footer class="banner-pagination"><span>عرض 1 إلى ${coupons.length} من 136 كوبون</span><div><button>السابق</button><button class="active">1</button><button>2</button><button>3</button><button>…</button><button>17</button><button>التالي</button></div><label>عرض <select><option>8</option></select></label></footer>
+    </div><aside class="coupon-sidebar"><article><h3>تصنيفات الكوبونات</h3>${categories.map((category, index) => `<button class="${index === 0 ? "active" : ""}"><span>${category}</span><b>${[136,62,28,18,12,16][index]}</b></button>`).join("")}</article><article class="coupon-insights"><h3>معلومات سريعة</h3><p><i>♨</i><span>أعلى استخدام<b>ORIGO15 (128 مرة)</b></span></p><p><i>◆</i><span>أكبر خصم<b>100 EGP (BIG100)</b></span></p><p><i>▱</i><span>أكثر الكوبونات توفيراً<b>شحن مجاني (FREESHIP)</b></span></p><p><i>▣</i><span>ينتهي خلال 7 أيام<b>4 كوبونات</b></span></p></article></aside></div>
+  </section>`;
+}
+
+function initializeCouponManager() {
+  const root = $(".coupon-manager"); if (!root) return;
+  const filter = () => { const query = String($("#coupon-search")?.value || "").toLowerCase(); const kind = $("#coupon-kind-filter")?.value || ""; const status = $("#coupon-status-filter")?.value || ""; $$('[data-coupon-row]', root).forEach((row) => row.hidden = !((!query || row.dataset.search.toLowerCase().includes(query)) && (!kind || row.dataset.kind === kind) && (!status || row.dataset.status === status))); };
+  $("#coupon-search")?.addEventListener("input", filter); $("#coupon-kind-filter")?.addEventListener("change", filter); $("#coupon-status-filter")?.addEventListener("change", filter);
 }
 
 function accountingMarkup() {
@@ -2062,6 +2224,48 @@ function settingsMarkup() {
     <button class="button burgundy-button" type="submit">${state.lang === "ar" ? "حفظ الإعدادات" : "Save settings"} ←</button></form>`;
 }
 
+function storeSettingsDashboardMarkup() {
+  const settings = mergeStoreSettings(state.adminWorkspace.settings || {});
+  const toggle = (name, checked = true) => `<label class="store-setting-switch"><input name="${name}" type="checkbox"${checked ? " checked" : ""}/><i></i></label>`;
+  return `<form id="store-basic-settings" class="store-settings-dashboard" dir="rtl">
+    <div class="store-settings-tabs"><button class="active" type="button">⚙ إعدادات المتجر</button><button type="button" data-action="advanced-settings">الإضافات والتكاملات</button></div>
+    <div class="store-settings-grid">
+      <section class="store-settings-card store-info-card"><h3>ⓘ معلومات المتجر الأساسية</h3><div class="store-info-layout"><div class="store-logo-box"><span>الشعار</span><img src="${escapeHTML(settings.logos.dark)}" alt="ORIGO"/><button type="button" data-action="advanced-settings">تغيير الشعار</button></div><div class="store-info-fields"><label>اسم المتجر<input name="storeName" value="${escapeHTML(settings.storeName || "ORIGO")}"/></label><label>الوصف القصير<textarea name="shortDescription">متجر فاخر للعطور الأصلية ومنتجات العناية الشخصية</textarea></label><div><label>رقم الجوال<input name="phone" value="010 1234 5678" dir="ltr"/></label><label>البريد الإلكتروني<input name="supportEmail" value="${escapeHTML(settings.supportEmail || "info@origoscents.com")}" dir="ltr"/></label></div><div><label>العملة الأساسية<select name="currency"><option value="EGP"${settings.currency === "EGP" ? " selected" : ""}>الجنيه المصري</option><option value="USD">الدولار الأمريكي</option></select></label><label>اللغة الافتراضية<select name="defaultLanguage"><option>العربية</option><option>English</option></select></label></div><div><label>المنطقة الزمنية<select name="timezone"><option>القاهرة (GMT+2)</option></select></label></div></div></div><button class="store-save-button" type="submit">حفظ التغييرات</button></section>
+      <div class="store-settings-stack"><section class="store-settings-card"><h3>▣ إعدادات الدفع</h3>${[["الدفع عند الاستلام","الدفع نقداً عند استلام الطلب","cod",true],["بطاقات الائتمان / الخصم","Visa, Mastercard, Meeza","cards",true],["فودافون كاش","الدفع عبر فودافون كاش","vodafone",true],["إنستاباي","الدفع عبر تطبيق إنستاباي","instapay",false]].map(([title,desc,name,on]) => `<div class="payment-setting"><span><b>${title}</b><small>${desc}</small></span><button type="button">إعداد</button>${toggle(`payment.${name}`,on)}</div>`).join("")}</section><section class="store-settings-card"><h3>▱ إعدادات الشحن والتوصيل</h3><div class="two-setting-fields"><label>شركة التوصيل<select><option>شركة واحدة - الشحن السريع</option></select></label><label>مدة التوصيل المتوقعة<select><option>2 - 5 أيام عمل</option></select></label><label>رسوم الشحن<input name="shippingFee" value="ثابتة"/></label><label>قيمة رسوم (EGP)<input name="shippingFeeValue" value="60"/></label></div><p class="store-success-note">ⓘ يتم حساب الرسوم بناءً على إجمالي الطلب والموقع</p></section></div>
+      <div class="store-settings-stack"><section class="store-settings-card"><h3>◎ إعدادات اللغة والترجمة</h3><label>اللغات المتاحة</label><div class="language-checks"><label><input type="checkbox" checked/> العربية</label><label><input type="checkbox" checked/> English</label></div><label>اللغة الافتراضية<select><option>العربية</option><option>English</option></select></label><label>اتجاه النص</label><div class="direction-choice"><button class="active" type="button">من اليمين لليسار (RTL)</button><button type="button">من اليسار لليمين (LTR)</button></div><div class="translation-toggle"><span><b>تفعيل الترجمة اليدوية</b><small>سيمكنك ترجمة المحتوى يدوياً بدلاً من الترجمة التلقائية</small></span>${toggle("manualTranslation",true)}</div></section><section class="store-settings-card"><h3>% إعدادات الضرائب</h3><label>تفعيل الضرائب</label><div class="two-setting-fields"><label>نوع الضريبة<select><option>ضريبة القيمة المضافة (VAT)</option></select></label><label>نسبة الضريبة (%)<input name="taxRate" type="number" value="${Number(settings.taxRate || 14)}"/></label><label>تطبيق الضريبة على<select><option>جميع المنتجات</option></select></label></div></section></div>
+      <section class="store-settings-card"><h3>▥ إعدادات SEO</h3><label>عنوان الموقع<input name="seoTitle" value="ORIGO - متجر العطور الأصلية ومنتجات العناية"/></label><label>الوصف التعريفي<textarea name="seoDescription">تسوق أفضل العطور الأصلية ومنتجات العناية الشخصية. أشهر الماركات العالمية، توصيل سريع وأسعار تنافسية.</textarea></label><label>الكلمات المفتاحية<input name="seoKeywords" value="عطور، perfumes، عطر رجالي، عطر نسائي، عطور أصلية"/></label><label>رابط الموقع (URL)<input name="siteUrl" value="https://origoscents.com" dir="ltr"/></label></section>
+      <section class="store-settings-card"><h3>◉ إعدادات العملة</h3><label>العملة الأساسية<select name="currencyMirror"><option>EGP - الجنيه المصري</option></select></label><label>عرض الأسعار<select><option>مع العملة</option></select></label><label>تنسيق الأسعار<input value="1,250.00 EGP" readonly/></label><label>عدد الأرقام العشرية<select><option>2</option></select></label></section>
+      <section class="store-settings-card"><h3>♢ إعدادات الإشعارات</h3>${[["إشعارات الطلبات الجديدة","newOrders"],["إشعارات الطلبات الملغاة","cancelledOrders"],["إشعارات العملاء الجدد","newCustomers"],["تذكيرات سلة التسوق المهجورة","abandonedCart"],["عروض وتحديثات المتجر","storeUpdates"]].map(([label,name]) => `<div class="notification-setting"><span>${label}</span>${toggle(`notify.${name}`,true)}</div>`).join("")}<label>إرسال الإشعارات عبر</label><div class="language-checks"><label><input name="orderNotifications" type="checkbox" checked/> البريد الإلكتروني</label><label><input type="checkbox" checked/> الجوال (SMS)</label></div></section>
+      <section class="store-settings-card store-other-settings"><h3>☷ إعدادات المتجر الأخرى</h3>${["إعدادات التخزين المؤقت","مصادر الصور والملفات","سياسة الإرجاع والاستبدال","الشروط والأحكام","سياسة الخصوصية","إعدادات متقدمة"].map((label) => `<button type="button" data-action="advanced-settings"><span>${label}</span>‹</button>`).join("")}</section>
+    </div><footer class="store-settings-footer">ORIGO SCENTS - © 2024 جميع الحقوق محفوظة</footer>
+  </form>`;
+}
+
+function systemStatesMarkup() {
+  const states = [
+    ["loading","تحميل","يظهر أثناء جلب البيانات أو تنفيذ العملية","◌","جاري التحميل...","يرجى الانتظار لحظة"],
+    ["empty","لا توجد نتائج","يظهر عندما لا يتم العثور على بيانات مطابقة","⌕","لا توجد نتائج","لم نتمكن من العثور على ما تبحث عنه"],
+    ["error","خطأ","يظهر عند حدوث خطأ في النظام أو العملية","!","حدث خطأ ما","عذراً، حدث خطأ غير متوقع"],
+    ["success","نجاح","يظهر عند اكتمال العملية بنجاح","✓","تم بنجاح","تم تنفيذ العملية بنجاح"],
+    ["offline","انقطاع الاتصال","يظهر عند فقدان الاتصال بالإنترنت","⌁","لا يوجد اتصال بالإنترنت","يرجى التحقق من اتصالك بالإنترنت"]
+  ];
+  return `<section class="system-states-showcase" dir="rtl"><header><h2>حالات النظام</h2><p>تجربة واضحة ومريحة في جميع حالات التفاعل</p></header><div class="system-state-grid">${states.map(([type,title,desc,icon,headline,copy],index) => `<article><span class="state-number">0${index+1}</span><h3>${title}</h3><p>${desc}</p><div class="state-demo ${type}"><i>${icon}</i><b>${headline}</b><small>${copy}</small>${type === "loading" ? `<span class="state-spinner"></span>` : `<button type="button" data-action="state-demo" data-state="${type}">${type === "success" ? "عرض التفاصيل" : "إعادة المحاولة"}</button>`}</div><div class="state-uses"><b>أمثلة الاستخدام</b><ul>${["تحميل المنتجات","نتائج البحث","فشل تحميل البيانات","حفظ التغييرات","فقدان الاتصال بالشبكة"].slice(index,index+1).concat(["معالجة الطلب","تحديث البيانات","تنفيذ العمليات"]).map(x=>`<li>${x}</li>`).join("")}</ul></div><button class="state-toast-demo ${type}" type="button" data-action="state-demo" data-state="${type}">${type === "success" ? "تم حفظ التغييرات بنجاح" : type === "error" ? "حدث خطأ! يرجى المحاولة لاحقاً" : type === "offline" ? "أنت الآن في وضع عدم الاتصال" : "معاينة الحالة"}</button></article>`).join("")}</div><div class="modal-patterns"><h3>النوافذ المنبثقة</h3>${[["delete","تأكيد الحذف"],["coupon","تطبيق كوبون"],["stock","أخبرني عند التوفر"],["share","مشاركة المنتج"],["signout","تسجيل الخروج"]].map(([type,label],i)=>`<button type="button" data-action="open-system-modal" data-modal="${type}"><b>0${i+1}</b>${label}</button>`).join("")}</div></section>`;
+}
+
+function openSystemModal(type) {
+  const content = {
+    delete: ["!","هل أنت متأكد من حذف هذا العنصر؟","لن تتمكن من التراجع عن هذا الإجراء",`<div class="system-modal-product"><span>ORIGO</span><b>عطر أسد</b><small>EDP - 100ml</small></div><div class="system-modal-actions"><button data-action="close-system-modal">إلغاء</button><button class="primary" data-action="confirm-system-action">حذف</button></div>`],
+    coupon: ["%","لديك كوبون خصم؟","أدخل كود الكوبون لتطبيق الخصم على طلبك",`<label class="system-modal-input">◇<input placeholder="أدخل كود الكوبون"/></label><button class="system-modal-main" data-action="apply-demo-coupon">تطبيق الكوبون</button><p class="coupon-applied">✓ تم تطبيق الكوبون بنجاح! <b>ORIGO15</b></p>`],
+    stock: ["♟","أخبرني عند التوفر","سنعلمك عند توفر المنتج مرة أخرى",`<label class="system-modal-input">✉<input type="email" placeholder="البريد الإلكتروني"/></label><label class="system-modal-input">⌕<input placeholder="رقم الهاتف (اختياري)"/></label><button class="system-modal-main" data-action="confirm-system-action">إشعاري عند التوفر</button><small>لن نشارك بياناتك مع أي جهة خارجية</small>`],
+    share: ["♧","مشاركة المنتج","شارك هذا المنتج مع أصدقائك",`<div class="share-modal-product"><div class="share-bottle">ORIGO</div><span><b>عطر أسد</b><small>EDP - 100ml</small></span></div><div class="share-buttons"><button>☘</button><button>f</button><button>𝕏</button><button>◎</button><button>↗</button></div><label class="system-modal-input"><input value="https://origoscents.com/product/asad" readonly/><button data-action="copy-share-link">نسخ الرابط</button></label>`],
+    signout: ["↪","هل ترغب في تسجيل الخروج؟","سيتم إنهاء جلستك الحالية",`<div class="system-modal-actions"><button data-action="close-system-modal">إلغاء</button><button class="primary" data-action="confirm-logout">تسجيل الخروج</button></div><small>سيتم تأمين حسابك بعد تسجيل الخروج</small>`]
+  }[type] || ["!","تنبيه","يرجى المحاولة مرة أخرى",""];
+  let overlay = $("#system-modal-overlay");
+  if (!overlay) { overlay = document.createElement("div"); overlay.id = "system-modal-overlay"; overlay.className = "system-modal-overlay"; document.body.append(overlay); }
+  overlay.innerHTML = `<section class="system-modal ${type}" role="dialog" aria-modal="true"><button class="system-modal-close" data-action="close-system-modal">×</button><i>${content[0]}</i><h2>${content[1]}</h2><p>${content[2]}</p>${content[3]}</section>`;
+  overlay.classList.add("open");
+}
+
 function entityCreateForm(view, item = null) {
   const section = adminSection(view);
   if (view === "team") {
@@ -2225,31 +2429,42 @@ function renderAdminDashboard(view = state.adminView) {
     orders: `<button class="button secondary-button" data-action="admin-export" data-report="orders">${state.lang === "ar" ? "تصدير الطلبات" : "Export orders"} ↓</button>`,
     inventory: `<button class="button secondary-button" data-action="admin-export" data-report="inventory">${state.lang === "ar" ? "تصدير المخزون" : "Export inventory"} ↓</button>`,
     notes: `<button class="button burgundy-button" data-action="open-notes-admin">${state.lang === "ar" ? "إدارة قاعدة المعرفة" : "Manage knowledge base"} ＋</button>`,
-    categories: `<button class="button burgundy-button" data-action="new-filter">${state.lang === "ar" ? "إضافة فلتر" : "Add filter"} ＋</button>`
+    categories: `<button class="button burgundy-button" data-action="new-filter">${state.lang === "ar" ? "إضافة فلتر" : "Add filter"} ＋</button>`,
+    brands: `<button class="button secondary-button" data-action="export-brands">تصدير ↓</button><button class="button secondary-button" data-action="import-brands">استيراد علامات ↓</button><button class="button burgundy-button" data-action="create-brand">إضافة علامة تجارية ＋</button>`,
+    content: `<button class="button secondary-button" data-action="export-banners">تصدير تقرير ↓</button><button class="button secondary-button" data-action="import-banners">استيراد بنرات ↥</button><button class="button burgundy-button" data-action="create-banner">إضافة بنر جديد ＋</button>`,
+    coupons: `<button class="button secondary-button" data-action="admin-export" data-report="coupons">تصدير ↓</button><button class="button secondary-button" data-action="import-coupons">استيراد كوبونات ↓</button><button class="button burgundy-button" data-action="create-coupon">إضافة كوبون جديد ＋</button>`
   };
   $("#admin-view-actions").innerHTML = actions[view] || (["overview","accounting","reports","settings"].includes(view) ? "" :
     `<button class="button burgundy-button" data-action="admin-create-entity" data-view="${view}">${state.lang === "ar" ? "إضافة جديد" : "Add new"} ＋</button>`);
   const content = {
-    overview: overviewMarkup,
-    orders: ordersViewMarkup,
+    overview: () => operationalAdminMarkup("overview"),
+    orders: () => operationalAdminMarkup("orders"),
     products: productViewMarkup,
     performance: performanceProductsViewMarkup,
     inventory: inventoryViewMarkup,
-    customers: customersViewMarkup,
+    customers: () => operationalAdminMarkup("customers"),
     categories: filtersViewMarkup,
+    brands: brandsManagementMarkup,
     "product-options": productOptionsAdminMarkup,
     homepage: homepageRailsAdminMarkup,
+    content: bannersViewMarkup,
+    coupons: couponsViewMarkup,
     alternatives: alternativesAdminMarkup,
-    team: teamViewMarkup,
+    team: rolesDashboardMarkup,
+    activity: activitySecurityMarkup,
     notes: notesViewMarkup,
     accounting: accountingMarkup,
     reports: reportsMarkup,
-    settings: settingsMarkup
+    settings: storeSettingsDashboardMarkup
+    ,"ui-states": systemStatesMarkup
   };
   const dashboardContent = $("#admin-dashboard-content");
   try {
     dashboardContent.innerHTML = content[view] ? content[view]() : genericEntityMarkup(view);
-    if (view === "settings") initializeSettingsPanels();
+    if (view === "content") initializeBannerManager();
+    if (view === "coupons") initializeCouponManager();
+    if (view === "activity") initializeActivitySecurity();
+    if (view === "brands") initializeBrandsManagement();
   } catch (error) {
     console.error("Admin view render failed:", view, error);
     dashboardContent.innerHTML = `<section class="admin-view-error" role="alert">
@@ -2329,6 +2544,8 @@ function exportAdminReport(report, format = "csv") {
   else if (report === "customers") rows = customerRows();
   else if (report === "campaigns") rows = state.adminWorkspace.campaigns;
   else if (report === "shipping") rows = state.adminWorkspace.shipping;
+  else if (report === "activity") rows = state.adminActivity.length ? state.adminActivity : [{ date: "2024-05-19", user: "أحمد محمد", action: "تعديل منتج", result: "نجاح" }, { date: "2024-05-18", user: "مستخدم غير معروف", action: "محاولة دخول", result: "فشل" }];
+  else if (report === "brands") rows = [...new Set(state.products.map((product)=>product.brand).filter(Boolean))].map((brand)=>({ brand, products: state.products.filter((product)=>product.brand===brand).length, status:"active" }));
   else rows = genericRowsFor(report);
   if (!rows.length) {
     showToast(adminCopy("لا توجد بيانات لتصديرها بعد", "There is no data to export yet"));
@@ -2377,7 +2594,31 @@ async function loadPasswordResetChannels() {
   return state.resetChannels;
 }
 
+function renderPasswordRecovery(mode = "reset-request", context = {}) {
+  state.passwordResetFlow = { ...state.passwordResetFlow, ...context };
+  const flow = state.passwordResetFlow;
+  const channels = Object.entries(state.resetChannels || {}).filter(([, enabled]) => enabled).map(([id]) => id);
+  const logo = escapeHTML(state.adminWorkspace.settings.logos?.dark || defaultStoreSettings.logos.dark);
+  const status = {
+    "reset-sent": ["✉", "تم إرسال رمز التحقق", `تم إرسال رمز التحقق إلى ${escapeHTML(flow.identifier || "بريدك الإلكتروني")}`],
+    "reset-success": ["✓", "تم تحديث كلمة المرور", "يمكنك الآن تسجيل الدخول باستخدام كلمة المرور الجديدة"],
+    "reset-expired": ["◷", "انتهت صلاحية الرابط أو الرمز", "للأمان، رابط التحقق أو الرمز منتهي الصلاحية."],
+    "reset-error": ["▣", "رمز تحقق غير صحيح", "الرمز الذي أدخلته غير صحيح. يرجى المحاولة مرة أخرى"],
+    "reset-locked": ["♜", "تم تجاوز الحد المسموح للمحاولات", "تم تعطيل التحقق مؤقتاً لأسباب أمنية."]
+  }[mode];
+  let body = "";
+  if (mode === "reset-request") body = `<form id="password-reset-request-form" class="recovery-step-form"><img src="${logo}" alt="ORIGO"/><p>أدخل بريدك الإلكتروني أو رقم هاتفك وسنرسل لك رمز التحقق</p><label>البريد الإلكتروني<div class="recovery-field"><input name="identifier" required placeholder="example@mail.com" dir="ltr"/>✉</div></label>${channels.length ? `<fieldset class="recovery-channel-options">${channels.map((id,i)=>`<label><input type="radio" name="channel" value="${id}"${i===0?" checked":""}/>${{email:"البريد الإلكتروني",whatsapp:"WhatsApp",sms:"SMS"}[id]}</label>`).join("")}</fieldset>` : `<p class="recovery-inline-error">لا توجد قناة استعادة مهيأة حاليًا</p>`}<p id="auth-error" class="form-error"></p><button class="recovery-primary" type="submit"${channels.length?"":" disabled"}>إرسال رمز التحقق</button><button type="button" class="recovery-link" data-action="auth-mode" data-mode="login">تذكرت كلمة المرور؟ تسجيل الدخول</button></form>`;
+  else if (mode === "reset-sent") body = `<div class="recovery-status sent"><i>${status[0]}</i><h3>${status[1]}</h3><p>${status[2]}</p><div class="recovery-notice">قد يستغرق وصول الرمز بضع دقائق.<br/>يرجى التحقق من صندوق الوارد أو البريد غير المرغوب.</div><button class="recovery-primary" data-action="show-reset-code">إدخال الرمز</button></div>`;
+  else if (mode === "reset-code") body = `<form id="password-reset-code-form" class="recovery-step-form"><img src="${logo}" alt="ORIGO"/><p>أدخل رمز التحقق المرسل إلى<br/><b>${escapeHTML(flow.identifier)}</b></p><div class="otp-inputs" dir="ltr">${Array.from({length:6},(_,i)=>`<input name="digit${i}" inputmode="numeric" maxlength="1" required/>`).join("")}</div><small>لم يصلك الرمز؟</small><button type="button" class="recovery-link" data-action="restart-password-reset">إعادة إرسال الرمز</button><p id="auth-error" class="form-error"></p><button class="recovery-primary" type="submit">تحقق من الرمز</button></form>`;
+  else if (mode === "reset-password") body = `<form id="password-reset-password-form" class="recovery-step-form"><img src="${logo}" alt="ORIGO"/><h3>إنشاء كلمة مرور جديدة</h3>${passwordFieldMarkup({name:"password",autocomplete:"new-password",label:"كلمة المرور الجديدة"})}<ul class="password-rules"><li>على الأقل 10 أحرف</li><li>حرف كبير وحرف صغير</li><li>رقم واحد على الأقل</li><li>رمز خاص واحد</li></ul>${passwordFieldMarkup({name:"confirmPassword",autocomplete:"new-password",label:"تأكيد كلمة المرور"})}<p id="auth-error" class="form-error"></p><button class="recovery-primary" type="submit">حفظ كلمة المرور</button></form>`;
+  else body = `<div class="recovery-status ${mode}"><i>${status[0]}</i><h3>${status[1]}</h3><p>${status[2]}</p>${mode === "reset-locked" ? `<div class="recovery-notice">◷ الوقت المتبقي للمحاولة: 14:55</div>` : `<button class="recovery-primary" data-action="${mode === "reset-success" ? "auth-mode" : "restart-password-reset"}" data-mode="login">${mode === "reset-success" ? "تسجيل الدخول الآن" : "طلب رمز جديد"}</button>`}</div>`;
+  const step = {"reset-request":0,"reset-sent":2,"reset-code":3,"reset-password":4,"reset-success":4}[mode] ?? 3;
+  $("#account-content").innerHTML = `<div class="password-recovery-shell" dir="rtl"><header><h2>نسيت كلمة المرور</h2><p>استعادة حسابك بخطوات بسيطة وآمنة</p></header><div class="recovery-progress">${["طلب الاستعادة","طريقة التحقق","إرسال الرمز","رمز التحقق","كلمة مرور جديدة"].map((label,i)=>`<span class="${i<=step?"active":""}"><b>${i+1}</b>${label}</span>`).join("")}</div><main>${body}</main><footer>🔒 جميع الرموز وروابط التحقق مشفرة وتنتهي صلاحيتها بعد مدة محدودة</footer></div>`;
+  applyStoreIdentity();
+}
+
 function renderAuth(mode = "login", requestId = "") {
+  if (String(mode).startsWith("reset-")) return renderPasswordRecovery(mode, requestId ? { requestId } : {});
   const isRegister = mode === "register";
   const isResetRequest = mode === "reset-request";
   const isResetConfirm = mode === "reset-confirm";
@@ -6998,6 +7239,11 @@ document.addEventListener("click", async (event) => {
     if (actionElement.dataset.mode === "reset-request") await loadPasswordResetChannels();
     renderAuth(actionElement.dataset.mode);
   }
+  if (action === "show-reset-code") renderPasswordRecovery("reset-code");
+  if (action === "restart-password-reset") {
+    await loadPasswordResetChannels();
+    renderPasswordRecovery("reset-request", { requestId: "", code: "", attempts: 0 });
+  }
   if (action === "toggle-password") {
     const input = actionElement.closest(".password-field")?.querySelector("input");
     if (input) {
@@ -7010,7 +7256,8 @@ document.addEventListener("click", async (event) => {
         : `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18M10.7 6.1A10.5 10.5 0 0 1 12 6c6 0 9.5 6 9.5 6a17 17 0 0 1-2.5 3.2M7.1 7.2A17.2 17.2 0 0 0 2.5 12s3.5 6 9.5 6c1.5 0 2.8-.4 4-1"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>`;
     }
   }
-  if (action === "logout") {
+  if (action === "logout") openSystemModal("signout");
+  if (action === "confirm-logout") {
     try {
       await api("/api/auth/logout", { method: "POST", body: "{}" });
     } catch {}
@@ -7023,7 +7270,27 @@ document.addEventListener("click", async (event) => {
     updateAccountIndicator();
     closeOverlay($("#account-overlay"));
     showToast(adminCopy("تم تسجيل الخروج", "Signed out"));
+    $("#system-modal-overlay")?.classList.remove("open");
   }
+  if (action === "open-system-modal") openSystemModal(actionElement.dataset.modal);
+  if (action === "close-system-modal") $("#system-modal-overlay")?.classList.remove("open");
+  if (action === "state-demo") showToast({ loading:"جاري التحميل...", empty:"لا توجد نتائج مطابقة", error:"حدث خطأ! يرجى المحاولة لاحقاً", success:"تم حفظ التغييرات بنجاح", offline:"أنت الآن في وضع عدم الاتصال" }[actionElement.dataset.state] || "تم");
+  if (action === "apply-demo-coupon") { actionElement.nextElementSibling?.classList.add("visible"); }
+  if (action === "copy-share-link") { navigator.clipboard?.writeText("https://origoscents.com/product/asad"); showToast("تم نسخ الرابط"); }
+  if (action === "confirm-system-action") { $("#system-modal-overlay")?.classList.remove("open"); showToast("تم تنفيذ الإجراء بنجاح"); }
+  if (action === "save-role-permissions") showToast("تم حفظ صلاحيات الدور");
+  if (action === "reset-role-permissions") { renderAdminDashboard("team"); showToast("تمت استعادة الصلاحيات الافتراضية"); }
+  if (action === "create-role") showToast("نموذج إضافة دور جديد جاهز");
+  if (action === "edit-role") showToast("تم فتح معلومات الدور للتعديل");
+  if (action === "copy-role") showToast("تم إنشاء نسخة من الدور");
+  if (action === "delete-role") openSystemModal("delete");
+  if (action === "export-activity") exportAdminReport("activity");
+  if (action === "apply-activity-filters") showToast("تم تطبيق فلاتر سجل النشاط");
+  if (action === "reset-activity-filters") { renderAdminDashboard("activity"); showToast("تمت إعادة تعيين الفلاتر"); }
+  if (action === "export-brands") exportAdminReport("brands");
+  if (action === "import-brands") showToast("اختر ملف العلامات التجارية للاستيراد");
+  if (action === "create-brand") showToast("نموذج إضافة علامة تجارية جديد جاهز");
+  if (action === "edit-brand") showToast("تم فتح بيانات العلامة التجارية للتعديل");
   if (action === "open-admin") {
     closeOverlay($("#account-overlay"));
     try {
@@ -7054,6 +7321,26 @@ document.addEventListener("click", async (event) => {
     renderAdminDashboard(actionElement.dataset.view);
     $(".advanced-admin-panel")?.classList.remove("sidebar-open");
   }
+  if (action === "toggle-banner") {
+    const banner = (state.adminWorkspace.banners || []).find((item) => item.id === actionElement.dataset.id);
+    if (banner) {
+      banner.status = actionElement.checked ? "active" : "expired";
+      saveAdminWorkspace("content");
+      showToast(actionElement.checked ? "تم تفعيل البنر" : "تم إيقاف البنر");
+    }
+  }
+  if (action === "create-banner") showToast("نموذج إضافة البنر جاهز للربط ببيانات المحتوى");
+  if (action === "edit-banner") showToast("تم فتح إعدادات البنر");
+  if (action === "banner-stats") showToast("إحصاءات البنر: النقرات والأداء");
+  if (action === "import-banners") showToast("اختر ملف البنرات للاستيراد");
+  if (action === "export-banners") exportAdminReport("content");
+  if (action === "create-coupon") showToast("نموذج إضافة كوبون جديد جاهز");
+  if (action === "edit-coupon") showToast("تم فتح إعدادات الكوبون");
+  if (action === "import-coupons") showToast("اختر ملف الكوبونات للاستيراد");
+  if (action === "copy-coupon") {
+    navigator.clipboard?.writeText(actionElement.dataset.code || "");
+    showToast("تم نسخ كود الخصم");
+  }
   if (action === "settings-panel") {
     const form = actionElement.closest("#admin-settings-form");
     const panel = String(actionElement.dataset.panel || "0");
@@ -7066,6 +7353,10 @@ document.addEventListener("click", async (event) => {
       button.setAttribute("aria-selected", String(active));
     });
     form.querySelector(`[data-settings-panel="${panel}"]`)?.scrollIntoView({ block: "start", behavior: "smooth" });
+  }
+  if (action === "advanced-settings") {
+    $("#admin-dashboard-content").innerHTML = settingsMarkup();
+    initializeSettingsPanels();
   }
   if (action === "product-editor-panel") {
     const form = actionElement.closest("#import-review-form");
@@ -7919,6 +8210,22 @@ document.addEventListener("submit", async (event) => {
     } catch (error) { showToast(error.message); }
     return;
   }
+  if (event.target.id === "store-basic-settings") {
+    const data = new FormData(event.target);
+    const current = mergeStoreSettings(state.adminWorkspace.settings || {});
+    state.adminWorkspace.settings = mergeStoreSettings({
+      ...current,
+      storeName: String(data.get("storeName") || current.storeName).trim(),
+      supportEmail: String(data.get("supportEmail") || current.supportEmail).trim(),
+      currency: String(data.get("currency") || current.currency),
+      taxRate: Number(data.get("taxRate") || current.taxRate || 0),
+      orderNotifications: data.has("orderNotifications")
+    });
+    saveAdminWorkspace("settings");
+    applyStoreIdentity();
+    showToast("تم حفظ إعدادات المتجر");
+    return;
+  }
   if (event.target.id === "admin-settings-form") {
     const data = new FormData(event.target);
     const current = mergeStoreSettings(state.adminWorkspace.settings || {});
@@ -8083,7 +8390,8 @@ document.addEventListener("submit", async (event) => {
     button.disabled = true;
     try {
       const result = await api("/api/auth/password-reset/request", { method: "POST", body: JSON.stringify(values) });
-      renderAuth("reset-confirm", result.requestId);
+      state.passwordResetFlow = { requestId: result.requestId, identifier: String(values.identifier || ""), channel: String(values.channel || "email"), code: "", attempts: 0, expiresAt: Date.now() + Number(result.expiresIn || 600) * 1000 };
+      renderPasswordRecovery("reset-sent");
       showToast(adminCopy("إذا كانت البيانات مطابقة فسيصلك رمز صالح لمدة 10 دقائق", "If the details match, a 10-minute code will be delivered"));
     } catch (requestError) {
       error.textContent = requestError.message;
@@ -8105,6 +8413,30 @@ document.addEventListener("submit", async (event) => {
     } catch (requestError) {
       error.textContent = requestError.message;
       button.disabled = false;
+    }
+    return;
+  }
+  if (event.target.id === "password-reset-code-form") {
+    const form = event.target;
+    const data = new FormData(form);
+    const code = Array.from({ length: 6 }, (_, index) => String(data.get(`digit${index}`) || "")).join("");
+    if (state.passwordResetFlow.expiresAt && Date.now() > state.passwordResetFlow.expiresAt) { renderPasswordRecovery("reset-expired"); return; }
+    if (!/^\d{6}$/.test(code)) { $("#auth-error").textContent = "أدخل رمز التحقق المكوّن من 6 أرقام"; return; }
+    state.passwordResetFlow.code = code;
+    renderPasswordRecovery("reset-password");
+    return;
+  }
+  if (event.target.id === "password-reset-password-form") {
+    const form = event.target;
+    const values = Object.fromEntries(new FormData(form));
+    const error = $("#auth-error");
+    if (values.password !== values.confirmPassword) { error.textContent = "كلمتا المرور غير متطابقتين"; return; }
+    try {
+      await api("/api/auth/password-reset/confirm", { method: "POST", body: JSON.stringify({ requestId: state.passwordResetFlow.requestId, code: state.passwordResetFlow.code, password: values.password }) });
+      renderPasswordRecovery("reset-success");
+    } catch (requestError) {
+      state.passwordResetFlow.attempts += 1;
+      renderPasswordRecovery(state.passwordResetFlow.attempts >= 5 ? "reset-locked" : "reset-error");
     }
     return;
   }
