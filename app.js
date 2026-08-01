@@ -3262,7 +3262,7 @@ function renderHomepageCommerce() {
   renderHomeBenefitsMarquee();
   const newest = $("#new-product-grid");
   if (newest) {
-    const homepageProductLimit = matchMedia("(max-width: 640px)").matches ? 2 : 6;
+    const homepageProductLimit = matchMedia("(max-width: 640px)").matches ? 8 : 6;
     const products = state.products.map((product, index) => ({ product, score: productDateScore(product, index) })).sort((a, b) => b.score - a.score).slice(0, homepageProductLimit).map(({ product }) => product);
     newest.innerHTML = products.map((product, index) => productCardMarkup(product, { context: "grid", delay: Math.min(index * 45, 180) })).join("");
     bindHorizontalRail(newest);
@@ -3726,7 +3726,7 @@ function renderProducts(filter = "all") {
       ...(product.notesEn || [])
     ].join(" ")).includes(search))
     .sort((a, b) => productSalesScore(b) - productSalesScore(a))
-    .slice(0, matchMedia("(max-width: 640px)").matches ? 2 : 6);
+    .slice(0, matchMedia("(max-width: 640px)").matches ? 8 : 6);
   if (!visibleProducts.length) {
     grid.innerHTML = `
       <div class="product-grid-empty">
@@ -5162,6 +5162,130 @@ function productCardPerformance(product, isArabic = state.lang === "ar", strict 
   return strict ? metrics.filter((metric) => metric.available) : metrics;
 }
 
+let productCardRenderSerial = 0;
+
+function normalizeProductCardNote(value, isArabic) {
+  const source = value && typeof value === "object" ? value : { id: value, nameAr: value, nameEn: value };
+  const lookup = source.id || source.slug || source.nameEn || source.nameAr;
+  const libraryNote = window.ORIGOFragranceNotes?.find?.(lookup);
+  const nameAr = source.nameAr || libraryNote?.nameAr || String(value || "");
+  const nameEn = source.nameEn || libraryNote?.nameEn || String(value || "");
+  return {
+    id: source.id || libraryNote?.id || ORIGOCatalog.normalize(nameEn || nameAr),
+    label: isArabic ? nameAr : nameEn,
+    image: source.image || libraryNote?.image || ""
+  };
+}
+
+function productCardNoteGroups(product, isArabic) {
+  const labels = isArabic
+    ? { top: "المقدمة", heart: "القلب", base: "القاعدة", all: "النوتات" }
+    : { top: "Top", heart: "Heart", base: "Base", all: "Notes" };
+  const groups = { top: [], heart: [], base: [], all: [] };
+  const pushUnique = (position, value) => {
+    const note = normalizeProductCardNote(value, isArabic);
+    if (!note.label) return;
+    const key = ORIGOCatalog.normalize(note.id || note.label);
+    if (!groups[position].some((item) => ORIGOCatalog.normalize(item.id || item.label) === key)) groups[position].push(note);
+  };
+  (Array.isArray(product.noteRefs) ? product.noteRefs : []).forEach((note) => {
+    const position = ["top", "heart", "base"].includes(note.position) ? note.position : "all";
+    pushUnique(position, note);
+  });
+  const notes = product.notes && typeof product.notes === "object" ? product.notes : {};
+  ["top", "heart", "base"].forEach((position) => {
+    if (groups[position].length) return;
+    const languageKey = `${position}${isArabic ? "Ar" : "En"}`;
+    const fallbackKey = `${position}${isArabic ? "En" : "Ar"}`;
+    const values = notes[languageKey] || notes[fallbackKey] || product.noteSelections?.[position] || [];
+    (Array.isArray(values) ? values : [values]).filter(Boolean).forEach((value) => pushUnique(position, value));
+  });
+  if (!["top", "heart", "base"].some((position) => groups[position].length)) {
+    const values = (isArabic ? product.notesAr : product.notesEn) || product.notesAr || product.notesEn || [];
+    (Array.isArray(values) ? values : [values]).filter(Boolean).forEach((value) => pushUnique("all", value));
+  }
+  return Object.entries(groups).filter(([, items]) => items.length).map(([id, items]) => ({ id, label: labels[id], items }));
+}
+
+function productCardAccordData(product, isArabic) {
+  const values = product.accordProfile?.length ? product.accordProfile : (product.mainAccords || product.accords || []);
+  return (Array.isArray(values) ? values : []).slice(0, 8).map((item, index) => {
+    const source = item && typeof item === "object" ? item : { nameAr: item, nameEn: item };
+    const strength = Number(source.strength ?? source.intensity);
+    return {
+      label: source[isArabic ? "nameAr" : "nameEn"] || source.name || source.label || "",
+      color: source.color || ["#9b6b43", "#c47b16", "#ec6d9c", "#6f8c71"][index % 4],
+      strength: Number.isFinite(strength) && strength > 0 ? Math.min(100, strength) : null
+    };
+  }).filter((item) => item.label);
+}
+
+function productCardProjectionLabel(product, isArabic) {
+  const raw = product.performance?.projection ?? product.performance?.sillage ?? product.filters?.projection;
+  const normalized = ORIGOCatalog.normalize(raw || "");
+  const labels = {
+    weak: ["ضعيف", "Weak"], soft: ["ضعيف", "Weak"], moderate: ["متوسط", "Moderate"],
+    medium: ["متوسط", "Moderate"], strong: ["قوي", "Strong"], verystrong: ["قوي جدًا", "Very strong"]
+  };
+  const key = Object.keys(labels).find((item) => normalized.replace(/[^a-z]/g, "").includes(item));
+  if (key) return labels[key][isArabic ? 0 : 1];
+  const numeric = Number(raw);
+  if (!Number.isFinite(numeric) || numeric <= 0) return isArabic ? "غير محدد" : "Not specified";
+  const score = numeric > 5 ? numeric / 2 : numeric;
+  if (score >= 4.5) return isArabic ? "قوي جدًا" : "Very strong";
+  if (score >= 3.5) return isArabic ? "قوي" : "Strong";
+  if (score >= 2.5) return isArabic ? "متوسط" : "Moderate";
+  return isArabic ? "ضعيف" : "Weak";
+}
+
+function productCardDetailsMarkup(product, isArabic) {
+  const serial = ++productCardRenderSerial;
+  const safeId = String(product.id || "product").replace(/[^a-zA-Z0-9_-]+/g, "-");
+  const performanceId = `card-performance-${safeId}-${serial}`;
+  const fragranceId = `card-fragrance-${safeId}-${serial}`;
+  const noteGroups = productCardNoteGroups(product, isArabic);
+  const accords = productCardAccordData(product, isArabic);
+  const seasons = (product.seasons || []).map((item) => ORIGOCatalog.normalize(item));
+  const seasonItems = [
+    ["spring", "ربيع", "Spring", "♧"], ["summer", "صيف", "Summer", "☼"],
+    ["autumn", "خريف", "Autumn", "❧"], ["winter", "شتاء", "Winter", "❄"]
+  ];
+  const usageLabels = {
+    day: ["نهار", "Day"], morning: ["صباح", "Morning"], evening: ["مساء", "Evening"], night: ["ليل", "Night"],
+    daily: ["يومي", "Daily"], work: ["عمل", "Work"], formal: ["رسمي", "Formal"], romantic: ["رومانسي", "Romantic"],
+    occasions: ["مناسبات", "Occasions"], casual: ["لقاءات", "Casual"], travel: ["سفر", "Travel"]
+  };
+  const usage = [...new Set([...(product.usageTimes || []), ...(product.occasions || [])].map((item) => ORIGOCatalog.normalize(item)).filter(Boolean))];
+  const hours = product.performanceInsights?.editorialDetails || product.editorialDetails || product.performance?.editorialDetails || {};
+  const minHours = Number(hours.longevityMinHours ?? hours.longevityHours);
+  const maxHours = Number(hours.longevityMaxHours ?? hours.longevityHours);
+  const hasHours = Number.isFinite(minHours) && minHours >= 0;
+  const hoursLabel = hasHours
+    ? (Number.isFinite(maxHours) && maxHours > minHours ? `${minHours}–${maxHours}` : `${minHours}`) + (isArabic ? " ساعات" : " hours")
+    : (isArabic ? "يُحمّل عند الفتح" : "Loaded on open");
+  const notesMarkup = noteGroups.length ? noteGroups.map((group) => `<div class="card-note-level"><strong>${escapeHTML(group.label)}</strong><div class="card-note-scroll" data-inner-horizontal-scroll>${group.items.map((note) => `<span>${note.image ? `<img src="${escapeHTML(note.image)}" alt="" width="46" height="46" loading="lazy"/>` : `<i aria-hidden="true">✦</i>`}<b>${escapeHTML(note.label)}</b></span>`).join("")}</div></div>`).join("") : `<p class="product-card-panel-empty">${isArabic ? "لم تُضف نوتات لهذا المنتج بعد." : "No notes have been added for this product."}</p>`;
+  const accordsMarkup = accords.length ? `<div class="card-accord-list">${accords.map((accord) => `<div style="--accord:${escapeHTML(accord.color)}"><span><i></i><b>${escapeHTML(accord.label)}</b>${accord.strength != null ? `<em>${accord.strength}%</em>` : ""}</span>${accord.strength != null ? `<small><i style="width:${accord.strength}%"></i></small>` : ""}</div>`).join("")}</div>` : `<p class="product-card-panel-empty">${isArabic ? "لم تُضف أكوردات لهذا المنتج بعد." : "No accords have been added for this product."}</p>`;
+  return `<div class="product-card-accordion-actions" aria-label="${isArabic ? "تفاصيل المنتج" : "Product details"}">
+      <button type="button" data-card-panel-trigger="performance" aria-expanded="false" aria-controls="${performanceId}"><span>${isArabic ? "الأداء" : "Performance"}</span><i aria-hidden="true">⌄</i></button>
+      <button type="button" data-card-panel-trigger="fragrance" aria-expanded="false" aria-controls="${fragranceId}"><span>${isArabic ? "الرائحة" : "Scent"}</span><i aria-hidden="true">⌄</i></button>
+    </div>
+    <div class="product-card-details" data-card-details>
+      <section id="${performanceId}" data-card-panel="performance" data-product-id="${escapeHTML(product.id)}" aria-hidden="true" hidden>
+        <div class="card-performance-metrics">
+          <article><i aria-hidden="true">◷</i><span><b>${isArabic ? "الثبات" : "Longevity"}</b><small data-performance-hours data-state="${hasHours ? "ready" : "idle"}">${escapeHTML(hoursLabel)}</small></span></article>
+          <article><i aria-hidden="true">≋</i><span><b>${isArabic ? "الفوحان" : "Projection"}</b><small>${escapeHTML(productCardProjectionLabel(product, isArabic))}</small></span></article>
+        </div>
+        ${seasons.length ? `<div class="card-performance-block"><b>${isArabic ? "المواسم" : "Seasons"}</b><div class="card-season-grid">${seasonItems.map(([id, ar, en, icon]) => `<span class="${seasons.some((value) => value.includes(id) || (id === "autumn" && /خريف/.test(value)) || (id === "winter" && /شتاء/.test(value)) || (id === "summer" && /صيف/.test(value)) || (id === "spring" && /ربيع/.test(value))) ? "active" : ""}"><i>${icon}</i>${isArabic ? ar : en}</span>`).join("")}</div></div>` : ""}
+        ${usage.length ? `<div class="card-performance-block"><b>${isArabic ? "الأوقات والمناسبات" : "Times and occasions"}</b><div class="card-usage-tags">${usage.map((item) => `<span>${escapeHTML((usageLabels[item] || [item, item])[isArabic ? 0 : 1])}</span>`).join("")}</div></div>` : ""}
+      </section>
+      <section id="${fragranceId}" data-card-panel="fragrance" aria-hidden="true" hidden>
+        <div class="card-fragrance-tabs" role="tablist"><button type="button" role="tab" data-card-fragrance-tab="notes" aria-selected="true">${isArabic ? "النوتات" : "Notes"}</button><button type="button" role="tab" data-card-fragrance-tab="accords" aria-selected="false">${isArabic ? "الأكوردات" : "Accords"}</button></div>
+        <div data-card-fragrance-content="notes">${notesMarkup}</div>
+        <div data-card-fragrance-content="accords" hidden>${accordsMarkup}</div>
+      </section>
+    </div>`;
+}
+
 function productCardMarkup(product, options = {}) {
   if (typeof options === "string") options = { meta: options, context: "recommendation" };
   const isArabic = state.lang === "ar";
@@ -5207,24 +5331,37 @@ function productCardMarkup(product, options = {}) {
   const disabled = interactive ? "" : " disabled tabindex=\"-1\"";
   const favoriteLabel = saved ? translations[state.lang].removeFavorite : translations[state.lang].favorites;
   const noteLabels = ((isArabic ? product.notesAr : product.notesEn) || product.notesAr || product.notesEn || []).filter(Boolean).slice(0, 3);
-  return `<article class="product-card${options.reveal ? " reveal" : ""}${outOfStock ? " is-out" : ""}" data-id="${escapeHTML(product.id)}"${delayStyle}>
+  const context = String(options.context || "grid");
+  const supportsDetails = interactive && context === "grid" && String(product.category || "perfume") === "perfume";
+  const availableStock = Number(variant?.stock ?? product.inventory?.available ?? product.inventory?.quantity);
+  const hasKnownAvailability = Number.isFinite(availableStock);
+  const limitedStock = !outOfStock && hasKnownAvailability && availableStock > 0 && availableStock <= 5;
+  const stockLabel = outOfStock
+    ? (isArabic ? "غير متوفر" : "Out of stock")
+    : limitedStock ? (isArabic ? "متبقي كمية محدودة" : "Limited quantity") : (isArabic ? "متوفر" : "Available");
+  const loyaltyPoints = Number(variant?.loyaltyPoints ?? product.loyaltyPoints ?? product.rewardPoints);
+  const concentrationLabel = String(product.concentration || product.fragranceType || "").trim();
+  const ratingStars = rating > 0 ? Array.from({ length: 5 }, (_, index) => `<i class="${index + .5 < rating ? "active" : ""}" aria-hidden="true">★</i>`).join("") : "";
+  return `<article class="product-card origo-reference-product-card${options.reveal ? " reveal" : ""}${outOfStock ? " is-out" : ""}" data-id="${escapeHTML(product.id)}"${delayStyle}>
     <div class="product-image">
       ${badges.length ? `<span class="product-badge" data-badge-kind="${escapeHTML(badges[0][2])}">${escapeHTML(badges[0][1])}</span>` : ""}
       <button class="heart-button card-favorite-button${saved ? " active" : ""}"${interactive ? ` data-action="toggle-wishlist"` : disabled} aria-label="${escapeHTML(favoriteLabel)}" aria-pressed="${saved}">${saved ? "♥" : "♡"}</button>
       <button class="home-compare-action card-compare-button${compared ? " active" : ""}"${interactive ? ` data-action="toggle-product-compare"` : disabled} aria-label="${escapeHTML(compareLabel)}" aria-pressed="${compared}"><span aria-hidden="true">⇄</span></button>
-      <img src="${escapeHTML(mainImage)}" alt="${escapeHTML(`${product.brand || "ORIGO"} ${name}`)}" width="640" height="700" loading="lazy" decoding="async" />
+      <button type="button" class="product-card-media-link"${interactive ? ` data-action="open-product" data-id="${escapeHTML(product.id)}"` : disabled} aria-label="${escapeHTML(isArabic ? `عرض ${name}` : `View ${name}`)}"><img src="${escapeHTML(mainImage)}" alt="${escapeHTML(`${product.brand || "ORIGO"} ${name}`)}" width="640" height="700" loading="lazy" decoding="async" draggable="false" /></button>
       <button class="quick-view"${interactive ? ` data-action="quick-view"` : disabled} aria-label="${escapeHTML(isArabic ? `عرض تفاصيل ${name}` : `View ${name}`)}"><span>${escapeHTML(translations[state.lang].quickView)}</span><span aria-hidden="true">＋</span></button>
     </div>
+    ${supportsDetails ? productCardDetailsMarkup(product, isArabic) : ""}
     <div class="product-info">
       <div class="product-brand">${escapeHTML(product.brand || "ORIGO")}</div>
-      <h3>${escapeHTML(name || (isArabic ? "منتج جديد" : "New product"))}</h3>
+      <h3><button type="button"${interactive ? ` data-action="open-product" data-id="${escapeHTML(product.id)}"` : disabled}>${escapeHTML(name || (isArabic ? "منتج جديد" : "New product"))}</button></h3>
       ${secondaryName && secondaryName !== name ? `<p class="product-card-secondary-name">${escapeHTML(secondaryName)}</p>` : ""}
       <p class="product-notes">${escapeHTML(noteLabels.join(" · "))}</p>
       ${options.meta ? `<p class="product-card-meta">${escapeHTML(options.meta)}</p>` : ""}
       <div class="home-product-compact-meta">
-        <span class="home-product-type">${escapeHTML(genderLabel)}${sizeLabel ? ` <i aria-hidden="true">|</i> <bdi dir="ltr">${escapeHTML(sizeLabel)}</bdi>` : ""}</span>
-        <span class="home-product-rating"><b><i aria-hidden="true">★</i> ${rating > 0 ? rating.toFixed(1) : "—"}</b><small>${reviewCount.toLocaleString(isArabic ? "ar-EG" : "en-US")} ${isArabic ? "تقييم" : reviewCount === 1 ? "review" : "reviews"}</small></span>
+        <span class="home-product-type">${escapeHTML(genderLabel)}${concentrationLabel ? ` <i aria-hidden="true">•</i> <bdi dir="ltr">${escapeHTML(concentrationLabel)}</bdi>` : ""}${sizeLabel ? ` <i aria-hidden="true">•</i> <bdi dir="ltr">${escapeHTML(sizeLabel)}</bdi>` : ""}</span>
+        <span class="home-product-rating"><span class="product-card-stars">${ratingStars}</span><b>${rating > 0 ? rating.toFixed(1) : "—"}</b><small>${reviewCount.toLocaleString(isArabic ? "ar-EG" : "en-US")} ${isArabic ? "تقييم" : reviewCount === 1 ? "review" : "reviews"}</small></span>
       </div>
+      <div class="product-card-status-row"><span class="${outOfStock ? "out" : limitedStock ? "limited" : "available"}"><i></i>${escapeHTML(stockLabel)}</span>${Number.isFinite(loyaltyPoints) && loyaltyPoints > 0 ? `<b>🎁 +${Math.round(loyaltyPoints)} ${isArabic ? "نقطة" : "points"}</b>` : ""}</div>
       <div class="product-bottom">
         <div><b class="product-price">${formatPrice(price)}</b>${oldPrice > price ? `<del>${formatPrice(oldPrice)}</del>` : ""}</div>
         <button class="card-add-button"${interactive ? ` data-action="add-to-cart"` : disabled} aria-label="${escapeHTML(translations[state.lang].addToBag)}"${outOfStock ? " disabled" : ""}><span>${escapeHTML(outOfStock ? (isArabic ? "غير متوفر" : "Unavailable") : translations[state.lang].addToBag)}</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h16l-1.2 12H5.2L4 8Z"></path><path d="M8 9V6a4 4 0 0 1 8 0v3"></path></svg></button>
@@ -9519,33 +9656,82 @@ function bindBrandMarquee(brandTrack) {
 function bindHorizontalRail(rail) {
   if (!rail || rail.dataset.railBound === "true") return;
   rail.dataset.railBound = "true";
+  const blockedStart = "button:not(.product-card-media-link),a,input,select,textarea,details,[data-inner-horizontal-scroll]";
+  let candidate = false;
   let dragging = false;
   let moved = false;
   let startX = 0;
+  let startY = 0;
   let startScroll = 0;
+  let pointerId = null;
+  let pointerType = "";
+  let suppressClickUntil = 0;
+  let scrollSettleTimer = 0;
+  const settleScroll = () => {
+    clearTimeout(scrollSettleTimer);
+    scrollSettleTimer = window.setTimeout(() => rail.classList.remove("is-scrolling"), 150);
+  };
+  rail.addEventListener("scroll", () => {
+    rail.classList.add("is-scrolling");
+    settleScroll();
+  }, { passive: true });
+  if ("onscrollend" in window) rail.addEventListener("scrollend", () => {
+    clearTimeout(scrollSettleTimer);
+    rail.classList.remove("is-scrolling");
+  }, { passive: true });
   rail.addEventListener("pointerdown", (event) => {
     if (event.pointerType === "mouse" && event.button !== 0) return;
-    dragging = true;
+    // A fresh physical press is intentional; only a click emitted without a
+    // new pointerdown belongs to the preceding drag gesture.
+    suppressClickUntil = 0;
+    if (event.target.closest(blockedStart)) return;
+    candidate = true;
+    dragging = false;
     moved = false;
     startX = event.clientX;
+    startY = event.clientY;
     startScroll = rail.scrollLeft;
-    rail.classList.add("is-dragging");
-    rail.setPointerCapture?.(event.pointerId);
+    pointerId = event.pointerId;
+    pointerType = event.pointerType;
   });
   rail.addEventListener("pointermove", (event) => {
-    if (!dragging) return;
+    if (!candidate || event.pointerId !== pointerId) return;
     const delta = event.clientX - startX;
-    if (Math.abs(delta) > 6) moved = true;
-    rail.scrollLeft = startScroll - delta;
+    const verticalDelta = event.clientY - startY;
+    if (!dragging) {
+      if (Math.max(Math.abs(delta), Math.abs(verticalDelta)) < 8) return;
+      if (Math.abs(verticalDelta) >= Math.abs(delta) * 1.15) {
+        candidate = false;
+        return;
+      }
+      dragging = true;
+      moved = true;
+      rail.classList.add("is-dragging");
+      if (pointerType !== "touch") rail.setPointerCapture?.(event.pointerId);
+    }
+    if (pointerType !== "touch") rail.scrollLeft = startScroll - delta;
   });
-  const finish = () => { dragging = false; rail.classList.remove("is-dragging"); };
+  const finish = () => {
+    if (!candidate && !dragging && pointerId == null) return;
+    const activePointerId = pointerId;
+    const shouldSuppressClick = moved;
+    candidate = false;
+    dragging = false;
+    rail.classList.remove("is-dragging");
+    pointerId = null;
+    if (activePointerId != null && rail.hasPointerCapture?.(activePointerId)) rail.releasePointerCapture?.(activePointerId);
+    suppressClickUntil = shouldSuppressClick ? performance.now() + 450 : suppressClickUntil;
+    moved = false;
+    settleScroll();
+  };
   rail.addEventListener("pointerup", finish);
   rail.addEventListener("pointercancel", finish);
+  rail.addEventListener("lostpointercapture", finish);
   rail.addEventListener("click", (event) => {
-    if (!moved) return;
+    if (performance.now() > suppressClickUntil) return;
     event.preventDefault();
     event.stopPropagation();
-    moved = false;
+    suppressClickUntil = 0;
   }, true);
 }
 
