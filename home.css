@@ -332,6 +332,90 @@ html{max-width:100%}
   }
 }
 
+/* Final compact header and responsive homepage slider. */
+@media(min-width:901px){
+  .site-header,.site-header.compact{min-height:0!important}
+  .header-main,.compact .header-main{height:68px!important;padding-inline:32px!important}
+  .header-main>.brand,.compact .header-main>.brand{width:132px!important}
+  .header-search{height:42px!important;width:min(290px,25vw)!important;left:clamp(120px,13vw,185px)!important}
+  .category-nav{min-height:44px!important;gap:clamp(16px,2.5vw,38px)!important}
+  .category-nav>a,.brands-nav>button{height:44px!important;font-size:12px!important}
+  .smart-scent-nav{height:34px!important;padding-inline:15px!important}
+  .origo-home-hero{
+    width:min(calc(100% - 64px),1380px)!important;
+    min-height:clamp(350px,31vw,430px)!important;
+    margin:14px auto 20px!important;
+    border:1px solid rgba(116,0,31,.08);
+    border-radius:18px;
+    box-shadow:0 12px 32px rgba(70,0,20,.08);
+  }
+  .home-hero-copy{top:clamp(48px,5.5vw,76px)!important;left:clamp(30px,5vw,72px)!important;width:min(38%,420px)!important}
+  .home-hero-copy h1{font-size:clamp(30px,3.1vw,47px)!important}
+  .home-hero-copy p{margin:8px 0 18px!important;font-size:clamp(13px,1.25vw,17px)!important}
+  .home-primary-button{width:176px!important;height:46px!important;padding-inline:20px!important;font-size:14px!important}
+  .home-hero-dots{top:auto!important;bottom:18px!important;z-index:5;gap:10px!important}
+}
+
+@media(max-width:900px){
+  .site-header,.site-header.compact{min-height:0!important}
+  .header-main,.compact .header-main{height:58px!important;padding-inline:10px!important}
+  .header-main>.brand,.compact .header-main>.brand{width:104px!important}
+  .header-commerce-zone{height:58px!important}
+  .header-commerce-actions{height:58px!important}
+  .mobile-menu-button{right:10px!important;width:38px!important;height:38px!important}
+  .mobile-header-search-trigger,.header-commerce-actions .cart-button{width:36px!important;height:36px!important}
+  .origo-home-hero{
+    box-sizing:border-box;
+    width:calc(100% - 16px)!important;
+    height:clamp(280px,72vw,360px)!important;
+    min-height:0!important;
+    margin:8px auto 18px!important;
+    padding-bottom:34px;
+    overflow:hidden;
+    border:1px solid rgba(116,0,31,.1);
+    border-radius:16px;
+    background:#fff;
+    touch-action:pan-y;
+  }
+  .home-hero-products{
+    inset:0 0 34px!important;
+    display:block!important;
+    opacity:1!important;
+    background-position:center!important;
+    background-size:cover!important;
+    background-repeat:no-repeat!important;
+    transition:background-image .28s ease,transform .18s ease!important;
+  }
+  .home-hero-products:after,.origo-home-hero:after{display:none!important}
+  .home-hero-copy{
+    inset:auto 10px 50px!important;
+    width:auto!important;
+    max-width:min(86%,420px)!important;
+    margin-inline:auto;
+    padding:11px 14px!important;
+    transform:none!important;
+    border:1px solid rgba(255,255,255,.68);
+    border-radius:13px;
+    background:rgba(255,255,255,.56);
+    box-shadow:0 8px 24px rgba(44,0,12,.12);
+    -webkit-backdrop-filter:blur(7px);
+    backdrop-filter:blur(7px);
+  }
+  .home-hero-copy h1{font-size:clamp(20px,6vw,29px)!important;line-height:1.2!important;text-shadow:0 1px 10px rgba(255,255,255,.85)}
+  .home-hero-copy p{margin:4px 0 9px!important;font-size:clamp(10px,2.8vw,13px)!important;line-height:1.45!important}
+  .home-primary-button{width:132px!important;height:36px!important;padding-inline:13px!important;border-width:1px!important;border-radius:8px!important;font-size:11px!important}
+  .home-primary-button i{font-size:19px!important}
+  .home-hero-dots{
+    top:auto!important;
+    bottom:9px!important;
+    z-index:6;
+    gap:8px!important;
+  }
+  .home-hero-dots button{width:8px!important;height:8px!important;border:1px solid rgba(112,0,31,.2)!important;background:#d8ccca!important;cursor:pointer}
+  .home-hero-dots button.active{width:20px!important;height:8px!important;margin:0!important;border-radius:10px!important;background:#790020!important}
+  .origo-home-hero.is-dragging{cursor:grabbing}
+}
+
 /* Reference-like mobile commerce: two products per row and four visible across two rails. */
 #home :is(.home-new-arrivals,.home-best-sellers) .card-add-button svg{
   width:17px;
@@ -1147,7 +1231,7 @@ body:not(.dark) .home-gender-section .gender-card:is(:hover,:focus-visible,:acti
   margin:0;
   color:#570018;
   font-family:var(--font-display);
-  font-size:clamp(30px,4.2vw,58px);
+  font-size:clamp(23px,2.1vw,27px);
   line-height:1.15;
   white-space:nowrap;
 }
@@ -1182,6 +1266,9 @@ body:not(.dark) .home-gender-section .gender-card:is(:hover,:focus-visible,:acti
 }
 #home .gender-card-art{position:relative;overflow:hidden;display:block;aspect-ratio:464/571;background:#faf7f4}
 #home .gender-card-art img{width:100%;height:100%;display:block;object-fit:cover}
+#home .gender-card-art:not(:has(img)){aspect-ratio:4/3;display:grid;place-items:center;background:linear-gradient(145deg,#fffaf7,#f6eee9)}
+#home .gender-art-placeholder{width:74px;height:74px;display:grid;place-items:center;border:1px solid rgba(138,0,37,.12);border-radius:50%;color:#a47a53;background:rgba(255,255,255,.78)}
+#home .gender-art-placeholder svg{width:38px;height:38px}
 #home .gender-card-copy{
   min-width:0;
   padding:clamp(13px,2vw,25px) clamp(8px,2vw,24px);

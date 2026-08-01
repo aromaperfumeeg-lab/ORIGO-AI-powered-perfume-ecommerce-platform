@@ -502,7 +502,7 @@ const seedProducts = [
     oldPrice: null,
     badgeAr: "الأكثر مبيعًا",
     badgeEn: "BESTSELLER",
-    image: "assets/nocturne-01.svg",
+    image: "",
     gender: "unisex", mainIngredients: ["عود", "ورد", "عنبر"], mainAccords: ["عود", "عنبر", "وردي", "خشبي"], accordProfile: [{id:"woody",nameAr:"خشبي",nameEn:"Woody",color:"#9b6b43",icon:"♢",strength:92},{id:"amber",nameAr:"عنبري",nameEn:"Amber",color:"#c47b16",icon:"◆",strength:84},{id:"floral",nameAr:"زهري",nameEn:"Floral",color:"#ec6d9c",icon:"❀",strength:66},{id:"warm-spicy",nameAr:"حار دافئ",nameEn:"Warm spicy",color:"#b85032",icon:"✦",strength:58}], seasons: ["winter", "autumn"], usageTimes: ["night"], occasions: ["formal", "romantic"]
   },
   {
@@ -522,7 +522,7 @@ const seedProducts = [
     oldPrice: 3200,
     badgeAr: "وصل حديثًا",
     badgeEn: "NEW",
-    image: "assets/velvet-iris.svg",
+    image: "",
     gender: "women", mainIngredients: ["سوسن", "فانيليا", "مسك"], mainAccords: ["بودري", "سوسن", "فانيليا", "مسكي"], accordProfile: [{id:"powdery",nameAr:"بودري",nameEn:"Powdery",color:"#ef72a4",icon:"◌",strength:90},{id:"floral",nameAr:"زهري",nameEn:"Floral",color:"#ec6d9c",icon:"❀",strength:82},{id:"vanilla",nameAr:"فانيليا",nameEn:"Vanilla",color:"#f2ae2e",icon:"✿",strength:74},{id:"musky",nameAr:"مسكي",nameEn:"Musky",color:"#aa8ac7",icon:"≋",strength:61}], seasons: ["spring", "autumn"], usageTimes: ["day", "evening"], occasions: ["work", "occasions", "romantic"]
   },
   {
@@ -542,7 +542,7 @@ const seedProducts = [
     oldPrice: null,
     badgeAr: "إصدار محدود",
     badgeEn: "LIMITED",
-    image: "assets/smoked-saffron.svg",
+    image: "",
     gender: "men", mainIngredients: ["جلد", "زعفران", "أخشاب"], mainAccords: ["جلدي", "زعفراني", "خشبي", "دافئ"], accordProfile: [{id:"leather",nameAr:"جلدي",nameEn:"Leather",color:"#635047",icon:"▰",strength:94},{id:"warm-spicy",nameAr:"حار دافئ",nameEn:"Warm spicy",color:"#b85032",icon:"✦",strength:83},{id:"woody",nameAr:"خشبي",nameEn:"Woody",color:"#9b6b43",icon:"♢",strength:76},{id:"amber",nameAr:"عنبري",nameEn:"Amber",color:"#c47b16",icon:"◆",strength:59}], seasons: ["winter", "autumn"], usageTimes: ["night"], occasions: ["formal", "occasions"]
   },
   {
@@ -562,7 +562,7 @@ const seedProducts = [
     oldPrice: 2250,
     badgeAr: "اختيار الصيف",
     badgeEn: "SUMMER PICK",
-    image: "assets/citrus-veil.svg",
+    image: "",
     gender: "unisex", mainIngredients: ["برغموت", "نيرولي", "أرز"], mainAccords: ["حمضي", "منعش", "أخضر", "خشبي"], accordProfile: [{id:"citrus",nameAr:"حمضي",nameEn:"Citrus",color:"#a7bd31",icon:"◉",strength:95},{id:"fresh",nameAr:"منعش",nameEn:"Fresh",color:"#24a7a1",icon:"≈",strength:88},{id:"aromatic",nameAr:"أروماتيك",nameEn:"Aromatic",color:"#4e9274",icon:"♧",strength:65},{id:"woody",nameAr:"خشبي",nameEn:"Woody",color:"#9b6b43",icon:"♢",strength:46}], seasons: ["spring", "summer"], usageTimes: ["day", "daily"], occasions: ["work", "travel", "casual"]
   },
   {
@@ -582,7 +582,7 @@ const seedProducts = [
     oldPrice: 1790,
     badgeAr: "الأكثر مبيعًا",
     badgeEn: "BESTSELLER",
-    image: "assets/products/experimental/lattafa-khamrah.webp",
+    image: "",
     gender: "unisex", mainIngredients: ["قرفة", "برغموت", "فانيليا", "عنبر"], mainAccords: ["دافئ", "حلو", "فانيليا", "عنبري"], accordProfile: [], seasons: ["winter", "autumn"], usageTimes: ["night"], occasions: ["evening", "formal"], performance: { longevity: 9, sillage: 8.5 }, reviewSummary: { average: 4.8, count: 2100 }, salesCount: 4200, createdAt: "2026-07-30T12:01:00.000Z", isNew: true
   },
   {
@@ -602,7 +602,7 @@ const seedProducts = [
     oldPrice: 1550,
     badgeAr: "جديد",
     badgeEn: "NEW",
-    image: "assets/products/experimental/lattafa-asad.webp",
+    image: "",
     gender: "men", mainIngredients: ["فلفل أسود", "قهوة", "فانيليا", "عنبر"], mainAccords: ["حار", "عنبري", "فانيليا", "خشبي"], accordProfile: [], seasons: ["winter", "autumn"], usageTimes: ["night"], occasions: ["evening", "formal"], performance: { longevity: 8, sillage: 8 }, reviewSummary: { average: 4.7, count: 1800 }, salesCount: 3600, createdAt: "2026-07-30T12:00:00.000Z", isNew: true
   },
   {
@@ -622,7 +622,7 @@ const seedProducts = [
     oldPrice: null,
     badgeAr: "جديد",
     badgeEn: "NEW",
-    image: "assets/products/experimental/xerjoff-naxos.webp",
+    image: "",
     gender: "unisex", mainIngredients: ["عسل", "تبغ", "لافندر", "فانيليا"], mainAccords: ["عسلي", "تبغي", "حلو", "عطري"], accordProfile: [], seasons: ["winter", "autumn", "spring"], usageTimes: ["evening"], occasions: ["formal", "occasions"], performance: { longevity: 8.5, sillage: 8 }, reviewSummary: { average: 4.7, count: 1600 }, salesCount: 2800, createdAt: "2026-07-30T12:04:00.000Z", isNew: true
   },
   {
@@ -642,7 +642,7 @@ const seedProducts = [
     oldPrice: null,
     badgeAr: "جديد",
     badgeEn: "NEW",
-    image: "assets/products/experimental/initio-oud-for-greatness.webp",
+    image: "",
     gender: "unisex", mainIngredients: ["عود", "زعفران", "لافندر", "مسك"], mainAccords: ["عود", "خشبي", "حار", "عطري"], accordProfile: [], seasons: ["winter", "autumn"], usageTimes: ["night"], occasions: ["formal", "occasions"], performance: { longevity: 9, sillage: 9 }, reviewSummary: { average: 4.9, count: 2200 }, salesCount: 3200, createdAt: "2026-07-30T12:03:00.000Z", isNew: true
   }
 ];
@@ -654,6 +654,17 @@ const insertSeedProduct = db.prepare(`
     image, catalog_json, status
   ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'published')
 `);
+
+const generatedProductImagePaths = new Set([
+  "assets/nocturne-01.svg",
+  "assets/velvet-iris.svg",
+  "assets/smoked-saffron.svg",
+  "assets/citrus-veil.svg",
+  "assets/products/experimental/lattafa-khamrah.webp",
+  "assets/products/experimental/lattafa-asad.webp",
+  "assets/products/experimental/xerjoff-naxos.webp",
+  "assets/products/experimental/initio-oud-for-greatness.webp"
+]);
 
 db.exec("BEGIN IMMEDIATE");
 try {
@@ -683,6 +694,21 @@ try {
     const merged = { ...defaults, ...stored };
     for (const [key, value] of Object.entries(defaults)) if (stored[key] == null || (Array.isArray(stored[key]) && !stored[key].length)) merged[key] = value;
     db.prepare("UPDATE products SET catalog_json=? WHERE id=?").run(JSON.stringify(merged), product.id);
+  }
+  const generatedImageRows = db.prepare("SELECT id, image, catalog_json FROM products").all();
+  const clearGeneratedProductImage = db.prepare("UPDATE products SET image=?, catalog_json=?, updated_at=CURRENT_TIMESTAMP WHERE id=?");
+  for (const row of generatedImageRows) {
+    const metadata = parseJSON(row.catalog_json, {});
+    const originalImages = Array.isArray(metadata.images) ? metadata.images : [];
+    const cleanedImages = originalImages.filter((item) => {
+      const url = typeof item === "string" ? item : item?.url;
+      return !generatedProductImagePaths.has(url);
+    });
+    const image = generatedProductImagePaths.has(row.image) ? "" : row.image;
+    const hoverImage = generatedProductImagePaths.has(metadata.hoverImage) ? "" : metadata.hoverImage;
+    const changed = image !== row.image || cleanedImages.length !== originalImages.length || hoverImage !== metadata.hoverImage;
+    if (!changed) continue;
+    clearGeneratedProductImage.run(image, JSON.stringify({ ...metadata, images: cleanedImages, hoverImage }), row.id);
   }
   db.exec("COMMIT");
 } catch (error) {
