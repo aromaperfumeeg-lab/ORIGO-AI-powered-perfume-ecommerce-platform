@@ -53,6 +53,15 @@ html{max-width:100%}
     max-width:245px!important;
   }
 }
+@media(min-width:1201px){
+  #home :is(#new-product-grid,#product-grid)>.product-card,
+  #home .home-brand-showcase .product-card{
+    flex:0 0 calc((100% - 90px)/6)!important;
+    width:calc((100% - 90px)/6)!important;
+    min-width:0!important;
+    max-width:none!important;
+  }
+}
 #home :is(.home-new-arrivals,.home-best-sellers) .product-card:hover{
   transform:translateY(-3px);
   box-shadow:0 13px 30px rgba(72,32,40,.11);
@@ -414,6 +423,28 @@ html{max-width:100%}
   .home-hero-dots button{width:8px!important;height:8px!important;border:1px solid rgba(112,0,31,.2)!important;background:#d8ccca!important;cursor:pointer}
   .home-hero-dots button.active{width:20px!important;height:8px!important;margin:0!important;border-radius:10px!important;background:#790020!important}
   .origo-home-hero.is-dragging{cursor:grabbing}
+}
+
+/* Mobile slider fills its visual area, including the image-free state. */
+@media(max-width:640px){
+  .origo-home-hero{height:clamp(248px,64vw,310px)!important}
+  .origo-home-hero.no-image .home-hero-products{
+    background-image:radial-gradient(circle at 80% 10%,rgba(205,156,77,.22),transparent 35%),linear-gradient(135deg,#fff8f2,#f6e7e4)!important;
+  }
+  .origo-home-hero.no-image .home-hero-copy{
+    inset:10px 10px 44px!important;
+    max-width:none!important;
+    padding:16px!important;
+    display:grid;
+    place-content:center;
+    background:rgba(255,255,255,.44);
+  }
+  .origo-home-hero.has-image .home-hero-copy{max-width:calc(100% - 20px)!important}
+  .header-commerce-actions{gap:7px!important}
+  .header-commerce-actions>button{width:40px!important;min-width:40px!important;height:40px!important;padding:7px!important}
+  .header-commerce-actions>button svg{width:24px!important;height:24px!important;stroke-width:1.9!important}
+  .mobile-menu-button svg{width:23px!important;height:23px!important}
+  .header-commerce-actions .action-count{top:-1px!important;right:-2px!important;min-width:12px!important;width:auto!important;height:14px!important;padding:0 2px!important;border:0!important;background:transparent!important;color:#720019!important;box-shadow:none!important;font-size:10px!important;font-weight:900!important;line-height:14px!important}
 }
 
 /* Reference-like mobile commerce: two products per row and four visible across two rails. */

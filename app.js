@@ -144,7 +144,7 @@ function hydrateLuxuryIcons(root = document) {
   navigation.forEach(([selector, name]) => $$(selector, root).forEach((icon) => setLuxuryIcon(icon, name)));
   $$(".category-nav .brands-nav > button > i", root).forEach((icon) => setLuxuryIcon(icon, "chevron"));
 
-  const bottomIcons = ["home", "grid", "sparkle", "heart", "user"];
+  const bottomIcons = ["home", "grid", "sparkle", "bag", "user"];
   $$(".store-bottom-nav > * > span:first-child", root).forEach((icon, index) => setLuxuryIcon(icon, bottomIcons[index] || "sparkle"));
   $$(".gender-card .gender-copy > span:first-child", root).forEach((icon, index) => setLuxuryIcon(icon, index === 2 ? "heart" : "user"));
   $$(".loyalty-strip article > span:first-child", root).forEach((icon, index) => setLuxuryIcon(icon, ["tag", "diamond", "sparkle", "crown"][index] || "sparkle"));
@@ -3182,6 +3182,8 @@ function renderHomeHero() {
   const show = (index) => {
     homeHeroIndex = (index + slides.length) % slides.length;
     const item = slides[homeHeroIndex];
+    hero.classList.toggle("has-image", Boolean(item.url));
+    hero.classList.toggle("no-image", !item.url);
     visual.style.backgroundImage = item.url ? `url("${String(item.url).replace(/["\\]/g, "")}")` : "none";
     visual.style.backgroundSize = item.sizeMode === "cover" ? "cover" : item.sizeMode === "contain" ? "contain" : item.sizeMode === "custom" ? `${Math.max(40, Math.min(200, Number(item.imageScale || 100)))}% auto` : "";
     visual.style.backgroundPosition = item.imagePosition && item.imagePosition !== "center" ? item.imagePosition : "";
@@ -3264,7 +3266,7 @@ function renderHomepageCommerce() {
   renderHomeBenefitsMarquee();
   const newest = $("#new-product-grid");
   if (newest) {
-    const homepageProductLimit = matchMedia("(max-width: 640px)").matches ? 2 : 12;
+    const homepageProductLimit = matchMedia("(max-width: 640px)").matches ? 2 : 6;
     const products = state.products.map((product, index) => ({ product, score: productDateScore(product, index) })).sort((a, b) => b.score - a.score).slice(0, homepageProductLimit).map(({ product }) => product);
     newest.innerHTML = products.map((product, index) => productCardMarkup(product, { context: "grid", delay: Math.min(index * 45, 180) })).join("");
     bindHorizontalRail(newest);
@@ -3276,7 +3278,7 @@ function renderHomepageCommerce() {
     const ordered = [...ORIGO_PERFUME_BRANDS, ...dataBrands].filter((brand, index, values) => values.findIndex((candidate) => ORIGOCatalog.normalize(candidate) === ORIGOCatalog.normalize(brand)) === index);
     const mobile = matchMedia("(max-width: 700px)").matches;
     const visibleBrands = mobile ? ordered.filter((brand) => homeBrandProducts(brand).length).slice(0, 4) : ordered;
-    const productLimit = mobile ? 6 : 12;
+    const productLimit = mobile ? 6 : 6;
     showcase.innerHTML = visibleBrands.map((brand) => {
       const products = homeBrandProducts(brand);
       if (!products.length) return "";
@@ -3728,7 +3730,7 @@ function renderProducts(filter = "all") {
       ...(product.notesEn || [])
     ].join(" ")).includes(search))
     .sort((a, b) => productSalesScore(b) - productSalesScore(a))
-    .slice(0, matchMedia("(max-width: 640px)").matches ? 2 : 12);
+    .slice(0, matchMedia("(max-width: 640px)").matches ? 2 : 6);
   if (!visibleProducts.length) {
     grid.innerHTML = `
       <div class="product-grid-empty">
