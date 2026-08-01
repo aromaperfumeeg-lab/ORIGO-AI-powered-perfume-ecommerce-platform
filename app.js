@@ -2007,21 +2007,19 @@ function bannerHeroSliderMarkup() {
     <div class="banner-slider-fields">
       <label>اسم الصورة<input data-home-media-field="name" data-id="${escapeHTML(item.id)}" value="${escapeHTML(item.name || "")}"/></label>
       <label>الترتيب<input type="number" min="1" max="99" data-home-media-field="sortOrder" data-id="${escapeHTML(item.id)}" value="${Number(item.sortOrder || 1)}"/></label>
-      <label>العنوان<input data-home-media-field="titleAr" data-id="${escapeHTML(item.id)}" value="${escapeHTML(item.titleAr || "")}"/></label>
-      <label>الوصف<input data-home-media-field="descriptionAr" data-id="${escapeHTML(item.id)}" value="${escapeHTML(item.descriptionAr || "")}"/></label>
-      <label>نص الزر<input data-home-media-field="buttonAr" data-id="${escapeHTML(item.id)}" value="${escapeHTML(item.buttonAr || "تسوق الآن")}"/></label>
-      <label>رابط الزر<input dir="ltr" data-home-media-field="href" data-id="${escapeHTML(item.id)}" value="${escapeHTML(item.href || "#new-arrivals")}"/></label>
+      <label>المنتج المرتبط<select data-home-media-field="productId" data-id="${escapeHTML(item.id)}">${homeHeroProductOptions(item.productId || "")}</select></label>
+      <label>رابط هدف مخصص<input dir="ltr" data-home-media-field="href" data-id="${escapeHTML(item.id)}" value="${escapeHTML(item.href || "#new-arrivals")}"/></label>
       <label>ملء الصورة<select data-home-media-field="sizeMode" data-id="${escapeHTML(item.id)}"><option value="default"${!item.sizeMode || item.sizeMode === "default" ? " selected" : ""}>تلقائي</option><option value="cover"${item.sizeMode === "cover" ? " selected" : ""}>تغطية كاملة</option><option value="contain"${item.sizeMode === "contain" ? " selected" : ""}>الصورة كاملة</option></select></label>
       <label class="banner-slider-active"><span>عرض الصورة</span><input type="checkbox" data-home-media-field="active" data-id="${escapeHTML(item.id)}"${item.active !== false ? " checked" : ""}/></label>
     </div>
   </article>`).join("");
   return `<form id="admin-banner-slider-settings" class="banner-slider-admin">
-    <header><div><span>▧</span><div><h3>سلايدر البنر الرئيسي</h3><p>ارفع عدة صور للواجهة الرئيسية؛ يتم الانتقال بينها تلقائيًا كل 3 ثوانٍ.</p></div></div><b>${slides.filter((item) => item.active !== false).length} صور نشطة</b></header>
+    <header><div><span>▧</span><div><h3>سلايدر البنر الرئيسي</h3><p>صور فقط دون نص؛ الضغط على الصورة يفتح المنتج أو الرابط المحدد.</p></div></div><b>${slides.filter((item) => item.active !== false).length} صور نشطة</b></header>
     <div class="banner-slider-controls">
       <label>زمن التبديل بالثواني<input name="heroIntervalSeconds" type="number" min="1" max="30" step="0.5" value="${Number(settings.homeHero.intervalSeconds || 3)}"/></label>
       <label class="banner-slider-upload">إضافة صور جديدة<input name="mediaFile" type="file" multiple accept="image/png,image/jpeg,image/webp,image/avif"/></label>
-      <label>العنوان الافتراضي للصور الجديدة<input name="mediaTitleAr" placeholder="اكتشف عالم العطور الفاخرة"/></label>
-      <label>الوصف الافتراضي<input name="mediaDescriptionAr" placeholder="نخبة مختارة من أفضل الماركات"/></label>
+      <label>المنتج الافتراضي للصور الجديدة<select name="mediaProductId">${homeHeroProductOptions("")}</select></label>
+      <label>رابط هدف افتراضي<input name="mediaHref" dir="ltr" value="#new-arrivals"/></label>
       <button class="button burgundy-button" type="submit">حفظ السلايدر</button>
     </div>
     <output class="banner-upload-status" id="banner-upload-status" aria-live="polite"></output>
@@ -2392,13 +2390,28 @@ function bannerEditorMarkup(id = "") {
     <footer><button type="button" class="secondary-button" data-action="close-admin-editor">إلغاء</button><button class="button burgundy-button" type="submit">حفظ التعديلات</button></footer></form>`;
 }
 
+function homeHeroProductOptions(selectedId = "") {
+  const options = state.products.map((product) => {
+    const label = state.lang === "ar" ? product.nameAr || product.nameEn : product.nameEn || product.nameAr;
+    return `<option value="${escapeHTML(product.id)}"${String(product.id) === String(selectedId) ? " selected" : ""}>${escapeHTML(label || product.id)} — ${escapeHTML(product.brand || "ORIGO")}</option>`;
+  }).join("");
+  return `<option value="">${state.lang === "ar" ? "رابط مخصص بدون منتج" : "Custom link without a product"}</option>${options}`;
+}
+
+function homeHeroTargetHref(item = {}) {
+  const product = item.productId ? getProduct(String(item.productId)) : null;
+  if (product) return `/?product=${encodeURIComponent(product.slug || product.id)}`;
+  const href = String(item.href || "").trim();
+  return /^(?:https?:\/\/|\/|#|\?)/i.test(href) ? href : "#new-arrivals";
+}
+
 function homeSlideEditorMarkup(id = "") {
   const settings = mergeStoreSettings(state.adminWorkspace.settings || {});
   const existing = settings.homeMedia.find((item) => String(item.id) === String(id));
-  const item = existing || { id:`media-${Date.now().toString(36)}`, name:"",titleAr:"",titleEn:"",descriptionAr:"",descriptionEn:"",buttonAr:"تسوق الآن",buttonEn:"Shop now",href:"#new-arrivals",sortOrder:settings.homeMedia.length+1,sizeMode:"cover",active:true,url:"" };
+  const item = existing || { id:`media-${Date.now().toString(36)}`, name:"",productId:"",href:"#new-arrivals",sortOrder:settings.homeMedia.length+1,sizeMode:"cover",active:true,url:"" };
   return `<form id="admin-home-slide-form" class="admin-modal-form" dir="rtl"><input type="hidden" name="id" value="${escapeHTML(item.id)}"/>
-    <header><span class="eyebrow">HOMEPAGE SLIDER</span><h2>${existing?"تعديل شريحة السلايدر":"إضافة شريحة سلايدر"}</h2><p>${existing?"تم تحميل نصوص وصورة الشريحة المختارة.":"اختر صورة وأدخل النص والرابط ثم احفظ."}</p></header>
-    <div class="admin-modal-grid"><label>اسم الصورة<input name="name" value="${escapeHTML(item.name||"")}"/></label><label>الترتيب<input name="sortOrder" type="number" min="1" value="${Number(item.sortOrder||1)}"/></label><label>العنوان بالعربية<input name="titleAr" value="${escapeHTML(item.titleAr||"")}"/></label><label>العنوان بالإنجليزية<input name="titleEn" value="${escapeHTML(item.titleEn||"")}"/></label><label>الوصف بالعربية<textarea name="descriptionAr">${escapeHTML(item.descriptionAr||"")}</textarea></label><label>الوصف بالإنجليزية<textarea name="descriptionEn">${escapeHTML(item.descriptionEn||"")}</textarea></label><label>نص الزر بالعربية<input name="buttonAr" value="${escapeHTML(item.buttonAr||"تسوق الآن")}"/></label><label>نص الزر بالإنجليزية<input name="buttonEn" value="${escapeHTML(item.buttonEn||"Shop now")}"/></label><label class="wide">رابط الزر<input name="href" dir="ltr" value="${escapeHTML(item.href||"#new-arrivals")}"/></label><label>ملاءمة الصورة<select name="sizeMode">${selectOptions([["cover","تغطية كاملة"],["contain","إظهار كاملة"]],item.sizeMode||"cover")}</select></label><label class="wide admin-modal-upload">${existing?"استبدال الصورة (اختياري)":"صورة الشريحة"}<input name="mediaFile" type="file" accept="image/png,image/jpeg,image/webp,image/avif"${existing?"":" required"}/></label><label class="admin-toggle-row wide"><span><b>عرض الشريحة</b></span><input name="active" type="checkbox"${item.active!==false?" checked":""}/></label></div>
+    <header><span class="eyebrow">HOMEPAGE SLIDER</span><h2>${existing?"تعديل شريحة السلايدر":"إضافة شريحة سلايدر"}</h2><p>الشريحة صورة فقط؛ الضغط عليها يفتح المنتج المختار أو الرابط المخصص.</p></header>
+    <div class="admin-modal-grid"><label>اسم الصورة<input name="name" value="${escapeHTML(item.name||"")}"/></label><label>الترتيب<input name="sortOrder" type="number" min="1" value="${Number(item.sortOrder||1)}"/></label><label class="wide">المنتج المرتبط بالصورة<select name="productId">${homeHeroProductOptions(item.productId||"")}</select></label><label class="wide">رابط هدف مخصص عند عدم اختيار منتج<input name="href" dir="ltr" value="${escapeHTML(item.href||"#new-arrivals")}" placeholder="/perfumes أو https://..."/></label><label>ملاءمة الصورة<select name="sizeMode">${selectOptions([["cover","تغطية كاملة"],["contain","إظهار كاملة"]],item.sizeMode||"cover")}</select></label><label class="wide admin-modal-upload">${existing?"استبدال الصورة (اختياري)":"صورة الشريحة"}<input name="mediaFile" type="file" accept="image/png,image/jpeg,image/webp,image/avif"${existing?"":" required"}/></label><label class="admin-toggle-row wide"><span><b>عرض الشريحة</b></span><input name="active" type="checkbox"${item.active!==false?" checked":""}/></label></div>
     <footer><button type="button" class="secondary-button" data-action="close-admin-editor">إلغاء</button><button class="button burgundy-button" type="submit">حفظ التعديلات</button></footer></form>`;
 }
 
@@ -2499,26 +2512,19 @@ function homepageRailsAdminMarkup() {
         <label>${ar ? "حجم الصورة المخصص %" : "Custom image size %"}<input type="number" min="40" max="200" step="5" data-home-media-field="imageScale" data-id="${escapeHTML(item.id)}" value="${Number(item.imageScale || 100)}"/></label>
         <label>${ar ? "موضع الصورة" : "Image position"}<select data-home-media-field="imagePosition" data-id="${escapeHTML(item.id)}"><option value="center"${!item.imagePosition || item.imagePosition === "center" ? " selected" : ""}>${ar ? "الوسط" : "Center"}</option><option value="right"${item.imagePosition === "right" ? " selected" : ""}>${ar ? "اليمين" : "Right"}</option><option value="left"${item.imagePosition === "left" ? " selected" : ""}>${ar ? "اليسار" : "Left"}</option><option value="top"${item.imagePosition === "top" ? " selected" : ""}>${ar ? "أعلى" : "Top"}</option><option value="bottom"${item.imagePosition === "bottom" ? " selected" : ""}>${ar ? "أسفل" : "Bottom"}</option></select></label>
         <label class="admin-toggle-row"><span>${ar ? "عرض الصورة" : "Show image"}</span><input type="checkbox" data-home-media-field="active" data-id="${escapeHTML(item.id)}"${item.active !== false ? " checked" : ""}/></label>
-        <label>${ar ? "عنوان الشريحة بالعربية" : "Arabic slide title"}<input data-home-media-field="titleAr" data-id="${escapeHTML(item.id)}" value="${escapeHTML(item.titleAr || "")}"/></label>
-        <label>${ar ? "عنوان الشريحة بالإنجليزية" : "English slide title"}<input data-home-media-field="titleEn" data-id="${escapeHTML(item.id)}" value="${escapeHTML(item.titleEn || "")}"/></label>
-        <label>${ar ? "الوصف بالعربية" : "Arabic description"}<textarea data-home-media-field="descriptionAr" data-id="${escapeHTML(item.id)}">${escapeHTML(item.descriptionAr || "")}</textarea></label>
-        <label>${ar ? "الوصف بالإنجليزية" : "English description"}<textarea data-home-media-field="descriptionEn" data-id="${escapeHTML(item.id)}">${escapeHTML(item.descriptionEn || "")}</textarea></label>
-        <label>${ar ? "نص الزر بالعربية" : "Arabic button label"}<input data-home-media-field="buttonAr" data-id="${escapeHTML(item.id)}" value="${escapeHTML(item.buttonAr || "")}"/></label>
-        <label>${ar ? "نص الزر بالإنجليزية" : "English button label"}<input data-home-media-field="buttonEn" data-id="${escapeHTML(item.id)}" value="${escapeHTML(item.buttonEn || "")}"/></label>
-        <label class="wide">${ar ? "رابط الزر" : "Button link"}<input data-home-media-field="href" data-id="${escapeHTML(item.id)}" dir="ltr" value="${escapeHTML(item.href || "#new-arrivals")}"/></label>
+        <label class="wide">${ar ? "المنتج المرتبط بالصورة" : "Product linked to the image"}<select data-home-media-field="productId" data-id="${escapeHTML(item.id)}">${homeHeroProductOptions(item.productId || "")}</select></label>
+        <label class="wide">${ar ? "رابط هدف مخصص" : "Custom target link"}<input data-home-media-field="href" data-id="${escapeHTML(item.id)}" dir="ltr" value="${escapeHTML(item.href || "#new-arrivals")}"/></label>
       </div>` : `<small>${escapeHTML(ar ? item.altAr : item.altEn)}</small>`}
     </article>`;
   }).join("");
   return `<form id="admin-homepage-rails" class="admin-settings-form homepage-rails-admin">
-    <section class="admin-home-hero-panel"><div class="review-section-head"><span>01</span><div><b>${ar ? "البنر الرئيسي" : "Homepage hero banner"}</b><small>${ar ? "قسم مستقل للتحكم في صورة البنر ونصه وزره وسرعة تبديل الشرائح." : "A dedicated section for the banner image, copy, button, and slide timing."}</small></div></div>
+    <section class="admin-home-hero-panel"><div class="review-section-head"><span>01</span><div><b>${ar ? "البنر الرئيسي" : "Homepage hero banner"}</b><small>${ar ? "السلايدر يعرض الصور فقط، وتعمل الصورة كاملة كرابط للمنتج أو الهدف المختار." : "The slider shows images only, and the full image links to the selected product or target."}</small></div></div>
       ${heroMedia.length ? "" : `<div class="admin-home-hero-default"><span><b>${ar ? "لا توجد صورة افتراضية" : "No default image"}</b><small>${ar ? "ارفع صورة واحدة أو عدة صور لإنشاء سلايدر الصفحة الرئيسية." : "Upload one or more images to create the homepage slider."}</small></span></div>`}
       <div class="review-grid">
         <label>${ar ? "زمن عرض كل صورة بالثواني" : "Seconds per slide"}<input name="heroIntervalSeconds" type="number" min="1" max="30" step="0.5" value="${Number(settings.homeHero.intervalSeconds || 2.5)}"/></label>
         <label>${ar ? "رفع صور البنر من الملفات" : "Upload banner images"}<input name="mediaFile" type="file" multiple accept="image/png,image/jpeg,image/webp,image/avif"/></label>
-        <label>${ar ? "عنوان عربي مبدئي للصور الجديدة" : "Initial Arabic title"}<input name="mediaTitleAr"/></label>
-        <label>${ar ? "عنوان إنجليزي مبدئي للصور الجديدة" : "Initial English title"}<input name="mediaTitleEn"/></label>
-        <label>${ar ? "وصف عربي مبدئي" : "Initial Arabic description"}<textarea name="mediaDescriptionAr"></textarea></label>
-        <label>${ar ? "وصف إنجليزي مبدئي" : "Initial English description"}<textarea name="mediaDescriptionEn"></textarea></label>
+        <label>${ar ? "المنتج الافتراضي للصور الجديدة" : "Default product for new images"}<select name="mediaProductId">${homeHeroProductOptions("")}</select></label>
+        <label>${ar ? "رابط هدف افتراضي" : "Default target link"}<input name="mediaHref" dir="ltr" value="#new-arrivals"/></label>
       </div>
       <input name="mediaPlacement" type="hidden" value="hero"/>
       <div class="home-media-library">${heroMedia.length ? mediaCards : `<p>${ar ? "لا توجد صور مخصصة؛ يتم استخدام صورة ORIGO الافتراضية المعروضة أعلاه." : "No custom slides yet; the ORIGO default shown above is in use."}</p>`}</div>
@@ -3177,7 +3183,7 @@ function renderHomeHero() {
   const media = settings.homeMedia
     .filter((item) => item.placement === "hero" && item.url && item.active !== false)
     .sort((a, b) => Number(a.sortOrder || 0) - Number(b.sortOrder || 0));
-  const slides = media.length ? media : [{ url: "", altAr: "بنر المتجر", altEn: "Store banner", titleAr: "اكتشف عالم العطور الفاخرة", titleEn: "Discover the world of luxury fragrance", descriptionAr: "نخبة مختارة من أفضل الماركات العالمية", descriptionEn: "A curated selection from leading global brands", buttonAr: "تسوق الآن", buttonEn: "Shop now", href: "#new-arrivals" }];
+  const slides = media.length ? media : [{ url: "", altAr: "بنر المتجر", altEn: "Store banner", href: "#new-arrivals" }];
   homeHeroIndex = Math.min(homeHeroIndex, slides.length - 1);
   const show = (index) => {
     homeHeroIndex = (index + slides.length) % slides.length;
@@ -3188,17 +3194,7 @@ function renderHomeHero() {
     visual.style.backgroundSize = item.sizeMode === "cover" ? "cover" : item.sizeMode === "contain" ? "contain" : item.sizeMode === "custom" ? `${Math.max(40, Math.min(200, Number(item.imageScale || 100)))}% auto` : "";
     visual.style.backgroundPosition = item.imagePosition && item.imagePosition !== "center" ? item.imagePosition : "";
     visual.setAttribute("aria-label", state.lang === "ar" ? item.altAr || item.name || "بانر دعائي" : item.altEn || item.name || "Campaign banner");
-    const title = hero.querySelector(".home-hero-copy h1");
-    const description = hero.querySelector(".home-hero-copy>p");
-    const button = hero.querySelector(".home-primary-button");
-    const isArabic = state.lang === "ar";
-    if (title) title.textContent = (isArabic ? item.titleAr : item.titleEn) || (isArabic ? "اكتشف عالم العطور الفاخرة" : "Discover the world of luxury fragrance");
-    if (description) description.textContent = (isArabic ? item.descriptionAr : item.descriptionEn) || (isArabic ? "نخبة مختارة من أفضل الماركات العالمية" : "A curated selection from leading global brands");
-    if (button) {
-      const label = button.querySelector("span");
-      if (label) label.textContent = (isArabic ? item.buttonAr : item.buttonEn) || (isArabic ? "تسوق الآن" : "Shop now");
-      button.href = item.href || "#new-arrivals";
-    }
+    visual.href = homeHeroTargetHref(item);
     [...dots.children].forEach((dot, dotIndex) => dot.classList.toggle("active", dotIndex === homeHeroIndex));
   };
   hero._origoShowHeroSlide = show;
@@ -3224,7 +3220,7 @@ function renderHomeHero() {
       lastX = 0;
     };
     hero.addEventListener("pointerdown", (event) => {
-      if (event.target.closest("a,button")) return;
+      if (event.target.closest(".home-hero-dots,button")) return;
       startX = event.clientX;
       lastX = event.clientX;
       dragged = false;
@@ -8279,7 +8275,7 @@ document.addEventListener("submit", async (event) => {
     try {
       const url = file ? await optimizeGalleryImage(file) : existing?.url || "";
       if (!url) throw new Error("اختر صورة للشريحة أولاً");
-      const slide = { ...existing, id, name:String(data.get("name")||file?.name||existing?.name||"").trim(), placement:"hero", url, titleAr:String(data.get("titleAr")||"").trim(), titleEn:String(data.get("titleEn")||"").trim(), descriptionAr:String(data.get("descriptionAr")||"").trim(), descriptionEn:String(data.get("descriptionEn")||"").trim(), buttonAr:String(data.get("buttonAr")||"تسوق الآن").trim(), buttonEn:String(data.get("buttonEn")||"Shop now").trim(), href:String(data.get("href")||"#new-arrivals").trim(), sortOrder:Math.max(1,Number(data.get("sortOrder")||1)), sizeMode:String(data.get("sizeMode")||"cover"), imageScale:100, imagePosition:"center", active:data.has("active"), createdAt:existing?.createdAt||new Date().toISOString() };
+      const slide = { ...existing, id, name:String(data.get("name")||file?.name||existing?.name||"").trim(), placement:"hero", url, productId:String(data.get("productId")||"").trim(), href:String(data.get("href")||"#new-arrivals").trim(), titleAr:"", titleEn:"", descriptionAr:"", descriptionEn:"", buttonAr:"", buttonEn:"", sortOrder:Math.max(1,Number(data.get("sortOrder")||1)), sizeMode:String(data.get("sizeMode")||"cover"), imageScale:100, imagePosition:"center", active:data.has("active"), createdAt:existing?.createdAt||new Date().toISOString() };
       if (existingIndex >= 0) media[existingIndex] = slide; else media.push(slide);
       state.adminWorkspace.settings = mergeStoreSettings({ ...current, homeMedia:media });
       saveAdminWorkspace("homepage");
@@ -8419,10 +8415,9 @@ document.addEventListener("submit", async (event) => {
           if (uploadStatus) uploadStatus.textContent = adminCopy(`جارٍ تجهيز الصورة ${index + 1} من ${files.length}…`, `Preparing image ${index + 1} of ${files.length}…`);
           uploaded.push({
             id: `media-${Date.now()}-${index}`, name: file.name, placement: "hero",
-            altAr: String(data.get("mediaTitleAr") || file.name).trim(), altEn: String(data.get("mediaTitleEn") || file.name).trim(),
-            titleAr: String(data.get("mediaTitleAr") || "").trim(), titleEn: String(data.get("mediaTitleEn") || "").trim(),
-            descriptionAr: String(data.get("mediaDescriptionAr") || "").trim(), descriptionEn: String(data.get("mediaDescriptionEn") || "").trim(),
-            buttonAr: "تسوق الآن", buttonEn: "Shop now", href: "#new-arrivals", sizeMode: "default",
+            altAr: file.name, altEn: file.name, productId: String(data.get("mediaProductId") || "").trim(),
+            titleAr: "", titleEn: "", descriptionAr: "", descriptionEn: "", buttonAr: "", buttonEn: "",
+            href: String(data.get("mediaHref") || "#new-arrivals").trim(), sizeMode: "default",
             imageScale: 100, imagePosition: "center", sortOrder: media.length + index + 1, active: true,
             url: await optimizeGalleryImage(file), createdAt: new Date().toISOString()
           });

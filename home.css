@@ -1482,3 +1482,41 @@ body:not(.dark) .home-gender-section .gender-card:is(:hover,:focus-visible,:acti
 #home .home-hero-copy{display:none!important}
 #home .home-hero-products{display:block;cursor:pointer;text-decoration:none;touch-action:pan-y}
 #home .home-hero-dots{z-index:4}
+
+/* One clean heading pattern: centered title between two uninterrupted lines. */
+#home :is(.gender-section-title,.ornament-heading){
+  width:100%!important;
+  display:grid!important;
+  grid-template-columns:minmax(34px,1fr) auto minmax(34px,1fr)!important;
+  align-items:center!important;
+  gap:clamp(12px,2.2vw,30px)!important;
+}
+#home .gender-section-title>div{display:block!important}
+#home .gender-section-title i{display:none!important}
+#home :is(.gender-section-title,.ornament-heading)>span{
+  position:static!important;
+  width:100%!important;
+  height:1px!important;
+  border:0!important;
+  background:linear-gradient(90deg,transparent,#c88b2c 34%,#c88b2c)!important;
+  transform:none!important;
+}
+#home :is(.gender-section-title,.ornament-heading)>span:last-child{
+  background:linear-gradient(90deg,#c88b2c,#c88b2c 66%,transparent)!important;
+  transform:none!important;
+}
+#home :is(.gender-section-title,.ornament-heading)>span::before,
+#home :is(.gender-section-title,.ornament-heading)>span::after,
+#home .gender-section-title::before,
+#home .gender-section-title::after,
+#home .ornament-heading::before,
+#home .ornament-heading::after{display:none!important;content:none!important}
+#home :is(.gender-section-title,.ornament-heading) h2{
+  margin:0!important;
+  line-height:1.25!important;
+  text-align:center!important;
+  white-space:nowrap;
+}
+@media(max-width:640px){
+  #home :is(.gender-section-title,.ornament-heading){gap:8px!important;grid-template-columns:minmax(22px,1fr) auto minmax(22px,1fr)!important}
+}
