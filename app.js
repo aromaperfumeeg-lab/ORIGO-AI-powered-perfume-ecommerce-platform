@@ -5209,8 +5209,13 @@ function productCardNoteGroups(product, isArabic) {
     (Array.isArray(values) ? values : [values]).filter(Boolean).forEach((value) => pushUnique(position, value));
   });
   if (!["top", "heart", "base"].some((position) => groups[position].length)) {
-    const values = (isArabic ? product.notesAr : product.notesEn) || product.notesAr || product.notesEn || [];
-    (Array.isArray(values) ? values : [values]).filter(Boolean).forEach((value) => pushUnique("all", value));
+    const existing = groups.all.splice(0);
+    const values = existing.length
+      ? existing
+      : ((isArabic ? product.notesAr : product.notesEn) || product.notesAr || product.notesEn || product.mainIngredients || []);
+    const items = (Array.isArray(values) ? values : [values]).filter(Boolean);
+    const chunk = Math.max(1, Math.ceil(items.length / 3));
+    items.forEach((value, index) => pushUnique(index < chunk ? "top" : index < chunk * 2 ? "heart" : "base", value));
   }
   return Object.entries(groups).filter(([, items]) => items.length).map(([id, items]) => ({ id, label: labels[id], items }));
 }
@@ -5235,6 +5240,10 @@ function productCardProjectionLabel(product, isArabic) {
     weak: ["ضعيف", "Weak"], soft: ["ضعيف", "Weak"], moderate: ["متوسط", "Moderate"],
     medium: ["متوسط", "Moderate"], strong: ["قوي", "Strong"], verystrong: ["قوي جدًا", "Very strong"]
   };
+  if (/قوي جدا|شديد|عالي جدا/.test(normalized)) return isArabic ? "قوي جدًا" : "Very strong";
+  if (/قوي|عالي/.test(normalized)) return isArabic ? "قوي" : "Strong";
+  if (/متوسط|معتدل/.test(normalized)) return isArabic ? "متوسط" : "Moderate";
+  if (/ضعيف|هادئ|ناعم/.test(normalized)) return isArabic ? "ضعيف" : "Weak";
   const key = Object.keys(labels).find((item) => normalized.replace(/[^a-z]/g, "").includes(item));
   if (key) return labels[key][isArabic ? 0 : 1];
   const numeric = Number(raw);
@@ -5268,9 +5277,15 @@ function productCardDetailsMarkup(product, isArabic) {
   const minHours = Number(hours.longevityMinHours ?? hours.longevityHours);
   const maxHours = Number(hours.longevityMaxHours ?? hours.longevityHours);
   const hasHours = Number.isFinite(minHours) && minHours >= 0;
+  const rawLongevity = Number(product.performance?.longevity ?? product.performance?.longevityScore ?? product.filters?.longevity ?? product.insights?.longevity);
+  const longevityScore = Number.isFinite(rawLongevity) ? Math.max(0, Math.min(10, rawLongevity <= 5 ? rawLongevity * 2 : rawLongevity)) : NaN;
+  const estimatedHours = Number.isFinite(longevityScore)
+    ? longevityScore >= 9 ? [10, 12] : longevityScore >= 8 ? [8, 10] : longevityScore >= 7 ? [7, 9] : longevityScore >= 6 ? [6, 8] : longevityScore >= 4 ? [4, 6] : [2, 4]
+    : null;
+  const estimatedHoursLabel = estimatedHours ? `${estimatedHours[0]}–${estimatedHours[1]}${isArabic ? " ساعات" : " hours"}` : (isArabic ? "غير محدد" : "Not specified");
   const hoursLabel = hasHours
     ? (Number.isFinite(maxHours) && maxHours > minHours ? `${minHours}–${maxHours}` : `${minHours}`) + (isArabic ? " ساعات" : " hours")
-    : (isArabic ? "يُحمّل عند الفتح" : "Loaded on open");
+    : estimatedHoursLabel;
   const notesMarkup = noteGroups.length ? noteGroups.map((group) => `<div class="card-note-level"><strong>${escapeHTML(group.label)}</strong><div class="card-note-scroll" data-inner-horizontal-scroll>${group.items.map((note) => `<span>${note.image ? `<img src="${escapeHTML(note.image)}" alt="" width="46" height="46" loading="lazy"/>` : `<i aria-hidden="true">✦</i>`}<b>${escapeHTML(note.label)}</b></span>`).join("")}</div></div>`).join("") : `<p class="product-card-panel-empty">${isArabic ? "لم تُضف نوتات لهذا المنتج بعد." : "No notes have been added for this product."}</p>`;
   const accordsMarkup = accords.length ? `<div class="card-accord-list">${accords.map((accord) => `<div style="--accord:${escapeHTML(accord.color)}"><span><i></i><b>${escapeHTML(accord.label)}</b>${accord.strength != null ? `<em>${accord.strength}%</em>` : ""}</span>${accord.strength != null ? `<small><i style="width:${accord.strength}%"></i></small>` : ""}</div>`).join("")}</div>` : `<p class="product-card-panel-empty">${isArabic ? "لم تُضف أكوردات لهذا المنتج بعد." : "No accords have been added for this product."}</p>`;
   return `<div class="product-card-accordion-actions" aria-label="${isArabic ? "تفاصيل المنتج" : "Product details"}">
@@ -5280,11 +5295,11 @@ function productCardDetailsMarkup(product, isArabic) {
     <div class="product-card-details" data-card-details>
       <section id="${performanceId}" data-card-panel="performance" data-product-id="${escapeHTML(product.id)}" aria-hidden="true" hidden>
         <div class="card-performance-metrics">
-          <article><i aria-hidden="true">◷</i><span><b>${isArabic ? "الثبات" : "Longevity"}</b><small data-performance-hours data-state="${hasHours ? "ready" : "idle"}">${escapeHTML(hoursLabel)}</small></span></article>
-          <article><i aria-hidden="true">≋</i><span><b>${isArabic ? "الفوحان" : "Projection"}</b><small>${escapeHTML(productCardProjectionLabel(product, isArabic))}</small></span></article>
+          <article><i aria-hidden="true">◷</i><span><b>${isArabic ? "الثبات" : "Longevity"}</b><small data-performance-hours data-fallback="${escapeHTML(hoursLabel)}" data-state="${hasHours ? "ready" : "idle"}">${escapeHTML(hoursLabel)}</small></span></article>
+          <article><i aria-hidden="true">≋</i><span><b>${isArabic ? "الفوحان" : "Projection"}</b><small data-performance-projection>${escapeHTML(productCardProjectionLabel(product, isArabic))}</small></span></article>
         </div>
-        ${seasons.length ? `<div class="card-performance-block"><b>${isArabic ? "المواسم" : "Seasons"}</b><div class="card-season-grid">${seasonItems.map(([id, ar, en, icon]) => `<span class="${seasons.some((value) => value.includes(id) || (id === "autumn" && /خريف/.test(value)) || (id === "winter" && /شتاء/.test(value)) || (id === "summer" && /صيف/.test(value)) || (id === "spring" && /ربيع/.test(value))) ? "active" : ""}"><i>${icon}</i>${isArabic ? ar : en}</span>`).join("")}</div></div>` : ""}
-        ${usage.length ? `<div class="card-performance-block"><b>${isArabic ? "الأوقات والمناسبات" : "Times and occasions"}</b><div class="card-usage-tags">${usage.map((item) => `<span>${escapeHTML((usageLabels[item] || [item, item])[isArabic ? 0 : 1])}</span>`).join("")}</div></div>` : ""}
+        <div class="card-performance-block"><b>${isArabic ? "المواسم" : "Seasons"}</b><div class="card-season-grid">${seasonItems.map(([id, ar, en, icon]) => `<span class="${seasons.some((value) => value.includes(id) || (id === "autumn" && /خريف/.test(value)) || (id === "winter" && /شتاء/.test(value)) || (id === "summer" && /صيف/.test(value)) || (id === "spring" && /ربيع/.test(value))) ? "active" : ""}"><i>${icon}</i>${isArabic ? ar : en}</span>`).join("")}</div></div>
+        <div class="card-performance-block"><b>${isArabic ? "الأوقات والمناسبات" : "Times and occasions"}</b><div class="card-usage-tags">${usage.length ? usage.map((item) => `<span>${escapeHTML((usageLabels[item] || [item, item])[isArabic ? 0 : 1])}</span>`).join("") : `<span>${isArabic ? "غير محدد" : "Not specified"}</span>`}</div></div>
       </section>
       <section id="${fragranceId}" data-card-panel="fragrance" aria-hidden="true" hidden>
         <div class="card-fragrance-tabs" role="tablist"><button type="button" role="tab" data-card-fragrance-tab="notes" aria-selected="true">${isArabic ? "النوتات" : "Notes"}</button><button type="button" role="tab" data-card-fragrance-tab="accords" aria-selected="false">${isArabic ? "الأكوردات" : "Accords"}</button></div>
@@ -5340,7 +5355,7 @@ function productCardMarkup(product, options = {}) {
   const favoriteLabel = saved ? translations[state.lang].removeFavorite : translations[state.lang].favorites;
   const noteLabels = ((isArabic ? product.notesAr : product.notesEn) || product.notesAr || product.notesEn || []).filter(Boolean).slice(0, 3);
   const context = String(options.context || "grid");
-  const supportsDetails = interactive && context === "grid" && String(product.category || "perfume") === "perfume";
+  const supportsDetails = interactive && context === "grid";
   const availableStock = Number(variant?.stock ?? product.inventory?.available ?? product.inventory?.quantity);
   const hasKnownAvailability = Number.isFinite(availableStock);
   const limitedStock = !outOfStock && hasKnownAvailability && availableStock > 0 && availableStock <= 5;
