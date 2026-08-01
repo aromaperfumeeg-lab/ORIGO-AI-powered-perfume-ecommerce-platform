@@ -1480,8 +1480,58 @@ body:not(.dark) .home-gender-section .gender-card:is(:hover,:focus-visible,:acti
 #home .origo-home-hero::after,
 #home .home-hero-products::after{display:none!important;content:none!important}
 #home .home-hero-copy{display:none!important}
-#home .home-hero-products{display:block;cursor:pointer;text-decoration:none;touch-action:pan-y}
+#home .origo-home-hero{padding:0!important;overflow:hidden!important;background:#fcf5ef!important}
+#home .home-hero-products{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;display:block!important;cursor:pointer;text-decoration:none;touch-action:pan-y;background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important;transform:none!important}
 #home .home-hero-dots{z-index:4}
+#home .home-hero-arrow{display:none;position:absolute;top:50%;z-index:7;width:46px;height:46px;padding:0;place-items:center;transform:translateY(-50%);border:1px solid rgba(255,255,255,.72);border-radius:50%;color:#fff;background:rgba(91,0,25,.72);box-shadow:0 8px 24px rgba(40,0,12,.22);font-size:32px;line-height:1;cursor:pointer;-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);transition:transform .2s ease,background .2s ease}
+#home .home-hero-arrow:hover{transform:translateY(-50%) scale(1.06);background:#76001f}
+#home .home-hero-arrow.previous{left:16px}
+#home .home-hero-arrow.next{right:16px}
+#home .home-hero-arrow[hidden]{display:none!important}
+@media(min-width:901px){#home .home-hero-arrow{display:grid}}
+@media(max-width:640px){
+  #home .origo-home-hero{padding:0!important;background:transparent!important}
+  #home .home-hero-products{inset:0!important;height:100%!important}
+  #home .home-hero-arrow{display:none!important}
+  #home .home-hero-dots{top:auto!important;bottom:7px!important;left:50%!important;width:auto!important;height:4px!important;padding:0!important;display:flex!important;align-items:center!important;gap:5px!important;transform:translateX(-50%)!important;border:0!important;background:transparent!important;box-shadow:none!important}
+  #home .home-hero-dots button,#home .home-hero-dots button.active{width:18px!important;height:2px!important;min-width:18px!important;margin:0!important;padding:0!important;border:0!important;border-radius:2px!important;background:rgba(255,255,255,.58)!important;box-shadow:0 1px 3px rgba(30,0,8,.28)!important}
+  #home .home-hero-dots button.active{width:28px!important;min-width:28px!important;background:#fff!important}
+}
+
+/* Product-carousel hard fix: keep the reference cards intact even when an older
+   cached component stylesheet is present. */
+#home :is(.home-new-arrivals,.home-best-sellers){height:auto!important;max-height:none!important;overflow:visible!important}
+#home :is(#new-product-grid,#product-grid){height:auto!important;max-height:none!important;padding:4px 4px 18px!important;display:flex!important;align-items:flex-start!important;gap:14px!important;overflow-x:auto!important;overflow-y:hidden!important;scroll-snap-type:x mandatory!important;scrollbar-width:none!important}
+#home :is(#new-product-grid,#product-grid)::-webkit-scrollbar{display:none!important}
+#home :is(#new-product-grid,#product-grid)>.origo-reference-product-card{position:relative!important;height:auto!important;min-height:0!important;max-height:none!important;display:flex!important;flex-direction:column!important;align-self:flex-start!important;overflow:hidden!important;border:1px solid #ead9d5!important;border-radius:15px!important;background:#fff!important;scroll-snap-align:start!important}
+#home :is(#new-product-grid,#product-grid)>.origo-reference-product-card .product-image{position:relative!important;width:calc(100% - 12px)!important;height:auto!important;min-height:0!important;max-height:none!important;aspect-ratio:4/5!important;margin:6px 6px 0!important;padding:0!important;overflow:hidden!important;border:0!important;border-radius:12px!important;background:#fff!important}
+#home :is(#new-product-grid,#product-grid)>.origo-reference-product-card .product-card-media-link{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;margin:0!important;padding:8px!important;display:block!important;overflow:hidden!important;border:0!important;border-radius:0!important;outline:0!important;background:#fff!important;box-shadow:none!important}
+#home :is(#new-product-grid,#product-grid)>.origo-reference-product-card .product-card-media-link img{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;margin:0!important;padding:7px!important;display:block!important;object-fit:contain!important;object-position:center!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;transform:none!important}
+#home :is(#new-product-grid,#product-grid)>.origo-reference-product-card .product-card-media-link:has(img[src^="data:image/svg+xml"]) img{display:none!important}
+#home :is(#new-product-grid,#product-grid)>.origo-reference-product-card .product-card-media-link:has(img[src^="data:image/svg+xml"])::after{content:"ORIGO";position:absolute;inset:0;display:grid;place-items:center;color:#76001f;font-family:Georgia,"Times New Roman",serif;font-size:clamp(28px,2.25vw,43px);letter-spacing:.1em;background:linear-gradient(145deg,#fff,#fbf8f6)}
+#home :is(#new-product-grid,#product-grid)>.origo-reference-product-card .product-card-accordion-actions{position:relative!important;z-index:4!important;margin:0!important;padding:8px 10px 0!important;display:grid!important;grid-template-columns:1fr 1fr!important;gap:7px!important;background:#fff!important}
+#home :is(#new-product-grid,#product-grid)>.origo-reference-product-card .product-card-accordion-actions button{appearance:none!important;width:100%!important;min-width:0!important;min-height:44px!important;height:44px!important;padding:7px 12px!important;display:flex!important;align-items:center!important;justify-content:space-between!important;border:1px solid rgba(118,0,31,.52)!important;border-radius:999px!important;color:#3b2a2f!important;background:#fff!important;box-shadow:none!important;font:inherit!important;font-size:12px!important;line-height:1!important}
+#home :is(#new-product-grid,#product-grid)>.origo-reference-product-card .product-card-accordion-actions button.active{color:#fff!important;border-color:#76001f!important;background:#76001f!important}
+#home :is(#new-product-grid,#product-grid)>.origo-reference-product-card .product-info{position:relative!important;height:auto!important;min-height:0!important;max-height:none!important;padding:11px 13px 13px!important;overflow:visible!important;background:#fff!important}
+#home :is(#new-product-grid,#product-grid)>.origo-reference-product-card .product-info h3{display:block!important;min-height:0!important;margin:3px 0 8px!important;overflow:visible!important}
+#home :is(#new-product-grid,#product-grid)>.origo-reference-product-card .product-info h3 button{width:100%!important;padding:0!important;display:-webkit-box!important;overflow:hidden!important;border:0!important;color:#21171a!important;background:transparent!important;font:inherit!important;font-size:17px!important;font-weight:800!important;line-height:1.35!important;text-align:start!important;-webkit-box-orient:vertical;-webkit-line-clamp:2}
+#home :is(#new-product-grid,#product-grid)>.origo-reference-product-card .product-brand{display:block!important;margin-bottom:2px!important;color:#bd8736!important;font-size:10px!important}
+#home :is(#new-product-grid,#product-grid)>.origo-reference-product-card .home-product-compact-meta{height:auto!important;min-height:0!important;display:grid!important;overflow:visible!important}
+#home :is(#new-product-grid,#product-grid)>.origo-reference-product-card .product-card-status-row{display:flex!important;margin-top:8px!important}
+#home :is(#new-product-grid,#product-grid)>.origo-reference-product-card .product-bottom{position:static!important;height:auto!important;min-height:0!important;margin-top:9px!important;padding:0!important;display:grid!important;grid-template-columns:1fr!important;gap:7px!important;overflow:visible!important}
+#home :is(#new-product-grid,#product-grid)>.origo-reference-product-card .product-bottom .card-add-button{position:static!important;inset:auto!important;width:100%!important;height:46px!important;min-height:46px!important;margin:0!important;padding-inline:14px!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:8px!important;transform:none!important;overflow:visible!important;opacity:1!important;border:0!important;border-radius:8px!important;color:#fff!important;background:#8d0025!important}
+#home :is(#new-product-grid,#product-grid)>.origo-reference-product-card .card-add-button span{display:inline!important}
+@media(min-width:641px){#home :is(#new-product-grid,#product-grid)>.origo-reference-product-card{flex:0 0 calc((100% - 56px)/5)!important;width:calc((100% - 56px)/5)!important;min-width:calc((100% - 56px)/5)!important;max-width:calc((100% - 56px)/5)!important}}
+@media(max-width:640px){
+  #home :is(#new-product-grid,#product-grid){gap:8px!important;padding-inline:2px!important}
+  html[data-product-card-view=two] #home :is(#new-product-grid,#product-grid)>.origo-reference-product-card{flex:0 0 calc((100% - 8px)/2)!important;width:calc((100% - 8px)/2)!important;min-width:calc((100% - 8px)/2)!important;max-width:none!important}
+  html[data-product-card-view=one] #home :is(#new-product-grid,#product-grid)>.origo-reference-product-card{flex:0 0 100%!important;width:100%!important;min-width:100%!important;max-width:none!important}
+  #home :is(#new-product-grid,#product-grid)>.origo-reference-product-card .product-image{width:calc(100% - 8px)!important;margin:4px 4px 0!important;aspect-ratio:4/5!important}
+  #home :is(#new-product-grid,#product-grid)>.origo-reference-product-card .product-card-accordion-actions{padding:7px 6px 0!important;gap:5px!important}
+  #home :is(#new-product-grid,#product-grid)>.origo-reference-product-card .product-card-accordion-actions button{height:40px!important;min-height:40px!important;padding-inline:8px!important;font-size:10px!important}
+  #home :is(#new-product-grid,#product-grid)>.origo-reference-product-card .product-info{padding:8px 8px 10px!important}
+  #home :is(#new-product-grid,#product-grid)>.origo-reference-product-card .product-info h3 button{font-size:15px!important}
+}
 
 /* One clean heading pattern: centered title between two uninterrupted lines. */
 #home :is(.gender-section-title,.ornament-heading){

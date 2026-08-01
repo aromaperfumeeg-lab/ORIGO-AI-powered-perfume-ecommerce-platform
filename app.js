@@ -2411,7 +2411,7 @@ function homeSlideEditorMarkup(id = "") {
   const item = existing || { id:`media-${Date.now().toString(36)}`, name:"",productId:"",href:"#new-arrivals",sortOrder:settings.homeMedia.length+1,sizeMode:"cover",active:true,url:"" };
   return `<form id="admin-home-slide-form" class="admin-modal-form" dir="rtl"><input type="hidden" name="id" value="${escapeHTML(item.id)}"/>
     <header><span class="eyebrow">HOMEPAGE SLIDER</span><h2>${existing?"تعديل شريحة السلايدر":"إضافة شريحة سلايدر"}</h2><p>الشريحة صورة فقط؛ الضغط عليها يفتح المنتج المختار أو الرابط المخصص.</p></header>
-    <div class="admin-modal-grid"><label>اسم الصورة<input name="name" value="${escapeHTML(item.name||"")}"/></label><label>الترتيب<input name="sortOrder" type="number" min="1" value="${Number(item.sortOrder||1)}"/></label><label class="wide">المنتج المرتبط بالصورة<select name="productId">${homeHeroProductOptions(item.productId||"")}</select></label><label class="wide">رابط هدف مخصص عند عدم اختيار منتج<input name="href" dir="ltr" value="${escapeHTML(item.href||"#new-arrivals")}" placeholder="/perfumes أو https://..."/></label><label>ملاءمة الصورة<select name="sizeMode">${selectOptions([["cover","تغطية كاملة"],["contain","إظهار كاملة"]],item.sizeMode||"cover")}</select></label><label class="wide admin-modal-upload">${existing?"استبدال الصورة (اختياري)":"صورة الشريحة"}<input name="mediaFile" type="file" accept="image/png,image/jpeg,image/webp,image/avif"${existing?"":" required"}/></label><label class="admin-toggle-row wide"><span><b>عرض الشريحة</b></span><input name="active" type="checkbox"${item.active!==false?" checked":""}/></label></div>
+    <div class="admin-modal-grid"><label>اسم الصورة<input name="name" value="${escapeHTML(item.name||"")}"/></label><label>الترتيب<input name="sortOrder" type="number" min="1" value="${Number(item.sortOrder||1)}"/></label><label class="wide">المنتج المرتبط بالصورة<select name="productId">${homeHeroProductOptions(item.productId||"")}</select></label><label class="wide">رابط هدف مخصص عند عدم اختيار منتج<input name="href" dir="ltr" value="${escapeHTML(item.href||"#new-arrivals")}" placeholder="/perfumes أو https://..."/></label><label>ملاءمة الصورة<select name="sizeMode"><option value="cover" selected>تغطية كاملة تلقائيًا</option></select></label><label class="wide admin-modal-upload">${existing?"استبدال الصورة (اختياري)":"صورة الشريحة"}<input name="mediaFile" type="file" accept="image/png,image/jpeg,image/webp,image/avif"${existing?"":" required"}/></label><label class="admin-toggle-row wide"><span><b>عرض الشريحة</b></span><input name="active" type="checkbox"${item.active!==false?" checked":""}/></label></div>
     <footer><button type="button" class="secondary-button" data-action="close-admin-editor">إلغاء</button><button class="button burgundy-button" type="submit">حفظ التعديلات</button></footer></form>`;
 }
 
@@ -2508,8 +2508,8 @@ function homepageRailsAdminMarkup() {
       ${isHero ? `<div class="home-hero-slide-fields">
         <label>${ar ? "اسم الصورة" : "Image name"}<input data-home-media-field="name" data-id="${escapeHTML(item.id)}" value="${escapeHTML(item.name || "")}"/></label>
         <label>${ar ? "الترتيب" : "Order"}<input type="number" min="1" max="99" data-home-media-field="sortOrder" data-id="${escapeHTML(item.id)}" value="${Number(item.sortOrder || 1)}"/></label>
-        <label>${ar ? "طريقة ملء البنر" : "Banner image fit"}<select data-home-media-field="sizeMode" data-id="${escapeHTML(item.id)}"><option value="default"${!item.sizeMode || item.sizeMode === "default" ? " selected" : ""}>${ar ? "تلقائي (تصميم المتجر)" : "Automatic (store design)"}</option><option value="cover"${item.sizeMode === "cover" ? " selected" : ""}>${ar ? "تغطية كاملة" : "Cover"}</option><option value="contain"${item.sizeMode === "contain" ? " selected" : ""}>${ar ? "إظهار الصورة كاملة" : "Contain"}</option><option value="custom"${item.sizeMode === "custom" ? " selected" : ""}>${ar ? "حجم مخصص" : "Custom size"}</option></select></label>
-        <label>${ar ? "حجم الصورة المخصص %" : "Custom image size %"}<input type="number" min="40" max="200" step="5" data-home-media-field="imageScale" data-id="${escapeHTML(item.id)}" value="${Number(item.imageScale || 100)}"/></label>
+        <label>${ar ? "طريقة ملء البنر" : "Banner image fit"}<select data-home-media-field="sizeMode" data-id="${escapeHTML(item.id)}"><option value="cover" selected>${ar ? "تغطية كاملة تلقائيًا" : "Automatic full cover"}</option></select></label>
+        <input type="hidden" data-home-media-field="imageScale" data-id="${escapeHTML(item.id)}" value="100"/>
         <label>${ar ? "موضع الصورة" : "Image position"}<select data-home-media-field="imagePosition" data-id="${escapeHTML(item.id)}"><option value="center"${!item.imagePosition || item.imagePosition === "center" ? " selected" : ""}>${ar ? "الوسط" : "Center"}</option><option value="right"${item.imagePosition === "right" ? " selected" : ""}>${ar ? "اليمين" : "Right"}</option><option value="left"${item.imagePosition === "left" ? " selected" : ""}>${ar ? "اليسار" : "Left"}</option><option value="top"${item.imagePosition === "top" ? " selected" : ""}>${ar ? "أعلى" : "Top"}</option><option value="bottom"${item.imagePosition === "bottom" ? " selected" : ""}>${ar ? "أسفل" : "Bottom"}</option></select></label>
         <label class="admin-toggle-row"><span>${ar ? "عرض الصورة" : "Show image"}</span><input type="checkbox" data-home-media-field="active" data-id="${escapeHTML(item.id)}"${item.active !== false ? " checked" : ""}/></label>
         <label class="wide">${ar ? "المنتج المرتبط بالصورة" : "Product linked to the image"}<select data-home-media-field="productId" data-id="${escapeHTML(item.id)}">${homeHeroProductOptions(item.productId || "")}</select></label>
@@ -3191,13 +3191,19 @@ function renderHomeHero() {
     hero.classList.toggle("has-image", Boolean(item.url));
     hero.classList.toggle("no-image", !item.url);
     visual.style.backgroundImage = item.url ? `url("${String(item.url).replace(/["\\]/g, "")}")` : "none";
-    visual.style.backgroundSize = item.sizeMode === "cover" ? "cover" : item.sizeMode === "contain" ? "contain" : item.sizeMode === "custom" ? `${Math.max(40, Math.min(200, Number(item.imageScale || 100)))}% auto` : "";
-    visual.style.backgroundPosition = item.imagePosition && item.imagePosition !== "center" ? item.imagePosition : "";
+    // Uploaded hero artwork always fills the frame. `contain`, custom scales,
+    // and the old `auto 100%` fallback all exposed empty side columns.
+    visual.style.backgroundSize = "cover";
+    visual.style.backgroundPosition = item.imagePosition && item.imagePosition !== "center" ? item.imagePosition : "center";
     visual.setAttribute("aria-label", state.lang === "ar" ? item.altAr || item.name || "بانر دعائي" : item.altEn || item.name || "Campaign banner");
     visual.href = homeHeroTargetHref(item);
     [...dots.children].forEach((dot, dotIndex) => dot.classList.toggle("active", dotIndex === homeHeroIndex));
   };
   hero._origoShowHeroSlide = show;
+  hero.querySelectorAll("[data-home-hero-arrow]").forEach((button) => {
+    button.hidden = slides.length < 2;
+    button.onclick = () => show(homeHeroIndex + Number(button.dataset.homeHeroArrow || 0));
+  });
   dots.innerHTML = slides.map((_, index) => `<button type="button" data-home-hero-slide="${index}" aria-label="${state.lang === "ar" ? "الشريحة" : "Slide"} ${index + 1}"></button>`).join("");
   dots.onclick = (event) => {
     const button = event.target.closest("[data-home-hero-slide]");
@@ -3232,7 +3238,9 @@ function renderHomeHero() {
       lastX = event.clientX;
       const delta = Math.max(-90, Math.min(90, lastX - startX));
       const currentVisual = hero.querySelector(".home-hero-products");
-      if (currentVisual) currentVisual.style.transform = `translateX(${delta * .18}px)`;
+      // Keep the artwork edge-to-edge while tracking the gesture; translating
+      // the background layer exposed the frame behind it at either side.
+      if (currentVisual) currentVisual.style.transform = "";
     });
     hero.addEventListener("pointerup", finishSwipe);
     hero.addEventListener("pointercancel", finishSwipe);
