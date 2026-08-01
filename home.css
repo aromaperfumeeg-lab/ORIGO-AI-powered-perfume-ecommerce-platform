@@ -62,6 +62,7 @@ html{max-width:100%}
     max-width:none!important;
   }
 }
+
 #home :is(.home-new-arrivals,.home-best-sellers) .product-card:hover{
   transform:translateY(-3px);
   box-shadow:0 13px 30px rgba(72,32,40,.11);
@@ -1432,3 +1433,52 @@ body:not(.dark) .home-gender-section .gender-card:is(:hover,:focus-visible,:acti
     font-size:11px;
   }
 }
+
+/* Keep the three gender cards proportional to their uploaded artwork. */
+#home .home-gender-section{
+  width:min(calc(100% - 32px),680px)!important;
+}
+#home .home-gender-grid{
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  align-items:start;
+  gap:clamp(10px,1.4vw,18px)!important;
+}
+#home .home-gender-card{
+  width:100%!important;
+  min-width:0!important;
+  grid-template-rows:auto 78px!important;
+  border-radius:18px!important;
+}
+#home .gender-card-art{
+  width:100%;
+  aspect-ratio:7/8!important;
+  background:#faf7f4;
+}
+#home .gender-card-art img{
+  width:100%!important;
+  height:100%!important;
+  object-fit:cover!important;
+  object-position:center top;
+}
+#home .gender-card-copy{
+  min-height:78px;
+  padding:10px 6px 11px!important;
+  gap:3px!important;
+}
+#home .gender-card-copy b{font-size:clamp(20px,1.8vw,26px)!important}
+#home .gender-card-copy small{font-size:clamp(9px,.82vw,11px)!important;white-space:nowrap}
+@media(max-width:640px){
+  #home .home-gender-section{width:calc(100% - 16px)!important}
+  #home .home-gender-grid{gap:6px!important}
+  #home .home-gender-card{grid-template-rows:auto 64px!important;border-radius:14px!important}
+  #home .gender-card-copy{min-height:64px;padding:8px 2px!important}
+  #home .gender-card-copy b{font-size:clamp(14px,4.5vw,19px)!important}
+  #home .gender-card-copy small{font-size:clamp(7px,2vw,9px)!important;white-space:normal}
+}
+
+/* Image-only hero: the whole slide is the target link. */
+#home .origo-home-hero::after,
+#home .home-hero-products::after{display:none!important;content:none!important}
+#home .home-hero-copy{display:none!important}
+#home .home-hero-products{display:block;cursor:pointer;text-decoration:none;touch-action:pan-y}
+#home .home-hero-dots{z-index:4}
