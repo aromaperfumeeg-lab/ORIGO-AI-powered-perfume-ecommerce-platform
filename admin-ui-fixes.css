@@ -1,0 +1,52 @@
+/* ORIGO admin readability and responsive layout fixes. Loaded last intentionally. */
+.advanced-admin-panel{
+  --admin-bg:#f7f5f3;
+  --admin-card:#fff;
+  --admin-text:#20191b;
+  --admin-muted:#6f6568;
+  --admin-line:#e5dddf;
+  --admin-primary:#7f0922;
+  grid-template-columns:280px minmax(0,1fr)!important;
+  color:var(--admin-text)!important;
+  background:var(--admin-bg)!important;
+  font-family:"Segoe UI",Tahoma,Arial,sans-serif!important;
+  font-size:14px!important;
+}
+.advanced-admin-panel *{box-sizing:border-box;font-family:inherit}
+.advanced-admin-sidebar{padding:18px 14px!important;background:linear-gradient(180deg,#310914,#180d11)!important}
+#advanced-admin-nav>small{font-size:11px!important;letter-spacing:.08em!important;color:rgba(255,255,255,.62)!important}
+#advanced-admin-nav button{min-height:46px!important;padding:9px 11px!important;border-radius:8px!important;font-size:13px!important;line-height:1.4!important}
+#advanced-admin-nav button i{width:28px!important;height:28px!important;font-size:15px!important}
+#advanced-admin-nav button b{font-size:10px!important}
+.admin-sidebar-user b,.admin-profile-button b{font-size:12px!important}.admin-sidebar-user small,.admin-sidebar-brand small{font-size:10px!important}
+.advanced-admin-main{grid-template-rows:72px minmax(0,1fr)!important}
+.advanced-admin-topbar{gap:14px!important;background:#fff!important;border-color:var(--admin-line)!important}
+.admin-global-search{height:44px!important;background:#faf8f7!important;border-color:var(--admin-line)!important}
+.admin-global-search input{font-size:13px!important}.admin-global-search kbd{font-size:10px!important}
+.admin-topbar-actions>button:not(.close-button){height:42px!important;min-width:42px!important;font-size:12px!important;background:#fff!important;border-color:var(--admin-line)!important}
+.advanced-admin-body{padding:24px clamp(16px,2.4vw,36px) 48px!important}
+.admin-view-head{align-items:center!important;margin-bottom:20px!important}.admin-view-head h1{font-size:clamp(26px,2.6vw,38px)!important}.admin-view-head p,.admin-breadcrumb{font-size:12px!important;color:var(--admin-muted)!important}
+.admin-view-actions{flex-wrap:wrap!important}.admin-view-actions .button{min-height:42px!important;padding:10px 16px!important;font-size:13px!important}
+.advanced-admin-panel :where(input,select,textarea){min-height:42px;font-size:13px!important;line-height:1.5;color:var(--admin-text)!important;background:#fff!important;border-color:var(--admin-line)!important}
+.advanced-admin-panel textarea{min-height:92px;padding-block:10px}
+.advanced-admin-panel :where(button,a.button){min-height:42px;font-size:13px;line-height:1.4}
+.advanced-admin-panel :where(label,p,li,dd,dt){font-size:12px;line-height:1.7}
+.advanced-admin-panel small{font-size:11px;line-height:1.55}
+.advanced-admin-panel :where(table){font-size:13px}.advanced-admin-panel :where(th){font-size:12px!important;white-space:nowrap}.advanced-admin-panel :where(td){font-size:12px!important;line-height:1.6}
+.admin-metrics-grid{gap:14px!important}.admin-metric-card{min-height:135px!important;padding:18px!important;border-radius:11px!important;background:#fff!important}
+.admin-metric-card :where(small,em){font-size:11px!important}.admin-metric-card b{font-size:24px!important}
+.banner-manager,.coupon-manager,.roles-dashboard,.activity-security,.brands-management{font-size:14px!important;color:var(--admin-text)!important}
+.banner-slider-admin,.banner-table-card,.coupon-table-card,.roles-list,.permissions-panel,.role-details,.activity-table-card,.activity-filter-panel,.brands-table-card,.brand-categories{border-color:var(--admin-line)!important;border-radius:12px!important;background:#fff!important}
+.banner-slider-controls{grid-template-columns:150px minmax(230px,1.1fr) repeat(2,minmax(180px,1fr)) auto!important;gap:12px!important}.banner-slider-controls label,.banner-slider-fields label{font-size:12px!important}.banner-slider-controls input,.banner-slider-fields input,.banner-slider-fields select{font-size:13px!important}
+.banner-upload-status{display:block;min-height:22px;padding:0 4px;color:#276d47;font-size:12px;font-weight:700}
+.banner-slider-empty{min-height:120px;justify-content:center;text-align:center;background:#fcfaf9}.banner-slider-empty span{gap:5px}
+.banner-filters,.activity-toolbar{gap:12px!important}.banner-filters label,.activity-toolbar label{font-size:12px!important}
+.banner-table th,.banner-table td,.coupon-table th,.coupon-table td,.activity-table-card th,.activity-table-card td,.brands-table-card th,.brands-table-card td{padding:12px 14px!important;font-size:12px!important}
+.banner-row-actions button,.coupon-actions button,.brands-table-card td button{min-width:34px;min-height:34px}
+.advanced-admin-panel button:not(:disabled){cursor:pointer}.advanced-admin-panel button:disabled{opacity:.58;cursor:not-allowed}
+.toast-region{z-index:10000!important;inset-inline-start:24px!important;inset-inline-end:auto!important;bottom:24px!important;max-width:min(430px,calc(100vw - 32px))}
+.toast{width:100%;min-width:min(340px,calc(100vw - 32px))!important;padding:14px 15px!important;display:grid!important;grid-template-columns:30px minmax(0,1fr) 28px!important;gap:11px!important;border:1px solid #d9c8cd!important;border-radius:12px!important;color:#24191c!important;background:#fff!important;box-shadow:0 16px 45px rgba(38,14,20,.2)!important;font-size:13px!important;line-height:1.6!important}
+.toast i{width:28px!important;height:28px!important;color:#fff!important;background:#27854c!important}.toast>button{width:28px;height:28px;border:0;border-radius:6px;color:#6f6266;background:#f3eeef;font-size:18px;cursor:pointer}.toast--error{border-color:#efb5bd!important;background:#fff7f8!important}.toast--error i{background:#c93245!important}.toast--warning{border-color:#efd49e!important;background:#fffaf0!important}.toast--warning i{background:#c47a13!important}.toast--info i{background:#336bb1!important}
+@media(max-width:1200px){.advanced-admin-panel{grid-template-columns:240px minmax(0,1fr)!important}.banner-slider-controls{grid-template-columns:repeat(2,minmax(0,1fr))!important}.banner-slider-library{grid-template-columns:repeat(2,minmax(0,1fr))!important}.roles-layout,.activity-layout,.brands-layout{grid-template-columns:1fr!important}.role-details,.activity-filter-panel,.brand-categories{order:-1}}
+@media(max-width:860px){.advanced-admin-panel{grid-template-columns:1fr!important}.advanced-admin-sidebar{width:min(300px,88vw)!important;position:absolute!important;inset-inline-start:-100%!important;z-index:30!important}.advanced-admin-panel.sidebar-open .advanced-admin-sidebar{inset-inline-start:0!important}.admin-sidebar-toggle{display:block!important}.advanced-admin-topbar{padding-inline:12px!important}.admin-global-search{width:min(100%,520px)!important}.admin-topbar-actions .admin-profile-button{display:none!important}.admin-metrics-grid,.banner-kpis,.roles-kpis,.activity-kpis,.brands-kpis{grid-template-columns:repeat(2,minmax(0,1fr))!important}.banner-slider-controls,.banner-slider-library,.banner-slider-fields{grid-template-columns:1fr!important}.banner-filters,.activity-toolbar{grid-template-columns:repeat(2,minmax(0,1fr))!important}.permissions-table-scroll,.banner-table-scroll,.coupon-table-scroll,.activity-table-scroll,.brands-table-scroll{overflow-x:auto!important;-webkit-overflow-scrolling:touch}}
+@media(max-width:600px){.advanced-admin-main{grid-template-rows:auto minmax(0,1fr)!important}.advanced-admin-topbar{min-height:64px;flex-wrap:wrap!important}.admin-global-search{order:3;width:100%!important}.advanced-admin-body{padding:16px 10px 34px!important}.admin-view-head{align-items:stretch!important;flex-direction:column!important}.admin-view-actions{display:grid!important;grid-template-columns:1fr!important}.admin-view-actions .button{width:100%}.admin-metrics-grid,.banner-kpis,.roles-kpis,.activity-kpis,.brands-kpis,.banner-slider-controls,.banner-slider-library,.banner-slider-fields,.banner-filters,.activity-toolbar{grid-template-columns:1fr!important}.banner-kpis,.roles-kpis,.activity-kpis,.brands-kpis{display:grid!important;overflow:visible!important}.banner-slider-admin{padding:13px!important}.banner-slider-admin>header{align-items:flex-start!important;flex-direction:column!important}.toast-region{inset-inline:16px!important;bottom:16px!important}.toast{min-width:0!important}}

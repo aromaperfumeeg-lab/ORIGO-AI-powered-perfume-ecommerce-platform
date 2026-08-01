@@ -1008,7 +1008,11 @@ function mergeStoreSettings(saved = {}) {
     appLinks: { ...defaultStoreSettings.appLinks, ...(saved.appLinks || {}) },
     passwordRecoveryChannels: { ...defaultStoreSettings.passwordRecoveryChannels, ...(saved.passwordRecoveryChannels || {}) },
     homepageRails: Object.fromEntries(Object.entries(defaultStoreSettings.homepageRails).map(([key, value]) => [key, { ...value, ...(saved.homepageRails?.[key] || {}) }])),
-    homeHero: { ...defaultStoreSettings.homeHero, ...(saved.homeHero || {}) },
+    homeHero: {
+      ...defaultStoreSettings.homeHero,
+      ...(saved.homeHero || {}),
+      intervalSeconds: Number(saved.homeHero?.intervalSeconds) === 2.5 ? 3 : Number(saved.homeHero?.intervalSeconds || defaultStoreSettings.homeHero.intervalSeconds)
+    },
     homeMedia: Array.isArray(saved.homeMedia) ? saved.homeMedia : [],
     categoryIcons: { ...defaultStoreSettings.categoryIcons, ...(saved.categoryIcons || {}) },
     homeBenefitIcons: { ...defaultStoreSettings.homeBenefitIcons, ...(saved.homeBenefitIcons || {}) },
@@ -1093,7 +1097,7 @@ const adminWorkspace = {
 
 const state = {
   lang: localStorage.getItem("origoLang") || "ar",
-  theme: localStorage.getItem("origoTheme") || "light",
+  theme: "light",
   currency: "EGP",
   cart: readStoredArray("origoCart"),
   wishlist: readStoredArray("origoWishlist"),
@@ -1470,7 +1474,11 @@ function printOrderDocument(order, kind = "invoice") {
 
 let adminWorkspaceSyncTimer;
 function saveAdminWorkspace(section = state.adminView) {
-  localStorage.setItem("origoAdminWorkspace", JSON.stringify(state.adminWorkspace));
+  try {
+    localStorage.setItem("origoAdminWorkspace", JSON.stringify(state.adminWorkspace));
+  } catch (error) {
+    if (!state.serverAvailable || !isStaffUser()) showToast(adminCopy("تعذر الحفظ المحلي بسبب امتلاء مساحة المتصفح. احذف بعض الصور الكبيرة.", "Local storage is full. Remove some large images."), "error");
+  }
   if (!state.serverAvailable || !isStaffUser()) return;
   clearTimeout(adminWorkspaceSyncTimer);
   adminWorkspaceSyncTimer = setTimeout(() => {
@@ -2005,7 +2013,8 @@ function bannerHeroSliderMarkup() {
       <label>الوصف الافتراضي<input name="mediaDescriptionAr" placeholder="نخبة مختارة من أفضل الماركات"/></label>
       <button class="button burgundy-button" type="submit">حفظ السلايدر</button>
     </div>
-    <div class="banner-slider-library">${cards || `<div class="banner-slider-empty"><img src="assets/home/hero/hero-main.png" alt="البنر الافتراضي"/><span><b>الصورة الافتراضية مستخدمة الآن</b><small>اختر عدة صور من جهازك لإضافة شرائح متغيرة.</small></span></div>`}</div>
+    <output class="banner-upload-status" id="banner-upload-status" aria-live="polite"></output>
+    <div class="banner-slider-library">${cards || `<div class="banner-slider-empty"><span><b>لا توجد صور في السلايدر</b><small>اختر صورة واحدة أو عدة صور ثم اضغط «حفظ السلايدر».</small></span></div>`}</div>
   </form>`;
 }
 
@@ -2415,7 +2424,7 @@ function homepageRailsAdminMarkup() {
   }).join("");
   return `<form id="admin-homepage-rails" class="admin-settings-form homepage-rails-admin">
     <section class="admin-home-hero-panel"><div class="review-section-head"><span>01</span><div><b>${ar ? "البنر الرئيسي" : "Homepage hero banner"}</b><small>${ar ? "قسم مستقل للتحكم في صورة البنر ونصه وزره وسرعة تبديل الشرائح." : "A dedicated section for the banner image, copy, button, and slide timing."}</small></div></div>
-      ${heroMedia.length ? "" : `<div class="admin-home-hero-default"><img src="assets/home/hero/hero-main.png" alt="${ar ? "معاينة البنر الرئيسي الافتراضي" : "Default homepage banner preview"}"/><span><b>${ar ? "البنر الافتراضي نشط الآن" : "The default banner is active"}</b><small>${ar ? "ارفع صورة جديدة أدناه لاستبداله، ويمكنك رفع عدة صور لإنشاء بنر متغير." : "Upload a new image below to replace it, or upload several images for a rotating banner."}</small></span></div>`}
+      ${heroMedia.length ? "" : `<div class="admin-home-hero-default"><span><b>${ar ? "لا توجد صورة افتراضية" : "No default image"}</b><small>${ar ? "ارفع صورة واحدة أو عدة صور لإنشاء سلايدر الصفحة الرئيسية." : "Upload one or more images to create the homepage slider."}</small></span></div>`}
       <div class="review-grid">
         <label>${ar ? "زمن عرض كل صورة بالثواني" : "Seconds per slide"}<input name="heroIntervalSeconds" type="number" min="1" max="30" step="0.5" value="${Number(settings.homeHero.intervalSeconds || 2.5)}"/></label>
         <label>${ar ? "رفع صور البنر من الملفات" : "Upload banner images"}<input name="mediaFile" type="file" multiple accept="image/png,image/jpeg,image/webp,image/avif"/></label>
@@ -2893,15 +2902,11 @@ function updateLanguage() {
 }
 
 function setupTheme() {
-  document.body.classList.toggle("dark", state.theme === "dark");
-  $$("[data-action='theme']").forEach((button) => {
-    button.setAttribute("aria-pressed", String(state.theme === "dark"));
-    button.setAttribute("aria-label", state.theme === "dark"
-      ? (state.lang === "ar" ? "تفعيل الوضع الفاتح" : "Switch to light mode")
-      : (state.lang === "ar" ? "تفعيل الوضع الداكن" : "Switch to dark mode"));
-  });
+  state.theme = "light";
+  document.body.classList.remove("dark");
+  $$("[data-action='theme']").forEach((button) => button.remove());
   applyStoreIdentity();
-  localStorage.setItem("origoTheme", state.theme);
+  localStorage.removeItem("origoTheme");
 }
 
 function localizeStaticStorefront() {
@@ -3063,12 +3068,12 @@ function renderHomeHero() {
   const media = settings.homeMedia
     .filter((item) => item.placement === "hero" && item.url && item.active !== false)
     .sort((a, b) => Number(a.sortOrder || 0) - Number(b.sortOrder || 0));
-  const slides = media.length ? media : [{ url: "assets/home/hero/hero-main.png", altAr: "مجموعة عطور فاخرة", altEn: "Luxury perfume collection", titleAr: "اكتشف عالم العطور الفاخرة", titleEn: "Discover the world of luxury fragrance", descriptionAr: "نخبة مختارة من أفضل الماركات العالمية", descriptionEn: "A curated selection from leading global brands", buttonAr: "تسوق الآن", buttonEn: "Shop now", href: "#new-arrivals" }];
+  const slides = media.length ? media : [{ url: "", altAr: "بنر المتجر", altEn: "Store banner", titleAr: "اكتشف عالم العطور الفاخرة", titleEn: "Discover the world of luxury fragrance", descriptionAr: "نخبة مختارة من أفضل الماركات العالمية", descriptionEn: "A curated selection from leading global brands", buttonAr: "تسوق الآن", buttonEn: "Shop now", href: "#new-arrivals" }];
   homeHeroIndex = Math.min(homeHeroIndex, slides.length - 1);
   const show = (index) => {
     homeHeroIndex = (index + slides.length) % slides.length;
     const item = slides[homeHeroIndex];
-    visual.style.backgroundImage = `url("${String(item.url).replace(/["\\]/g, "")}")`;
+    visual.style.backgroundImage = item.url ? `url("${String(item.url).replace(/["\\]/g, "")}")` : "none";
     visual.style.backgroundSize = item.sizeMode === "cover" ? "cover" : item.sizeMode === "contain" ? "contain" : item.sizeMode === "custom" ? `${Math.max(40, Math.min(200, Number(item.imageScale || 100)))}% auto` : "";
     visual.style.backgroundPosition = item.imagePosition && item.imagePosition !== "center" ? item.imagePosition : "";
     visual.setAttribute("aria-label", state.lang === "ar" ? item.altAr || item.name || "بانر دعائي" : item.altEn || item.name || "Campaign banner");
@@ -3217,7 +3222,7 @@ function applyStoreIdentity() {
   }
   $$('[data-store-logo]').forEach((image) => {
     const requested = image.dataset.logoVariant || "auto";
-    const variant = requested === "auto" ? (state.theme === "dark" ? "dark" : "light") : requested;
+    const variant = requested === "auto" ? "light" : requested;
     const src = settings.logos[variant] || settings.logos.light || defaultStoreSettings.logos.light;
     if (image.getAttribute("src") !== src) image.setAttribute("src", src);
     image.alt = `${settings.storeName || "ORIGO"} SCENTS`;
@@ -5192,12 +5197,15 @@ function handleProductRoute() {
   return true;
 }
 
-function showToast(message) {
+function showToast(message, type = "success") {
   const toast = document.createElement("div");
-  toast.className = "toast";
-  toast.innerHTML = `<i>✓</i><span>${escapeHTML(message)}</span>`;
+  const normalizedType = ["success", "error", "warning", "info"].includes(type) ? type : "info";
+  toast.className = `toast toast--${normalizedType}`;
+  toast.setAttribute("role", normalizedType === "error" ? "alert" : "status");
+  toast.innerHTML = `<i>${normalizedType === "error" ? "!" : normalizedType === "warning" ? "⚠" : normalizedType === "info" ? "i" : "✓"}</i><span>${escapeHTML(message)}</span><button type="button" aria-label="${state.lang === "ar" ? "إغلاق الرسالة" : "Dismiss message"}">×</button>`;
+  toast.querySelector("button").addEventListener("click", () => toast.remove(), { once: true });
   $("#toast-region").append(toast);
-  setTimeout(() => toast.remove(), 3200);
+  setTimeout(() => toast.remove(), 4800);
 }
 
 function escapeHTML(value = "") {
@@ -6495,22 +6503,35 @@ function fileAsDataURL(file) {
 }
 
 async function optimizeGalleryImage(file) {
-  if (!file.type.startsWith("image/")) throw new Error("unsupported-image");
-  if (file.size > 10 * 1024 * 1024) throw new Error("image-too-large");
+  const allowed = ["image/jpeg", "image/png", "image/webp", "image/avif"];
+  if (!allowed.includes(file.type)) throw new Error(adminCopy("صيغة الصورة غير مدعومة. استخدم JPG أو PNG أو WebP أو AVIF.", "Unsupported image type. Use JPG, PNG, WebP, or AVIF."));
+  if (file.size > 15 * 1024 * 1024) throw new Error(adminCopy("حجم الصورة أكبر من 15 MB.", "Image exceeds 15 MB."));
   const source = await fileAsDataURL(file);
   const image = await new Promise((resolve, reject) => {
     const preview = new Image();
     preview.onload = () => resolve(preview);
-    preview.onerror = reject;
+    preview.onerror = () => reject(new Error(adminCopy("تعذر قراءة الصورة. جرّب حفظها بصيغة JPG أو PNG.", "Could not read the image. Try saving it as JPG or PNG.")));
     preview.src = source;
   });
-  const maxSide = 1400;
-  const scale = Math.min(1, maxSide / Math.max(image.naturalWidth, image.naturalHeight));
+  const maxWidth = 1800;
+  const maxHeight = 900;
+  const scale = Math.min(1, maxWidth / image.naturalWidth, maxHeight / image.naturalHeight);
   const canvas = document.createElement("canvas");
   canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
   canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
-  canvas.getContext("2d").drawImage(image, 0, 0, canvas.width, canvas.height);
-  return canvas.toDataURL("image/webp", .82);
+  const context = canvas.getContext("2d", { alpha: false });
+  if (!context) throw new Error(adminCopy("تعذر تجهيز الصورة في هذا المتصفح.", "This browser could not process the image."));
+  context.fillStyle = "#ffffff";
+  context.fillRect(0, 0, canvas.width, canvas.height);
+  context.drawImage(image, 0, 0, canvas.width, canvas.height);
+  let quality = .82;
+  let result = canvas.toDataURL("image/webp", quality);
+  while (result.length > 520_000 && quality > .48) {
+    quality -= .08;
+    result = canvas.toDataURL("image/webp", quality);
+  }
+  if (result === "data:,") throw new Error(adminCopy("فشل تحويل الصورة. جرّب صورة أصغر.", "Image conversion failed. Try a smaller image."));
+  return result;
 }
 
 async function optimizeProductOptionArtwork(file) {
@@ -7360,10 +7381,18 @@ document.addEventListener("click", async (event) => {
       showToast(actionElement.checked ? "تم تفعيل البنر" : "تم إيقاف البنر");
     }
   }
-  if (action === "create-banner") showToast("نموذج إضافة البنر جاهز للربط ببيانات المحتوى");
-  if (action === "edit-banner") showToast("تم فتح إعدادات البنر");
+  if (action === "create-banner" || action === "import-banners") {
+    const form = $("#admin-banner-slider-settings");
+    form?.scrollIntoView({ behavior: "smooth", block: "start" });
+    const upload = form?.querySelector("[name='mediaFile']");
+    if (upload) upload.click();
+  }
+  if (action === "edit-banner") {
+    const form = $("#admin-banner-slider-settings");
+    form?.scrollIntoView({ behavior: "smooth", block: "start" });
+    form?.querySelector("input:not([type='file'])")?.focus();
+  }
   if (action === "banner-stats") showToast("إحصاءات البنر: النقرات والأداء");
-  if (action === "import-banners") showToast("اختر ملف البنرات للاستيراد");
   if (action === "export-banners") exportAdminReport("content");
   if (action === "create-coupon") showToast("نموذج إضافة كوبون جديد جاهز");
   if (action === "edit-coupon") showToast("تم فتح إعدادات الكوبون");
@@ -7645,10 +7674,7 @@ document.addEventListener("click", async (event) => {
   if (action === "close-wishlist") toggleWishlistDrawer(false);
   if (action === "close-overlay") closeOverlay(actionElement.closest(".overlay"));
   if (action === "close-product-page") closeProductPage();
-  if (action === "theme") {
-    state.theme = state.theme === "light" ? "dark" : "light";
-    setupTheme();
-  }
+  if (action === "theme") setupTheme();
   if (action === "language") {
     state.lang = state.lang === "ar" ? "en" : "ar";
     updateLanguage();
@@ -8135,6 +8161,9 @@ document.addEventListener("submit", async (event) => {
     return;
   }
   if (event.target.id === "admin-homepage-rails" || event.target.id === "admin-banner-slider-settings") {
+    const submitButton = event.target.querySelector("button[type='submit']");
+    const uploadStatus = event.target.querySelector("#banner-upload-status");
+    if (submitButton) submitButton.disabled = true;
     const data = new FormData(event.target);
     const current = mergeStoreSettings(state.adminWorkspace.settings || {});
     const nextRails = event.target.id === "admin-homepage-rails" ? Object.fromEntries(Object.keys(current.homepageRails).map((key) => [key, {
@@ -8156,29 +8185,26 @@ document.addEventListener("submit", async (event) => {
     });
     if (files.length) {
       try {
-        const uploaded = await Promise.all(files.map(async (file, index) => ({
-          id: `media-${Date.now()}-${index}`,
-          name: file.name,
-          placement: "hero",
-          altAr: String(data.get("mediaTitleAr") || file.name).trim(),
-          altEn: String(data.get("mediaTitleEn") || file.name).trim(),
-          titleAr: String(data.get("mediaTitleAr") || "").trim(),
-          titleEn: String(data.get("mediaTitleEn") || "").trim(),
-          descriptionAr: String(data.get("mediaDescriptionAr") || "").trim(),
-          descriptionEn: String(data.get("mediaDescriptionEn") || "").trim(),
-          buttonAr: "تسوق الآن",
-          buttonEn: "Shop now",
-          href: "#new-arrivals",
-          sizeMode: "default",
-          imageScale: 100,
-          imagePosition: "center",
-          sortOrder: media.length + index + 1,
-          active: true,
-          url: await optimizeGalleryImage(file),
-          createdAt: new Date().toISOString()
-        })));
+        const uploaded = [];
+        for (const [index, file] of files.entries()) {
+          if (uploadStatus) uploadStatus.textContent = adminCopy(`جارٍ تجهيز الصورة ${index + 1} من ${files.length}…`, `Preparing image ${index + 1} of ${files.length}…`);
+          uploaded.push({
+            id: `media-${Date.now()}-${index}`, name: file.name, placement: "hero",
+            altAr: String(data.get("mediaTitleAr") || file.name).trim(), altEn: String(data.get("mediaTitleEn") || file.name).trim(),
+            titleAr: String(data.get("mediaTitleAr") || "").trim(), titleEn: String(data.get("mediaTitleEn") || "").trim(),
+            descriptionAr: String(data.get("mediaDescriptionAr") || "").trim(), descriptionEn: String(data.get("mediaDescriptionEn") || "").trim(),
+            buttonAr: "تسوق الآن", buttonEn: "Shop now", href: "#new-arrivals", sizeMode: "default",
+            imageScale: 100, imagePosition: "center", sortOrder: media.length + index + 1, active: true,
+            url: await optimizeGalleryImage(file), createdAt: new Date().toISOString()
+          });
+        }
         media.push(...uploaded);
-      } catch (error) { showToast(adminCopy("تعذر معالجة الصورة", "Could not process image")); return; }
+      } catch (error) {
+        if (submitButton) submitButton.disabled = false;
+        if (uploadStatus) uploadStatus.textContent = error.message;
+        showToast(error.message || adminCopy("تعذر معالجة الصورة", "Could not process image"), "error");
+        return;
+      }
     }
     const intervalSeconds = Math.max(1, Math.min(30, Number(data.get("heroIntervalSeconds") || 3)));
     state.adminWorkspace.settings = mergeStoreSettings({ ...current, homepageRails: nextRails, homeHero: { ...current.homeHero, intervalSeconds }, homeMedia: media });
@@ -8822,6 +8848,19 @@ document.addEventListener("error", (event) => {
 }, true);
 
 document.addEventListener("change", async (event) => {
+  if (event.target.matches("#admin-banner-slider-settings [name='mediaFile']")) {
+    const files = [...(event.target.files || [])];
+    const status = event.target.closest("form")?.querySelector("#banner-upload-status");
+    const invalid = files.filter((file) => !["image/jpeg", "image/png", "image/webp", "image/avif"].includes(file.type) || file.size > 15 * 1024 * 1024);
+    if (invalid.length) {
+      event.target.value = "";
+      if (status) status.textContent = adminCopy("تعذر اختيار بعض الملفات. استخدم JPG أو PNG أو WebP أو AVIF وبحد أقصى 15 MB للصورة.", "Some files are invalid. Use JPG, PNG, WebP, or AVIF up to 15 MB each.");
+      showToast(status?.textContent || adminCopy("ملفات صور غير صالحة", "Invalid image files"), "error");
+      return;
+    }
+    if (status) status.textContent = files.length ? adminCopy(`تم اختيار ${files.length} صورة. اضغط حفظ السلايدر لإضافتها.`, `${files.length} images selected. Save the slider to add them.`) : "";
+    return;
+  }
   if (event.target.id === "quick-import-images") {
     await addQuickImportImages(event.target.files);
     event.target.value = "";

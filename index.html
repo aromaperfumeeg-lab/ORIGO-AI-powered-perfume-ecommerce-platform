@@ -96,6 +96,7 @@
     <link rel="stylesheet" href="performance-insights.css?v=3" media="print" onload="this.media='all'" />
 <link rel="stylesheet" href="shell.css?v=10" />
     <link rel="stylesheet" href="appearance.css?v=22" />
+    <link rel="stylesheet" href="admin-ui-fixes.css?v=2" />
     <link rel="stylesheet" href="notes-admin-fixes.css?v=2" media="print" onload="this.media='all'" />
   </head>
   <body class="is-loading">
@@ -187,7 +188,6 @@
               <button type="button" role="menuitem" data-action="account"><i>♙</i><span class="menu-ar">حسابي</span><span class="menu-en">My account</span></button>
               <button type="button" role="menuitem" data-action="view-orders"><i>▣</i><span class="menu-ar">طلباتي</span><span class="menu-en">My orders</span></button>
               <button type="button" role="menuitem" data-action="wishlist"><i>♡</i><span class="menu-ar">المفضلة</span><span class="menu-en">Wishlist</span></button>
-              <button type="button" role="menuitem" data-action="theme"><i>◐</i><span class="menu-ar">الوضع الداكن</span><span class="menu-en">Dark mode</span></button>
               <button type="button" role="menuitem" data-action="language"><i>◎</i><span class="menu-ar">اللغة</span><span class="menu-en">Language</span></button>
               <button type="button" role="menuitem" data-action="account"><i>⚙</i><span class="menu-ar">الإعدادات</span><span class="menu-en">Settings</span></button>
             </div>
@@ -265,7 +265,6 @@
       <div class="mobile-menu-actions">
         <button data-action="account"><span>♙</span><b data-i18n="account">الحساب</b></button>
         <button data-action="language"><span>文</span><b data-i18n="language">English</b></button>
-        <button data-action="theme"><span>◐</span><b data-i18n="appearance">المظهر</b></button>
       </div>
     </aside>
 
@@ -922,7 +921,6 @@
             </label>
             <div class="admin-topbar-actions">
               <button data-action="admin-language" aria-label="تبديل اللغة">AR / EN</button>
-              <button data-action="theme" aria-label="الوضع الداكن">◐</button>
               <button class="admin-notifications" data-action="admin-notifications" aria-label="الإشعارات">♢<i>4</i></button>
               <button class="admin-profile-button" data-action="admin-profile"><span>OA</span><b id="admin-profile-name">ORIGO Admin</b><i>⌄</i></button>
               <button class="close-button" data-action="close-overlay" aria-label="إغلاق">×</button>
@@ -1144,7 +1142,7 @@
     <script src="fragrance-notes-library.js?v=7"></script>
     <script src="catalog-providers.js?v=6"></script>
     <script src="external-tracking.js?v=1"></script>
-    <script src="app.js?v=72"></script>
+    <script src="app.js?v=74"></script>
     <script src="deferred-modules.js?v=2"></script>
   </body>
 </html>
