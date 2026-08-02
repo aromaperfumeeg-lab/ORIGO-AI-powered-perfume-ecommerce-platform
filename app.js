@@ -960,6 +960,10 @@ const defaultStoreSettings = {
     categories: { enabled: true, order: 3, titleAr: "تسوق حسب الفئة", titleEn: "Shop by category" },
     brands: { enabled: true, order: 4, titleAr: "العلامات التجارية", titleEn: "Brands", speed: 34 }
   },
+  homeProductRows: [
+    { id: "home-row-newest", source: "newest", brand: "", titleAr: "المنتجات الحديثة", titleEn: "New arrivals", order: 1, enabled: true },
+    { id: "home-row-best", source: "best-selling", brand: "", titleAr: "الأكثر مبيعًا", titleEn: "Best sellers", order: 2, enabled: true }
+  ],
   homeGenderImages: { men: "", women: "", unisex: "" },
   homeHero: { intervalSeconds: 3 },
   homeMedia: [],
@@ -1010,6 +1014,15 @@ function mergeStoreSettings(saved = {}) {
     appLinks: { ...defaultStoreSettings.appLinks, ...(saved.appLinks || {}) },
     passwordRecoveryChannels: { ...defaultStoreSettings.passwordRecoveryChannels, ...(saved.passwordRecoveryChannels || {}) },
     homepageRails: Object.fromEntries(Object.entries(defaultStoreSettings.homepageRails).map(([key, value]) => [key, { ...value, ...(saved.homepageRails?.[key] || {}) }])),
+    homeProductRows: (Array.isArray(saved.homeProductRows) ? saved.homeProductRows : defaultStoreSettings.homeProductRows).map((row, index) => ({
+      id: String(row?.id || `home-row-${index + 1}`),
+      source: ["newest", "best-selling", "brand", "all"].includes(row?.source) ? row.source : "brand",
+      brand: String(row?.brand || "").trim(),
+      titleAr: String(row?.titleAr || "").trim(),
+      titleEn: String(row?.titleEn || "").trim(),
+      order: Math.max(1, Number(row?.order || index + 1)),
+      enabled: row?.enabled !== false
+    })),
     homeGenderImages: { ...defaultStoreSettings.homeGenderImages, ...(saved.homeGenderImages || {}) },
     homeHero: {
       ...defaultStoreSettings.homeHero,
@@ -2491,6 +2504,30 @@ function genderMediaAdminMarkup(settings, ar) {
   }).join("")}</div><output id="gender-upload-status" class="banner-upload-status" aria-live="polite"></output></div>`;
 }
 
+function homepageProductBrandOptions(selected = "") {
+  const brands = [...ORIGO_PERFUME_BRANDS, ...state.products.map((product) => String(product.brand || "").trim()).filter(Boolean)]
+    .filter((brand, index, values) => values.findIndex((candidate) => ORIGOCatalog.normalize(candidate) === ORIGOCatalog.normalize(brand)) === index)
+    .sort((a, b) => a.localeCompare(b, state.lang === "ar" ? "ar" : "en"));
+  return `<option value="">${adminCopy("اختر العلامة التجارية", "Choose a brand")}</option>${brands.map((brand) => `<option value="${escapeHTML(brand)}"${ORIGOCatalog.normalize(brand) === ORIGOCatalog.normalize(selected) ? " selected" : ""}>${escapeHTML(brand)}</option>`).join("")}`;
+}
+
+function homepageProductRowAdminCard(row = {}, index = 0) {
+  const ar = state.lang === "ar";
+  const id = String(row.id || `home-row-${Date.now()}-${index}`);
+  const source = String(row.source || "brand");
+  return `<article class="home-product-row-admin-card" data-home-product-row="${escapeHTML(id)}">
+    <header><b>${ar ? "قسم منتجات" : "Product section"} ${index + 1}</b><div><label class="admin-toggle-row"><span>${ar ? "ظاهر" : "Visible"}</span><input type="checkbox" data-row-field="enabled"${row.enabled !== false ? " checked" : ""}/></label><button type="button" class="admin-danger-link" data-action="delete-home-product-row">${ar ? "حذف القسم" : "Delete section"}</button></div></header>
+    <div class="review-grid home-product-row-fields">
+      <label>${ar ? "مصدر المنتجات" : "Product source"}<select data-row-field="source"><option value="newest"${source === "newest" ? " selected" : ""}>${ar ? "الأحدث" : "Newest"}</option><option value="best-selling"${source === "best-selling" ? " selected" : ""}>${ar ? "الأكثر مبيعًا" : "Best selling"}</option><option value="brand"${source === "brand" ? " selected" : ""}>${ar ? "علامة تجارية" : "Brand"}</option><option value="all"${source === "all" ? " selected" : ""}>${ar ? "كل المنتجات" : "All products"}</option></select></label>
+      <label>${ar ? "العلامة التجارية" : "Brand"}<select data-row-field="brand">${homepageProductBrandOptions(row.brand || "")}</select></label>
+      <label>${ar ? "العنوان العربي" : "Arabic title"}<input data-row-field="titleAr" value="${escapeHTML(row.titleAr || "")}" placeholder="${ar ? "يُستخدم اسم العلامة تلقائيًا" : "Brand name is used automatically"}"/></label>
+      <label>${ar ? "العنوان الإنجليزي" : "English title"}<input data-row-field="titleEn" value="${escapeHTML(row.titleEn || "")}" placeholder="${ar ? "يُستخدم اسم العلامة تلقائيًا" : "Brand name is used automatically"}"/></label>
+      <label>${ar ? "الترتيب" : "Order"}<input type="number" min="1" max="999" data-row-field="order" value="${Number(row.order || index + 1)}"/></label>
+    </div>
+    <small>${ar ? "على الديسكتوب تظهر المنتجات كاملة في شبكة. على الهاتف يظهر صف واحد قابل للسحب بالإصبع." : "Desktop uses a complete grid. Mobile uses one touch-swipable row."}</small>
+  </article>`;
+}
+
 function homepageRailsAdminMarkup() {
   const ar = state.lang === "ar";
   const settings = mergeStoreSettings(state.adminWorkspace.settings || {});
@@ -2531,6 +2568,10 @@ function homepageRailsAdminMarkup() {
     </section>
     <section><div class="review-section-head"><span>02</span><div><b>${ar ? "إدارة أشرطة الصفحة الرئيسية" : "Homepage rails management"}</b><small>${ar ? "تحكم في ظهور الأشرطة وترتيبها وسرعة حركة المميزات والعلامات." : "Control rail visibility, order, and the benefits and brands motion speed."}</small></div></div>
       <div class="homepage-rail-settings">${Object.entries(settings.homepageRails).map(([key, rail]) => `<article><header><b>${escapeHTML(labels[key][ar ? 0 : 1])}</b><label class="admin-toggle-row"><span>${ar ? "ظاهر" : "Visible"}</span><input name="${key}.enabled" type="checkbox"${rail.enabled !== false ? " checked" : ""}/></label></header><div class="review-grid"><label>${ar ? "العنوان العربي" : "Arabic title"}<input name="${key}.titleAr" value="${escapeHTML(rail.titleAr || "")}"/></label><label>${ar ? "العنوان الإنجليزي" : "English title"}<input name="${key}.titleEn" value="${escapeHTML(rail.titleEn || "")}"/></label><label>${ar ? "الترتيب" : "Order"}<input name="${key}.order" type="number" min="1" max="10" value="${Number(rail.order || 1)}"/></label>${key === "brands" || key === "benefits" ? `<label>${ar ? "مدة الدورة بالثواني" : "Cycle duration (seconds)"}<input name="${key}.speed" type="number" min="6" max="120" step="1" value="${Number(rail.speed || (key === "benefits" ? 18 : 34))}"/></label>` : ""}</div>${key === "gender" ? genderMediaAdminMarkup(settings, ar) : ""}</article>`).join("")}</div>
+    </section>
+    <section class="home-product-rows-admin"><div class="review-section-head"><span>03</span><div><b>${ar ? "أقسام المنتجات المتعددة" : "Multiple product sections"}</b><small>${ar ? "أضف أي عدد من الأقسام، واربط كل قسم بالأحدث أو الأكثر مبيعًا أو بعلامة تجارية محددة." : "Add any number of sections and connect each to newest, best sellers, or a specific brand."}</small></div></div>
+      <div id="home-product-row-list" class="home-product-row-admin-list">${settings.homeProductRows.map((row, index) => homepageProductRowAdminCard(row, index)).join("")}</div>
+      <button type="button" class="secondary-button add-home-product-row" data-action="add-home-product-row">＋ ${ar ? "إضافة قسم منتجات" : "Add product section"}</button>
     </section>
     <button class="button burgundy-button" type="submit">${ar ? "حفظ البنر وإعدادات الصفحة" : "Save banner and homepage settings"}</button></form>`;
 }
@@ -3266,33 +3307,52 @@ function homeBrandProducts(brand) {
   return state.products.filter((product) => ORIGOCatalog.normalize(product.brand || "") === key);
 }
 
+function homeProductRowProducts(row) {
+  const products = state.products.map((product, index) => ({ product, index }));
+  if (row.source === "brand") {
+    const brand = ORIGOCatalog.normalize(row.brand || "");
+    return products.filter(({ product }) => ORIGOCatalog.normalize(product.brand || "") === brand).map(({ product }) => product);
+  }
+  if (row.source === "newest") return products.sort((a, b) => productDateScore(b.product, b.index) - productDateScore(a.product, a.index)).map(({ product }) => product);
+  if (row.source === "best-selling") return products.sort((a, b) => productSalesScore(b.product) - productSalesScore(a.product)).map(({ product }) => product);
+  return products.map(({ product }) => product);
+}
+
+function homeProductRowTitle(row) {
+  const configured = state.lang === "ar" ? row.titleAr : row.titleEn;
+  if (String(configured || "").trim()) return String(configured).trim();
+  if (row.source === "brand" && row.brand) return row.brand;
+  if (row.source === "newest") return state.lang === "ar" ? "المنتجات الحديثة" : "New arrivals";
+  if (row.source === "best-selling") return state.lang === "ar" ? "الأكثر مبيعًا" : "Best sellers";
+  return state.lang === "ar" ? "كل المنتجات" : "All products";
+}
+
+function homeProductRowViewAll(row) {
+  const label = state.lang === "ar" ? "عرض الكل" : "View all";
+  if (row.source === "brand" && row.brand) return `<button type="button" data-action="brand-search" data-query="${escapeHTML(row.brand)}">${label} <span aria-hidden="true">‹</span></button>`;
+  const sort = row.source === "newest" ? "newest" : row.source === "best-selling" ? "best-selling" : "relevance";
+  return `<a href="/perfumes?sort=${sort}">${label} <span aria-hidden="true">‹</span></a>`;
+}
+
+function renderConfiguredHomeProductRows() {
+  const holder = $("#home-configured-product-rows");
+  if (!holder) return;
+  const settings = mergeStoreSettings(state.adminWorkspace.settings || {});
+  const rows = settings.homeProductRows.filter((row) => row.enabled !== false).sort((a, b) => Number(a.order || 0) - Number(b.order || 0));
+  holder.innerHTML = rows.map((row) => {
+    const products = homeProductRowProducts(row);
+    if (!products.length) return "";
+    return `<section class="home-configured-product-row" data-home-product-source="${escapeHTML(row.source)}"${row.brand ? ` data-home-product-brand="${escapeHTML(row.brand)}"` : ""}>
+      <div class="home-section-head">${homeProductRowViewAll(row)}<div class="ornament-heading"><h2>${escapeHTML(homeProductRowTitle(row))}</h2></div></div>
+      <div class="home-products-wrap"><div class="product-grid home-product-row-track" data-mobile-product-rail>${products.map((product, index) => productCardMarkup(product, { context: "grid", delay: Math.min(index * 35, 175) })).join("")}</div></div>
+    </section>`;
+  }).join("");
+  if (matchMedia("(max-width: 700px)").matches) $$('[data-mobile-product-rail]', holder).forEach((rail) => bindHorizontalRail(rail));
+}
+
 function renderHomepageCommerce() {
   renderHomeBenefitsMarquee();
-  const newest = $("#new-product-grid");
-  if (newest) {
-    const homepageProductLimit = matchMedia("(max-width: 640px)").matches ? 8 : 6;
-    const products = state.products.map((product, index) => ({ product, score: productDateScore(product, index) })).sort((a, b) => b.score - a.score).slice(0, homepageProductLimit).map(({ product }) => product);
-    newest.innerHTML = products.map((product, index) => productCardMarkup(product, { context: "grid", delay: Math.min(index * 45, 180) })).join("");
-    bindHorizontalRail(newest);
-  }
-  const showcase = $("#home-brand-showcases");
-  if (showcase) {
-    const configured = state.adminWorkspace.settings?.homeMedia || [];
-    const dataBrands = [...new Set(state.products.map((product) => String(product.brand || "").trim()).filter(Boolean))];
-    const ordered = [...ORIGO_PERFUME_BRANDS, ...dataBrands].filter((brand, index, values) => values.findIndex((candidate) => ORIGOCatalog.normalize(candidate) === ORIGOCatalog.normalize(brand)) === index);
-    const mobile = matchMedia("(max-width: 700px)").matches;
-    const visibleBrands = mobile ? ordered.filter((brand) => homeBrandProducts(brand).length).slice(0, 4) : ordered;
-    const productLimit = mobile ? 6 : 6;
-    showcase.innerHTML = visibleBrands.map((brand) => {
-      const products = homeBrandProducts(brand);
-      if (!products.length) return "";
-      const banner = configured.find((item) => item.placement === "brand-banner" && ORIGOCatalog.normalize(item.brand || "") === ORIGOCatalog.normalize(brand));
-      return `<section class="home-brand-showcase"><div class="home-section-head"><button data-action="brand-search" data-query="${escapeHTML(brand)}">${state.lang === "ar" ? "عرض كل المنتجات" : "View all products"} ‹</button><div><small>${state.lang === "ar" ? "مختارات العلامة" : "Brand selection"}</small><h2>${escapeHTML(brand)}</h2></div></div>${banner ? `<button class="home-brand-banner" data-action="brand-search" data-query="${escapeHTML(brand)}"><img src="${escapeHTML(banner.url)}" alt="${escapeHTML(state.lang === "ar" ? banner.altAr : banner.altEn)}" loading="lazy" decoding="async"/></button>` : ""}<div class="product-grid horizontal-scroll horizontal-rail" data-horizontal-rail>${products.slice(0, productLimit).map((product) => productCardMarkup(product, { context: "grid" })).join("")}</div></section>`;
-    }).join("");
-    $$('[data-horizontal-rail]', showcase).forEach((rail) => {
-      bindHorizontalRail(rail);
-    });
-  }
+  renderConfiguredHomeProductRows();
   observeReveals();
 }
 
@@ -7712,6 +7772,20 @@ document.addEventListener("click", async (event) => {
   if (action === "create-banner") openAdminEditorModal(homeSlideEditorMarkup(), "[name='mediaFile']");
   if (action === "import-banners") openAdminEditorModal(homeSlideEditorMarkup(), "[name='mediaFile']");
   if (action === "edit-home-slide") openAdminEditorModal(homeSlideEditorMarkup(actionElement.dataset.id), "[name='titleAr']");
+  if (action === "add-home-product-row") {
+    const list = actionElement.closest("form")?.querySelector("#home-product-row-list");
+    if (list) {
+      const index = list.querySelectorAll("[data-home-product-row]").length;
+      list.insertAdjacentHTML("beforeend", homepageProductRowAdminCard({ id: `home-row-${Date.now()}`, source: "brand", enabled: true, order: index + 1 }, index));
+      const card = list.lastElementChild;
+      card?.scrollIntoView({ block: "center", behavior: "smooth" });
+      card?.querySelector("[data-row-field='source']")?.focus();
+    }
+  }
+  if (action === "delete-home-product-row") {
+    const card = actionElement.closest("[data-home-product-row]");
+    if (card && confirm(adminCopy("حذف هذا القسم من الصفحة الرئيسية؟", "Delete this homepage section?"))) card.remove();
+  }
   if (action === "edit-banner") {
     openAdminEditorModal(bannerEditorMarkup(actionElement.dataset.id), "[name='title']");
   }
@@ -8549,6 +8623,20 @@ document.addEventListener("submit", async (event) => {
       ...(key === "brands" ? { speed: Math.max(12, Math.min(120, Number(data.get("brands.speed") || 34))) } : {}),
       ...(key === "benefits" ? { speed: Math.max(6, Math.min(120, Number(data.get("benefits.speed") || 18))) } : {})
     }])) : current.homepageRails;
+    const nextProductRows = event.target.id === "admin-homepage-rails"
+      ? [...event.target.querySelectorAll("[data-home-product-row]")].map((card, index) => {
+          const field = (name) => card.querySelector(`[data-row-field="${name}"]`);
+          return {
+            id: String(card.dataset.homeProductRow || `home-row-${Date.now()}-${index}`),
+            source: String(field("source")?.value || "brand"),
+            brand: String(field("brand")?.value || "").trim(),
+            titleAr: String(field("titleAr")?.value || "").trim(),
+            titleEn: String(field("titleEn")?.value || "").trim(),
+            order: Math.max(1, Math.min(999, Number(field("order")?.value || index + 1))),
+            enabled: Boolean(field("enabled")?.checked)
+          };
+        })
+      : current.homeProductRows;
     const files = [...(event.target.elements.mediaFile?.files || [])];
     const genderImages = { ...current.homeGenderImages };
     const genderUploads = ["men", "women", "unisex"].map((key) => ({
@@ -8595,7 +8683,7 @@ document.addEventListener("submit", async (event) => {
       }
     }
     const intervalSeconds = Math.max(1, Math.min(30, Number(data.get("heroIntervalSeconds") || 3)));
-    state.adminWorkspace.settings = mergeStoreSettings({ ...current, homepageRails: nextRails, homeHero: { ...current.homeHero, intervalSeconds }, homeMedia: media, homeGenderImages: genderImages });
+    state.adminWorkspace.settings = mergeStoreSettings({ ...current, homepageRails: nextRails, homeProductRows: nextProductRows, homeHero: { ...current.homeHero, intervalSeconds }, homeMedia: media, homeGenderImages: genderImages });
     saveAdminWorkspace("homepage");
     applyHomepageRailSettings();
     renderHomeHero();

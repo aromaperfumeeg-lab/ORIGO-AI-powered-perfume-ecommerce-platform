@@ -84,8 +84,8 @@
         .origo-page-loader__progress::after{animation:none}
       }
     </style>
-    <link rel="stylesheet" href="styles.css?v=26" />
-    <link rel="stylesheet" href="home.css?v=59" />
+    <link rel="stylesheet" href="styles.css?v=27" />
+    <link rel="stylesheet" href="home.css?v=60" />
   <link rel="stylesheet" href="components/product-card/storefront-product-card.css?v=4" />
     <link rel="stylesheet" href="product-detail.css?v=8" media="print" onload="this.media='all'" />
     <link rel="stylesheet" href="catalog.css?v=1" media="print" onload="this.media='all'" />
@@ -341,9 +341,11 @@
           </div>
         </section>
 
-        <section class="home-best-sellers home-new-arrivals" id="new-arrivals" aria-labelledby="new-arrivals-title"><div class="home-section-head"><a href="/perfumes?sort=newest"><span data-i18n="viewAll">عرض باقي المنتجات الحديثة</span> <span>‹</span></a><div class="ornament-heading"><span></span><h2 id="new-arrivals-title">المنتجات الحديثة</h2><span></span></div></div><div class="home-products-wrap"><div class="product-grid horizontal-scroll horizontal-rail" id="new-product-grid" data-horizontal-rail></div></div></section>
+        <div class="home-configured-product-rows" id="home-configured-product-rows" aria-live="polite"></div>
 
-        <section class="home-best-sellers" id="best-sellers" aria-labelledby="best-sellers-title">
+        <section class="home-best-sellers home-new-arrivals home-products-legacy" id="new-arrivals" aria-labelledby="new-arrivals-title" hidden><div class="home-section-head"><a href="/perfumes?sort=newest"><span data-i18n="viewAll">عرض باقي المنتجات الحديثة</span> <span>‹</span></a><div class="ornament-heading"><span></span><h2 id="new-arrivals-title">المنتجات الحديثة</h2><span></span></div></div><div class="home-products-wrap"><div class="product-grid horizontal-scroll horizontal-rail" id="new-product-grid"></div></div></section>
+
+        <section class="home-best-sellers home-products-legacy" id="best-sellers" aria-labelledby="best-sellers-title" hidden>
           <div class="home-section-head">
             <a href="#featured"><span data-i18n="viewAll">عرض الكل</span> <span>‹</span></a>
             <div class="ornament-heading"><span></span><h2 id="best-sellers-title" data-i18n="bestSellers">الأكثر مبيعًا</h2><span></span></div>
@@ -1137,7 +1139,7 @@
     <script src="fragrance-notes-library.js?v=7"></script>
     <script src="catalog-providers.js?v=6"></script>
     <script src="external-tracking.js?v=1"></script>
-    <script src="app.js?v=85"></script>
+    <script src="app.js?v=86"></script>
     <script src="components/product-card/storefront-product-card.js?v=2"></script>
     <script src="deferred-modules.js?v=2"></script>
   </body>
