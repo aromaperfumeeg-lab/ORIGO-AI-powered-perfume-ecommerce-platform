@@ -2592,3 +2592,36 @@ body:not(.dark) :where(
     clip-path:none!important;
   }
 }
+
+/* Readability pass: secondary copy stays jet black on every light surface. */
+body:not(.dark){
+  --ink-soft:#090909;
+  --muted:#090909;
+  --shell-muted:#090909;
+  --origo-muted:#090909;
+  --origo-light-muted:#090909;
+  --admin-text-muted:#090909;
+}
+body:not(.dark) #storefront-main :where(
+  .muted,
+  [class*="-muted"],
+  [class*="-subtitle"],
+  .product-notes,
+  .exact-card-specs>span,
+  .exact-card-prices del,
+  .catalog-sort-controls span
+){color:#090909!important}
+body:not(.dark) #storefront-main #home .origo-exact-product-card .exact-card-specs>span,
+body:not(.dark) #storefront-main #home .origo-exact-product-card .exact-card-prices del{
+  color:#090909!important;
+}
+body:not(.dark) :where(.advanced-admin-panel,.catalog-admin-panel){--admin-text-muted:#090909}
+body:not(.dark) :where(.advanced-admin-panel,.catalog-admin-panel) :where(
+  .muted,
+  [class*="-muted"],
+  [class*="-subtitle"]
+){color:#090909!important}
+body:not(.dark) :where(#storefront-main,.advanced-admin-panel,.catalog-admin-panel) :where(input,textarea)::placeholder{
+  color:#090909!important;
+  opacity:1!important;
+}
