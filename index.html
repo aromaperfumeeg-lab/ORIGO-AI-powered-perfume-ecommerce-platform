@@ -85,7 +85,7 @@
       }
     </style>
     <link rel="stylesheet" href="styles.css?v=28" />
-    <link rel="stylesheet" href="home.css?v=67" />
+    <link rel="stylesheet" href="home.css?v=69" />
   <link rel="stylesheet" href="components/product-card/storefront-product-card.css?v=4" />
     <link rel="stylesheet" href="product-detail.css?v=9" media="print" onload="this.media='all'" />
     <link rel="stylesheet" href="catalog.css?v=1" media="print" onload="this.media='all'" />
@@ -124,7 +124,9 @@
         let target = 18;
         let finished = false;
         const startedAt = Date.now();
-        const minimumVisibleTime = 520;
+        // Do not hold the storefront behind an artificial delay. The loader
+        // still remains visible while the page is genuinely loading.
+        const minimumVisibleTime = 0;
 
         const paint = () => {
           loader.style.setProperty("--loader-progress", String(value));
@@ -1161,7 +1163,7 @@
     <script src="fragrance-notes-library.js?v=7"></script>
     <script src="catalog-providers.js?v=6"></script>
     <script src="external-tracking.js?v=1"></script>
-    <script src="app.js?v=91"></script>
+    <script src="app.js?v=92"></script>
     <script src="components/product-card/storefront-product-card.js?v=2"></script>
     <script src="deferred-modules.js?v=2"></script>
   </body>

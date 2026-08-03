@@ -986,8 +986,40 @@ const defaultStoreSettings = {
   footerBenefits: defaultFooterBenefits
 };
 
+/*
+ * A previous Windows-side settings write replaced a number of Arabic strings
+ * with question marks. Keep valid administrator edits, but fall back to the
+ * bundled Arabic copy when the persisted value is visibly corrupted. This is
+ * deliberately recursive because footer benefits contain nested steps/FAQs.
+ */
+function restoreCorruptedLocalizedValues(value, fallback) {
+  if (typeof value === "string") {
+    const fallbackIsArabic = typeof fallback === "string" && /[\u0600-\u06FF]/.test(fallback);
+    const valueHasArabic = /[\u0600-\u06FF]/.test(value);
+    const valueIsCorrupted = /\?{2,}/.test(value) && !valueHasArabic;
+    return valueIsCorrupted && fallbackIsArabic ? fallback : value;
+  }
+  if (Array.isArray(value)) {
+    const fallbackItems = Array.isArray(fallback) ? fallback : [];
+    return value.map((item, index) => {
+      const matchingFallback = item && typeof item === "object" && item.id
+        ? fallbackItems.find((candidate) => candidate?.id === item.id)
+        : fallbackItems[index];
+      return restoreCorruptedLocalizedValues(item, matchingFallback);
+    });
+  }
+  if (value && typeof value === "object") {
+    return Object.fromEntries(Object.entries(value).map(([key, item]) => [
+      key,
+      restoreCorruptedLocalizedValues(item, fallback && typeof fallback === "object" ? fallback[key] : undefined)
+    ]));
+  }
+  return value;
+}
+
 function mergeStoreSettings(saved = {}) {
   if (!saved || typeof saved !== "object" || Array.isArray(saved)) saved = {};
+  saved = restoreCorruptedLocalizedValues(saved, defaultStoreSettings);
   const benefitMap = new Map(defaultFooterBenefits.map((item) => [item.id, item]));
   const savedBenefits = Array.isArray(saved.footerBenefits)
     ? saved.footerBenefits.filter((item) => item && typeof item === "object")
