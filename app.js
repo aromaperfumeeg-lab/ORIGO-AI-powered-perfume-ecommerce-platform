@@ -5425,29 +5425,23 @@ function productCardMarkup(product, options = {}) {
   const loyaltyPoints = Number(variant?.loyaltyPoints ?? product.loyaltyPoints ?? product.rewardPoints);
   const concentrationLabel = String(product.concentration || product.fragranceType || "").trim();
   const ratingStars = rating > 0 ? Array.from({ length: 5 }, (_, index) => `<i class="${index + .5 < rating ? "active" : ""}" aria-hidden="true">★</i>`).join("") : "";
-  return `<article class="product-card origo-reference-product-card${options.reveal ? " reveal" : ""}${outOfStock ? " is-out" : ""}" data-id="${escapeHTML(product.id)}"${delayStyle}>
+  return `<article class="product-card origo-reference-product-card origo-exact-product-card${options.reveal ? " reveal" : ""}${outOfStock ? " is-out" : ""}" data-id="${escapeHTML(product.id)}"${delayStyle}>
     <div class="product-image">
-      ${badges.length ? `<span class="product-badge" data-badge-kind="${escapeHTML(badges[0][2])}">${escapeHTML(badges[0][1])}</span>` : ""}
-      <button class="heart-button card-favorite-button${saved ? " active" : ""}"${interactive ? ` data-action="toggle-wishlist"` : disabled} aria-label="${escapeHTML(favoriteLabel)}" aria-pressed="${saved}">${saved ? "♥" : "♡"}</button>
-      <button class="home-compare-action card-compare-button${compared ? " active" : ""}"${interactive ? ` data-action="toggle-product-compare"` : disabled} aria-label="${escapeHTML(compareLabel)}" aria-pressed="${compared}"><span aria-hidden="true">⇄</span></button>
+      ${discount ? `<span class="product-badge" data-badge-kind="sale">-${discount}%</span>` : ""}
+      <button class="heart-button card-favorite-button${saved ? " active" : ""}"${interactive ? ` data-action="toggle-wishlist"` : disabled} aria-label="${escapeHTML(favoriteLabel)}" aria-pressed="${saved}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/></svg></button>
       <button type="button" class="product-card-media-link"${interactive ? ` data-action="open-product" data-id="${escapeHTML(product.id)}"` : disabled} aria-label="${escapeHTML(isArabic ? `عرض ${name}` : `View ${name}`)}"><img src="${escapeHTML(mainImage)}" alt="${escapeHTML(`${product.brand || "ORIGO"} ${name}`)}" width="640" height="700" loading="lazy" decoding="async" draggable="false" /></button>
-      <button class="quick-view"${interactive ? ` data-action="quick-view"` : disabled} aria-label="${escapeHTML(isArabic ? `عرض تفاصيل ${name}` : `View ${name}`)}"><span>${escapeHTML(translations[state.lang].quickView)}</span><span aria-hidden="true">＋</span></button>
     </div>
-    ${supportsDetails ? productCardDetailsMarkup(product, isArabic) : ""}
     <div class="product-info">
-      <div class="product-brand">${escapeHTML(product.brand || "ORIGO")}</div>
+      <div class="exact-card-heading"><div class="product-brand">${escapeHTML(product.brand || "ORIGO")}</div><span class="exact-card-rating"><b aria-hidden="true">★</b>${rating > 0 ? rating.toFixed(1) : "—"}</span></div>
       <h3><button type="button"${interactive ? ` data-action="open-product" data-id="${escapeHTML(product.id)}"` : disabled}>${escapeHTML(name || (isArabic ? "منتج جديد" : "New product"))}</button></h3>
-      ${secondaryName && secondaryName !== name ? `<p class="product-card-secondary-name">${escapeHTML(secondaryName)}</p>` : ""}
-      <p class="product-notes">${escapeHTML(noteLabels.join(" · "))}</p>
-      ${options.meta ? `<p class="product-card-meta">${escapeHTML(options.meta)}</p>` : ""}
-      <div class="home-product-compact-meta">
-        <span class="home-product-type">${escapeHTML(genderLabel)}${concentrationLabel ? ` <i aria-hidden="true">•</i> <bdi dir="ltr">${escapeHTML(concentrationLabel)}</bdi>` : ""}${sizeLabel ? ` <i aria-hidden="true">•</i> <bdi dir="ltr">${escapeHTML(sizeLabel)}</bdi>` : ""}</span>
-        <span class="home-product-rating"><span class="product-card-stars">${ratingStars}</span><b>${rating > 0 ? rating.toFixed(1) : "—"}</b><small>${reviewCount.toLocaleString(isArabic ? "ar-EG" : "en-US")} ${isArabic ? "تقييم" : reviewCount === 1 ? "review" : "reviews"}</small></span>
+      <div class="exact-card-specs">
+        <span>${luxuryIcon("user")}<b>${escapeHTML(genderLabel || (isArabic ? "للجنسين" : "Unisex"))}</b></span>
+        <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C9 7 6.5 10 6.5 14a5.5 5.5 0 0 0 11 0C17.5 10 15 7 12 2Z"/></svg><b><bdi dir="ltr">${escapeHTML(concentrationLabel || "EDP")}</bdi></b></span>
+        <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7V3h6v4M8 7h8l1.5 3v10h-11V10L8 7Z"/></svg><b><bdi dir="ltr">${escapeHTML(sizeLabel || "100ml")}</bdi></b></span>
       </div>
-      <div class="product-card-status-row"><span class="${outOfStock ? "out" : limitedStock ? "limited" : "available"}"><i></i>${escapeHTML(stockLabel)}</span>${Number.isFinite(loyaltyPoints) && loyaltyPoints > 0 ? `<b>🎁 +${Math.round(loyaltyPoints)} ${isArabic ? "نقطة" : "points"}</b>` : ""}</div>
       <div class="product-bottom">
-        <div><b class="product-price">${formatPrice(price)}</b>${oldPrice > price ? `<del>${formatPrice(oldPrice)}</del>` : ""}</div>
-        <button class="card-add-button"${interactive ? ` data-action="add-to-cart"` : disabled} aria-label="${escapeHTML(translations[state.lang].addToBag)}"${outOfStock ? " disabled" : ""}><span>${escapeHTML(outOfStock ? (isArabic ? "غير متوفر" : "Unavailable") : translations[state.lang].addToBag)}</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h16l-1.2 12H5.2L4 8Z"></path><path d="M8 9V6a4 4 0 0 1 8 0v3"></path></svg></button>
+        <div class="exact-card-prices"><b class="product-price">${formatPrice(price)}</b>${oldPrice > price ? `<del>${formatPrice(oldPrice)}</del>` : ""}</div>
+        <button class="card-add-button"${interactive ? ` data-action="add-to-cart"` : disabled} aria-label="${escapeHTML(translations[state.lang].addToBag)}"${outOfStock ? " disabled" : ""}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.2 10.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.6L20 8H6M10 20a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm8 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"/></svg><span>${escapeHTML(outOfStock ? (isArabic ? "غير متوفر" : "Unavailable") : translations[state.lang].addToBag)}</span></button>
       </div>
     </div>
   </article>`;
@@ -5465,6 +5459,126 @@ function setCardImage(productId, value, absolute = false) {
   if ($("#search-overlay")?.classList.contains("open") && state.globalSearchQuery) renderSearchSuggestions(state.globalSearchQuery);
   if ($("#product-overlay")?.classList.contains("open") && state.activeProductId) showProductDetails(getProduct(state.activeProductId), false);
 }
+
+const productImageLightboxState = {
+  scale: 1,
+  x: 0,
+  y: 0,
+  pointers: new Map(),
+  lastPoint: null,
+  pinchDistance: 0,
+  pinchScale: 1
+};
+
+function clampProductImageLightboxPosition() {
+  const stage = $("#product-image-lightbox-stage");
+  if (!stage) return;
+  const maximumX = Math.max(0, (stage.clientWidth * (productImageLightboxState.scale - 1)) / 2);
+  const maximumY = Math.max(0, (stage.clientHeight * (productImageLightboxState.scale - 1)) / 2);
+  productImageLightboxState.x = Math.max(-maximumX, Math.min(maximumX, productImageLightboxState.x));
+  productImageLightboxState.y = Math.max(-maximumY, Math.min(maximumY, productImageLightboxState.y));
+}
+
+function renderProductImageLightboxTransform() {
+  const image = $("#product-image-lightbox-image");
+  const status = $("#product-image-lightbox-status");
+  if (!image) return;
+  clampProductImageLightboxPosition();
+  image.style.transform = `translate3d(${productImageLightboxState.x}px, ${productImageLightboxState.y}px, 0) scale(${productImageLightboxState.scale})`;
+  if (status) status.textContent = `${Math.round(productImageLightboxState.scale * 100)}%`;
+}
+
+function resetProductImageLightbox(scale = 1) {
+  productImageLightboxState.scale = Math.max(1, Math.min(5, Number(scale) || 1));
+  productImageLightboxState.x = 0;
+  productImageLightboxState.y = 0;
+  productImageLightboxState.pointers.clear();
+  productImageLightboxState.lastPoint = null;
+  productImageLightboxState.pinchDistance = 0;
+  renderProductImageLightboxTransform();
+}
+
+function adjustProductImageLightboxZoom(change) {
+  productImageLightboxState.scale = Math.max(1, Math.min(5, productImageLightboxState.scale + Number(change || 0)));
+  if (productImageLightboxState.scale === 1) {
+    productImageLightboxState.x = 0;
+    productImageLightboxState.y = 0;
+  }
+  renderProductImageLightboxTransform();
+}
+
+function openProductImageLightbox(source, alt = "") {
+  const lightbox = $("#product-image-lightbox");
+  const image = $("#product-image-lightbox-image");
+  if (!lightbox || !image || !source) return;
+  image.src = source;
+  image.alt = alt;
+  resetProductImageLightbox();
+  lightbox.classList.add("open");
+  lightbox.setAttribute("aria-hidden", "false");
+  document.body.classList.add("product-image-lightbox-open");
+  lightbox.querySelector("[data-action='close-image-lightbox']")?.focus();
+}
+
+function closeProductImageLightbox() {
+  const lightbox = $("#product-image-lightbox");
+  if (!lightbox) return;
+  lightbox.classList.remove("open");
+  lightbox.setAttribute("aria-hidden", "true");
+  document.body.classList.remove("product-image-lightbox-open");
+  resetProductImageLightbox();
+}
+
+function bindProductImageLightboxGestures() {
+  const stage = $("#product-image-lightbox-stage");
+  if (!stage || stage.dataset.gesturesBound === "true") return;
+  stage.dataset.gesturesBound = "true";
+  const distance = (points) => Math.hypot(points[0].x - points[1].x, points[0].y - points[1].y);
+  stage.addEventListener("pointerdown", (event) => {
+    productImageLightboxState.pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+    stage.setPointerCapture?.(event.pointerId);
+    const points = [...productImageLightboxState.pointers.values()];
+    if (points.length === 1) productImageLightboxState.lastPoint = points[0];
+    if (points.length === 2) {
+      productImageLightboxState.pinchDistance = distance(points);
+      productImageLightboxState.pinchScale = productImageLightboxState.scale;
+    }
+  });
+  stage.addEventListener("pointermove", (event) => {
+    if (!productImageLightboxState.pointers.has(event.pointerId)) return;
+    productImageLightboxState.pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+    const points = [...productImageLightboxState.pointers.values()];
+    if (points.length >= 2) {
+      const nextDistance = distance(points);
+      if (productImageLightboxState.pinchDistance > 0) productImageLightboxState.scale = Math.max(1, Math.min(5, productImageLightboxState.pinchScale * nextDistance / productImageLightboxState.pinchDistance));
+      event.preventDefault();
+      renderProductImageLightboxTransform();
+      return;
+    }
+    if (points.length === 1 && productImageLightboxState.scale > 1 && productImageLightboxState.lastPoint) {
+      productImageLightboxState.x += points[0].x - productImageLightboxState.lastPoint.x;
+      productImageLightboxState.y += points[0].y - productImageLightboxState.lastPoint.y;
+      productImageLightboxState.lastPoint = points[0];
+      event.preventDefault();
+      renderProductImageLightboxTransform();
+    }
+  }, { passive: false });
+  const release = (event) => {
+    productImageLightboxState.pointers.delete(event.pointerId);
+    const points = [...productImageLightboxState.pointers.values()];
+    productImageLightboxState.lastPoint = points[0] || null;
+    if (points.length < 2) productImageLightboxState.pinchDistance = 0;
+  };
+  stage.addEventListener("pointerup", release);
+  stage.addEventListener("pointercancel", release);
+  stage.addEventListener("wheel", (event) => {
+    event.preventDefault();
+    adjustProductImageLightboxZoom(event.deltaY < 0 ? .25 : -.25);
+  }, { passive: false });
+  stage.addEventListener("dblclick", () => resetProductImageLightbox(productImageLightboxState.scale > 1 ? 1 : 2.5));
+}
+
+bindProductImageLightboxGestures();
 
 function showProductDetails(product, shouldOpen = true) {
   if (!product) return;
@@ -5520,7 +5634,7 @@ function showProductDetails(product, shouldOpen = true) {
       <section class="pdp-hero">
         <div class="pdp-gallery">
           <div class="pdp-thumbnails" aria-label="${isArabic ? "صور المنتج" : "Product media"}">${media.map((item, index) => `<button class="${index === state.activeProductImageIndex ? "active" : ""}" data-action="product-image" data-index="${index}" aria-label="${isArabic ? `الصورة ${index + 1}` : `Image ${index + 1}`}" aria-pressed="${index === state.activeProductImageIndex}"><img src="${escapeHTML(item.url)}" alt="" loading="${index ? "lazy" : "eager"}" /></button>`).join("")}</div>
-          <div class="pdp-main-image"><span>${escapeHTML(isArabic ? product.badgeAr || "" : product.badgeEn || "")}</span><button data-action="product-zoom" aria-label="${isArabic ? "تكبير صورة المنتج" : "Zoom product image"}">⌕</button><img src="${escapeHTML(activeMedia.url)}" alt="${escapeHTML(`${product.brand} ${name}`)}" /></div>
+          <div class="pdp-main-image" data-action="product-zoom" role="button" tabindex="0" aria-label="${isArabic ? "فتح صورة المنتج بملء الشاشة" : "Open product image fullscreen"}"><span>${escapeHTML(isArabic ? product.badgeAr || "" : product.badgeEn || "")}</span><button type="button" data-action="product-zoom" aria-label="${isArabic ? "فتح صورة المنتج بملء الشاشة" : "Open product image fullscreen"}">⌕</button><img src="${escapeHTML(activeMedia.url)}" alt="${escapeHTML(`${product.brand} ${name}`)}" /></div>
         </div>
         ${productHeroProfileMarkup(product)}
         <aside class="pdp-purchase">
@@ -8132,7 +8246,14 @@ document.addEventListener("click", async (event) => {
     state.activeProductImageIndex = Math.max(0, Number(actionElement.dataset.index) || 0);
     showProductDetails(getProduct(state.activeProductId), false);
   }
-  if (action === "product-zoom") actionElement.closest(".pdp-main-image")?.classList.toggle("zoomed");
+  if (action === "product-zoom") {
+    const image = actionElement.closest(".pdp-main-image")?.querySelector("img");
+    if (image) openProductImageLightbox(image.currentSrc || image.src, image.alt);
+  }
+  if (action === "close-image-lightbox") closeProductImageLightbox();
+  if (action === "image-lightbox-reset") resetProductImageLightbox();
+  if (action === "image-lightbox-zoom-in") adjustProductImageLightboxZoom(.5);
+  if (action === "image-lightbox-zoom-out") adjustProductImageLightboxZoom(-.5);
   if (action === "restock-channel") {
     const form = actionElement.closest("#pdp-restock-form");
     const input = form?.querySelector("#pdp-restock-contact");
@@ -9569,11 +9690,21 @@ $("#mobile-header-search")?.addEventListener("focusout", (event) => {
 });
 
 document.addEventListener("keydown", (event) => {
+  if ((event.key === "Enter" || event.key === " ") && event.target.closest?.(".pdp-main-image")) {
+    event.preventDefault();
+    const image = event.target.closest(".pdp-main-image")?.querySelector("img");
+    if (image) openProductImageLightbox(image.currentSrc || image.src, image.alt);
+    return;
+  }
   if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
     event.preventDefault();
     openOverlay("#search-overlay");
   }
   if (event.key === "Escape") {
+    if ($("#product-image-lightbox")?.classList.contains("open")) {
+      closeProductImageLightbox();
+      return;
+    }
     if ($("#product-overlay").classList.contains("open")) closeProductPage();
     else $$(".overlay.open").forEach(closeOverlay);
     closeDrawers();
@@ -9851,8 +9982,25 @@ $$('[data-horizontal-rail]').forEach(bindHorizontalRail);
 
 const backToTopButton = $("#back-to-top");
 if (backToTopButton) {
-  const updateBackToTop = () => backToTopButton.classList.toggle("visible", window.scrollY > 420);
+  const progressCircle = backToTopButton.querySelector(".back-to-top-value");
+  const updateBackToTop = () => {
+    const page = document.documentElement;
+    const maximum = Math.max(1, page.scrollHeight - window.innerHeight);
+    const progress = Math.min(1, Math.max(0, window.scrollY / maximum));
+    const percentage = Math.round(progress * 100);
+    if (progressCircle) progressCircle.style.strokeDashoffset = String(100 - percentage);
+    backToTopButton.classList.toggle("visible", window.scrollY > 320);
+    backToTopButton.dataset.complete = String(percentage >= 99);
+    backToTopButton.setAttribute("aria-valuenow", String(percentage));
+    backToTopButton.setAttribute("aria-label", state.lang === "ar"
+      ? `العودة إلى أعلى الصفحة — تقدّم التصفح ${percentage}%`
+      : `Back to top — browsing progress ${percentage}%`);
+    backToTopButton.title = state.lang === "ar"
+      ? `مستوى تصفح المتجر: ${percentage}% — اضغط للعودة إلى الأعلى`
+      : `Store browsing progress: ${percentage}% — click to return to top`;
+  };
   window.addEventListener("scroll", updateBackToTop, { passive: true });
+  window.addEventListener("resize", updateBackToTop, { passive: true });
   backToTopButton.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
   updateBackToTop();
 }
