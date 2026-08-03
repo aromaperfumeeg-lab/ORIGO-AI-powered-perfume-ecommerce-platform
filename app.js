@@ -1489,6 +1489,20 @@ function printOrderDocument(order, kind = "invoice") {
 }
 
 let adminWorkspaceSyncTimer;
+async function saveAdminWorkspaceNow(section = state.adminView) {
+  try {
+    localStorage.setItem("origoAdminWorkspace", JSON.stringify(state.adminWorkspace));
+  } catch (error) {
+    if (!state.serverAvailable || !isStaffUser()) showToast(adminCopy("تعذّر الحفظ المحلي بسبب امتلاء مساحة المتصفح. احذف بعض الصور الكبيرة.", "Local storage is full. Remove some large images."), "error");
+  }
+  if (!state.serverAvailable || !isStaffUser()) return null;
+  clearTimeout(adminWorkspaceSyncTimer);
+  return api("/api/admin/workspace", {
+    method: "POST",
+    body: JSON.stringify({ state: state.adminWorkspace, section })
+  });
+}
+
 function saveAdminWorkspace(section = state.adminView) {
   try {
     localStorage.setItem("origoAdminWorkspace", JSON.stringify(state.adminWorkspace));
@@ -2526,6 +2540,32 @@ function homepageProductRowAdminCard(row = {}, index = 0) {
     </div>
     <small>${ar ? "على الديسكتوب تظهر المنتجات كاملة في شبكة. على الهاتف يظهر صف واحد قابل للسحب بالإصبع." : "Desktop uses a complete grid. Mobile uses one touch-swipable row."}</small>
   </article>`;
+}
+
+function homepageProductRowsFromAdminForm(form) {
+  if (!form) return [];
+  return [...form.querySelectorAll("[data-home-product-row]")].map((card, index) => {
+    const field = (name) => card.querySelector(`[data-row-field="${name}"]`);
+    return {
+      id: String(card.dataset.homeProductRow || `home-row-${Date.now()}-${index}`),
+      source: String(field("source")?.value || "brand"),
+      brand: String(field("brand")?.value || "").trim(),
+      titleAr: String(field("titleAr")?.value || "").trim(),
+      titleEn: String(field("titleEn")?.value || "").trim(),
+      order: Math.max(1, Math.min(999, Number(field("order")?.value || index + 1))),
+      enabled: Boolean(field("enabled")?.checked)
+    };
+  });
+}
+
+function updateHomepageProductRowsFromAdminForm(form, { persist = true } = {}) {
+  if (!form) return [];
+  const rows = homepageProductRowsFromAdminForm(form);
+  const current = mergeStoreSettings(state.adminWorkspace.settings || {});
+  state.adminWorkspace.settings = mergeStoreSettings({ ...current, homeProductRows: rows });
+  renderHomepageCommerce();
+  if (persist) saveAdminWorkspace("homepage");
+  return rows;
 }
 
 function homepageRailsAdminMarkup() {
@@ -5425,23 +5465,29 @@ function productCardMarkup(product, options = {}) {
   const loyaltyPoints = Number(variant?.loyaltyPoints ?? product.loyaltyPoints ?? product.rewardPoints);
   const concentrationLabel = String(product.concentration || product.fragranceType || "").trim();
   const ratingStars = rating > 0 ? Array.from({ length: 5 }, (_, index) => `<i class="${index + .5 < rating ? "active" : ""}" aria-hidden="true">★</i>`).join("") : "";
+  const featureBadge = outOfStock
+    ? (isArabic ? "نفد المخزون" : "Out of stock")
+    : explicitBadge || (isNew ? (isArabic ? "حديث" : "New") : "");
   return `<article class="product-card origo-reference-product-card origo-exact-product-card${options.reveal ? " reveal" : ""}${outOfStock ? " is-out" : ""}" data-id="${escapeHTML(product.id)}"${delayStyle}>
     <div class="product-image">
       ${discount ? `<span class="product-badge" data-badge-kind="sale">-${discount}%</span>` : ""}
-      <button class="heart-button card-favorite-button${saved ? " active" : ""}"${interactive ? ` data-action="toggle-wishlist"` : disabled} aria-label="${escapeHTML(favoriteLabel)}" aria-pressed="${saved}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/></svg></button>
+      ${featureBadge ? `<span class="product-feature-badge">${escapeHTML(featureBadge)}</span>` : ""}
       <button type="button" class="product-card-media-link"${interactive ? ` data-action="open-product" data-id="${escapeHTML(product.id)}"` : disabled} aria-label="${escapeHTML(isArabic ? `عرض ${name}` : `View ${name}`)}"><img src="${escapeHTML(mainImage)}" alt="${escapeHTML(`${product.brand || "ORIGO"} ${name}`)}" width="640" height="700" loading="lazy" decoding="async" draggable="false" /></button>
     </div>
     <div class="product-info">
       <div class="exact-card-heading"><div class="product-brand">${escapeHTML(product.brand || "ORIGO")}</div><span class="exact-card-rating"><b aria-hidden="true">★</b>${rating > 0 ? rating.toFixed(1) : "—"}</span></div>
       <h3><button type="button"${interactive ? ` data-action="open-product" data-id="${escapeHTML(product.id)}"` : disabled}>${escapeHTML(name || (isArabic ? "منتج جديد" : "New product"))}</button></h3>
       <div class="exact-card-specs">
-        <span>${luxuryIcon("user")}<b>${escapeHTML(genderLabel || (isArabic ? "للجنسين" : "Unisex"))}</b></span>
-        <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C9 7 6.5 10 6.5 14a5.5 5.5 0 0 0 11 0C17.5 10 15 7 12 2Z"/></svg><b><bdi dir="ltr">${escapeHTML(concentrationLabel || "EDP")}</bdi></b></span>
-        <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7V3h6v4M8 7h8l1.5 3v10h-11V10L8 7Z"/></svg><b><bdi dir="ltr">${escapeHTML(sizeLabel || "100ml")}</bdi></b></span>
+        <span><b>${escapeHTML(genderLabel || (isArabic ? "للجنسين" : "Unisex"))}</b></span>
+        <span><b><bdi dir="ltr">${escapeHTML(concentrationLabel || "EDP")}</bdi></b></span>
+        <span><b><bdi dir="ltr">${escapeHTML(sizeLabel || "100ml")}</bdi></b></span>
       </div>
       <div class="product-bottom">
         <div class="exact-card-prices"><b class="product-price">${formatPrice(price)}</b>${oldPrice > price ? `<del>${formatPrice(oldPrice)}</del>` : ""}</div>
-        <button class="card-add-button"${interactive ? ` data-action="add-to-cart"` : disabled} aria-label="${escapeHTML(translations[state.lang].addToBag)}"${outOfStock ? " disabled" : ""}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.2 10.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.6L20 8H6M10 20a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm8 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"/></svg><span>${escapeHTML(outOfStock ? (isArabic ? "غير متوفر" : "Unavailable") : translations[state.lang].addToBag)}</span></button>
+        <div class="exact-card-actions">
+          <button class="card-add-button"${interactive ? ` data-action="add-to-cart"` : disabled} aria-label="${escapeHTML(translations[state.lang].addToBag)}"${outOfStock ? " disabled" : ""}><span>${escapeHTML(outOfStock ? (isArabic ? "غير متوفر" : "Unavailable") : translations[state.lang].addToBag)}</span></button>
+          <button class="heart-button card-favorite-button exact-card-favorite${saved ? " active" : ""}"${interactive ? ` data-action="toggle-wishlist"` : disabled} aria-label="${escapeHTML(favoriteLabel)}" aria-pressed="${saved}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/></svg></button>
+        </div>
       </div>
     </div>
   </article>`;
@@ -7035,6 +7081,17 @@ async function optimizeGalleryImage(file) {
   return result;
 }
 
+async function uploadStorefrontImage(file, folder = "hero") {
+  const dataUrl = await optimizeGalleryImage(file);
+  if (!state.serverAvailable || !isStaffUser()) return dataUrl;
+  const result = await api("/api/admin/uploads/storefront-image", {
+    method: "POST",
+    body: JSON.stringify({ dataUrl, folder, originalName: file.name || "image" })
+  });
+  if (!result?.url) throw new Error(adminCopy("لم يُرجع الخادم رابط الصورة المحفوظة.", "The server did not return the saved image URL."));
+  return result.url;
+}
+
 async function optimizeProductOptionArtwork(file) {
   const allowed = ["image/jpeg", "image/png", "image/webp", "image/avif", "image/svg+xml"];
   if (!allowed.includes(file.type)) throw new Error(adminCopy("نوع الصورة غير مدعوم.", "Unsupported image type."));
@@ -7892,13 +7949,19 @@ document.addEventListener("click", async (event) => {
       const index = list.querySelectorAll("[data-home-product-row]").length;
       list.insertAdjacentHTML("beforeend", homepageProductRowAdminCard({ id: `home-row-${Date.now()}`, source: "brand", enabled: true, order: index + 1 }, index));
       const card = list.lastElementChild;
+      updateHomepageProductRowsFromAdminForm(actionElement.closest("form"));
       card?.scrollIntoView({ block: "center", behavior: "smooth" });
-      card?.querySelector("[data-row-field='source']")?.focus();
+      card?.querySelector("[data-row-field='brand']")?.focus();
+      showToast(adminCopy("اختر العلامة التجارية؛ سيُحفظ الشريط ويظهر في الرئيسية تلقائيًا.", "Choose a brand; the section will save and appear on the homepage automatically."));
     }
   }
   if (action === "delete-home-product-row") {
     const card = actionElement.closest("[data-home-product-row]");
-    if (card && confirm(adminCopy("حذف هذا القسم من الصفحة الرئيسية؟", "Delete this homepage section?"))) card.remove();
+    if (card && confirm(adminCopy("حذف هذا القسم من الصفحة الرئيسية؟", "Delete this homepage section?"))) {
+      const form = card.closest("form");
+      card.remove();
+      updateHomepageProductRowsFromAdminForm(form);
+    }
   }
   if (action === "edit-banner") {
     openAdminEditorModal(bannerEditorMarkup(actionElement.dataset.id), "[name='title']");
@@ -8592,7 +8655,7 @@ document.addEventListener("submit", async (event) => {
     let image = String(data.get("image") || "").trim();
     const file = event.target.elements.imageFile?.files?.[0];
     try {
-      if (file) image = await optimizeGalleryImage(file);
+      if (file) image = await uploadStorefrontImage(file, "brand");
       const item = { id, nameAr:String(data.get("nameAr")||"").trim(), nameEn:String(data.get("nameEn")||"").trim(), country:String(data.get("country")||"").trim(), flag:String(data.get("flag")||"").trim(), level:String(data.get("level")||"medium"), count:Math.max(0,Number(data.get("count")||0)), sales:Math.max(0,Number(data.get("sales")||0)), active:data.has("active"), image };
       const rows = state.adminWorkspace.entities.brands || [];
       const index = rows.findIndex((row) => String(row.id) === id);
@@ -8628,12 +8691,12 @@ document.addEventListener("submit", async (event) => {
     const existing = existingIndex >= 0 ? media[existingIndex] : null;
     const file = event.target.elements.mediaFile?.files?.[0];
     try {
-      const url = file ? await optimizeGalleryImage(file) : existing?.url || "";
+      const url = file ? await uploadStorefrontImage(file, "hero") : existing?.url || "";
       if (!url) throw new Error("اختر صورة للشريحة أولاً");
       const slide = { ...existing, id, name:String(data.get("name")||file?.name||existing?.name||"").trim(), placement:"hero", url, productId:String(data.get("productId")||"").trim(), href:String(data.get("href")||"#new-arrivals").trim(), titleAr:"", titleEn:"", descriptionAr:"", descriptionEn:"", buttonAr:"", buttonEn:"", sortOrder:Math.max(1,Number(data.get("sortOrder")||1)), sizeMode:String(data.get("sizeMode")||"cover"), imageScale:100, imagePosition:"center", active:data.has("active"), createdAt:existing?.createdAt||new Date().toISOString() };
       if (existingIndex >= 0) media[existingIndex] = slide; else media.push(slide);
       state.adminWorkspace.settings = mergeStoreSettings({ ...current, homeMedia:media });
-      saveAdminWorkspace("homepage");
+      await saveAdminWorkspaceNow("homepage");
       renderHomeHero();
       closeAdminEditorModal();
       renderAdminDashboard("content");
@@ -8745,18 +8808,7 @@ document.addEventListener("submit", async (event) => {
       ...(key === "benefits" ? { speed: Math.max(6, Math.min(120, Number(data.get("benefits.speed") || 18))) } : {})
     }])) : current.homepageRails;
     const nextProductRows = event.target.id === "admin-homepage-rails"
-      ? [...event.target.querySelectorAll("[data-home-product-row]")].map((card, index) => {
-          const field = (name) => card.querySelector(`[data-row-field="${name}"]`);
-          return {
-            id: String(card.dataset.homeProductRow || `home-row-${Date.now()}-${index}`),
-            source: String(field("source")?.value || "brand"),
-            brand: String(field("brand")?.value || "").trim(),
-            titleAr: String(field("titleAr")?.value || "").trim(),
-            titleEn: String(field("titleEn")?.value || "").trim(),
-            order: Math.max(1, Math.min(999, Number(field("order")?.value || index + 1))),
-            enabled: Boolean(field("enabled")?.checked)
-          };
-        })
+      ? homepageProductRowsFromAdminForm(event.target)
       : current.homeProductRows;
     const files = [...(event.target.elements.mediaFile?.files || [])];
     const genderImages = { ...current.homeGenderImages };
@@ -8788,13 +8840,13 @@ document.addEventListener("submit", async (event) => {
             titleAr: "", titleEn: "", descriptionAr: "", descriptionEn: "", buttonAr: "", buttonEn: "",
             href: String(data.get("mediaHref") || "#new-arrivals").trim(), sizeMode: "default",
             imageScale: 100, imagePosition: "center", sortOrder: media.length + index + 1, active: true,
-            url: await optimizeGalleryImage(file), createdAt: new Date().toISOString()
+            url: await uploadStorefrontImage(file, "hero"), createdAt: new Date().toISOString()
           });
         }
         media.push(...uploaded);
         for (const [index, item] of genderUploads.entries()) {
           if (uploadStatus) uploadStatus.textContent = adminCopy(`جارٍ تجهيز صورة القسم ${index + 1} من ${genderUploads.length}…`, `Preparing section image ${index + 1} of ${genderUploads.length}…`);
-          genderImages[item.key] = await optimizeGalleryImage(item.file);
+          genderImages[item.key] = await uploadStorefrontImage(item.file, "gender");
         }
       } catch (error) {
         if (submitButton) submitButton.disabled = false;
@@ -8805,7 +8857,13 @@ document.addEventListener("submit", async (event) => {
     }
     const intervalSeconds = Math.max(1, Math.min(30, Number(data.get("heroIntervalSeconds") || 3)));
     state.adminWorkspace.settings = mergeStoreSettings({ ...current, homepageRails: nextRails, homeProductRows: nextProductRows, homeHero: { ...current.homeHero, intervalSeconds }, homeMedia: media, homeGenderImages: genderImages });
-    saveAdminWorkspace("homepage");
+    try {
+      await saveAdminWorkspaceNow("homepage");
+    } catch (error) {
+      if (submitButton) submitButton.disabled = false;
+      showToast(error.message || adminCopy("تعذّر حفظ أقسام الصفحة الرئيسية.", "Could not save homepage sections."), "error");
+      return;
+    }
     applyHomepageRailSettings();
     renderHomeHero();
     renderHomepageCommerce();
@@ -9459,6 +9517,22 @@ document.addEventListener("error", (event) => {
 }, true);
 
 document.addEventListener("change", async (event) => {
+  if (event.target.matches("#admin-homepage-rails [data-row-field]")) {
+    updateHomepageProductRowsFromAdminForm(event.target.closest("form"), { persist: false });
+    const card = event.target.closest("[data-home-product-row]");
+    try {
+      await saveAdminWorkspaceNow("homepage");
+      if (event.target.matches("[data-row-field='brand']") && event.target.value) {
+        const brand = String(event.target.value).trim();
+        showToast(adminCopy(`تم حفظ شريط ${brand} وسيظهر في الصفحة الرئيسية.`, `${brand} section saved and added to the homepage.`));
+      }
+    } catch (error) {
+      showToast(error.message || adminCopy("تعذّر حفظ شريط العلامة التجارية.", "Could not save the brand section."), "error");
+    }
+    card?.classList.add("is-saved");
+    setTimeout(() => card?.classList.remove("is-saved"), 900);
+    return;
+  }
   if (event.target.matches("#admin-banner-slider-settings [name='mediaFile']")) {
     const files = [...(event.target.files || [])];
     const status = event.target.closest("form")?.querySelector("#banner-upload-status");

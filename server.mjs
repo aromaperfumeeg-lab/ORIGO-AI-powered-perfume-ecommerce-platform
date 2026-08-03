@@ -1,5 +1,5 @@
 import { createServer } from "node:http";
-import { readFile, stat } from "node:fs/promises";
+import { mkdir, readFile, stat, writeFile } from "node:fs/promises";
 import { extname, join, normalize, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { randomBytes } from "node:crypto";
@@ -113,6 +113,7 @@ import {
 } from "./performance-service.mjs";
 
 const ROOT = resolve(fileURLToPath(new URL(".", import.meta.url)));
+const STOREFRONT_UPLOAD_ROOT = resolve(ROOT, "uploads", "storefront");
 const HOST = process.env.ORIGO_HOST || "0.0.0.0";
 const PORT = Number(process.env.PORT || process.env.ORIGO_PORT || 4173);
 const OPENAI_MODEL = process.env.OPENAI_MODEL || "gpt-5.4-mini";
@@ -306,6 +307,15 @@ function parseCookies(request) {
     }));
 }
 
+function requestUsesHTTPS(request) {
+  const forwardedProto = String(request.headers["x-forwarded-proto"] || "")
+    .split(",")[0]
+    .trim()
+    .toLowerCase();
+  if (forwardedProto) return forwardedProto === "https";
+  return Boolean(request.socket?.encrypted);
+}
+
 function sessionToken(request) {
   return parseCookies(request)[SESSION_COOKIE] || "";
 }
@@ -327,8 +337,7 @@ function commerceContext(request) {
 }
 
 function guestCartCookie(context, request) {
-  const forwardedProto = String(request.headers["x-forwarded-proto"] || "").split(",")[0].trim();
-  const secure = process.env.NODE_ENV === "production" || forwardedProto === "https";
+  const secure = requestUsesHTTPS(request);
   return [
     `${GUEST_CART_COOKIE}=${encodeURIComponent(context.guestToken)}`,
     "Path=/", "HttpOnly", "SameSite=Lax", "Max-Age=2592000", secure ? "Secure" : ""
@@ -336,8 +345,7 @@ function guestCartCookie(context, request) {
 }
 
 function sessionCookie(session, request) {
-  const forwardedProto = String(request.headers["x-forwarded-proto"] || "").split(",")[0].trim();
-  const secure = process.env.NODE_ENV === "production" || forwardedProto === "https";
+  const secure = requestUsesHTTPS(request);
   return [
     `${SESSION_COOKIE}=${encodeURIComponent(session.token)}`,
     "Path=/",
@@ -349,8 +357,7 @@ function sessionCookie(session, request) {
 }
 
 function expiredSessionCookie(request) {
-  const forwardedProto = String(request.headers["x-forwarded-proto"] || "").split(",")[0].trim();
-  const secure = process.env.NODE_ENV === "production" || forwardedProto === "https";
+  const secure = requestUsesHTTPS(request);
   return [
     `${SESSION_COOKIE}=`,
     "Path=/",
@@ -420,6 +427,29 @@ async function readJSONBody(request) {
     chunks.push(chunk);
   }
   return JSON.parse(Buffer.concat(chunks).toString("utf8") || "{}");
+}
+
+async function saveStorefrontImageUpload(body = {}) {
+  const match = String(body.dataUrl || "").match(/^data:image\/(webp|png|jpeg);base64,([a-z0-9+/=]+)$/i);
+  if (!match) {
+    const error = new Error("INVALID_STOREFRONT_IMAGE");
+    error.code = "INVALID_STOREFRONT_IMAGE";
+    throw error;
+  }
+  const bytes = Buffer.from(match[2], "base64");
+  if (!bytes.length || bytes.length > 2_500_000) {
+    const error = new Error("STOREFRONT_IMAGE_TOO_LARGE");
+    error.code = "STOREFRONT_IMAGE_TOO_LARGE";
+    throw error;
+  }
+  const folder = ["hero", "gender", "brand"].includes(String(body.folder || "")) ? String(body.folder) : "hero";
+  const extension = match[1].toLowerCase() === "jpeg" ? "jpg" : match[1].toLowerCase();
+  const directory = resolve(STOREFRONT_UPLOAD_ROOT, folder);
+  if (!directory.startsWith(`${STOREFRONT_UPLOAD_ROOT}${sep}`)) throw new Error("INVALID_UPLOAD_PATH");
+  await mkdir(directory, { recursive: true });
+  const fileName = `${Date.now().toString(36)}-${randomBytes(8).toString("hex")}.${extension}`;
+  await writeFile(resolve(directory, fileName), bytes, { flag: "wx" });
+  return `/uploads/storefront/${folder}/${fileName}`;
 }
 
 function outputText(apiResponse) {
@@ -675,6 +705,22 @@ async function handleAPI(request, response, url, origin) {
         freeShippingThreshold: commerce.freeShippingThreshold
       }
     }, origin);
+  }
+
+  if (url.pathname === "/api/admin/uploads/storefront-image" && request.method === "POST") {
+    const user = requireUser(request, response, origin, "staff");
+    if (!user) return;
+    try {
+      const body = await readJSONBody(request);
+      const imageUrl = await saveStorefrontImageUpload(body);
+      recordActivity(user.id, "storefront_image_uploaded", "settings", "homepage", { folder: body.folder || "hero" });
+      return jsonResponse(response, 201, { url: imageUrl }, origin);
+    } catch (error) {
+      const tooLarge = error.code === "STOREFRONT_IMAGE_TOO_LARGE" || error.message === "REQUEST_TOO_LARGE";
+      return jsonResponse(response, tooLarge ? 413 : 400, {
+        error: tooLarge ? "حجم صورة السلايدر أكبر من الحد المسموح." : "تعذّر حفظ صورة السلايدر على الخادم."
+      }, origin);
+    }
   }
 
   if (url.pathname === "/api/admin/integrations" && request.method === "GET") {

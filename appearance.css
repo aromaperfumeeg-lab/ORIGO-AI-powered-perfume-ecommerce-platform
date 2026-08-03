@@ -2625,3 +2625,23 @@ body:not(.dark) :where(#storefront-main,.advanced-admin-panel,.catalog-admin-pan
   color:#090909!important;
   opacity:1!important;
 }
+
+/* Mobile end-of-page controls share space without creating a blank tail. */
+@media(max-width:640px){
+  body{padding-bottom:0!important}
+  footer.origo-footer{margin-bottom:0!important}
+  footer.origo-footer .footer-bottom-bar{
+    min-height:calc(44px + 82px + env(safe-area-inset-bottom))!important;
+    padding:10px 18px calc(82px + env(safe-area-inset-bottom))!important;
+  }
+  .back-to-top{
+    left:10px!important;
+    bottom:calc(82px + env(safe-area-inset-bottom))!important;
+    width:42px!important;
+    height:42px!important;
+  }
+  .back-to-top::before{inset:5px!important}
+  .back-to-top-track{stroke-width:2!important}
+  .back-to-top-value{stroke-width:3!important}
+  .back-to-top-arrow{stroke-width:2.2!important}
+}
