@@ -1684,8 +1684,7 @@ body:not(.dark) .home-gender-section .gender-card:is(:hover,:focus-visible,:acti
   #home :is(#new-product-grid,#product-grid)>.origo-reference-product-card .card-note-scroll img,#home :is(#new-product-grid,#product-grid)>.origo-reference-product-card .card-note-scroll>span>i{width:32px!important;height:32px!important}
 }
 
-/* Configurable homepage product sections.
-   Desktop is a complete wrapping grid; touch devices use one horizontal row. */
+/* Configurable homepage product sections: one navigable row per heading. */
 #home .home-products-legacy[hidden]{display:none!important}
 #home .home-configured-product-rows{
   width:min(calc(100% - 32px),var(--origo-content-max,1440px));
@@ -1715,25 +1714,56 @@ body:not(.dark) .home-gender-section .gender-card:is(:hover,:focus-visible,:acti
   align-items:start;
 }
 @media(min-width:701px){
+  #home .home-configured-product-row .home-products-wrap{
+    position:relative;
+    overflow:hidden;
+    padding-inline:3px;
+  }
   #home .home-configured-product-row .home-product-row-track{
-    display:grid!important;
-    grid-template-columns:repeat(5,minmax(0,1fr))!important;
+    display:flex!important;
+    flex-flow:row nowrap!important;
     gap:16px!important;
-    overflow:visible!important;
-    scroll-snap-type:none!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    scroll-snap-type:x mandatory!important;
+    scrollbar-width:none!important;
     cursor:default!important;
     transform:none!important;
+    scroll-behavior:smooth;
+    overscroll-behavior-inline:contain;
   }
+  #home .home-configured-product-row .home-product-row-track::-webkit-scrollbar{display:none!important}
   #home .home-configured-product-row .home-product-row-track>.origo-reference-product-card{
-    width:100%!important;
+    flex:0 0 calc((100% - 64px)/5)!important;
+    width:calc((100% - 64px)/5)!important;
     min-width:0!important;
     max-width:none!important;
-    flex:none!important;
     margin:0!important;
+    scroll-snap-align:start;
   }
+  #home .home-product-row-arrow{
+    position:absolute;
+    top:42%;
+    z-index:7;
+    width:42px;
+    height:42px;
+    display:grid;
+    place-items:center;
+    border:1px solid rgba(118,0,31,.2);
+    border-radius:50%;
+    color:#76001f;
+    background:rgba(255,255,255,.96);
+    box-shadow:0 8px 22px rgba(66,0,18,.16);
+    font:700 27px/1 Arial,sans-serif;
+    cursor:pointer;
+    transform:translateY(-50%);
+  }
+  #home .home-product-row-arrow:hover{color:#fff;background:#76001f;box-shadow:0 10px 26px rgba(66,0,18,.25)}
+  #home .home-product-row-arrow.previous{inset-inline-start:8px}
+  #home .home-product-row-arrow.next{inset-inline-end:8px}
 }
 @media(min-width:701px) and (max-width:1120px){
-  #home .home-configured-product-row .home-product-row-track{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+  #home .home-configured-product-row .home-product-row-track>.origo-reference-product-card{flex-basis:calc((100% - 48px)/4)!important;width:calc((100% - 48px)/4)!important}
 }
 @media(max-width:700px){
   #home .home-configured-product-rows{width:100%;gap:24px}
@@ -1768,7 +1798,7 @@ body:not(.dark) .home-gender-section .gender-card:is(:hover,:focus-visible,:acti
     flex-basis:100%!important;
     width:100%!important;
   }
-  #home :is(.home-carousel-arrow,.home-hero-arrow){display:none!important}
+  #home :is(.home-carousel-arrow,.home-hero-arrow,.home-product-row-arrow){display:none!important}
 }
 
 /* Refined desktop hero controls: quiet frosted buttons with a precise chevron. */

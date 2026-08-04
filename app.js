@@ -2470,8 +2470,8 @@ function homeSlideEditorMarkup(id = "") {
   const item = existing || { id:`media-${Date.now().toString(36)}`, name:"",productId:"",href:"#new-arrivals",sortOrder:settings.homeMedia.length+1,sizeMode:"cover",active:true,url:"" };
   return `<form id="admin-home-slide-form" class="admin-modal-form" dir="rtl"><input type="hidden" name="id" value="${escapeHTML(item.id)}"/>
     <header><span class="eyebrow">HOMEPAGE SLIDER</span><h2>${existing?"تعديل شريحة السلايدر":"إضافة شريحة سلايدر"}</h2><p>الشريحة صورة فقط؛ الضغط عليها يفتح المنتج المختار أو الرابط المخصص.</p></header>
-    <div class="admin-modal-grid"><label>اسم الصورة<input name="name" value="${escapeHTML(item.name||"")}"/></label><label>الترتيب<input name="sortOrder" type="number" min="1" value="${Number(item.sortOrder||1)}"/></label><label class="wide">المنتج المرتبط بالصورة<select name="productId">${homeHeroProductOptions(item.productId||"")}</select></label><label class="wide">رابط هدف مخصص عند عدم اختيار منتج<input name="href" dir="ltr" value="${escapeHTML(item.href||"#new-arrivals")}" placeholder="/perfumes أو https://..."/></label><label>ملاءمة الصورة<select name="sizeMode"><option value="cover" selected>تغطية كاملة تلقائيًا</option></select></label><label class="wide admin-modal-upload">${existing?"استبدال الصورة (اختياري)":"صورة الشريحة"}<input name="mediaFile" type="file" accept="image/png,image/jpeg,image/webp,image/avif"${existing?"":" required"}/></label><label class="admin-toggle-row wide"><span><b>عرض الشريحة</b></span><input name="active" type="checkbox"${item.active!==false?" checked":""}/></label></div>
-    <footer><button type="button" class="secondary-button" data-action="close-admin-editor">إلغاء</button><button class="button burgundy-button" type="submit">حفظ التعديلات</button></footer></form>`;
+    <div class="admin-modal-grid"><label>اسم الصورة<input name="name" value="${escapeHTML(item.name||"")}"/></label><label>الترتيب<input name="sortOrder" type="number" min="1" value="${Number(item.sortOrder||1)}"/></label><label class="wide">المنتج المرتبط بالصورة<select name="productId">${homeHeroProductOptions(item.productId||"")}</select></label><label class="wide">رابط هدف مخصص عند عدم اختيار منتج<input name="href" dir="ltr" value="${escapeHTML(item.href||"#new-arrivals")}" placeholder="/perfumes أو https://..."/></label><label>ملاءمة الصورة<select name="sizeMode"><option value="cover" selected>تغطية كاملة تلقائيًا</option></select></label><label class="wide admin-modal-upload">${existing?"استبدال الصورة (اختياري)":"صورة الشريحة"}<input name="mediaFile" type="file" accept="image/png,image/jpeg,image/webp,image/avif"${existing?"":" required"}/><small>PNG أو JPG أو WebP أو AVIF — بحد أقصى 15 MB</small></label><figure class="admin-slide-file-preview wide${item.url ? " has-image" : ""}" data-slide-file-preview>${item.url ? `<img src="${escapeHTML(item.url)}" alt="${escapeHTML(item.name || "معاينة الشريحة")}"/>` : ""}<figcaption>${item.url ? escapeHTML(item.name || "الصورة الحالية") : "ستظهر معاينة الصورة هنا بعد اختيارها"}</figcaption></figure><label class="admin-toggle-row wide"><span><b>عرض الشريحة</b></span><input name="active" type="checkbox"${item.active!==false?" checked":""}/></label></div>
+    <footer><output class="admin-slide-save-status" aria-live="polite"></output><button type="button" class="secondary-button" data-action="close-admin-editor">إلغاء</button><button class="button burgundy-button" type="submit">حفظ التعديلات</button></footer></form>`;
 }
 
 function alternativesAdminMarkup() {
@@ -3406,6 +3406,18 @@ function homeProductRowViewAll(row) {
   return `<a href="/perfumes?sort=${sort}">${label} <span aria-hidden="true">‹</span></a>`;
 }
 
+function bindConfiguredHomeProductRow(section) {
+  const rail = section?.querySelector(".home-product-row-track");
+  if (!rail) return;
+  section.querySelectorAll("[data-home-product-row-direction]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const direction = Number(button.dataset.homeProductRowDirection || 1);
+      const rtlFactor = getComputedStyle(rail).direction === "rtl" ? -1 : 1;
+      rail.scrollBy({ left: direction * rtlFactor * Math.max(280, rail.clientWidth * .88), behavior: "smooth" });
+    });
+  });
+}
+
 function renderConfiguredHomeProductRows() {
   const holder = $("#home-configured-product-rows");
   if (!holder) return;
@@ -3416,9 +3428,10 @@ function renderConfiguredHomeProductRows() {
     if (!products.length) return "";
     return `<section class="home-configured-product-row" data-home-product-source="${escapeHTML(row.source)}"${row.brand ? ` data-home-product-brand="${escapeHTML(row.brand)}"` : ""}>
       <div class="home-section-head">${homeProductRowViewAll(row)}<div class="ornament-heading"><h2>${escapeHTML(homeProductRowTitle(row))}</h2></div></div>
-      <div class="home-products-wrap"><div class="product-grid home-product-row-track" data-mobile-product-rail>${products.map((product, index) => productCardMarkup(product, { context: "grid", delay: Math.min(index * 35, 175) })).join("")}</div></div>
+      <div class="home-products-wrap"><button class="home-product-row-arrow previous" type="button" data-home-product-row-direction="-1" aria-label="${state.lang === "ar" ? "المنتجات السابقة" : "Previous products"}">${state.lang === "ar" ? "›" : "‹"}</button><div class="product-grid home-product-row-track" data-mobile-product-rail>${products.map((product, index) => productCardMarkup(product, { context: "grid", delay: Math.min(index * 35, 175) })).join("")}</div><button class="home-product-row-arrow next" type="button" data-home-product-row-direction="1" aria-label="${state.lang === "ar" ? "المنتجات التالية" : "Next products"}">${state.lang === "ar" ? "‹" : "›"}</button></div>
     </section>`;
   }).join("");
+  $$(".home-configured-product-row", holder).forEach(bindConfiguredHomeProductRow);
   if (matchMedia("(max-width: 700px)").matches) $$('[data-mobile-product-rail]', holder).forEach((rail) => bindHorizontalRail(rail));
 }
 
@@ -7100,14 +7113,29 @@ async function optimizeGalleryImage(file) {
   canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
   const context = canvas.getContext("2d", { alpha: false });
   if (!context) throw new Error(adminCopy("تعذر تجهيز الصورة في هذا المتصفح.", "This browser could not process the image."));
-  context.fillStyle = "#ffffff";
-  context.fillRect(0, 0, canvas.width, canvas.height);
-  context.drawImage(image, 0, 0, canvas.width, canvas.height);
-  let quality = .82;
-  let result = canvas.toDataURL("image/webp", quality);
-  while (result.length > 520_000 && quality > .48) {
-    quality -= .08;
-    result = canvas.toDataURL("image/webp", quality);
+  const paint = () => {
+    context.fillStyle = "#ffffff";
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.drawImage(image, 0, 0, canvas.width, canvas.height);
+  };
+  paint();
+  let quality = .84;
+  let outputType = "image/webp";
+  let result = canvas.toDataURL(outputType, quality);
+  if (!result.startsWith("data:image/webp")) {
+    outputType = "image/jpeg";
+    result = canvas.toDataURL(outputType, quality);
+  }
+  while (result.length > 620_000 && quality > .48) {
+    quality -= .07;
+    result = canvas.toDataURL(outputType, quality);
+  }
+  while (result.length > 620_000 && canvas.width > 720) {
+    canvas.width = Math.max(720, Math.round(canvas.width * .84));
+    canvas.height = Math.max(360, Math.round(canvas.height * .84));
+    paint();
+    quality = .68;
+    result = canvas.toDataURL(outputType, quality);
   }
   if (result === "data:,") throw new Error(adminCopy("فشل تحويل الصورة. جرّب صورة أصغر.", "Image conversion failed. Try a smaller image."));
   return result;
@@ -7115,13 +7143,10 @@ async function optimizeGalleryImage(file) {
 
 async function uploadStorefrontImage(file, folder = "hero") {
   const dataUrl = await optimizeGalleryImage(file);
-  if (!state.serverAvailable || !isStaffUser()) return dataUrl;
-  const result = await api("/api/admin/uploads/storefront-image", {
-    method: "POST",
-    body: JSON.stringify({ dataUrl, folder, originalName: file.name || "image" })
-  });
-  if (!result?.url) throw new Error(adminCopy("لم يُرجع الخادم رابط الصورة المحفوظة.", "The server did not return the saved image URL."));
-  return result.url;
+  // Store optimized managed artwork with the workspace. Filesystem upload URLs
+  // can disappear after a restart or deployment; this payload persists across
+  // reloads and is available to every device through storefront settings.
+  return dataUrl;
 }
 
 async function optimizeProductOptionArtwork(file) {
@@ -8716,6 +8741,13 @@ document.addEventListener("submit", async (event) => {
   }
   if (event.target.id === "admin-home-slide-form") {
     const data = new FormData(event.target);
+    const submitButton = event.target.querySelector("button[type='submit']");
+    const saveStatus = event.target.querySelector(".admin-slide-save-status");
+    if (submitButton) {
+      submitButton.disabled = true;
+      submitButton.textContent = adminCopy("جارٍ حفظ الشريحة…", "Saving slide…");
+    }
+    if (saveStatus) saveStatus.textContent = adminCopy("جارٍ تجهيز الصورة وحفظها…", "Preparing and saving image…");
     const current = mergeStoreSettings(state.adminWorkspace.settings || {});
     const id = String(data.get("id") || `media-${Date.now().toString(36)}`);
     const media = current.homeMedia.map((item) => ({ ...item }));
@@ -8733,7 +8765,14 @@ document.addEventListener("submit", async (event) => {
       closeAdminEditorModal();
       renderAdminDashboard("content");
       showToast(existing ? "تم حفظ تعديلات الشريحة" : "تمت إضافة شريحة السلايدر");
-    } catch (error) { showToast(error.message || "تعذر حفظ الشريحة", "error"); }
+    } catch (error) {
+      if (submitButton) {
+        submitButton.disabled = false;
+        submitButton.textContent = adminCopy("حفظ التعديلات", "Save changes");
+      }
+      if (saveStatus) saveStatus.textContent = error.message || adminCopy("تعذر حفظ الشريحة", "Could not save slide");
+      showToast(error.message || "تعذر حفظ الشريحة", "error");
+    }
     return;
   }
   if (event.target.id === "admin-filter-form") {
@@ -9549,6 +9588,29 @@ document.addEventListener("error", (event) => {
 }, true);
 
 document.addEventListener("change", async (event) => {
+  if (event.target.matches("#admin-home-slide-form [name='mediaFile']")) {
+    const form = event.target.closest("form");
+    const file = event.target.files?.[0];
+    const preview = form?.querySelector("[data-slide-file-preview]");
+    const allowed = ["image/jpeg", "image/png", "image/webp", "image/avif"];
+    if (!file) return;
+    if (!allowed.includes(file.type) || file.size > 15 * 1024 * 1024) {
+      event.target.value = "";
+      showToast(adminCopy("استخدم صورة JPG أو PNG أو WebP أو AVIF بحجم لا يتجاوز 15 MB.", "Use a JPG, PNG, WebP, or AVIF image up to 15 MB."), "error");
+      return;
+    }
+    const nameInput = form?.elements?.name;
+    if (nameInput && !String(nameInput.value || "").trim()) nameInput.value = file.name.replace(/\.[^.]+$/, "");
+    if (preview) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        preview.classList.add("has-image");
+        preview.innerHTML = `<img src="${reader.result}" alt="${escapeHTML(file.name)}"/><figcaption>${escapeHTML(file.name)}</figcaption>`;
+      };
+      reader.readAsDataURL(file);
+    }
+    return;
+  }
   if (event.target.matches("#admin-homepage-rails [data-row-field]")) {
     updateHomepageProductRowsFromAdminForm(event.target.closest("form"), { persist: false });
     const card = event.target.closest("[data-home-product-row]");
