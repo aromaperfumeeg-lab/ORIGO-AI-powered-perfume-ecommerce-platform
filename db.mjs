@@ -76,6 +76,10 @@ db.exec(`
     description_ar TEXT NOT NULL DEFAULT '',
     description_en TEXT NOT NULL DEFAULT '',
     catalog_json TEXT NOT NULL DEFAULT '{}',
+    perfume_profile_json TEXT NOT NULL DEFAULT '{}',
+    profile_status TEXT NOT NULL DEFAULT 'stale',
+    profile_engine_version INTEGER NOT NULL DEFAULT 0,
+    profile_source TEXT NOT NULL DEFAULT 'generated',
     status TEXT NOT NULL DEFAULT 'published' CHECK (status IN ('draft', 'published', 'unavailable')),
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -375,6 +379,13 @@ const productColumns = new Set(db.prepare("PRAGMA table_info(products)").all().m
 if (!productColumns.has("catalog_json")) {
   db.exec("ALTER TABLE products ADD COLUMN catalog_json TEXT NOT NULL DEFAULT '{}'");
 }
+
+ensureColumns("products", {
+  perfume_profile_json: "TEXT NOT NULL DEFAULT '{}'",
+  profile_status: "TEXT NOT NULL DEFAULT 'stale'",
+  profile_engine_version: "INTEGER NOT NULL DEFAULT 0",
+  profile_source: "TEXT NOT NULL DEFAULT 'generated'"
+});
 
 const userColumns = new Set(db.prepare("PRAGMA table_info(users)").all().map((column) => column.name));
 if (!userColumns.has("staff_role")) {
@@ -966,6 +977,10 @@ function productFromRow(row, includeMetadata = false) {
     accordProfile: Array.isArray(metadata.accordProfile) ? metadata.accordProfile : [],
     profileImages: metadata.profileImages && typeof metadata.profileImages === "object" ? metadata.profileImages : {},
     mainAccords: Array.isArray(metadata.mainAccords) ? metadata.mainAccords : (Array.isArray(metadata.accords) ? metadata.accords : []),
+    perfumeProfile: parseJSON(row.perfume_profile_json, metadata.perfumeProfile || {}),
+    profileStatus: row.profile_status || metadata.profileStatus || "stale",
+    profileEngineVersion: Number(row.profile_engine_version || metadata.perfumeProfile?.engineVersion || 0),
+    profileSource: row.profile_source || metadata.perfumeProfile?.source || "generated",
     personalities: Array.isArray(metadata.personalities) ? metadata.personalities : [],
     noteLibrary: metadata.noteLibrary || { slugs: [], unmatched: [] },
     noteRefs: noteRefsForProduct(row.id),
@@ -1330,8 +1345,9 @@ export function upsertProduct(input) {
     INSERT INTO products (
       id, sku, brand, name_ar, name_en, category, type_ar, type_en, concentration,
       sizes_json, notes_ar_json, notes_en_json, price, old_price, badge_ar, badge_en,
-      image, description_ar, description_en, catalog_json, status
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      image, description_ar, description_en, catalog_json, perfume_profile_json,
+      profile_status, profile_engine_version, profile_source, status
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ON CONFLICT(id) DO UPDATE SET
       sku = excluded.sku,
       brand = excluded.brand,
@@ -1352,6 +1368,10 @@ export function upsertProduct(input) {
       description_ar = excluded.description_ar,
       description_en = excluded.description_en,
       catalog_json = excluded.catalog_json,
+      perfume_profile_json = excluded.perfume_profile_json,
+      profile_status = excluded.profile_status,
+      profile_engine_version = excluded.profile_engine_version,
+      profile_source = excluded.profile_source,
       status = excluded.status,
       updated_at = CURRENT_TIMESTAMP
   `).run(
@@ -1380,6 +1400,10 @@ export function upsertProduct(input) {
     clean(input.descriptionAr, 4000),
     clean(input.descriptionEn, 4000),
     JSON.stringify(input),
+    JSON.stringify(input.perfumeProfile && typeof input.perfumeProfile === "object" ? input.perfumeProfile : {}),
+    clean(input.profileStatus || input.perfumeProfile?.profileStatus || "stale", 40),
+    Math.max(0, Math.floor(Number(input.profileEngineVersion || input.perfumeProfile?.engineVersion || 0))),
+    clean(input.profileSource || input.perfumeProfile?.source || "generated", 40),
     status
   );
 

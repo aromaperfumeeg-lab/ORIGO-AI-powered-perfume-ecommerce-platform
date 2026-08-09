@@ -6,6 +6,14 @@ import { randomBytes } from "node:crypto";
 import { brotliCompress, constants as zlibConstants, gzip, gzipSync } from "node:zlib";
 import { promisify } from "node:util";
 import {
+  ACCORD_CATALOG,
+  ENGINE_VERSION as PERFUME_ENGINE_VERSION,
+  analyzePerfume,
+  fingerprintPerfumeInput,
+  perfumeInputFromProduct,
+  resolveAccords
+} from "./lib/perfume-engine/index.mjs";
+import {
   ROLE_PERMISSIONS,
   alternativesAdminPayload,
   alternativesPayload,
@@ -123,6 +131,52 @@ const MAX_BODY_BYTES = 25_000_000;
 const SESSION_COOKIE = "origo_session";
 const GUEST_CART_COOKIE = "origo_guest_cart";
 const performanceRateLimits = new Map();
+
+const PERFUME_FAMILY_LABELS = Object.freeze({
+  oriental: ["شرقي", "Oriental"], woody: ["خشبي", "Woody"], floral: ["زهري", "Floral"],
+  citrus: ["حمضي", "Citrus"], aromatic: ["أروماتيك", "Aromatic"], fruity: ["فاكهي", "Fruity"],
+  aquatic: ["مائي", "Aquatic"], leather: ["جلدي", "Leather"], musky: ["مسكي", "Musky"],
+  amber: ["عنبري", "Amber"], gourmand: ["غورماند", "Gourmand"]
+});
+
+function scoreKeys(values = {}, threshold = 52, limit = 5) {
+  return Object.entries(values).sort((a, b) => Number(b[1]) - Number(a[1])).filter(([, score]) => Number(score) >= threshold).slice(0, limit).map(([key]) => key);
+}
+
+function preparePerfumeProduct(input = {}, { force = false } = {}) {
+  const product = { ...input };
+  if ((product.category || "perfume") !== "perfume") return product;
+  const engineInput = perfumeInputFromProduct(product);
+  const hasNotes = [engineInput.topNotes, engineInput.middleNotes, engineInput.baseNotes].some((items) => Array.isArray(items) && items.length);
+  const currentProfile = product.perfumeProfile && typeof product.perfumeProfile === "object" ? product.perfumeProfile : {};
+  if (!hasNotes) {
+    product.perfumeProfile = currentProfile;
+    product.profileStatus = Object.keys(currentProfile).length ? (product.profileStatus || "stale") : "stale";
+    product.profileEngineVersion = Number(currentProfile.engineVersion || product.profileEngineVersion || 0);
+    product.profileSource = currentProfile.source || product.profileSource || "generated";
+    return product;
+  }
+  const fingerprint = fingerprintPerfumeInput(engineInput);
+  const needsAnalysis = force || !currentProfile.engineVersion || currentProfile.engineVersion !== PERFUME_ENGINE_VERSION
+    || currentProfile.inputFingerprint !== fingerprint || product.profileStatus === "stale";
+  const manualOverrides = Array.isArray(currentProfile.manualOverrides) ? currentProfile.manualOverrides : [];
+  const profile = needsAnalysis ? analyzePerfume(engineInput, { manualOverrides }) : currentProfile;
+  product.perfumeProfile = profile;
+  product.profileStatus = "fresh";
+  product.profileEngineVersion = profile.engineVersion;
+  product.profileSource = profile.source;
+  product.descriptionAr = profile.descriptions?.fullDescriptionAr || product.descriptionAr || "";
+  product.descriptionEn = profile.descriptions?.fullDescriptionEn || product.descriptionEn || "";
+  product.seasons = scoreKeys(profile.seasons, 55, 4);
+  product.usageTimes = scoreKeys(profile.time, 45, 2);
+  product.occasions = scoreKeys(profile.occasions, 48, 6);
+  product.personalities = (profile.character || []).map((item) => item.labelAr);
+  product.moods = (profile.character || []).map((item) => item.labelAr);
+  product.families = profile.scentFamilies || [];
+  product.familyAr = product.families.map((id) => PERFUME_FAMILY_LABELS[id]?.[0] || id).join("، ");
+  product.familyEn = product.families.map((id) => PERFUME_FAMILY_LABELS[id]?.[1] || id).join(", ");
+  return product;
+}
 
 function allowPerformanceRequest(key, limit = 12, windowMs = 60_000) {
   const now = Date.now();
@@ -825,6 +879,12 @@ async function handleAPI(request, response, url, origin) {
     });
   }
 
+  if (url.pathname === "/api/accord-catalog" && request.method === "GET") {
+    return jsonResponse(response, 200, { accords: ACCORD_CATALOG }, origin, {
+      "Cache-Control": "public, max-age=3600, stale-while-revalidate=86400"
+    });
+  }
+
   if (url.pathname === "/api/restock-requests" && request.method === "POST") {
     const ip = String(request.headers["x-forwarded-for"] || request.socket.remoteAddress || "").split(",")[0].trim();
     if (!allowPerformanceRequest(`restock:${ip}`, 8, 60_000)) {
@@ -1341,6 +1401,18 @@ async function handleAPI(request, response, url, origin) {
     }, origin);
   }
 
+  if (url.pathname === "/api/admin/perfume-analysis" && request.method === "POST") {
+    const user = requireUser(request, response, origin, "catalog");
+    if (!user) return;
+    try {
+      const body = await readJSONBody(request);
+      const profile = analyzePerfume(body, { manualOverrides: body.manualOverrides || [] });
+      return jsonResponse(response, 200, { profile, resolvedAccords: resolveAccords(profile.accords) }, origin);
+    } catch (error) {
+      return jsonResponse(response, 400, { error: `تعذر تحليل العطر: ${error.message}` }, origin);
+    }
+  }
+
   if (url.pathname === "/api/admin/performance-products" && request.method === "GET") {
     const user = requireUser(request, response, origin, "catalog:view");
     if (!user) return;
@@ -1490,7 +1562,7 @@ async function handleAPI(request, response, url, origin) {
     const user = requireUser(request, response, origin, "catalog");
     if (!user) return;
     try {
-      const body = await readJSONBody(request);
+      const body = preparePerfumeProduct(await readJSONBody(request));
       if (!String(body.nameAr || body.nameEn || "").trim()) {
         return jsonResponse(response, 400, { error: "أدخل اسم المنتج بلغة واحدة على الأقل." }, origin);
       }
@@ -1510,6 +1582,22 @@ async function handleAPI(request, response, url, origin) {
     } catch (error) {
       console.error("[ORIGO PRODUCT]", error.message);
       return jsonResponse(response, 400, { error: `تعذر حفظ المنتج: ${error.message}` }, origin);
+    }
+  }
+
+  const perfumeReanalysisMatch = url.pathname.match(/^\/api\/admin\/products\/([^/]+)\/perfume-profile\/reanalyze$/);
+  if (perfumeReanalysisMatch && request.method === "POST") {
+    const user = requireUser(request, response, origin, "catalog");
+    if (!user) return;
+    const id = decodeURIComponent(perfumeReanalysisMatch[1]);
+    const existing = listProducts({ includeHidden: true }).find((item) => item.id === id);
+    if (!existing) return jsonResponse(response, 404, { error: "المنتج غير موجود." }, origin);
+    try {
+      const product = upsertProduct(preparePerfumeProduct(existing, { force: true }));
+      recordActivity(user.id, "perfume_profile_reanalyzed", "product", id, { engineVersion: PERFUME_ENGINE_VERSION });
+      return jsonResponse(response, 200, { product }, origin);
+    } catch (error) {
+      return jsonResponse(response, 400, { error: `تعذر إعادة تحليل العطر: ${error.message}` }, origin);
     }
   }
 

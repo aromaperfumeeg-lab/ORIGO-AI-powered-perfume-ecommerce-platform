@@ -2264,3 +2264,31 @@ body{max-width:100%;overflow-x:hidden}
   #home .origo-exact-product-card .product-image-missing i{font-size:25px}
   #home .origo-exact-product-card .product-image-missing small{font-size:9px}
 }
+/* Keep the storefront mobile navigation reachable while scrolling. */
+@media (max-width: 768px) {
+  .mobile-bottom-nav,
+  .mobile-bottom-bar,
+  .storefront-bottom-nav,
+  [data-mobile-bottom-nav] {
+    position: fixed !important;
+    inset-inline: 0 !important;
+    bottom: 0 !important;
+    z-index: 1200 !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding-bottom: env(safe-area-inset-bottom, 0px) !important;
+    transform: none !important;
+  }
+
+  body:has(.mobile-bottom-nav),
+  body:has(.mobile-bottom-bar),
+  body:has(.storefront-bottom-nav),
+  body:has([data-mobile-bottom-nav]) {
+    padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  .scroll-to-top,
+  .back-to-top {
+    bottom: calc(82px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+}
