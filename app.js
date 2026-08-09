@@ -1,6 +1,11 @@
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
-const PRODUCT_IMAGE_PLACEHOLDER = "assets/origo-logo.svg";
+const PRODUCT_IMAGE_PLACEHOLDER = "assets/product-image-placeholder.svg";
+
+function isProductImagePlaceholder(url) {
+  const value = String(url || "").toLowerCase();
+  return !value || value.includes("product-image-placeholder.svg") || value.includes("origo-logo.svg") || value.includes("origo-logo-dark.svg");
+}
 
 const ORIGO_PERFUME_BRANDS = [
   "Lattafa", "Armaf", "Afnan Perfumes", "Paris Corner", "Swiss Arabian", "Rasasi Perfumes",
@@ -1412,6 +1417,14 @@ function updateAccountIndicator() {
   $$(".mobile-admin-link").forEach((button) => {
     button.hidden = !isStaffUser();
   });
+  $$('[data-account-settings]').forEach((button) => {
+    const staff = isStaffUser();
+    button.dataset.action = staff ? "admin" : "account";
+    const ar = button.querySelector(".menu-ar");
+    const en = button.querySelector(".menu-en");
+    if (ar) ar.textContent = staff ? "لوحة التحكم" : "الإعدادات";
+    if (en) en.textContent = staff ? "Admin dashboard" : "Settings";
+  });
 }
 
 async function hydrateServer() {
@@ -1655,12 +1668,18 @@ async function loadAdminDashboardData() {
 }
 
 async function openAdminDashboard(view = state.adminView || "overview") {
-  await loadAdminDashboardData();
   state.adminView = view;
   $("#admin-sidebar-user-name").textContent = state.user?.name || "ORIGO Admin";
   $("#admin-profile-name").textContent = state.user?.name || "ORIGO Admin";
-  renderAdminDashboard(view);
+  const content = $("#admin-dashboard-content");
+  if (content) content.innerHTML = `<section class="admin-loading-state" role="status" aria-live="polite"><span aria-hidden="true"></span><b>${adminCopy("جارٍ تحميل لوحة التحكم…", "Loading dashboard…")}</b><small>${adminCopy("يتم الآن تجهيز بيانات المتجر.", "Preparing store data.")}</small></section>`;
   openOverlay("#admin-overlay");
+  try {
+    await loadAdminDashboardData();
+    renderAdminDashboard(view);
+  } catch (error) {
+    if (content) content.innerHTML = `<section class="admin-loading-state is-error" role="alert"><b>${adminCopy("تعذر تحميل بعض بيانات اللوحة", "Some dashboard data could not be loaded")}</b><small>${escapeHTML(error.message || adminCopy("تحقق من اتصال الخادم ثم حاول مرة أخرى.", "Check the server connection and try again."))}</small><button type="button" class="burgundy-button" data-action="open-admin">${adminCopy("إعادة المحاولة", "Try again")}</button></section>`;
+  }
 }
 
 function adminMetric(icon, label, value, trend = "", tone = "") {
@@ -3296,7 +3315,19 @@ function renderHomeHero() {
   const media = settings.homeMedia
     .filter((item) => item.placement === "hero" && item.url && item.active !== false)
     .sort((a, b) => Number(a.sortOrder || 0) - Number(b.sortOrder || 0));
-  const slides = media.length ? media : [{ url: "", altAr: "بنر المتجر", altEn: "Store banner", href: "#new-arrivals" }];
+  clearInterval(homeHeroTimer);
+  if (!media.length) {
+    hero.hidden = true;
+    hero.classList.remove("has-image", "is-dragging");
+    hero.classList.add("no-image");
+    visual.style.backgroundImage = "none";
+    visual.removeAttribute("href");
+    dots.innerHTML = "";
+    hero.querySelectorAll("[data-home-hero-arrow]").forEach((button) => (button.hidden = true));
+    return;
+  }
+  hero.hidden = false;
+  const slides = media;
   homeHeroIndex = Math.min(homeHeroIndex, slides.length - 1);
   const show = (index) => {
     homeHeroIndex = (index + slides.length) % slides.length;
@@ -3359,7 +3390,6 @@ function renderHomeHero() {
     hero.addEventListener("pointercancel", finishSwipe);
     hero.addEventListener("click", (event) => { if (dragged) { event.preventDefault(); event.stopPropagation(); dragged = false; } }, true);
   }
-  clearInterval(homeHeroTimer);
   const intervalMs = Math.max(1000, Math.min(30000, Number(settings.homeHero.intervalSeconds || 3) * 1000));
   if (slides.length > 1 && !matchMedia("(prefers-reduced-motion: reduce)").matches) homeHeroTimer = setInterval(() => show(homeHeroIndex + 1), intervalMs);
   show(homeHeroIndex);
@@ -5468,6 +5498,7 @@ function productCardMarkup(product, options = {}) {
   if (product.hoverImage && !media.some((item) => item.url === product.hoverImage)) media.push({ url: product.hoverImage, type: "image" });
   const imageIndex = Math.min(Math.max(0, Number(state.cardImageIndexes[product.id] || 0)), Math.max(0, media.length - 1));
   const mainImage = media[imageIndex]?.url || product.image || PRODUCT_IMAGE_PLACEHOLDER;
+  const hasProductImage = Boolean(mainImage && !isProductImagePlaceholder(mainImage));
   const richVariants = [...(Array.isArray(product.variantOptions) ? product.variantOptions : []), ...(Array.isArray(product.variants) ? product.variants.filter((item) => item && typeof item === "object") : [])];
   const selectedVariantId = state.selectedCardVariants[product.id];
   const variant = richVariants.find((item) => String(item.id || item.size) === String(selectedVariantId)) || richVariants[0] || null;
@@ -5517,7 +5548,9 @@ function productCardMarkup(product, options = {}) {
     <div class="product-image">
       ${discount ? `<span class="product-badge" data-badge-kind="sale">-${discount}%</span>` : ""}
       ${featureBadge ? `<span class="product-feature-badge">${escapeHTML(featureBadge)}</span>` : ""}
-      <button type="button" class="product-card-media-link"${interactive ? ` data-action="open-product" data-id="${escapeHTML(product.id)}"` : disabled} aria-label="${escapeHTML(isArabic ? `عرض ${name}` : `View ${name}`)}"><img src="${escapeHTML(mainImage)}" alt="${escapeHTML(`${product.brand || "ORIGO"} ${name}`)}" width="640" height="700" loading="lazy" decoding="async" draggable="false" /></button>
+      <button type="button" class="product-card-media-link"${interactive ? ` data-action="open-product" data-id="${escapeHTML(product.id)}"` : disabled} aria-label="${escapeHTML(isArabic ? `عرض ${name}` : `View ${name}`)}">${hasProductImage
+        ? `<img src="${escapeHTML(mainImage)}" alt="${escapeHTML(`${product.brand || "ORIGO"} ${name}`)}" width="640" height="700" loading="lazy" decoding="async" draggable="false" />`
+        : `<span class="product-image-missing" role="img" aria-label="${escapeHTML(isArabic ? "صورة المنتج غير متاحة" : "Product image unavailable")}"><i aria-hidden="true">◇</i><small>${isArabic ? "الصورة غير متاحة" : "Image unavailable"}</small></span>`}</button>
     </div>
     <div class="product-info">
       <div class="exact-card-heading"><div class="product-brand">${escapeHTML(product.brand || "ORIGO")}</div><span class="exact-card-rating"><b aria-hidden="true">★</b>${rating > 0 ? rating.toFixed(1) : "—"}</span></div>

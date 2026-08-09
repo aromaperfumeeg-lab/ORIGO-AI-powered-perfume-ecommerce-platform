@@ -91,3 +91,9 @@
 .gender-media-remove{display:flex;align-items:center;gap:7px;color:#a32236!important;font-weight:700}
 .gender-media-remove input{width:18px!important;min-height:18px!important;height:18px!important}
 @media(max-width:860px){.home-gender-media-grid{grid-template-columns:1fr}}
+.admin-loading-state{min-height:58vh;display:grid;place-content:center;justify-items:center;gap:10px;padding:32px;text-align:center;color:#24181a}
+.admin-loading-state>span{width:42px;height:42px;border:3px solid #ead9de;border-top-color:#720019;border-radius:50%;animation:adminDashboardSpin .8s linear infinite}
+.admin-loading-state>b{color:#720019;font-size:18px}.admin-loading-state>small{color:#171113;font-size:13px}
+.admin-loading-state.is-error>span{display:none}.admin-loading-state.is-error button{margin-top:8px}
+@keyframes adminDashboardSpin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.admin-loading-state>span{animation-duration:1.8s}}

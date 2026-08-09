@@ -1,12 +1,13 @@
 {
-  "name": "ORIGO Scents",
+  "name": "ORIGO SCENTS",
   "short_name": "ORIGO",
-  "description": "متجر ORIGO للعطور الأصلية والاختيار الذكي",
   "lang": "ar",
   "dir": "rtl",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#fffdfa",
-  "theme_color": "#35020f",
-  "icons": [{"src":"/assets/origo-mark.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
+  "background_color": "#fffdf9",
+  "theme_color": "#6d0d24",
+  "icons": [
+    { "src": "/assets/origo-logo-icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
 }

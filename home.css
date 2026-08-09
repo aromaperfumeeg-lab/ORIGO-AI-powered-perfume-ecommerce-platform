@@ -1,5 +1,12 @@
 :root{--ob:#71001f;--obd:#4d0017;--og:#c99a45;--ogl:#d5ac60;--oc:#fff9f4;--ot:#3b1717}
-body{background:#fff;color:var(--ot)}.announcement{display:none!important}
+body{background:#fff;color:var(--ot)}.announcement{display:flex!important}
+.announcement{width:100%;padding:0!important;justify-content:flex-start!important;gap:0!important;overflow:hidden;direction:ltr}
+.announcement>span{flex:0 0 auto;min-width:100%;min-height:34px;padding-inline:32px;display:flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;direction:rtl;animation:origoAnnouncementTicker 20s linear infinite;will-change:transform}
+.announcement:hover>span{animation-play-state:paused}
+@keyframes origoAnnouncementTicker{to{transform:translateX(-100%)}}
+@media(max-width:640px){.announcement>span{min-height:29px;padding-inline:18px;font-size:10px;animation-duration:14s}}
+@media(prefers-reduced-motion:reduce){.announcement>span{animation:none!important}.announcement>span[aria-hidden="true"]{display:none!important}}
+.home-gender-section,.home-configured-product-row,.home-categories-directory{content-visibility:auto;contain-intrinsic-size:auto 520px}
 #storefront-main>.hero,#storefront-main>.service-strip,#storefront-main>.brand-carousel-section,#storefront-main>.featured-section,#storefront-main>.collection-story,#storefront-main>.discover-section,#storefront-main>.notes-library,#storefront-main>.profile-section,#storefront-main>.alternative-section,#storefront-main>.journal-section,#storefront-main>.newsletter{display:none!important}
 .site-header,.site-header.compact{position:sticky;top:0;z-index:50;min-height:0;padding:0;color:#fff8ef;border:0;background:linear-gradient(115deg,#4b0016,#75001f 50%,#4d0017);box-shadow:0 5px 18px #42001221;backdrop-filter:none}
 .header-main,.compact .header-main{position:relative;width:min(100%,1440px);height:92px;margin:auto;padding:0 42px;display:flex;align-items:center;justify-content:center}
@@ -2240,4 +2247,20 @@ body:not(.dark) .home-gender-section .gender-card:is(:hover,:focus-visible,:acti
   opacity: 1 !important;
   filter: none !important;
   will-change: auto !important;
+}
+/* Runtime stability and honest product media fallbacks. */
+html{max-width:100%;overflow-x:clip}
+body{max-width:100%;overflow-x:hidden}
+#app,#storefront-main,.origo-home{max-width:100%;overflow-x:clip}
+#home-hero[hidden]{display:none!important;min-height:0!important;margin:0!important;padding:0!important}
+#home .origo-exact-product-card .product-card-media-link>.product-image-missing{
+  position:absolute;inset:0;display:grid;place-content:center;justify-items:center;gap:8px;
+  padding:18px;color:#72132a;background:linear-gradient(145deg,#fff,#fbf7f5);
+  font-weight:750;text-align:center
+}
+#home .origo-exact-product-card .product-image-missing i{font:normal 34px/1 Georgia,serif;color:#c8943d}
+#home .origo-exact-product-card .product-image-missing small{font-size:11px;color:#171113}
+@media(max-width:640px){
+  #home .origo-exact-product-card .product-image-missing i{font-size:25px}
+  #home .origo-exact-product-card .product-image-missing small{font-size:9px}
 }

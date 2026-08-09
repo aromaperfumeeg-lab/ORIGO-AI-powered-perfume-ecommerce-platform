@@ -8,12 +8,22 @@
         window.location.replace("http://127.0.0.1:4173/");
       }
     </script>
-    <meta name="viewport" content="width=device-width, initial-scale=1.05" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#6d0d24" />
     <meta
       name="description"
       content="ORIGO — متجر ومنصة عربية لاكتشاف العطور، النوتات، البدائل، والمقارنات."
     />
+    <link rel="canonical" href="https://origoscents.com/" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="ar_EG" />
+    <meta property="og:site_name" content="ORIGO SCENTS" />
+    <meta property="og:title" content="ORIGO | أصل الحكاية العطرية" />
+    <meta property="og:description" content="اكتشف العطور الأصلية والنوتات والبدائل والمقارنات في ORIGO." />
+    <meta property="og:url" content="https://origoscents.com/" />
+    <meta property="og:image" content="https://origoscents.com/assets/origo-logo.svg" />
+    <meta name="twitter:card" content="summary_large_image" />
     <title>ORIGO | أصل الحكاية العطرية</title>
     <style>
       body.is-loading{overflow:hidden}
@@ -85,19 +95,19 @@
       }
     </style>
     <link rel="stylesheet" href="styles.css?v=29" />
-    <link rel="stylesheet" href="home.css?v=70" />
+    <link rel="stylesheet" href="home.css?v=73" />
   <link rel="stylesheet" href="components/product-card/storefront-product-card.css?v=4" />
     <link rel="stylesheet" href="product-detail.css?v=9" media="print" onload="this.media='all'" />
     <link rel="stylesheet" href="catalog.css?v=1" media="print" onload="this.media='all'" />
-    <link rel="stylesheet" href="footer.css?v=18" />
+    <link rel="stylesheet" href="footer.css?v=19" />
     <link rel="stylesheet" href="commerce.css?v=1" media="print" onload="this.media='all'" />
     <link rel="stylesheet" href="account.css?v=2" media="print" onload="this.media='all'" />
     <link rel="stylesheet" href="fragrance-finder.css?v=1" media="print" onload="this.media='all'" />
     <link rel="stylesheet" href="alternatives.css?v=2" media="print" onload="this.media='all'" />
     <link rel="stylesheet" href="performance-insights.css?v=3" media="print" onload="this.media='all'" />
-<link rel="stylesheet" href="shell.css?v=16" />
+<link rel="stylesheet" href="shell.css?v=17" />
     <link rel="stylesheet" href="appearance.css?v=26" />
-    <link rel="stylesheet" href="admin-ui-fixes.css?v=4" />
+    <link rel="stylesheet" href="admin-ui-fixes.css?v=5" />
     <link rel="stylesheet" href="notes-admin-fixes.css?v=2" media="print" onload="this.media='all'" />
   </head>
   <body class="is-loading">
@@ -159,9 +169,11 @@
         }, 45);
 
         paint();
-        document.addEventListener("DOMContentLoaded", () => { target = Math.max(target, 74); }, { once: true });
+        // DOMContentLoaded already waits for the storefront scripts. Do not
+        // block the customer behind slow, below-the-fold images and styles.
+        document.addEventListener("DOMContentLoaded", complete, { once: true });
         window.addEventListener("load", complete, { once: true });
-        window.setTimeout(complete, 8000);
+        window.setTimeout(complete, 3500);
       })();
     </script>
     <div class="announcement" aria-hidden="true"></div>
@@ -192,7 +204,7 @@
               <button type="button" role="menuitem" data-action="view-orders"><i>▣</i><span class="menu-ar">طلباتي</span><span class="menu-en">My orders</span></button>
               <button type="button" role="menuitem" data-action="wishlist"><i>♡</i><span class="menu-ar">المفضلة</span><span class="menu-en">Wishlist</span></button>
               <button type="button" role="menuitem" data-action="language"><i>◎</i><span class="menu-ar">اللغة</span><span class="menu-en">Language</span></button>
-              <button type="button" role="menuitem" data-action="account"><i>⚙</i><span class="menu-ar">الإعدادات</span><span class="menu-en">Settings</span></button>
+              <button type="button" role="menuitem" data-action="account" data-account-settings><i>⚙</i><span class="menu-ar">الإعدادات</span><span class="menu-en">Settings</span></button>
             </div>
           </div>
           <button class="header-search" data-action="search" aria-label="بحث">
@@ -212,7 +224,7 @@
         <button class="mobile-header-search-submit" type="submit" aria-label="بحث">
           <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg>
         </button>
-        <input id="mobile-header-search-input" type="search" autocomplete="off" placeholder="ابحث عن عطر أو ماركة..." data-i18n-placeholder="searchPlaceholder" />
+        <input id="mobile-header-search-input" type="search" autocomplete="off" placeholder="ابحث عن عطر أو ماركة..." data-i18n-placeholder="searchPlaceholder" aria-label="البحث في المتجر" />
         <button class="mobile-header-search-filter" type="button" data-action="mobile-search-filters" aria-label="فلاتر البحث">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M7 12h10M10 17h4"></path><circle cx="8" cy="7" r="1.5"></circle><circle cx="15" cy="12" r="1.5"></circle><circle cx="12" cy="17" r="1.5"></circle></svg>
         </button>
@@ -806,7 +818,7 @@
         <h2 data-i18n="searchPrompt">عمّ تبحث اليوم؟</h2>
         <div class="global-search">
           <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg>
-          <input id="global-search-input" type="search" autocomplete="off" placeholder="اسم العطر، البراند، أو نوتة…" data-i18n-placeholder="searchPlaceholder" />
+          <input id="global-search-input" type="search" autocomplete="off" placeholder="اسم العطر، البراند، أو نوتة…" data-i18n-placeholder="searchPlaceholder" aria-label="البحث في المتجر" />
           <kbd>ESC</kbd>
         </div>
         <div class="search-suggestions" id="search-suggestions"></div>
@@ -988,7 +1000,7 @@
             <form class="web-import-search" id="web-import-form">
               <div class="admin-search-field">
                 <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg>
-                <input id="web-product-query" required type="search" autocomplete="off" placeholder="مثال: Dior Sauvage Eau de Parfum" data-i18n-placeholder="webSearchPlaceholder" />
+                <input id="web-product-query" required type="search" autocomplete="off" placeholder="مثال: Dior Sauvage Eau de Parfum" data-i18n-placeholder="webSearchPlaceholder" aria-label="البحث عن بيانات منتج" />
                 <span class="admin-search-spinner" aria-hidden="true"></span>
                 <div class="admin-suggestions" id="admin-suggestions"></div>
               </div>
@@ -1010,7 +1022,7 @@
               </label>
               <div class="quick-image-preview" id="quick-image-preview" hidden></div>
               <div class="quick-image-actions">
-                <input id="quick-import-hint" type="text" maxlength="220" placeholder="اختياري: اسم العطر أو العلامة أو الباركود" />
+                <input id="quick-import-hint" type="text" maxlength="220" placeholder="اختياري: اسم العطر أو العلامة أو الباركود" aria-label="تلميح استيراد المنتج" />
                 <button class="button burgundy-button" type="button" data-action="extract-product-images" disabled>
                   <span>استخراج وإنشاء مسودة</span><i>✦</i>
                 </button>
@@ -1163,8 +1175,8 @@
     <script src="fragrance-notes-library.js?v=7"></script>
     <script src="catalog-providers.js?v=6"></script>
     <script src="external-tracking.js?v=1"></script>
-    <script src="app.js?v=93"></script>
+    <script src="app.js?v=96"></script>
     <script src="components/product-card/storefront-product-card.js?v=2"></script>
-    <script src="deferred-modules.js?v=2"></script>
+    <script src="deferred-modules.js?v=3"></script>
   </body>
 </html>

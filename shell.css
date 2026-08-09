@@ -451,7 +451,7 @@ body.dark {
   body.commerce-route .announcement,
   body.account-route .announcement,
   body.finder-route .announcement {
-    display: none !important;
+    display: flex !important;
   }
 
   .site-header,
@@ -694,7 +694,7 @@ fieldset {
   body.commerce-route .announcement,
   body.account-route .announcement,
   body.finder-route .announcement {
-    display: none !important;
+    display: flex !important;
   }
 
   .site-header,

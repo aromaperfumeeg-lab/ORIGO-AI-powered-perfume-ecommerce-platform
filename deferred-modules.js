@@ -23,9 +23,12 @@
   const deferred = routeScripts.filter((entry) => !routeSpecific.includes(entry));
   const loadDeferred = () => deferred.forEach(loadScript);
 
-  if ("requestIdleCallback" in window) {
-    requestIdleCallback(loadDeferred, { timeout: 3000 });
-  } else {
-    window.addEventListener("load", () => setTimeout(loadDeferred, 800), { once: true });
-  }
+  const scheduleDeferred = () => {
+    if ("requestIdleCallback" in window) requestIdleCallback(loadDeferred, { timeout: 5000 });
+    else setTimeout(loadDeferred, 1200);
+  };
+  // Starting every route bundle before `load` made the homepage navigation
+  // wait for code that the visitor had not requested yet.
+  if (document.readyState === "complete") scheduleDeferred();
+  else window.addEventListener("load", scheduleDeferred, { once: true });
 })();

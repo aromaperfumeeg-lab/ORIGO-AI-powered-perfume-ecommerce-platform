@@ -3,7 +3,7 @@ import { mkdir, readFile, stat, writeFile } from "node:fs/promises";
 import { extname, join, normalize, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { randomBytes } from "node:crypto";
-import { brotliCompress, gzip } from "node:zlib";
+import { brotliCompress, constants as zlibConstants, gzip, gzipSync } from "node:zlib";
 import { promisify } from "node:util";
 import {
   ROLE_PERMISSIONS,
@@ -257,15 +257,25 @@ const imageImportSchema = {
 };
 
 function jsonResponse(response, status, value, origin = "", extraHeaders = {}) {
+  const rawBody = Buffer.from(JSON.stringify(value));
+  const acceptedEncoding = String(response.origoAcceptedEncoding || "");
+  const shouldCompress = rawBody.length > 1024 && /\bgzip\b/.test(acceptedEncoding);
+  const body = shouldCompress ? gzipSync(rawBody, { level: 4 }) : rawBody;
   response.writeHead(status, {
     "Access-Control-Allow-Origin": origin || "null",
     ...(origin && origin !== "null" ? { "Access-Control-Allow-Credentials": "true" } : {}),
     "Cache-Control": "no-store",
     "Content-Type": "application/json; charset=utf-8",
-    "Vary": "Origin",
+    "Content-Length": String(body.length),
+    ...(shouldCompress ? { "Content-Encoding": "gzip" } : {}),
+    "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
+    "Referrer-Policy": "strict-origin-when-cross-origin",
+    "X-Frame-Options": "SAMEORIGIN",
+    "X-Content-Type-Options": "nosniff",
+    "Vary": "Origin, Accept-Encoding",
     ...extraHeaders
   });
-  response.end(JSON.stringify(value));
+  response.end(body);
 }
 
 function allowedOrigin(request) {
@@ -704,7 +714,7 @@ async function handleAPI(request, response, url, origin) {
         ...(workspace?.settings || {}),
         freeShippingThreshold: commerce.freeShippingThreshold
       }
-    }, origin);
+    }, origin, { "Cache-Control": "public, max-age=15, stale-while-revalidate=60" });
   }
 
   if (url.pathname === "/api/admin/uploads/storefront-image" && request.method === "POST") {
@@ -810,7 +820,9 @@ async function handleAPI(request, response, url, origin) {
   }
 
   if (url.pathname === "/api/products" && request.method === "GET") {
-    return jsonResponse(response, 200, { products: listProducts() }, origin);
+    return jsonResponse(response, 200, { products: listProducts() }, origin, {
+      "Cache-Control": "public, max-age=30, stale-while-revalidate=120"
+    });
   }
 
   if (url.pathname === "/api/restock-requests" && request.method === "POST") {
@@ -1810,6 +1822,17 @@ async function handleAPI(request, response, url, origin) {
   return jsonResponse(response, 404, { error: "Not found" }, origin);
 }
 
+const staticCompressionCache = new Map();
+const STATIC_COMPRESSION_CACHE_LIMIT = 80;
+
+function cacheCompressedStatic(key, body) {
+  if (staticCompressionCache.size >= STATIC_COMPRESSION_CACHE_LIMIT) {
+    staticCompressionCache.delete(staticCompressionCache.keys().next().value);
+  }
+  staticCompressionCache.set(key, body);
+  return body;
+}
+
 async function serveStatic(request, response, url) {
   const isNotesRoute = /^\/notes(?:\/[a-z0-9-]+)?\/?$/i.test(url.pathname);
   const isBenefitRoute = /^\/benefits(?:\/[a-z0-9-]+)?\/?$/i.test(url.pathname);
@@ -1839,7 +1862,10 @@ async function serveStatic(request, response, url) {
           : "public, max-age=86400",
       "Content-Type": mimeTypes[extension] || "application/octet-stream",
       "ETag": etag,
+      "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
+      "Referrer-Policy": "strict-origin-when-cross-origin",
       "Vary": "Accept-Encoding",
+      "X-Frame-Options": "SAMEORIGIN",
       "X-Content-Type-Options": "nosniff"
     };
     if (request.headers["if-none-match"] === etag) {
@@ -1857,13 +1883,22 @@ async function serveStatic(request, response, url) {
     const acceptedEncoding = request.headers["accept-encoding"] || "";
     if (canCompress && /\bbr\b/.test(acceptedEncoding)) {
       headers["Content-Encoding"] = "br";
+      const cacheKey = `${filePath}:${etag}:br`;
+      const body = staticCompressionCache.get(cacheKey) || cacheCompressedStatic(cacheKey, await promisify(brotliCompress)(data, {
+        params: { [zlibConstants.BROTLI_PARAM_QUALITY]: 4 }
+      }));
+      headers["Content-Length"] = String(body.length);
       response.writeHead(200, headers);
-      response.end(await promisify(brotliCompress)(data));
+      response.end(body);
     } else if (canCompress && /\bgzip\b/.test(acceptedEncoding)) {
       headers["Content-Encoding"] = "gzip";
+      const cacheKey = `${filePath}:${etag}:gzip`;
+      const body = staticCompressionCache.get(cacheKey) || cacheCompressedStatic(cacheKey, await promisify(gzip)(data));
+      headers["Content-Length"] = String(body.length);
       response.writeHead(200, headers);
-      response.end(await promisify(gzip)(data));
+      response.end(body);
     } else {
+      headers["Content-Length"] = String(data.length);
       response.writeHead(200, headers);
       response.end(data);
     }
@@ -1873,6 +1908,7 @@ async function serveStatic(request, response, url) {
 }
 
 const server = createServer(async (request, response) => {
+  response.origoAcceptedEncoding = String(request.headers["accept-encoding"] || "");
   const origin = allowedOrigin(request);
   if (origin === null) {
     jsonResponse(response, 403, { error: "Origin not allowed" });
