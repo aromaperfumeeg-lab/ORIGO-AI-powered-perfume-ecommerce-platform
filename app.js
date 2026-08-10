@@ -1490,6 +1490,8 @@ async function hydrateServer() {
     handleBenefitsRoute({ replace: true });
     handleCatalogRoute({ replace: true });
     handleProductRoute();
+  } finally {
+    document.body.classList.remove("origo-hydrating");
   }
 }
 
@@ -6758,8 +6760,15 @@ function renderImportReview(product) {
   const level = product.confidence?.level || "incomplete";
   const missing = product.confidence?.missing || [];
   const images = product.images || [];
-  const linkedReferenceIds = new Set((state.alternativesAdmin?.items || []).filter((item) => item.productId === product.id).map((item) => item.referenceId));
-  const alternativeReferenceOptions = (state.alternativesAdmin?.references || []).filter((reference) => reference.status !== "archived").map((reference) => `<label class="product-reference-choice"><input type="checkbox" name="alternativeReferenceIds" value="${escapeHTML(reference.id)}"${linkedReferenceIds.has(reference.id) ? " checked" : ""}/><img src="${escapeHTML(reference.image)}" alt=""/><span><b>${escapeHTML(adminCopy(reference.nameAr, reference.nameEn))}</b><small>${escapeHTML(reference.brand)}</small></span></label>`).join("");
+  const linkedAlternativeMatches = (state.alternativesAdmin?.items || []).filter((item) => item.productId === product.id);
+  const linkedReferenceIds = new Set(linkedAlternativeMatches.map((item) => item.referenceId));
+  const activeAlternativeReferences = (state.alternativesAdmin?.references || []).filter((reference) => reference.status !== "archived");
+  const inspiredMatch = linkedAlternativeMatches.find((item) => item.relationshipType === "inspired_by" && item.primaryReference)
+    || linkedAlternativeMatches.find((item) => item.relationshipType === "inspired_by")
+    || linkedAlternativeMatches.find((item) => item.primaryReference);
+  const inspiredReferenceId = inspiredMatch?.referenceId || product.inspiredReferenceId || "";
+  const inspiredReferenceOptions = activeAlternativeReferences.map((reference) => `<option value="${escapeHTML(reference.id)}"${String(inspiredReferenceId) === String(reference.id) ? " selected" : ""}>${escapeHTML(`${adminCopy(reference.nameAr, reference.nameEn)} — ${reference.brand}`)}</option>`).join("");
+  const alternativeReferenceOptions = activeAlternativeReferences.map((reference) => `<label class="product-reference-choice"><input type="checkbox" name="alternativeReferenceIds" value="${escapeHTML(reference.id)}"${linkedReferenceIds.has(reference.id) ? " checked" : ""}/><img src="${escapeHTML(reference.image)}" alt=""/><span><b>${escapeHTML(adminCopy(reference.nameAr, reference.nameEn))}</b><small>${escapeHTML(reference.brand)}</small></span></label>`).join("");
   $("#import-workspace").innerHTML = `
     <form class="catalog-review" id="import-review-form" data-editor-mode="${escapeHTML(state.productEditorMode)}">
       <div class="product-editor-modes">
@@ -6824,6 +6833,23 @@ function renderImportReview(product) {
         <details class="perfume-manual-override"${product.perfumeProfile?.source === "manual_override" ? " open" : ""}><summary>${adminCopy("تعديل يدوي متقدم — اختياري", "Advanced manual override — optional")}</summary><label class="perfume-manual-toggle"><input type="checkbox" name="profileManualOverride"${product.perfumeProfile?.source === "manual_override" ? " checked" : ""}/> ${adminCopy("استخدام درجات الأكوردات اليدوية بدل التحليل المولد", "Use manual accord scores instead of generated analysis")}</label>${adminAccordEditor(product)}</details>
       </section>
 
+      <section class="review-section inspired-reference-section" data-editor-tier="smart" data-perfume-section>
+        <div class="review-section-head"><span>04</span><div><b>${adminCopy("العطر المستوحى منه", "Inspired-by fragrance")}</b><small>${adminCopy("اختر عطرًا مرجعيًا موجودًا أو أضف عطرًا جديدًا؛ سيظهر الربط تلقائيًا في قسم البدائل.", "Choose an existing reference fragrance or add a new one; the relationship is saved automatically in Alternatives.")}</small></div></div>
+        <div class="review-grid inspired-reference-grid">
+          <label class="wide">${adminCopy("العطر المرجعي", "Reference fragrance")}<select name="inspiredReferenceId"><option value="">${adminCopy("غير محدد", "Not specified")}</option>${inspiredReferenceOptions}</select><small>${adminCopy("يمكن البحث وإدارة جميع العلاقات لاحقًا من قسم إدارة البدائل.", "All relationships can be reviewed later in Alternatives management.")}</small></label>
+        </div>
+        <details class="inspired-reference-create">
+          <summary>＋ ${adminCopy("إضافة عطر مرجعي جديد إلى الخيارات", "Add a new reference fragrance")}</summary>
+          <p>${adminCopy("املأ الحقول الثلاثة الأساسية فقط. بعد حفظ المنتج سيضاف العطر إلى مكتبة البدائل ويُربط كـ «مستوحى من».", "Complete the three required fields. Saving the product adds it to the Alternatives library and links it as Inspired by.")}</p>
+          <div class="review-grid">
+            <label>${adminCopy("اسم العطر بالعربية", "Arabic fragrance name")}<input name="newInspiredNameAr" maxlength="200" dir="rtl" /></label>
+            <label>${adminCopy("اسم العطر بالإنجليزية", "English fragrance name")}<input name="newInspiredNameEn" maxlength="200" dir="ltr" /></label>
+            <label>${adminCopy("العلامة التجارية", "Brand")}<input name="newInspiredBrand" maxlength="160" /></label>
+            <label>${adminCopy("رابط الصورة — اختياري", "Image URL — optional")}<input name="newInspiredImage" dir="ltr" placeholder="https://..." /></label>
+          </div>
+        </details>
+      </section>
+
       ${performanceAdminSection(product)}
 
       <section class="review-section" data-editor-tier="smart" data-nonperfume-section hidden>
@@ -6871,7 +6897,7 @@ function renderImportReview(product) {
           <label>${adminCopy("شارة البطاقة", "Card badge")}<input name="cardBadgeAr" value="${escapeHTML(product.cardBadgeAr || "")}" placeholder="${adminCopy("حصري", "Exclusive")}" /></label>
           <label>${adminCopy("منتجات مشابهة", "Similar product IDs")}<input name="similarProductIds" value="${escapeHTML(csv(product.similarProductIds))}" /></label>
           <label>${adminCopy("اشترِ معه", "Cross-sell product IDs")}<input name="crossSellIds" value="${escapeHTML(csv(product.crossSellIds))}" /></label>
-          <fieldset class="product-reference-links wide"><legend>${adminCopy("العطور العالمية المرجعية المرتبطة بهذا المنتج", "Global reference fragrances linked to this product")}</legend><p>${adminCopy("يمكن ربط المنتج بأكثر من عطر مرجعي. تُحفظ العلاقة في نظام البدائل وليست كنص داخل المنتج.", "A product can link to multiple references. Relationships are saved in the alternatives system, not as product text.")}</p><div>${alternativeReferenceOptions || `<small>${adminCopy("أضف عطرًا مرجعيًا أولًا من قسم البدائل.", "Add a reference fragrance from Alternatives first.")}</small>`}</div></fieldset>
+           <fieldset class="product-reference-links wide"><legend>${adminCopy("روابط بدائل إضافية — اختياري", "Additional alternative links — optional")}</legend><p>${adminCopy("العطر الرئيسي المستوحى منه يُدار في القسم الواضح أعلاه. استخدم هذه القائمة فقط لإضافة مراجع أخرى للمقارنة.", "The primary inspired-by fragrance is managed in the dedicated section above. Use this list only for additional comparison references.")}</p><div>${alternativeReferenceOptions || `<small>${adminCopy("لا توجد عطور مرجعية أخرى بعد.", "No additional reference fragrances yet.")}</small>`}</div></fieldset>
         </div>
       </section>
 
@@ -6915,6 +6941,10 @@ function optionValuesForProduct(group, rawValue) {
 function collectReviewProduct(form) {
   const data = new FormData(form);
   const base = state.activeImportDraft || ORIGOCatalog.emptyProduct();
+  const inspiredReferenceId = String(data.get("inspiredReferenceId") || "").trim();
+  const inspiredReference = (state.alternativesAdmin?.references || []).find((reference) => String(reference.id) === inspiredReferenceId);
+  const newInspiredNameAr = String(data.get("newInspiredNameAr") || "").trim();
+  const newInspiredNameEn = String(data.get("newInspiredNameEn") || "").trim();
   const useManualOverride = data.get("profileManualOverride") === "on";
   const selectedAccordIds = new Set(data.getAll("accordSelected").map(String));
   const accordProfile = ORIGO_ACCORD_LIBRARY.filter(([id]) => selectedAccordIds.has(id)).map(([id, nameAr, nameEn, color, icon]) => ({
@@ -6990,7 +7020,8 @@ function collectReviewProduct(form) {
     profileStatus: useManualOverride ? "stale" : (base.profileStatus || (base.perfumeProfile?.engineVersion ? "fresh" : "stale")),
     personalities: data.has("personalities") ? csvValues(data.get("personalities")) : (base.personalities || []),
     moods: data.has("moods") ? csvValues(data.get("moods")) : (base.moods || []),
-    inspiredBy: data.has("inspiredBy") ? String(data.get("inspiredBy") || "").trim() : (base.inspiredBy || ""),
+    inspiredBy: newInspiredNameEn || newInspiredNameAr || inspiredReference?.nameEn || inspiredReference?.nameAr || (inspiredReferenceId ? base.inspiredBy || "" : ""),
+    inspiredReferenceId,
     similarity: data.has("similarity") ? (data.get("similarity") === "" ? null : Number(data.get("similarity"))) : (base.similarity ?? null),
     slug: String(data.get("slug") || "").trim(),
     seo: {
@@ -7270,7 +7301,32 @@ function updateDuplicateWarning(form) {
 
 async function saveCatalogProduct(form, workflowAction = "draft") {
   let product = collectReviewProduct(form);
-  const selectedReferenceIds = [...form.querySelectorAll("[name='alternativeReferenceIds']:checked")].map((input) => input.value);
+  const newInspiredReference = {
+    nameAr: String(form.elements.newInspiredNameAr?.value || "").trim(),
+    nameEn: String(form.elements.newInspiredNameEn?.value || "").trim(),
+    brand: String(form.elements.newInspiredBrand?.value || "").trim(),
+    image: String(form.elements.newInspiredImage?.value || "").trim()
+  };
+  const wantsNewInspiredReference = Object.values(newInspiredReference).some(Boolean);
+  let inspiredReferenceId = String(form.elements.inspiredReferenceId?.value || "").trim();
+  if (wantsNewInspiredReference) {
+    if (!newInspiredReference.nameAr || !newInspiredReference.nameEn || !newInspiredReference.brand) {
+      showToast(adminCopy("لإضافة عطر مرجعي جديد أدخل الاسم بالعربية والإنجليزية والعلامة التجارية.", "To add a new reference, enter its Arabic name, English name, and brand."));
+      const invalidField = !newInspiredReference.nameAr ? form.elements.newInspiredNameAr : !newInspiredReference.nameEn ? form.elements.newInspiredNameEn : form.elements.newInspiredBrand;
+      invalidField?.focus();
+      invalidField?.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+    const referenceSlug = ORIGOCatalog.normalize(newInspiredReference.nameEn || newInspiredReference.nameAr)
+      .replace(/[^a-z0-9\u0600-\u06ff]+/g, "-").replace(/^-+|-+$/g, "") || `reference-${Date.now().toString(36)}`;
+    inspiredReferenceId = `ref-${referenceSlug}`;
+    product.inspiredReferenceId = inspiredReferenceId;
+    product.inspiredBy = newInspiredReference.nameEn || newInspiredReference.nameAr;
+  }
+  const selectedReferenceIds = [...new Set([
+    ...[...form.querySelectorAll("[name='alternativeReferenceIds']:checked")].map((input) => input.value),
+    ...(inspiredReferenceId ? [inspiredReferenceId] : [])
+  ])];
   const previousAlternativeMatches = (state.alternativesAdmin?.items || []).filter((item) => item.productId === product.id);
   product.status = ["draft", "review", "published"].includes(workflowAction) ? workflowAction : "draft";
   const duplicate = findDuplicate(product, product.id);
@@ -7308,14 +7364,25 @@ async function saveCatalogProduct(form, workflowAction = "draft") {
         body: JSON.stringify(product)
       });
       product = result.product;
+      if (wantsNewInspiredReference) {
+        state.alternativesAdmin = await api("/api/admin/alternative-references", {
+          method: "POST",
+          body: JSON.stringify({
+            id: inspiredReferenceId,
+            slug: inspiredReferenceId.replace(/^ref-/, ""),
+            ...newInspiredReference,
+            status: "active"
+          })
+        });
+      }
       for (const referenceId of selectedReferenceIds) {
         const existing = previousAlternativeMatches.find((item) => item.referenceId === referenceId);
         await api("/api/admin/alternative-relationships/bulk", { method: "POST", body: JSON.stringify({ referenceId, links: [{
           productId: product.id, approvedSimilarity: existing?.approvedSimilarity ?? null,
-          relationshipType: existing?.relationshipType || "similar_character", reasonAr: existing?.reasonAr || "",
+          relationshipType: referenceId === inspiredReferenceId ? "inspired_by" : (existing?.relationshipType === "inspired_by" ? "similar_character" : existing?.relationshipType || "similar_character"), reasonAr: existing?.reasonAr || "",
           reasonEn: existing?.reasonEn || "", visible: existing?.visible !== false, status: existing?.status || "active",
           reviewStatus: existing?.reviewStatus || "approved", sortOrder: existing?.sortOrder || 0,
-          primaryReference: existing?.primaryReference || false, primaryAlternative: existing?.primaryAlternative || false
+          primaryReference: referenceId === inspiredReferenceId, primaryAlternative: existing?.primaryAlternative || false
         }] }) });
       }
       for (const match of previousAlternativeMatches.filter((item) => !selectedReferenceIds.includes(item.referenceId))) {

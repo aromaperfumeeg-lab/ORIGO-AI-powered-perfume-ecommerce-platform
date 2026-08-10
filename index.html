@@ -25,6 +25,10 @@
     <meta property="og:image" content="https://origoscents.com/assets/origo-logo.svg" />
     <meta name="twitter:card" content="summary_large_image" />
     <title>ORIGO | أصل الحكاية العطرية</title>
+    <style id="origo-hydration-guard">
+      body.origo-hydrating #home{visibility:hidden;opacity:0}
+      body:not(.origo-hydrating) #home{visibility:visible;opacity:1;transition:opacity .12s ease-out}
+    </style>
     <link rel="stylesheet" href="styles.css?v=34" />
     <link rel="stylesheet" href="home.css?v=73" />
   <link rel="stylesheet" href="components/product-card/storefront-product-card.css?v=4" />
@@ -41,7 +45,9 @@
     <link rel="stylesheet" href="admin-ui-fixes.css?v=6" />
     <link rel="stylesheet" href="notes-admin-fixes.css?v=2" media="print" onload="this.media='all'" />
   </head>
-  <body>
+  <body class="origo-hydrating">
+    <noscript><style>body.origo-hydrating #home{visibility:visible;opacity:1}</style></noscript>
+    <script>window.setTimeout(() => document.body?.classList.remove("origo-hydrating"), 5000);</script>
     <div class="announcement" aria-hidden="true"></div>
 
     <header class="site-header" id="top">
