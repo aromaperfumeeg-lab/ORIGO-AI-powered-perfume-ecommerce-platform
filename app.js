@@ -1170,7 +1170,6 @@ const state = {
   activeImportDraft: null,
   adminSuggestions: [],
   adminSearchController: null,
-  quickImportImages: [],
   user: null,
   orders: [],
   adminOrders: [],
@@ -6296,112 +6295,6 @@ async function loadImportDraft(selection) {
   renderImportReview(product);
 }
 
-function renderQuickImportImages() {
-  const holder = $("#quick-image-preview");
-  const extractButton = $("[data-action='extract-product-images']");
-  const clearButton = $("[data-action='clear-product-images']");
-  if (!holder) return;
-  const images = state.quickImportImages || [];
-  holder.hidden = !images.length;
-  holder.innerHTML = images.map((image, index) => `<article>
-    <img src="${escapeHTML(image.dataUrl)}" alt="${escapeHTML(image.name)}"/>
-    <button type="button" data-action="remove-quick-import-image" data-index="${index}" aria-label="${adminCopy("إزالة الصورة", "Remove image")}">×</button>
-  </article>`).join("");
-  if (extractButton) extractButton.disabled = !images.length;
-  if (clearButton) clearButton.hidden = !images.length;
-}
-
-async function addQuickImportImages(fileList) {
-  const files = [...(fileList || [])].filter((file) => /^image\/(?:jpeg|png|webp)$/i.test(file.type));
-  const available = Math.max(0, 6 - (state.quickImportImages || []).length);
-  if (!available || !files.length) return;
-  const section = $(".quick-image-import");
-  const status = $("#quick-image-status");
-  section?.classList.add("extracting");
-  if (status) status.textContent = adminCopy("جارٍ تجهيز الصور ورفع جودتها للاستخراج…", "Preparing images for extraction…");
-  try {
-    const prepared = [];
-    for (const file of files.slice(0, available)) {
-      if (file.size > 10_000_000) throw new Error(adminCopy("حجم الصورة يجب ألا يتجاوز 10 MB", "Each image must be 10 MB or less"));
-      prepared.push({ name: file.name, dataUrl: await optimizeGalleryImage(file) });
-    }
-    state.quickImportImages = [...(state.quickImportImages || []), ...prepared];
-    renderQuickImportImages();
-    if (status) status.textContent = adminCopy(`تم تجهيز ${state.quickImportImages.length} صورة لنفس المنتج.`, `${state.quickImportImages.length} images are ready for one product.`);
-  } catch (error) {
-    if (status) status.textContent = error.message;
-    showToast(error.message);
-  } finally {
-    section?.classList.remove("extracting");
-  }
-}
-
-function clearQuickImportImages() {
-  state.quickImportImages = [];
-  const input = $("#quick-import-images");
-  if (input) input.value = "";
-  const status = $("#quick-image-status");
-  if (status) status.textContent = "";
-  renderQuickImportImages();
-}
-
-async function extractQuickImportProduct() {
-  const images = state.quickImportImages || [];
-  if (!images.length) return;
-  const section = $(".quick-image-import");
-  const status = $("#quick-image-status");
-  const button = $("[data-action='extract-product-images']");
-  section?.classList.add("extracting");
-  if (button) button.disabled = true;
-  if (status) status.textContent = adminCopy("نقرأ الصور، نوحّد المنتج، ونراجع المصادر…", "Reading images, merging the product, and checking sources…");
-  try {
-    const result = await api("/api/catalog/ai-extract-images", {
-      method: "POST",
-      body: JSON.stringify({
-        hint: $("#quick-import-hint")?.value.trim() || $("#web-product-query")?.value.trim() || "",
-        images: images.map((image) => image.dataUrl)
-      })
-    });
-    const extracted = result.data || {};
-    const product = {
-      ...ORIGOCatalog.emptyProduct(),
-      ...extracted,
-      id: `catalog-${Date.now()}`,
-      status: "draft",
-      price: "",
-      size: extracted.sizes?.[0] || "",
-      images: [],
-      mainAccords: (extracted.accordProfile || []).map((item) => item.nameAr || item.nameEn).filter(Boolean),
-      sourceLog: [{
-        provider: `OpenAI image extraction · ${result.model || "AI"}`,
-        url: result.citations?.[0]?.url || "",
-        fields: Object.keys(extracted).filter((key) => !["images"].includes(key)),
-        status: "review",
-        note: adminCopy(`استخراج من ${images.length} صور؛ يتطلب مراجعة المدير`, `Extracted from ${images.length} images; manager review required`),
-        fetchedAt: result.fetchedAt || new Date().toISOString()
-      }, ...(result.citations || []).slice(1, 8).map((citation) => ({
-        provider: citation.title || "Web source",
-        url: citation.url || "",
-        fields: [],
-        status: "reference",
-        note: "Cross-check source",
-        fetchedAt: result.fetchedAt || new Date().toISOString()
-      }))]
-    };
-    ORIGOCatalog.computeConfidence(product);
-    state.activeImportDraft = product;
-    renderImportReview(product);
-    clearQuickImportImages();
-    showToast(adminCopy("تم إنشاء مسودة موحدة؛ راجعها قبل الحفظ", "A merged draft is ready; review it before saving"));
-  } catch (error) {
-    if (status) status.textContent = error.message;
-    showToast(error.message);
-  } finally {
-    section?.classList.remove("extracting");
-    if (button) button.disabled = !(state.quickImportImages || []).length;
-  }
-}
-
 function selectOptions(options, selected) {
   return options.map(([value, label]) => `<option value="${value}"${value === selected ? " selected" : ""}>${label}</option>`).join("");
 }
@@ -6566,7 +6459,7 @@ function performanceAdminSection(product) {
   const visible = new Set(settings.visibleMetrics || Object.keys(performanceAdminOptions));
   const votes = admin.votes || [];
   const canImport = state.user?.role === "owner";
-  return `<section class="review-section performance-admin-section" data-editor-tier="advanced">
+  return `<section class="review-section performance-admin-section" data-editor-tier="smart" data-perfume-section>
     <div class="review-section-head"><span>04</span><div><b>${adminCopy("تقييم ومؤشرات الأداء", "Ratings & performance insights")}</b><small>${adminCopy("تقييم ORIGO منفصل عن أصوات العملاء ومتوسط النجوم", "ORIGO editorial data stays separate from customer votes and star ratings")}</small></div></div>
     <div class="performance-admin-controls">
       <label class="performance-admin-toggle"><input type="checkbox" name="performanceEnabled"${settings.enabled !== false ? " checked" : ""}/><span>${adminCopy("إظهار القسم في صفحة المنتج", "Show on product page")}</span></label>
@@ -6930,6 +6823,8 @@ function renderImportReview(product) {
         <div id="perfume-analysis-preview" aria-live="polite">${perfumeAnalysisPreviewMarkup(product)}</div>
         <details class="perfume-manual-override"${product.perfumeProfile?.source === "manual_override" ? " open" : ""}><summary>${adminCopy("تعديل يدوي متقدم — اختياري", "Advanced manual override — optional")}</summary><label class="perfume-manual-toggle"><input type="checkbox" name="profileManualOverride"${product.perfumeProfile?.source === "manual_override" ? " checked" : ""}/> ${adminCopy("استخدام درجات الأكوردات اليدوية بدل التحليل المولد", "Use manual accord scores instead of generated analysis")}</label>${adminAccordEditor(product)}</details>
       </section>
+
+      ${performanceAdminSection(product)}
 
       <section class="review-section" data-editor-tier="smart" data-nonperfume-section hidden>
         <div class="review-section-head"><span>03</span><div><b>${adminCopy("خصائص القسم", "Category-specific attributes")}</b><small>${adminCopy("تظهر الحقول المناسبة لنوع المنتج فقط.", "Only fields relevant to the selected product type are shown.")}</small></div></div>
@@ -8718,19 +8613,6 @@ document.addEventListener("click", async (event) => {
       $("#import-workspace").innerHTML = `<div class="import-empty"><span>!</span><h3>${adminCopy("تعذر جلب البيانات", "Could not fetch product data")}</h3><p>${adminCopy("جرّب نتيجة أخرى أو أنشئ مسودة يدوية.", "Try another result or create a manual draft.")}</p></div>`;
     });
   }
-  if (action === "extract-product-images") {
-    await extractQuickImportProduct();
-    return;
-  }
-  if (action === "clear-product-images") {
-    clearQuickImportImages();
-    return;
-  }
-  if (action === "remove-quick-import-image") {
-    state.quickImportImages.splice(Number(actionElement.dataset.index), 1);
-    renderQuickImportImages();
-    return;
-  }
   if (action === "new-product") startManualProduct();
   if (action === "restore-product-draft") startManualProduct(true);
   if (action === "product-editor-mode") {
@@ -9787,11 +9669,6 @@ document.addEventListener("change", async (event) => {
       return;
     }
     if (status) status.textContent = files.length ? adminCopy(`تم اختيار ${files.length} صورة. اضغط حفظ السلايدر لإضافتها.`, `${files.length} images selected. Save the slider to add them.`) : "";
-    return;
-  }
-  if (event.target.id === "quick-import-images") {
-    await addQuickImportImages(event.target.files);
-    event.target.value = "";
     return;
   }
   if (event.target.id === "alternatives-import-file") {
