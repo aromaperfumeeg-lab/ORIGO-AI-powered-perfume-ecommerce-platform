@@ -1585,18 +1585,27 @@ function orderStatusOptions(selected) {
 }
 
 function adminNavMarkup() {
-  let lastGroup = "";
-  return adminSections.filter((section) => section.id === "overview"
+  const allowed = adminSections.filter((section) => section.id === "overview"
     || hasStaffPermission(sectionPermission(section.id))
-    || state.user?.permissions?.includes("*")).map((section) => {
-    const group = state.lang === "ar" ? section.groupAr : section.groupEn;
-    const heading = group !== lastGroup ? `<small>${escapeHTML(group)}</small>` : "";
-    lastGroup = group;
-    return `${heading}<button data-action="admin-view" data-view="${section.id}" class="${state.adminView === section.id ? "active" : ""}">
+    || state.user?.permissions?.includes("*"));
+  const primaryIds = new Set(["overview", "orders", "products", "inventory", "customers", "homepage", "content", "marketing", "coupons", "reports", "support", "settings"]);
+  const itemMarkup = (section) => `<button data-action="admin-view" data-view="${section.id}" class="${state.adminView === section.id ? "active" : ""}">
       <i>${section.icon}</i><span>${escapeHTML(state.lang === "ar" ? section.ar : section.en)}</span>
       ${section.id === "orders" && state.adminOrders.filter((order) => order.status === "new").length ? `<b>${state.adminOrders.filter((order) => order.status === "new").length}</b>` : ""}
       ${section.id === "inventory" ? `<b>${lowStockProducts().length}</b>` : ""}</button>`;
-  }).join("");
+  const groupedMarkup = (sections) => {
+    let lastGroup = "";
+    return sections.map((section) => {
+      const group = state.lang === "ar" ? section.groupAr : section.groupEn;
+      const heading = group !== lastGroup ? `<small>${escapeHTML(group)}</small>` : "";
+      lastGroup = group;
+      return `${heading}${itemMarkup(section)}`;
+    }).join("");
+  };
+  const primary = allowed.filter((section) => primaryIds.has(section.id));
+  const secondary = allowed.filter((section) => !primaryIds.has(section.id));
+  const secondaryIsActive = secondary.some((section) => section.id === state.adminView);
+  return `${groupedMarkup(primary)}${secondary.length ? `<details class="admin-nav-more"${secondaryIsActive ? " open" : ""}><summary><i>＋</i><span>${adminCopy("المزيد من الأدوات", "More tools")}</span><b>${secondary.length}</b></summary><div>${groupedMarkup(secondary)}</div></details>` : ""}`;
 }
 
 function inventoryForProduct(product) {
@@ -1851,7 +1860,7 @@ function productViewMarkup() {
         <button class="table-action danger" data-action="delete-admin-product" data-id="${escapeHTML(product.id)}">${state.lang === "ar" ? "حذف" : "Delete"}</button>
       </span></td></tr>`;
   });
-  return adminTable(headers, rows, state.lang === "ar" ? "لا توجد منتجات" : "No products");
+  return adminTable(headers, rows, state.lang === "ar" ? "لا توجد منتجات" : "No products").replace('class="admin-data-table"', 'class="admin-data-table product-admin-table"');
 }
 
 function performanceProductsViewMarkup() {
@@ -5534,39 +5543,23 @@ function productCardMarkup(product, options = {}) {
   const explicitBadge = String(isArabic ? product.cardBadgeAr || product.badgeAr || "" : product.cardBadgeEn || product.badgeEn || "").trim();
   const normalizedBadge = ORIGOCatalog.normalize(explicitBadge);
   const isNew = Boolean(product.isNew) || /new|جديد|وصل حديثا/.test(normalizedBadge);
-  const badgeCandidates = [
-    outOfStock ? [100, isArabic ? "نفد المخزون" : "OUT OF STOCK", "stock"] : null,
-    discount ? [90, isArabic ? `خصم ${discount}%` : `${discount}% OFF`, "sale"] : null,
-    isNew ? [80, isArabic ? "جديد" : "NEW", "new"] : null
-  ].filter(Boolean).sort((a, b) => b[0] - a[0]);
-  const badges = badgeCandidates.filter((item, index, list) => list.findIndex((other) => other[1] === item[1]) === index).slice(0, 2);
   const saved = state.wishlist.includes(product.id);
-  const compared = state.comparison.includes(product.id);
   const rating = catalogRating(product);
-  const reviewCount = Number(product.reviewSummary?.count || product.insights?.reviews || product.reviewsCount || 0);
   const genderLabel = productCardGenderLabel(product, isArabic);
   const sizeLabel = formatProductSize(variant?.size || product.size || product.sizes?.[0] || "");
-  const compareLabel = compared
-    ? (isArabic ? "إزالة من المقارنة" : "Remove from comparison")
-    : (isArabic ? "إضافة إلى المقارنة" : "Add to comparison");
   const delayStyle = Number.isFinite(options.delay) ? ` style="transition-delay:${options.delay}ms"` : "";
   const disabled = interactive ? "" : " disabled tabindex=\"-1\"";
   const favoriteLabel = saved ? translations[state.lang].removeFavorite : translations[state.lang].favorites;
-  const noteLabels = ((isArabic ? product.notesAr : product.notesEn) || product.notesAr || product.notesEn || []).filter(Boolean).slice(0, 3);
-  const context = String(options.context || "grid");
-  const supportsDetails = interactive && context === "grid";
   const availableStock = Number(variant?.stock ?? product.inventory?.available ?? product.inventory?.quantity);
   const hasKnownAvailability = Number.isFinite(availableStock);
   const limitedStock = !outOfStock && hasKnownAvailability && availableStock > 0 && availableStock <= 5;
-  const stockLabel = outOfStock
-    ? (isArabic ? "غير متوفر" : "Out of stock")
-    : limitedStock ? (isArabic ? "متبقي كمية محدودة" : "Limited quantity") : (isArabic ? "متوفر" : "Available");
-  const loyaltyPoints = Number(variant?.loyaltyPoints ?? product.loyaltyPoints ?? product.rewardPoints);
-  const concentrationLabel = String(product.concentration || product.fragranceType || "").trim();
-  const ratingStars = rating > 0 ? Array.from({ length: 5 }, (_, index) => `<i class="${index + .5 < rating ? "active" : ""}" aria-hidden="true">★</i>`).join("") : "";
   const featureBadge = outOfStock
     ? (isArabic ? "نفد المخزون" : "Out of stock")
-    : explicitBadge || (isNew ? (isArabic ? "حديث" : "New") : "");
+    : limitedStock
+      ? (isArabic ? "كمية محدودة" : "Limited stock")
+      : isNew
+        ? (isArabic ? "جديد" : "New")
+        : (isArabic ? "متوفر" : "Available");
   return `<article class="product-card origo-reference-product-card origo-exact-product-card${options.reveal ? " reveal" : ""}${outOfStock ? " is-out" : ""}" data-id="${escapeHTML(product.id)}"${delayStyle}>
     <div class="product-image">
       ${discount ? `<span class="product-badge" data-badge-kind="sale">-${discount}%</span>` : ""}
@@ -5580,7 +5573,6 @@ function productCardMarkup(product, options = {}) {
       <h3><button type="button"${interactive ? ` data-action="open-product" data-id="${escapeHTML(product.id)}"` : disabled}>${escapeHTML(name || (isArabic ? "منتج جديد" : "New product"))}</button></h3>
       <div class="exact-card-specs">
         <span><b>${escapeHTML(genderLabel || (isArabic ? "للجنسين" : "Unisex"))}</b></span>
-        <span><b><bdi dir="ltr">${escapeHTML(concentrationLabel || "EDP")}</bdi></b></span>
         <span><b><bdi dir="ltr">${escapeHTML(sizeLabel || "100ml")}</bdi></b></span>
       </div>
       <div class="product-bottom">
@@ -6461,6 +6453,32 @@ function productOptionItems(group) {
   return [...unique.values()];
 }
 
+function smartSelectOptionMarkup(item, values = []) {
+  const value = item.value || item.slug || item.nameEn || item.nameAr || "";
+  const label = state.lang === "ar" ? item.nameAr || item.nameEn || value : item.nameEn || item.nameAr || value;
+  const secondary = state.lang === "ar" ? item.nameEn || "" : item.nameAr || "";
+  const selected = values.some((selectedValue) => normalizeOptionSearch(selectedValue) === normalizeOptionSearch(value));
+  return `<button type="button" role="option" data-action="smart-select-option" data-value="${escapeHTML(value)}" data-search="${escapeHTML(normalizeOptionSearch(`${item.nameAr || ""} ${item.nameEn || ""} ${value}`))}" aria-selected="${selected}">${item.image ? `<img src="${escapeHTML(item.image)}" alt=""/>` : `<em style="${item.color ? `--option-color:${escapeHTML(item.color)}` : ""}">${escapeHTML(item.icon || "◇")}</em>`}<span><b>${escapeHTML(label)}</b><small>${escapeHTML(secondary)}</small></span><i>✓</i></button>`;
+}
+
+function renderSmartSelectSearch(select, query = "") {
+  if (!select) return 0;
+  const group = select.dataset.group || "";
+  const normalizedQuery = normalizeOptionSearch(query);
+  const values = csvValues(select.querySelector('input[type="hidden"]')?.value || "");
+  const items = productOptionItems(group);
+  const selectedKeys = new Set(values.map(normalizeOptionSearch));
+  const matches = items.filter((item) => {
+    const search = normalizeOptionSearch(`${item.nameAr || ""} ${item.nameEn || ""} ${item.value || item.slug || ""}`);
+    return !normalizedQuery || search.includes(normalizedQuery);
+  });
+  const selectedItems = items.filter((item) => selectedKeys.has(normalizeOptionSearch(item.value || item.slug || item.nameEn || item.nameAr)));
+  const visible = [...new Map([...selectedItems, ...matches].map((item) => [normalizeOptionSearch(item.value || item.slug || item.nameEn || item.nameAr), item])).values()].slice(0, 80);
+  const holder = select.querySelector(".smart-select-options");
+  if (holder) holder.innerHTML = visible.map((item) => smartSelectOptionMarkup(item, values)).join("");
+  return matches.length;
+}
+
 function searchableCreatableSelect({ name, group, labelAr, labelEn, selected = [], multiple = false, required = false, allowCreate = true, all = false, hintAr = "", hintEn = "" }) {
   const values = (Array.isArray(selected) ? selected : [selected]).map(String).map((item) => item.trim()).filter(Boolean);
   const items = productOptionItems(group);
@@ -6475,7 +6493,7 @@ function searchableCreatableSelect({ name, group, labelAr, labelEn, selected = [
       <div class="smart-select-menu" hidden>
         <div class="smart-select-search"><input type="search" data-smart-search placeholder="${adminCopy("ابحث بالعربية أو الإنجليزية…","Search in Arabic or English…")}" autocomplete="off"/><button type="button" data-action="smart-select-settings" title="${adminCopy("إدارة الخيارات","Manage options")}">⚙</button></div>
         <div class="smart-select-actions">${all && multiple ? `<button type="button" data-action="smart-select-all">${adminCopy("تحديد الكل","Select all")}</button>` : ""}<button type="button" data-action="smart-select-clear">${adminCopy("مسح الكل","Clear all")}</button></div>
-        <div class="smart-select-options" role="listbox"${multiple ? ` aria-multiselectable="true"` : ""}>${visible.map((item) => `<button type="button" role="option" data-action="smart-select-option" data-value="${escapeHTML(item.value)}" data-search="${escapeHTML(normalizeOptionSearch(`${item.nameAr} ${item.nameEn} ${item.value}`))}" aria-selected="${values.some((value) => normalizeOptionSearch(value) === normalizeOptionSearch(item.value))}">${item.image ? `<img src="${escapeHTML(item.image)}" alt=""/>` : `<em style="${item.color ? `--option-color:${escapeHTML(item.color)}` : ""}">${escapeHTML(item.icon || "◇")}</em>`}<span><b>${escapeHTML(state.lang === "ar" ? item.nameAr || item.nameEn : item.nameEn || item.nameAr)}</b><small>${escapeHTML(state.lang === "ar" ? item.nameEn || "" : item.nameAr || "")}</small></span><i>✓</i></button>`).join("")}</div>
+        <div class="smart-select-options" role="listbox"${multiple ? ` aria-multiselectable="true"` : ""}>${visible.map((item) => smartSelectOptionMarkup(item, values)).join("")}</div>
         ${allowCreate ? `<button type="button" class="smart-select-create" data-action="smart-select-create">＋ ${adminCopy("إضافة خيار جديد","Add new option")}</button>` : ""}
       </div>
     </div>${hintAr || hintEn ? `<small>${adminCopy(hintAr,hintEn)}</small>` : ""}</label>`;
@@ -6514,12 +6532,16 @@ function editorPreviewMarkup(product) {
     ["stock", Number(product.inventory?.quantity) > 0], ["SEO", Boolean(product.seo?.title && product.seo?.description)],
     ["alternatives", Boolean(product.alternativeIds?.length)]
   ];
-  return `<aside class="product-editor-preview ${state.adminCardPreviewMode} ${state.adminCardPreviewTheme}">
+  const readyCount = checks.filter(([, ready]) => ready).length;
+  return `<details class="product-editor-preview-shell">
+    <summary><span>◇</span><div><b>${adminCopy("معاينة بطاقة المنتج", "Preview product card")}</b><small>${adminCopy(`${readyCount} من ${checks.length} عناصر جاهزة`, `${readyCount} of ${checks.length} items ready`)}</small></div><i>⌄</i></summary>
+    <aside class="product-editor-preview ${state.adminCardPreviewMode} ${state.adminCardPreviewTheme}">
     <div class="admin-card-preview-head"><span class="eyebrow">LIVE PRODUCT CARD</span><div><button type="button" data-action="admin-card-preview-mode" data-mode="desktop" class="${state.adminCardPreviewMode === "desktop" ? "active" : ""}">${adminCopy("سطح المكتب", "Desktop")}</button><button type="button" data-action="admin-card-preview-mode" data-mode="mobile" class="${state.adminCardPreviewMode === "mobile" ? "active" : ""}">${adminCopy("هاتف", "Mobile")}</button><button type="button" data-action="admin-card-preview-theme" data-theme="light" class="active">${adminCopy("فاتح", "Light")}</button></div></div>
     <div id="admin-live-product-card">${productCardMarkup(previewProduct, { context: "admin", interactive: false })}</div>
     <div class="product-editor-checklist" id="product-editor-checklist">${checks.map(([label, ready]) => `<span class="${ready ? "ready" : ""}"><i>${ready ? "✓" : "○"}</i>${label}</span>`).join("")}</div>
     <small id="product-autosave-status">${adminCopy("المسودة جاهزة للحفظ التلقائي", "Draft autosave is ready")}</small>
-  </aside>`;
+    </aside>
+  </details>`;
 }
 
 const performanceAdminOptions = {
@@ -6722,6 +6744,42 @@ function perfumeAnalysisPreviewMarkup(product = {}) {
   </div>`;
 }
 
+async function runPerfumeAnalysisPreview(form, button) {
+  if (!form || !button || button.dataset.running === "true") return;
+  button.dataset.running = "true";
+  button.disabled = true;
+  button.classList.add("is-loading");
+  try {
+    const draft = collectReviewProduct(form);
+    const manualOverrides = draft.perfumeProfile?.manualOverrides || [];
+    const result = await api("/api/admin/perfume-analysis", {
+      method: "POST",
+      body: JSON.stringify({ name:draft.nameAr || draft.nameEn, releaseYear:draft.releaseYear, topNotes:draft.noteSelections?.top || [], middleNotes:draft.noteSelections?.heart || [], baseNotes:draft.noteSelections?.base || [], manualOverrides })
+    });
+    state.activeImportDraft = { ...draft, perfumeProfile:result.profile, profileStatus:"fresh", profileEngineVersion:result.profile.engineVersion, profileSource:result.profile.source };
+    const preview = form.querySelector("#perfume-analysis-preview");
+    if (preview) preview.innerHTML = perfumeAnalysisPreviewMarkup(state.activeImportDraft);
+    showToast(adminCopy("اكتمل التحليل. راجع المعاينة ثم احفظ المنتج.", "Analysis complete. Review the preview, then save the product."));
+  } catch (error) {
+    console.error("[ORIGO PERFUME ANALYSIS]", error);
+    showToast(error.message || adminCopy("تعذر تحليل العطر.", "Unable to analyze the fragrance."), "error");
+  } finally {
+    button.disabled = false;
+    button.classList.remove("is-loading");
+    delete button.dataset.running;
+  }
+}
+
+function initializePerfumeAnalysisEditor(form) {
+  const button = form?.querySelector('[data-action="analyze-perfume-profile"]');
+  if (!button || button.dataset.analysisBound === "true") return;
+  button.dataset.analysisBound = "true";
+  button.addEventListener("click", async (event) => {
+    event.preventDefault();
+    await runPerfumeAnalysisPreview(form, button);
+  });
+}
+
 function filterAdminAccords(editor) {
   if (!editor) return;
   const query = normalizeOptionSearch(editor.querySelector("[data-accord-search]")?.value || "");
@@ -6795,6 +6853,7 @@ function setAdminStudioImage(studio, nextIndex) {
 }
 
 function renderImportReview(product) {
+  if (state.productEditorMode !== "advanced") state.productEditorMode = "smart";
   product = {
     ...ORIGOCatalog.emptyProduct(),
     ...product,
@@ -6811,21 +6870,9 @@ function renderImportReview(product) {
   $("#import-workspace").innerHTML = `
     <form class="catalog-review" id="import-review-form" data-editor-mode="${escapeHTML(state.productEditorMode)}">
       <div class="product-editor-modes">
-        <button type="button" data-action="product-editor-mode" data-mode="quick" class="${state.productEditorMode === "quick" ? "active" : ""}">${adminCopy("إضافة سريعة", "Quick Add")}</button>
-        <button type="button" data-action="product-editor-mode" data-mode="smart" class="${state.productEditorMode === "smart" ? "active" : ""}">${adminCopy("إضافة ذكية", "Smart Add")}</button>
-        <button type="button" data-action="product-editor-mode" data-mode="advanced" class="${state.productEditorMode === "advanced" ? "active" : ""}">${adminCopy("إضافة متقدمة", "Advanced Add")}</button>
+        <button type="button" data-action="product-editor-mode" data-mode="smart" class="${state.productEditorMode === "smart" ? "active" : ""}">${adminCopy("الحقول الأساسية", "Essential fields")}</button>
+        <button type="button" data-action="product-editor-mode" data-mode="advanced" class="${state.productEditorMode === "advanced" ? "active" : ""}">${adminCopy("خيارات متقدمة", "Advanced options")}</button>
       </div>
-      <div class="product-ai-tools">
-        <span>AI</span>
-        ${[
-          ["description", adminCopy("اقتراح الوصف", "Suggest descriptions")],
-          ["translate", adminCopy("ترجمة جميع الحقول الناقصة", "Translate missing fields")],
-          ["seo", adminCopy("اقتراح SEO", "Suggest SEO")],
-          ["alternatives", adminCopy("اقتراح البدائل", "Suggest alternatives")],
-          ["analysis", adminCopy("تحليل العطر", "Analyze fragrance")]
-        ].map(([task, label]) => `<button type="button" data-action="ai-product-task" data-task="${task}">${label}</button>`).join("")}
-      </div>
-      <div id="ai-product-suggestion"></div>
       ${editorPreviewMarkup(product)}
       <div class="review-summary">
         <div class="confidence-card ${level}"><span>◉</span><div><small>${adminCopy("ثقة البيانات", "DATA CONFIDENCE")}</small><b>${confidenceLabel(level)} · ${product.confidence?.score || 0}%</b></div></div>
@@ -6900,8 +6947,6 @@ function renderImportReview(product) {
         </div>
       </section>
 
-      ${performanceImageAdminSection(product)}
-
       <section class="review-section" data-editor-tier="core">
         <div class="review-section-head"><span>05</span><div><b>${adminCopy("الوصف والصور", "Descriptions & images")}</b></div></div>
         <div class="review-grid description-grid" data-nonperfume-section${product.category === "perfume" ? " hidden" : ""}>
@@ -6959,6 +7004,7 @@ function renderImportReview(product) {
   updateProductEditorPreview($("#import-review-form"));
   updateAdminAccordEditor($("#import-review-form"));
   updateProductTypeFields($("#import-review-form"));
+  initializePerfumeAnalysisEditor($("#import-review-form"));
   initializeProductEditorTabs();
 }
 
@@ -8688,7 +8734,7 @@ document.addEventListener("click", async (event) => {
   if (action === "new-product") startManualProduct();
   if (action === "restore-product-draft") startManualProduct(true);
   if (action === "product-editor-mode") {
-    state.productEditorMode = actionElement.dataset.mode || "quick";
+    state.productEditorMode = actionElement.dataset.mode || "smart";
     localStorage.setItem("origoProductEditorMode", state.productEditorMode);
     const form = $("#import-review-form");
     if (form) {
@@ -8728,35 +8774,7 @@ document.addEventListener("click", async (event) => {
     updateAdminAccordEditor(actionElement.closest("#import-review-form"));
   }
   if (action === "analyze-perfume-profile") {
-    const form = actionElement.closest("#import-review-form");
-    if (!form) return;
-    actionElement.disabled = true;
-    actionElement.classList.add("is-loading");
-    try {
-      const draft = collectReviewProduct(form);
-      const manualOverrides = draft.perfumeProfile?.manualOverrides || [];
-      const result = await api("/api/admin/perfume-analysis", {
-        method: "POST",
-        body: JSON.stringify({
-          name: draft.nameAr || draft.nameEn,
-          releaseYear: draft.releaseYear,
-          topNotes: draft.noteSelections?.top || [],
-          middleNotes: draft.noteSelections?.heart || [],
-          baseNotes: draft.noteSelections?.base || [],
-          manualOverrides
-        })
-      });
-      state.activeImportDraft = { ...draft, perfumeProfile: result.profile, profileStatus:"fresh", profileEngineVersion:result.profile.engineVersion, profileSource:result.profile.source };
-      const preview = $("#perfume-analysis-preview");
-      if (preview) preview.innerHTML = perfumeAnalysisPreviewMarkup(state.activeImportDraft);
-      showToast(adminCopy("اكتمل التحليل. راجع المعاينة ثم احفظ المنتج.", "Analysis complete. Review the preview, then save the product."));
-    } catch (error) {
-      console.error("[ORIGO PERFUME ANALYSIS]", error);
-      showToast(error.message || adminCopy("تعذر تحليل العطر.", "Unable to analyze the fragrance."));
-    } finally {
-      actionElement.disabled = false;
-      actionElement.classList.remove("is-loading");
-    }
+    await runPerfumeAnalysisPreview(actionElement.closest("#import-review-form"), actionElement);
   }
   if (action === "reanalyze-perfume-profile") {
     const draft = state.activeImportDraft;
@@ -9581,12 +9599,7 @@ document.addEventListener("input", (event) => {
   if (event.target.matches("[data-smart-search]")) {
     const menu = event.target.closest(".smart-select-menu");
     const query = normalizeOptionSearch(event.target.value);
-    let visible = 0;
-    menu.querySelectorAll("[role='option']").forEach((option) => {
-      const match = !query || String(option.dataset.search || "").includes(query);
-      option.hidden = !match;
-      if (match) visible += 1;
-    });
+    const visible = renderSmartSelectSearch(event.target.closest("[data-smart-select]"), query);
     const create = menu.querySelector(".smart-select-create");
     if (create) create.innerHTML = visible || !query ? `＋ ${adminCopy("إضافة خيار جديد","Add new option")}` : `＋ ${adminCopy("لم يتم العثور على الخيار — إضافته","No option found — add it")}`;
     return;

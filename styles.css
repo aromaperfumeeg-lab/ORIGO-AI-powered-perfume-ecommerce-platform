@@ -1218,7 +1218,7 @@ h2 em {
 .note-ribbon {
   margin: 38px 0 30px;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   border-block: 1px solid rgba(255,255,255,.12);
 }
 
@@ -5116,7 +5116,7 @@ body.dark .advanced-admin-panel {
   margin: 15px 10px 5px;
   display: block;
   color: rgba(255,255,255,.35);
-  font-size: 6px;
+  font-size: 10px;
   font-weight: 700;
   letter-spacing: .18em;
 }
@@ -5133,7 +5133,7 @@ body.dark .advanced-admin-panel {
   border-radius: 5px;
   color: rgba(255,255,255,.68);
   background: transparent;
-  font-size: 8px;
+  font-size: 13px;
   text-align: start;
   cursor: pointer;
   transition: .2s ease;
@@ -5157,7 +5157,7 @@ body.dark .advanced-admin-panel {
   border-radius: 99px;
   color: #fff;
   background: var(--burgundy-2);
-  font-size: 6px;
+  font-size: 10px;
   text-align: center;
 }
 
@@ -5171,6 +5171,32 @@ body.dark .advanced-admin-panel {
   color: var(--gold-bright);
   background: rgba(255,255,255,.1);
 }
+
+.admin-nav-more {
+  margin-top: 10px;
+  border-top: 1px solid rgba(255,255,255,.1);
+}
+
+.admin-nav-more > summary {
+  min-height: 42px;
+  padding: 8px 10px;
+  display: grid;
+  grid-template-columns: 23px 1fr auto;
+  align-items: center;
+  gap: 8px;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 750;
+  cursor: pointer;
+  list-style: none;
+}
+
+.admin-nav-more > summary::-webkit-details-marker { display: none; }
+.admin-nav-more > summary i { font-style: normal; color: var(--gold-bright); }
+.admin-nav-more > summary b { min-width: 24px; text-align: center; color: rgba(255,255,255,.7); font-size: 10px; }
+.admin-nav-more[open] > summary i { transform: rotate(45deg); }
+.admin-nav-more > div { padding-inline-start: 7px; border-inline-start: 1px solid rgba(255,255,255,.12); }
+.admin-nav-more > div > small { margin: 13px 10px 5px; display: block; color: rgba(255,255,255,.45); font-size: 9px; font-weight: 700; letter-spacing: .12em; }
 
 .admin-sidebar-user {
   padding: 12px 8px 2px;
@@ -5853,7 +5879,7 @@ body.dark .admin-alerts-card button {
 .admin-data-table th {
   color: #887d78;
   background: #faf8f5;
-  font-size: 6px;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: .04em;
 }
@@ -5863,7 +5889,7 @@ body.dark .admin-data-table th {
 }
 
 .admin-data-table td {
-  font-size: 8px;
+  font-size: 12px;
 }
 
 .admin-data-table td > b,
@@ -5873,7 +5899,7 @@ body.dark .admin-data-table th {
 
 .admin-data-table td small {
   color: #948985;
-  font-size: 6px;
+  font-size: 10px;
 }
 
 /* Banner management */
@@ -6703,6 +6729,47 @@ body.dark .admin-search-results > div:last-child button {
   .admin-quick-create {
     grid-template-columns: 1fr;
   }
+
+  .product-admin-table {
+    max-width: calc(100vw - 22px);
+    overflow: visible;
+    border: 0;
+    background: transparent;
+  }
+
+  .product-admin-table table,
+  .product-admin-table tbody {
+    width: 100%;
+    min-width: 0;
+    display: block;
+  }
+
+  .product-admin-table thead { display: none; }
+  .product-admin-table tbody { display: grid; gap: 10px; }
+  .product-admin-table tr {
+    width: 100%;
+    padding: 11px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 8px 12px;
+    border: 1px solid rgba(34,24,24,.1);
+    border-radius: 10px;
+    background: #fff;
+  }
+
+  .product-admin-table td { padding: 0; border: 0; font-size: 12px; }
+  .product-admin-table td:first-child,
+  .product-admin-table td:last-child { grid-column: 1 / -1; }
+  .product-admin-table td:nth-child(2),
+  .product-admin-table td:nth-child(5) { display: none; }
+  .product-admin-table td:nth-child(3) { font-size: 14px; }
+  .product-admin-table td:nth-child(4) { justify-self: end; }
+  .product-admin-table .admin-product-cell img { width: 48px; height: 58px; }
+  .product-admin-table .admin-table-actions { display: grid; grid-template-columns: repeat(3, 1fr); }
+  .product-admin-table .admin-table-actions button { min-height: 38px; font-size: 11px; }
+  .product-admin-table .admin-table-actions button:nth-child(2),
+  .product-admin-table .admin-table-actions button:nth-child(4) { display: none; }
 }
 
 .product-bottom .card-add-button {
@@ -8973,7 +9040,7 @@ body.notes-route #storefront-main > section:not(#notes-library-page) {
   z-index: 8;
   top: 0;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 4px;
   padding: 7px;
   border: 1px solid var(--line);
@@ -9057,7 +9124,7 @@ body.notes-route #storefront-main > section:not(#notes-library-page) {
 
 @media (max-width: 620px) {
   .catalog-review { padding-bottom: 156px; }
-  .product-editor-modes { grid-template-columns: 1fr; position: static; }
+  .product-editor-modes { grid-template-columns: 1fr 1fr; position: sticky; }
   .accord-admin-toolbar { align-items: stretch; flex-direction: column; }
   .accord-admin-search { grid-template-columns: 1fr 1fr; }
   .accord-admin-search .accord-search-count { grid-column: 1 / -1; }
@@ -9084,6 +9151,33 @@ body.notes-route #storefront-main > section:not(#notes-library-page) {
   border: 1px solid var(--line);
   background: var(--surface);
 }
+
+.product-editor-preview-shell {
+  margin-block: 12px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+}
+
+.product-editor-preview-shell > summary {
+  min-height: 58px;
+  padding: 10px 16px;
+  display: grid;
+  grid-template-columns: 34px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  color: var(--ink);
+  cursor: pointer;
+  list-style: none;
+}
+
+.product-editor-preview-shell > summary::-webkit-details-marker { display: none; }
+.product-editor-preview-shell > summary > span { display: grid; width: 34px; height: 34px; place-items: center; border-radius: 50%; background: color-mix(in srgb, var(--burgundy) 9%, #fff); color: var(--burgundy); }
+.product-editor-preview-shell > summary > div { display: grid; gap: 2px; }
+.product-editor-preview-shell > summary b { font-size: .96rem; }
+.product-editor-preview-shell > summary small { color: var(--muted); font-size: .78rem; }
+.product-editor-preview-shell > summary > i { font-style: normal; transition: transform .2s ease; }
+.product-editor-preview-shell[open] > summary > i { transform: rotate(180deg); }
+.product-editor-preview-shell[open] > summary { border-bottom: 1px solid var(--line); }
 
 .product-editor-preview > img {
   grid-row: 1 / span 6;

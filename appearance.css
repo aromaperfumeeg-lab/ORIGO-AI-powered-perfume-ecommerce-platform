@@ -2645,3 +2645,163 @@ body:not(.dark) :where(#storefront-main,.advanced-admin-panel,.catalog-admin-pan
   .back-to-top-value{stroke-width:3!important}
   .back-to-top-arrow{stroke-width:2.2!important}
 }
+
+/* Borderless compact product cards: image first, essentials only. */
+body :is(#home,#storefront-main) .origo-exact-product-card,
+body .product-overlay .origo-exact-product-card{
+  border:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  overflow:visible!important;
+  transition:none!important;
+  transform:none!important;
+}
+body :is(#home,#storefront-main) .origo-exact-product-card:hover,
+body .product-overlay .origo-exact-product-card:hover{
+  border:0!important;
+  box-shadow:none!important;
+  transform:none!important;
+}
+body :is(#home,#storefront-main) .origo-exact-product-card .product-image,
+body .product-overlay .origo-exact-product-card .product-image{
+  overflow:hidden!important;
+  border:0!important;
+  border-radius:14px!important;
+  background:#fff!important;
+  box-shadow:none!important;
+}
+body :is(#home,#storefront-main) .origo-exact-product-card .product-image::before,
+body :is(#home,#storefront-main) .origo-exact-product-card .product-image::after,
+body .product-overlay .origo-exact-product-card .product-image::before,
+body .product-overlay .origo-exact-product-card .product-image::after{
+  display:none!important;
+}
+body :is(#home,#storefront-main) .origo-exact-product-card .product-image img,
+body .product-overlay .origo-exact-product-card .product-image img{
+  transition:none!important;
+  transform:none!important;
+}
+body :is(#home,#storefront-main) .origo-exact-product-card:hover .product-image img,
+body .product-overlay .origo-exact-product-card:hover .product-image img{
+  transform:none!important;
+}
+body :is(#home,#storefront-main) .origo-exact-product-card .product-info,
+body .product-overlay .origo-exact-product-card .product-info{
+  padding:10px 3px 3px!important;
+  gap:6px!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+body :is(#home,#storefront-main) .origo-exact-product-card h3,
+body .product-overlay .origo-exact-product-card h3{
+  min-height:0!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+body :is(#home,#storefront-main) .origo-exact-product-card h3 button,
+body .product-overlay .origo-exact-product-card h3 button{
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+}
+body :is(#home,#storefront-main) .origo-exact-product-card .exact-card-specs,
+body .product-overlay .origo-exact-product-card .exact-card-specs{
+  padding:1px 0!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:8px!important;
+  border:0!important;
+}
+body :is(#home,#storefront-main) .origo-exact-product-card .exact-card-specs>span,
+body .product-overlay .origo-exact-product-card .exact-card-specs>span{
+  padding:0!important;
+  border:0!important;
+}
+body :is(#home,#storefront-main) .origo-exact-product-card .product-bottom,
+body .product-overlay .origo-exact-product-card .product-bottom{
+  gap:7px!important;
+  border:0!important;
+}
+body :is(#home,#storefront-main) .origo-exact-product-card .product-badge,
+body .product-overlay .origo-exact-product-card .product-badge{
+  top:10px!important;
+  left:auto!important;
+  right:auto!important;
+  inset-inline-start:10px!important;
+  inset-inline-end:auto!important;
+  direction:inherit!important;
+  max-width:43%!important;
+  margin:0!important;
+  overflow:hidden!important;
+  border:0!important;
+  box-shadow:none!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+}
+body #storefront-main #home .origo-exact-product-card .product-image>.product-badge{
+  inset-inline-start:auto!important;
+  inset-inline-end:auto!important;
+  left:auto!important;
+  right:10px!important;
+}
+body :is(#home,#storefront-main) .origo-exact-product-card .product-feature-badge,
+body .product-overlay .origo-exact-product-card .product-feature-badge{
+  top:10px!important;
+  left:auto!important;
+  right:auto!important;
+  inset-inline-start:auto!important;
+  inset-inline-end:10px!important;
+  direction:inherit!important;
+  max-width:43%!important;
+  margin:0!important;
+  overflow:hidden!important;
+  border:0!important;
+  box-shadow:none!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+}
+body :is(#home,#storefront-main) .origo-exact-product-card .exact-card-favorite,
+body .product-overlay .origo-exact-product-card .exact-card-favorite,
+body :is(#home,#storefront-main) .origo-exact-product-card .exact-card-favorite:hover,
+body .product-overlay .origo-exact-product-card .exact-card-favorite:hover{
+  position:static!important;
+  transform:none!important;
+  transition:none!important;
+  animation:none!important;
+  box-shadow:none!important;
+}
+@media(max-width:700px){
+  body :is(#home,#storefront-main) .origo-exact-product-card,
+  body .product-overlay .origo-exact-product-card{
+    border-radius:0!important;
+    box-shadow:none!important;
+  }
+  body :is(#home,#storefront-main) .origo-exact-product-card .product-info,
+  body .product-overlay .origo-exact-product-card .product-info{
+    padding:7px 2px 2px!important;
+    gap:4px!important;
+  }
+  body :is(#home,#storefront-main) .origo-exact-product-card .product-badge,
+  body :is(#home,#storefront-main) .origo-exact-product-card .product-feature-badge,
+  body .product-overlay .origo-exact-product-card .product-badge,
+  body .product-overlay .origo-exact-product-card .product-feature-badge{
+    top:7px!important;
+    max-width:42%!important;
+    padding:5px 7px!important;
+    font-size:8px!important;
+  }
+  body :is(#home,#storefront-main) .origo-exact-product-card .product-badge,
+  body .product-overlay .origo-exact-product-card .product-badge{inset-inline-start:7px!important}
+  body :is(#home,#storefront-main) .origo-exact-product-card .product-feature-badge,
+  body .product-overlay .origo-exact-product-card .product-feature-badge{inset-inline-end:7px!important}
+  body #storefront-main #home .origo-exact-product-card .product-image>.product-badge{
+    inset-inline-start:auto!important;
+    left:auto!important;
+    right:7px!important;
+  }
+}
