@@ -25,75 +25,6 @@
     <meta property="og:image" content="https://origoscents.com/assets/origo-logo.svg" />
     <meta name="twitter:card" content="summary_large_image" />
     <title>ORIGO | أصل الحكاية العطرية</title>
-    <style>
-      body.is-loading{overflow:hidden}
-      .origo-page-loader{
-        position:fixed;
-        inset:0;
-        z-index:2147483647;
-        display:grid;
-        place-items:center;
-        background:#fffdf9;
-        opacity:1;
-        visibility:visible;
-        transition:opacity .35s ease,visibility .35s ease;
-      }
-      .origo-page-loader.is-complete{opacity:0;visibility:hidden;pointer-events:none}
-      .origo-page-loader__content{
-        display:grid;
-        place-items:center;
-        gap:22px;
-      }
-      .origo-page-loader__logo{
-        width:clamp(170px,32vw,255px);
-        height:auto;
-        display:block;
-      }
-      .origo-page-loader__progress{
-        position:relative;
-        width:76px;
-        height:76px;
-        display:grid;
-        place-items:center;
-      }
-      .origo-page-loader__progress svg{
-        position:absolute;
-        inset:0;
-        width:100%;
-        height:100%;
-        overflow:visible;
-        transform:rotate(-90deg);
-      }
-      .origo-page-loader__track,
-      .origo-page-loader__value{fill:none;stroke-width:3}
-      .origo-page-loader__track{stroke:rgba(109,13,36,.12)}
-      .origo-page-loader__value{
-        stroke:#8a0a27;
-        stroke-linecap:round;
-        stroke-dasharray:213.63;
-        stroke-dashoffset:calc(213.63 - (213.63 * var(--loader-progress,0) / 100));
-        transition:stroke-dashoffset .18s linear;
-      }
-      .origo-page-loader__progress::after{
-        content:"";
-        position:absolute;
-        inset:4px;
-        border-radius:50%;
-        border-top:1px solid rgba(211,161,60,.8);
-        animation:origo-loader-spin 1.25s linear infinite;
-      }
-      .origo-page-loader__percent{
-        position:relative;
-        color:#720019;
-        font:700 14px/1 "Segoe UI",Tahoma,sans-serif;
-        direction:ltr;
-      }
-      @keyframes origo-loader-spin{to{transform:rotate(360deg)}}
-      @media(prefers-reduced-motion:reduce){
-        .origo-page-loader,.origo-page-loader__value{transition-duration:.12s}
-        .origo-page-loader__progress::after{animation:none}
-      }
-    </style>
     <link rel="stylesheet" href="styles.css?v=34" />
     <link rel="stylesheet" href="home.css?v=73" />
   <link rel="stylesheet" href="components/product-card/storefront-product-card.css?v=4" />
@@ -110,72 +41,7 @@
     <link rel="stylesheet" href="admin-ui-fixes.css?v=6" />
     <link rel="stylesheet" href="notes-admin-fixes.css?v=2" media="print" onload="this.media='all'" />
   </head>
-  <body class="is-loading">
-    <div class="origo-page-loader" id="origo-page-loader" role="status" aria-live="polite" aria-label="جارٍ تحميل متجر ORIGO">
-      <div class="origo-page-loader__content">
-        <img class="origo-page-loader__logo" src="assets/origo-logo.svg" alt="ORIGO" />
-        <div class="origo-page-loader__progress" aria-hidden="true">
-          <svg viewBox="0 0 76 76">
-            <circle class="origo-page-loader__track" cx="38" cy="38" r="34"></circle>
-            <circle class="origo-page-loader__value" cx="38" cy="38" r="34"></circle>
-          </svg>
-          <span class="origo-page-loader__percent" id="origo-page-loader-percent">0%</span>
-        </div>
-      </div>
-    </div>
-    <noscript><style>.origo-page-loader{display:none!important}body.is-loading{overflow:auto}</style></noscript>
-    <script>
-      (() => {
-        const loader = document.getElementById("origo-page-loader");
-        const percent = document.getElementById("origo-page-loader-percent");
-        if (!loader || !percent) return;
-
-        let value = 0;
-        let target = 18;
-        let finished = false;
-        const startedAt = Date.now();
-        // Do not hold the storefront behind an artificial delay. The loader
-        // still remains visible while the page is genuinely loading.
-        const minimumVisibleTime = 0;
-
-        const paint = () => {
-          loader.style.setProperty("--loader-progress", String(value));
-          percent.textContent = `${Math.round(value)}%`;
-          loader.setAttribute("aria-label", `جارٍ تحميل متجر ORIGO — ${Math.round(value)}%`);
-        };
-
-        const complete = () => {
-          if (finished) return;
-          finished = true;
-          target = 100;
-        };
-
-        const timer = window.setInterval(() => {
-          const step = target === 100 ? 4 : Math.max(.35, (target - value) * .09);
-          value = Math.min(target, value + step);
-          if (target === 100 && value >= 99.5) {
-            value = 100;
-            paint();
-            window.clearInterval(timer);
-            const remaining = Math.max(0, minimumVisibleTime - (Date.now() - startedAt));
-            window.setTimeout(() => {
-              loader.classList.add("is-complete");
-              document.body.classList.remove("is-loading");
-              window.setTimeout(() => loader.remove(), 380);
-            }, remaining);
-            return;
-          }
-          paint();
-        }, 45);
-
-        paint();
-        // DOMContentLoaded already waits for the storefront scripts. Do not
-        // block the customer behind slow, below-the-fold images and styles.
-        document.addEventListener("DOMContentLoaded", complete, { once: true });
-        window.addEventListener("load", complete, { once: true });
-        window.setTimeout(complete, 3500);
-      })();
-    </script>
+  <body>
     <div class="announcement" aria-hidden="true"></div>
 
     <header class="site-header" id="top">
