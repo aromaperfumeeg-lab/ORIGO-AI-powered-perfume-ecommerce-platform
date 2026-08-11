@@ -1507,7 +1507,6 @@ async function hydrateServer() {
     handleCatalogRoute({ replace: true });
     handleProductRoute();
   } finally {
-    document.body.classList.remove("origo-hydrating");
   }
 }
 
@@ -5647,6 +5646,9 @@ const productImageLightboxState = {
   scale: 1,
   x: 0,
   y: 0,
+  images: [],
+  imageIndex: 0,
+  swipeStart: null,
   pointers: new Map(),
   lastPoint: null,
   pinchDistance: 0,
@@ -5690,13 +5692,23 @@ function adjustProductImageLightboxZoom(change) {
   renderProductImageLightboxTransform();
 }
 
-function openProductImageLightbox(source, alt = "") {
+function showProductImageLightboxImage(index) {
+  const image = $("#product-image-lightbox-image");
+  const items = productImageLightboxState.images;
+  if (!image || !items.length) return;
+  productImageLightboxState.imageIndex = (Number(index) + items.length) % items.length;
+  const item = items[productImageLightboxState.imageIndex];
+  image.src = item.url;
+  image.alt = item.alt || "";
+  resetProductImageLightbox();
+}
+
+function openProductImageLightbox(source, alt = "", images = [], activeIndex = 0) {
   const lightbox = $("#product-image-lightbox");
   const image = $("#product-image-lightbox-image");
   if (!lightbox || !image || !source) return;
-  image.src = source;
-  image.alt = alt;
-  resetProductImageLightbox();
+  productImageLightboxState.images = (Array.isArray(images) && images.length ? images : [{ url: source, alt }]).map((item) => ({ url: String(item.url || source), alt: String(item.alt || alt) }));
+  showProductImageLightboxImage(Math.max(0, Number(activeIndex) || 0));
   lightbox.classList.add("open");
   lightbox.setAttribute("aria-hidden", "false");
   document.body.classList.add("product-image-lightbox-open");
@@ -5709,6 +5721,9 @@ function closeProductImageLightbox() {
   lightbox.classList.remove("open");
   lightbox.setAttribute("aria-hidden", "true");
   document.body.classList.remove("product-image-lightbox-open");
+  productImageLightboxState.images = [];
+  productImageLightboxState.imageIndex = 0;
+  productImageLightboxState.swipeStart = null;
   resetProductImageLightbox();
 }
 
@@ -5721,8 +5736,12 @@ function bindProductImageLightboxGestures() {
     productImageLightboxState.pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
     stage.setPointerCapture?.(event.pointerId);
     const points = [...productImageLightboxState.pointers.values()];
-    if (points.length === 1) productImageLightboxState.lastPoint = points[0];
+    if (points.length === 1) {
+      productImageLightboxState.lastPoint = points[0];
+      productImageLightboxState.swipeStart = { x: event.clientX, y: event.clientY };
+    }
     if (points.length === 2) {
+      productImageLightboxState.swipeStart = null;
       productImageLightboxState.pinchDistance = distance(points);
       productImageLightboxState.pinchScale = productImageLightboxState.scale;
     }
@@ -5747,10 +5766,20 @@ function bindProductImageLightboxGestures() {
     }
   }, { passive: false });
   const release = (event) => {
+    const swipeStart = productImageLightboxState.swipeStart;
+    const releasedPoint = productImageLightboxState.pointers.get(event.pointerId);
     productImageLightboxState.pointers.delete(event.pointerId);
     const points = [...productImageLightboxState.pointers.values()];
     productImageLightboxState.lastPoint = points[0] || null;
     if (points.length < 2) productImageLightboxState.pinchDistance = 0;
+    if (!points.length && productImageLightboxState.scale <= 1.001 && swipeStart && releasedPoint && matchMedia("(max-width: 900px)").matches) {
+      const deltaX = releasedPoint.x - swipeStart.x;
+      const deltaY = releasedPoint.y - swipeStart.y;
+      if (productImageLightboxState.images.length > 1 && Math.abs(deltaX) > 48 && Math.abs(deltaX) > Math.abs(deltaY) * 1.25) {
+        showProductImageLightboxImage(productImageLightboxState.imageIndex + (deltaX < 0 ? 1 : -1));
+      }
+    }
+    if (!points.length) productImageLightboxState.swipeStart = null;
   };
   stage.addEventListener("pointerup", release);
   stage.addEventListener("pointercancel", release);
@@ -5762,6 +5791,35 @@ function bindProductImageLightboxGestures() {
 }
 
 bindProductImageLightboxGestures();
+
+function bindProductGallerySwipe() {
+  const gallery = $(".pdp-main-image");
+  if (!gallery || gallery.dataset.swipeBound === "true") return;
+  gallery.dataset.swipeBound = "true";
+  let start = null;
+  let pointerId = null;
+  gallery.addEventListener("pointerdown", (event) => {
+    if (!matchMedia("(max-width: 900px)").matches || event.pointerType === "mouse" || event.target.closest("button")) return;
+    start = { x: event.clientX, y: event.clientY };
+    pointerId = event.pointerId;
+    gallery.setPointerCapture?.(event.pointerId);
+  });
+  gallery.addEventListener("pointerup", (event) => {
+    if (!start || event.pointerId !== pointerId) return;
+    const deltaX = event.clientX - start.x;
+    const deltaY = event.clientY - start.y;
+    start = null;
+    pointerId = null;
+    const product = getProduct(state.activeProductId);
+    const count = product ? productMedia(product).length : 0;
+    if (count > 1 && Math.abs(deltaX) > 48 && Math.abs(deltaX) > Math.abs(deltaY) * 1.25) {
+      gallery.dataset.ignoreNextClick = "true";
+      state.activeProductImageIndex = (state.activeProductImageIndex + (deltaX < 0 ? 1 : -1) + count) % count;
+      showProductDetails(product, false);
+    }
+  });
+  gallery.addEventListener("pointercancel", () => { start = null; pointerId = null; });
+}
 
 function showProductDetails(product, shouldOpen = true) {
   if (!product) return;
@@ -5817,7 +5875,7 @@ function showProductDetails(product, shouldOpen = true) {
       <section class="pdp-hero">
         <div class="pdp-gallery">
           <div class="pdp-thumbnails" aria-label="${isArabic ? "صور المنتج" : "Product media"}">${media.map((item, index) => `<button class="${index === state.activeProductImageIndex ? "active" : ""}" data-action="product-image" data-index="${index}" aria-label="${isArabic ? `الصورة ${index + 1}` : `Image ${index + 1}`}" aria-pressed="${index === state.activeProductImageIndex}"><img src="${escapeHTML(item.url)}" alt="" loading="${index ? "lazy" : "eager"}" /></button>`).join("")}</div>
-          <div class="pdp-main-image" data-action="product-zoom" role="button" tabindex="0" aria-label="${isArabic ? "فتح صورة المنتج بملء الشاشة" : "Open product image fullscreen"}"><span>${escapeHTML(isArabic ? product.badgeAr || "" : product.badgeEn || "")}</span><button type="button" class="pdp-fullscreen-button" data-action="product-zoom" aria-label="${isArabic ? "عرض الصورة بملء الشاشة" : "View image fullscreen"}"><i aria-hidden="true">⛶</i><b>${isArabic ? "عرض كامل" : "Fullscreen"}</b></button>${media.length > 1 ? `<button type="button" class="pdp-media-arrow previous" data-action="product-image-step" data-change="-1" aria-label="${isArabic ? "الصورة السابقة" : "Previous image"}">‹</button><button type="button" class="pdp-media-arrow next" data-action="product-image-step" data-change="1" aria-label="${isArabic ? "الصورة التالية" : "Next image"}">›</button><small class="pdp-media-count">${state.activeProductImageIndex + 1} / ${media.length}</small>` : ""}<img src="${escapeHTML(activeMedia.url)}" alt="${escapeHTML(`${product.brand} ${name}`)}" /></div>
+          <div class="pdp-main-image" data-action="product-zoom" role="button" tabindex="0" aria-label="${isArabic ? "فتح صورة المنتج بملء الشاشة" : "Open product image fullscreen"}"><span>${escapeHTML(isArabic ? product.badgeAr || "" : product.badgeEn || "")}</span>${media.length > 1 ? `<button type="button" class="pdp-media-arrow previous" data-action="product-image-step" data-change="-1" aria-label="${isArabic ? "الصورة السابقة" : "Previous image"}">‹</button><button type="button" class="pdp-media-arrow next" data-action="product-image-step" data-change="1" aria-label="${isArabic ? "الصورة التالية" : "Next image"}">›</button><small class="pdp-media-count">${state.activeProductImageIndex + 1} / ${media.length}</small>` : ""}<img src="${escapeHTML(activeMedia.url)}" alt="${escapeHTML(`${product.brand} ${name}`)}" /></div>
         </div>
         <aside class="pdp-purchase">
           <span class="pdp-brand">${escapeHTML(product.brand)}</span><h1 id="product-dialog-title">${escapeHTML(name)}</h1>${secondName && secondName !== name ? `<p class="pdp-english-name">${escapeHTML(secondName)}</p>` : ""}
@@ -5838,6 +5896,7 @@ function showProductDetails(product, shouldOpen = true) {
       ${recent.length ? `<section class="pdp-recommendations recently"><div class="pdp-section-heading"><span>RECENT</span><h2>${isArabic ? "شوهد مؤخرًا" : "Recently viewed"}</h2></div><div class="pdp-products-row">${recent.map((item) => productCardMarkup(item)).join("")}</div></section>` : ""}
     </main>`;
   $("#product-dialog-content").querySelectorAll("img").forEach((image) => image.addEventListener("error", () => (image.src = PRODUCT_IMAGE_PLACEHOLDER), { once: true }));
+  bindProductGallerySwipe();
   rememberProduct(product.id);
   productStructuredData(product, media);
   if (shouldOpen) {
@@ -6855,6 +6914,7 @@ function renderImportReview(product) {
   const alternativeReferenceOptions = activeAlternativeReferences.map((reference) => `<label class="product-reference-choice"><input type="checkbox" name="alternativeReferenceIds" value="${escapeHTML(reference.id)}"${linkedReferenceIds.has(reference.id) ? " checked" : ""}/><img src="${escapeHTML(reference.image)}" alt=""/><span><b>${escapeHTML(adminCopy(reference.nameAr, reference.nameEn))}</b><small>${escapeHTML(reference.brand)}</small></span></label>`).join("");
   $("#import-workspace").innerHTML = `
     <form class="catalog-review" id="import-review-form" data-editor-mode="${escapeHTML(state.productEditorMode)}">
+      ${perfumeBundleEditorSection(product)}
       <div class="product-editor-modes">
         <button type="button" data-action="product-editor-mode" data-mode="smart" class="${state.productEditorMode === "smart" ? "active" : ""}" title="${adminCopy("الحقول الأساسية", "Essential fields")}" aria-label="${adminCopy("الحقول الأساسية", "Essential fields")}"><span aria-hidden="true">▤</span></button>
         <button type="button" data-action="product-editor-mode" data-mode="advanced" class="${state.productEditorMode === "advanced" ? "active" : ""}" title="${adminCopy("خيارات متقدمة", "Advanced options")}" aria-label="${adminCopy("خيارات متقدمة", "Advanced options")}"><span aria-hidden="true">⚙</span></button>
@@ -6865,8 +6925,6 @@ function renderImportReview(product) {
         <div class="missing-card" title="${adminCopy("حقول ما زالت ناقصة ولن نملأها بتخمينات", "fields remain empty and will not be guessed")}"><b>${missing.length}</b><span>${adminCopy("حقول ناقصة", "Missing fields")}</span></div>
         <div class="duplicate-alert" id="duplicate-alert" hidden></div>
       </div>
-
-      ${perfumeBundleEditorSection(product)}
 
       <section class="review-section" data-editor-tier="core">
         <div class="review-section-head"><span>01</span><div><b>${adminCopy("هوية المنتج", "Product identity")}</b><small>${adminCopy("العربية والإنجليزية محفوظتان في حقول منفصلة", "Arabic and English are stored separately")}</small></div></div>
@@ -8697,8 +8755,15 @@ document.addEventListener("click", async (event) => {
     showProductDetails(product, false);
   }
   if (action === "product-zoom") {
-    const image = actionElement.closest(".pdp-main-image")?.querySelector("img");
-    if (image) openProductImageLightbox(image.currentSrc || image.src, image.alt);
+    const gallery = actionElement.closest(".pdp-main-image");
+    if (gallery?.dataset.ignoreNextClick === "true") {
+      delete gallery.dataset.ignoreNextClick;
+      return;
+    }
+    const image = gallery?.querySelector("img");
+    const product = getProduct(state.activeProductId);
+    const images = product ? productMedia(product).map((item) => ({ url: item.url, alt: image?.alt || "" })) : [];
+    if (image) openProductImageLightbox(image.currentSrc || image.src, image.alt, images, state.activeProductImageIndex);
   }
   if (action === "close-image-lightbox") closeProductImageLightbox();
   if (action === "image-lightbox-reset") resetProductImageLightbox();
@@ -10252,7 +10317,9 @@ document.addEventListener("keydown", (event) => {
   if ((event.key === "Enter" || event.key === " ") && event.target.closest?.(".pdp-main-image")) {
     event.preventDefault();
     const image = event.target.closest(".pdp-main-image")?.querySelector("img");
-    if (image) openProductImageLightbox(image.currentSrc || image.src, image.alt);
+    const product = getProduct(state.activeProductId);
+    const images = product ? productMedia(product).map((item) => ({ url: item.url, alt: image?.alt || "" })) : [];
+    if (image) openProductImageLightbox(image.currentSrc || image.src, image.alt, images, state.activeProductImageIndex);
     return;
   }
   if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
@@ -10601,5 +10668,4 @@ renderBrandCarousel();
 renderProducts($(".chip.active")?.dataset.filter || "all");
 renderHomepageCommerce();
 observeReveals();
-document.body.classList.remove("origo-hydrating");
 hydrateServer();

@@ -1940,9 +1940,21 @@ async function serveStatic(request, response, url) {
   try {
     const info = await stat(filePath);
     if (!info.isFile()) throw new Error("Not a file");
-    const data = await readFile(filePath);
+    let data = await readFile(filePath);
     const extension = extname(filePath).toLowerCase();
     const isHtml = extension === ".html";
+    if (isHtml && cleanPath === "index.html") {
+      const workspace = getAdminWorkspaceState();
+      const hero = (Array.isArray(workspace?.settings?.homeMedia) ? workspace.settings.homeMedia : [])
+        .filter((item) => item?.placement === "hero" && item?.url && item?.active !== false)
+        .sort((a, b) => Number(a?.sortOrder || 0) - Number(b?.sortOrder || 0))[0];
+      const safeHeroUrl = String(hero?.url || "").replace(/["'()\\\n\r]/g, "").replace(/&/g, "&amp;").replace(/</g, "%3C").replace(/>/g, "%3E");
+      const html = data.toString("utf8")
+        .replace("ORIGO_INITIAL_HERO_STATE", hero ? "data-initial-hero=\"true\"" : "hidden data-initial-hero=\"false\"")
+        .replace("ORIGO_INITIAL_HERO_STYLE", hero ? `style=\"background-image:url(&quot;${safeHeroUrl}&quot;)\"` : "")
+        .replace("<!-- ORIGO_INITIAL_HERO_PRELOAD -->", hero ? `<link rel=\"preload\" as=\"image\" href=\"${safeHeroUrl}\" fetchpriority=\"high\" />` : "");
+      data = Buffer.from(html);
+    }
     const isVersionedRuntimeAsset = [".js", ".mjs", ".css"].includes(extension) && url.searchParams.has("v");
     const etag = `W/"${info.size.toString(16)}-${Math.floor(info.mtimeMs).toString(16)}"`;
     const headers = {
@@ -1959,7 +1971,7 @@ async function serveStatic(request, response, url) {
       "X-Frame-Options": "SAMEORIGIN",
       "X-Content-Type-Options": "nosniff"
     };
-    if (request.headers["if-none-match"] === etag) {
+    if (!isHtml && request.headers["if-none-match"] === etag) {
       response.writeHead(304, headers).end();
       return;
     }
@@ -1975,16 +1987,20 @@ async function serveStatic(request, response, url) {
     if (canCompress && /\bbr\b/.test(acceptedEncoding)) {
       headers["Content-Encoding"] = "br";
       const cacheKey = `${filePath}:${etag}:br`;
-      const body = staticCompressionCache.get(cacheKey) || cacheCompressedStatic(cacheKey, await promisify(brotliCompress)(data, {
+      const cachedBody = isHtml ? null : staticCompressionCache.get(cacheKey);
+      const compressedBody = await promisify(brotliCompress)(data, {
         params: { [zlibConstants.BROTLI_PARAM_QUALITY]: 4 }
-      }));
+      });
+      const body = cachedBody || (isHtml ? compressedBody : cacheCompressedStatic(cacheKey, compressedBody));
       headers["Content-Length"] = String(body.length);
       response.writeHead(200, headers);
       response.end(body);
     } else if (canCompress && /\bgzip\b/.test(acceptedEncoding)) {
       headers["Content-Encoding"] = "gzip";
       const cacheKey = `${filePath}:${etag}:gzip`;
-      const body = staticCompressionCache.get(cacheKey) || cacheCompressedStatic(cacheKey, await promisify(gzip)(data));
+      const cachedBody = isHtml ? null : staticCompressionCache.get(cacheKey);
+      const compressedBody = await promisify(gzip)(data);
+      const body = cachedBody || (isHtml ? compressedBody : cacheCompressedStatic(cacheKey, compressedBody));
       headers["Content-Length"] = String(body.length);
       response.writeHead(200, headers);
       response.end(body);

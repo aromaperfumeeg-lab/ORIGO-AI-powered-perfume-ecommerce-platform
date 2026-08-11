@@ -25,14 +25,11 @@
     <meta property="og:image" content="https://origoscents.com/assets/origo-logo.svg" />
     <meta name="twitter:card" content="summary_large_image" />
     <title>ORIGO | أصل الحكاية العطرية</title>
-    <style id="origo-hydration-guard">
-      body.origo-hydrating #home{visibility:hidden;opacity:0}
-      body:not(.origo-hydrating) #home{visibility:visible;opacity:1;transition:opacity .12s ease-out}
-    </style>
+    <!-- ORIGO_INITIAL_HERO_PRELOAD -->
     <link rel="stylesheet" href="styles.css?v=38" />
-    <link rel="stylesheet" href="home.css?v=74" />
+    <link rel="stylesheet" href="home.css?v=75" />
   <link rel="stylesheet" href="components/product-card/storefront-product-card.css?v=5" />
-    <link rel="stylesheet" href="product-detail.css?v=15" />
+    <link rel="stylesheet" href="product-detail.css?v=17" />
     <link rel="stylesheet" href="catalog.css?v=1" media="print" onload="this.media='all'" />
     <link rel="stylesheet" href="footer.css?v=19" />
     <link rel="stylesheet" href="commerce.css?v=1" media="print" onload="this.media='all'" />
@@ -41,18 +38,16 @@
     <link rel="stylesheet" href="alternatives.css?v=2" media="print" onload="this.media='all'" />
     <link rel="stylesheet" href="performance-insights.css?v=3" media="print" onload="this.media='all'" />
 <link rel="stylesheet" href="shell.css?v=17" />
-    <link rel="stylesheet" href="appearance.css?v=38" />
+    <link rel="stylesheet" href="appearance.css?v=39" />
   <link rel="stylesheet" href="product-reference-card.css?v=8" />
-    <link rel="stylesheet" href="home-gender-slider.css?v=3" />
+    <link rel="stylesheet" href="home-gender-slider.css?v=4" />
     <script defer src="home-brand-navigation.js?v=1"></script>
     <link rel="stylesheet" href="admin-ui-fixes.css?v=6" />
     <link rel="stylesheet" href="notes-admin-fixes.css?v=2" media="print" onload="this.media='all'" />
     <link rel="stylesheet" href="dark-theme.css?v=13" />
     <link rel="stylesheet" href="origo-identity.css?v=20" />
   </head>
-  <body class="origo-hydrating">
-    <noscript><style>body.origo-hydrating #home{visibility:visible;opacity:1}</style></noscript>
-    <script>window.setTimeout(() => document.body?.classList.remove("origo-hydrating"), 1200);</script>
+  <body>
     <div class="announcement" aria-hidden="true"></div>
 
     <header class="site-header" id="top">
@@ -198,8 +193,8 @@
       </section>
 
       <div class="origo-home" id="home">
-        <section class="origo-home-hero" id="home-hero" aria-label="سلايدر عروض المتجر">
-          <a class="home-hero-products" href="#new-arrivals" aria-label="عرض تفاصيل العرض"></a>
+        <section class="origo-home-hero" id="home-hero" aria-label="سلايدر عروض المتجر" ORIGO_INITIAL_HERO_STATE>
+          <a class="home-hero-products" href="#new-arrivals" aria-label="عرض تفاصيل العرض" ORIGO_INITIAL_HERO_STYLE></a>
           <button type="button" class="home-hero-arrow previous" data-home-hero-arrow="-1" aria-label="الشريحة السابقة">‹</button>
           <button type="button" class="home-hero-arrow next" data-home-hero-arrow="1" aria-label="الشريحة التالية">›</button>
           <div class="home-hero-dots" aria-label="شرائح البنر"></div>
@@ -223,13 +218,13 @@
           </div>
           <div class="home-gender-grid home-gender-slider" aria-label="تسوّق حسب الجنس">
             <a class="home-gender-card gender-men" href="/perfumes?quick=men" data-action="home-gender-filter" data-gender="men">
-              <img class="gender-card-image" src="assets/home/gender/gender-men.png" alt="تسوّق عطور للرجال" loading="lazy" decoding="async" />
+              <picture><source type="image/webp" srcset="assets/home/gender/gender-men-768.webp 768w, assets/home/gender/gender-men-1536.webp 1536w" sizes="(max-width: 900px) 33vw, 31vw" /><img class="gender-card-image" src="assets/home/gender/gender-men.png" width="1536" height="1024" alt="تسوّق عطور للرجال" loading="lazy" decoding="async" /></picture>
             </a>
             <a class="home-gender-card gender-women" href="/perfumes?quick=women" data-action="home-gender-filter" data-gender="women">
-              <img class="gender-card-image" src="assets/home/gender/gender-women.png" alt="تسوّق عطور للنساء" loading="lazy" decoding="async" />
+              <picture><source type="image/webp" srcset="assets/home/gender/gender-women-768.webp 768w, assets/home/gender/gender-women-1536.webp 1536w" sizes="(max-width: 900px) 33vw, 31vw" /><img class="gender-card-image" src="assets/home/gender/gender-women.png" width="1536" height="1024" alt="تسوّق عطور للنساء" loading="lazy" decoding="async" /></picture>
             </a>
             <a class="home-gender-card gender-unisex" href="/perfumes?quick=unisex" data-action="home-gender-filter" data-gender="unisex">
-              <img class="gender-card-image" src="assets/home/gender/gender-unisex.png" alt="تسوّق عطور للجنسين" loading="lazy" decoding="async" />
+              <picture><source type="image/webp" srcset="assets/home/gender/gender-unisex-768.webp 768w, assets/home/gender/gender-unisex-1536.webp 1536w" sizes="(max-width: 900px) 33vw, 31vw" /><img class="gender-card-image" src="assets/home/gender/gender-unisex.png" width="1536" height="1024" alt="تسوّق عطور للجنسين" loading="lazy" decoding="async" /></picture>
             </a>
           </div>
         </section>
@@ -254,38 +249,6 @@
       </div>
 
       <template id="retired-home-content">
-      <section class="hero" aria-labelledby="hero-title">
-        <div class="hero-image" role="img" aria-label="زجاجة عطر فاخرة على خلفية نبيتي"></div>
-        <div class="hero-vignette"></div>
-        <div class="hero-content reveal">
-          <span class="eyebrow light" data-i18n="heroEyebrow">مجموعة ORIGO الخاصة · 2026</span>
-          <h1 id="hero-title" data-i18n="heroTitle">ليس عطرًا فقط.<br />إنه <em>أثرٌ يبقى.</em></h1>
-          <p data-i18n="heroBody">
-            اكتشف تركيبات منتقاة بعناية، وافهم نوتاتها، ثم اختر العطر الذي يشبه حضورك.
-          </p>
-          <div class="hero-actions">
-            <a class="button gold-button" href="#featured">
-              <span data-i18n="shopNow">تسوّق المجموعة</span>
-              <span aria-hidden="true">←</span>
-            </a>
-            <a class="button ghost-button" href="/fragrance-finder/for-whom" data-action="find-matches">
-              <span data-i18n="finderEntry">اكتشف عطرًا يناسب ذوقك</span>
-              <span class="play" aria-hidden="true">◇</span>
-            </a>
-          </div>
-          <div class="hero-proof">
-            <div class="avatar-stack" aria-hidden="true">
-              <span>ن</span><span>ل</span><span>م</span><span>س</span>
-            </div>
-            <p><b>+12,000</b> <span data-i18n="happyClients">عميل وجدوا عطرهم</span></p>
-          </div>
-        </div>
-        <div class="hero-index" aria-hidden="true"><span>01</span><i></i><span>03</span></div>
-        <a class="scroll-cue" href="#featured" aria-label="انتقل إلى المنتجات">
-          <span data-i18n="scroll">اكتشف</span><i></i>
-        </a>
-      </section>
-
       <section class="service-strip" aria-label="مزايا المتجر">
         <article>
           <span class="service-icon">✦</span>
@@ -1033,7 +996,7 @@
     <script src="catalog-providers.js?v=6"></script>
     <script src="external-tracking.js?v=1"></script>
     <script src="perfume-bundle.js?v=1"></script>
-    <script src="app.js?v=144"></script>
+    <script src="app.js?v=147"></script>
     <script src="components/product-card/storefront-product-card.js?v=3"></script>
     <script src="deferred-modules.js?v=5"></script>
   </body>

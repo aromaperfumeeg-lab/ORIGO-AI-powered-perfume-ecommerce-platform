@@ -843,6 +843,47 @@ html[data-balanced-layout="false"] .admin-view-head h1{font-size:clamp(28px,2vw,
 html[data-balanced-layout="false"] .admin-view-head p{font-size:15px}
 html[data-balanced-layout="false"] .catalog-review label,html[data-balanced-layout="false"] .admin-settings-form label{font-size:15px}
 
+/* Dense, readable admin workspace: more controls per screen without micro typography. */
+.admin-overlay{padding:8px!important}
+.admin-overlay>.admin-panel{width:min(1680px,100%)!important;min-height:calc(100vh - 16px)!important;padding:14px 16px!important}
+.admin-panel>.admin-head{min-height:48px;margin-bottom:8px;align-items:center;gap:12px}
+.admin-panel>.admin-head .eyebrow{font-size:10px}.admin-panel>.admin-head h2{margin:1px 0;font-size:23px;line-height:1.2}.admin-panel>.admin-head p{font-size:13px;line-height:1.4}
+.admin-head-actions{gap:5px}.admin-head-actions :where(button,.button){min-height:34px;padding:6px 10px;font-size:13px}.admin-head-actions .close-button{width:34px;min-width:34px;height:34px;padding:0}
+.admin-panel>.admin-stats{margin:8px 0;grid-template-columns:repeat(3,minmax(150px,1fr));gap:7px}
+.admin-panel>.admin-stats article{min-height:48px;padding:7px 11px;gap:9px;border-radius:9px}
+.admin-panel>.admin-stats article>span{width:30px;height:30px;font-size:15px}.admin-panel>.admin-stats b{font-size:20px;line-height:1}.admin-panel>.admin-stats small{margin-top:3px;font-size:12px;line-height:1.15;font-weight:650}
+.admin-panel>.admin-dashboard{gap:10px}.admin-panel .import-steps{height:38px;margin:4px 0 7px;align-items:center}
+.admin-panel .import-steps span{gap:7px;font-size:13px;font-weight:650}.admin-panel .import-steps span:after{top:15px}.admin-panel .import-steps b{width:30px;height:30px;font-size:13px}.admin-panel .import-steps i{font-style:normal;white-space:nowrap}
+.admin-panel .web-import-search{grid-template-columns:minmax(0,1fr) 150px;gap:7px}.admin-panel .web-import-search>div{height:48px;padding:0 14px;border-radius:9px}.admin-panel .web-import-search input{font-size:17px}.admin-panel .web-import-search>button{min-height:48px;padding:8px 14px;font-size:14px;border-radius:9px}
+.admin-panel .source-note{min-height:28px;margin-top:5px;gap:6px}.admin-panel .source-note>span:first-child{font-size:16px}.admin-panel .source-note p{font-size:11px;line-height:1.45}.admin-panel .source-note .ai-source-badge{min-height:24px;padding:4px 8px;font-size:10px}
+.admin-panel .import-workspace{margin-top:7px}
+
+.catalog-review{padding:10px 12px 78px!important}.catalog-review .review-section{margin-top:9px!important;padding:13px 14px!important;border-radius:11px!important}
+.catalog-review .review-section-head{margin-bottom:10px!important;gap:9px}.catalog-review .review-section-head>span{width:32px!important;height:32px!important;font-size:12px!important}.catalog-review .review-section-head b{font-size:18px!important;line-height:1.3}.catalog-review .review-section-head small{font-size:12px!important;line-height:1.4}
+.catalog-review .review-grid,.admin-settings-form .review-grid{grid-template-columns:repeat(auto-fit,minmax(210px,1fr))!important;gap:9px 11px!important}
+.catalog-review label,.admin-settings-form label{font-size:15px!important;line-height:1.4!important}
+.catalog-review :where(input:not([type=checkbox]):not([type=radio]):not([type=range]),select,textarea),.admin-settings-form :where(input:not([type=checkbox]):not([type=radio]):not([type=range]),select,textarea){min-height:42px!important;padding:8px 10px!important;font-size:15px!important;border-radius:8px!important}
+.catalog-review textarea,.admin-settings-form textarea{min-height:84px!important}.catalog-review .perfume-bundle-textarea textarea{min-height:136px!important;font-size:13px!important;line-height:1.5!important}
+.catalog-review>.product-editor-modes{margin-bottom:6px}.catalog-review>.review-summary{margin-bottom:5px!important}.catalog-review>.review-summary :where(.confidence-card,.missing-card){min-height:32px!important}.catalog-review>.review-summary .confidence-card b{font-size:12px!important}.catalog-review>.review-summary .missing-card span{font-size:11px!important}
+.smart-select-control{min-height:42px!important;padding:5px 9px!important}.smart-select-chips>small{font-size:13px!important}.smart-select-options [role=option]{min-height:44px!important;padding:7px!important;font-size:14px!important}
+.review-submit{margin-top:10px!important;padding:7px!important}.review-submit-actions .button{min-height:42px!important;padding:8px 13px!important;font-size:14px!important}
+
+.advanced-admin-body{padding:14px 16px!important}.admin-view-head{margin-bottom:11px!important}.admin-view-head h1{font-size:29px!important}.admin-view-head p{font-size:14px!important;line-height:1.45!important}.admin-dashboard-content{gap:10px!important}
+.admin-metrics-grid,.admin-metric-grid{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))!important;gap:8px!important}.admin-metric{min-height:92px!important;padding:12px!important}.admin-metric b{font-size:25px!important}.admin-metric small{font-size:13px!important}
+.advanced-admin-panel :where(.admin-chart-card,.admin-status-card,.admin-list-card,.admin-alerts-card,.admin-generic-grid article,.admin-report-grid article){padding:12px!important;border-radius:10px!important}
+.advanced-admin-panel :where(.admin-data-table,.admin-table-card,.catalog-admin-table) :where(th,td){padding:8px 9px!important;font-size:14px!important;line-height:1.35!important}.admin-table-actions{gap:4px!important}.admin-table-actions button{min-height:30px!important;padding:5px 8px!important;font-size:12px!important}
+.admin-quick-create,.admin-settings-form{gap:10px!important}.admin-toggle-row{min-height:42px!important;padding:7px 0!important}.admin-toggle-row b{font-size:15px!important}.admin-toggle-row small{font-size:12px!important}
+
+@media(max-width:760px){
+  .admin-overlay{padding:0!important}.admin-overlay>.admin-panel{min-height:100vh!important;padding:9px!important;border-radius:0!important}
+  .admin-panel>.admin-head{align-items:flex-start}.admin-panel>.admin-head p{display:none}.admin-head-actions .compact-button{width:34px;min-width:34px;padding:0;overflow:hidden;text-indent:-999px}
+  .admin-panel>.admin-stats{grid-template-columns:repeat(3,minmax(0,1fr));gap:4px}.admin-panel>.admin-stats article{min-width:0;padding:6px;justify-content:center}.admin-panel>.admin-stats article>span{display:none}.admin-panel>.admin-stats b{font-size:18px}.admin-panel>.admin-stats small{font-size:10px;text-align:center}
+  .admin-panel .import-steps span{justify-content:center}.admin-panel .import-steps i{display:none}.admin-panel .import-steps span:after{right:50%;left:-50%}
+  .admin-panel .web-import-search{grid-template-columns:minmax(0,1fr) 46px}.admin-panel .web-import-search>button{padding:0}.admin-panel .web-import-search>button span:first-child{display:none}.admin-panel .source-note p{display:none}
+  .catalog-review{padding:8px 7px 126px!important}.catalog-review .review-section{padding:11px!important}.catalog-review .review-grid,.admin-settings-form .review-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr))!important;gap:8px!important}
+  .advanced-admin-body{padding:10px 8px!important}.admin-metrics-grid,.admin-metric-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}.admin-metric{min-height:82px!important;padding:10px!important}
+}
+
 /* Final admin readability pass: replace legacy micro type and oversized empty rhythm. */
 html:not([data-balanced-layout="false"]) .advanced-admin-panel{font-size:18px;line-height:1.6}
 html:not([data-balanced-layout="false"]) .admin-sidebar-brand small{font-size:11px!important}
