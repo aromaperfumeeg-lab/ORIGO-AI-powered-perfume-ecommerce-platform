@@ -2805,7 +2805,7 @@ function initializeProductEditorTabs() {
     section.dataset.productPanel = String(index);
     section.classList.toggle("product-tab-hidden", index !== 0);
     const title = section.querySelector(".review-section-head b")?.textContent?.trim() || `${adminCopy("قسم", "Section")} ${index + 1}`;
-    return `<button type="button" data-action="product-editor-panel" data-panel="${index}" class="${index === 0 ? "active" : ""}" aria-selected="${index === 0}"><span>${String(index + 1).padStart(2,"0")}</span><b>${escapeHTML(title)}</b></button>`;
+    return `<button type="button" data-action="product-editor-panel" data-panel="${index}" class="${index === 0 ? "active" : ""}" aria-selected="${index === 0}" title="${escapeHTML(title)}" aria-label="${escapeHTML(title)}"><span>${String(index + 1).padStart(2,"0")}</span><b>${escapeHTML(title)}</b></button>`;
   }).join("");
   const anchor = form.querySelector(".review-summary") || form.firstElementChild;
   anchor?.insertAdjacentElement("afterend", nav);
@@ -6455,7 +6455,7 @@ function editorPreviewMarkup(product) {
   ];
   const readyCount = checks.filter(([, ready]) => ready).length;
   return `<details class="product-editor-preview-shell">
-    <summary><span>◇</span><div><b>${adminCopy("معاينة بطاقة المنتج", "Preview product card")}</b><small>${adminCopy(`${readyCount} من ${checks.length} عناصر جاهزة`, `${readyCount} of ${checks.length} items ready`)}</small></div><i>⌄</i></summary>
+    <summary title="${adminCopy("معاينة بطاقة المنتج", "Preview product card")}" aria-label="${adminCopy("معاينة بطاقة المنتج", "Preview product card")}"><span>◇</span><div><b>${adminCopy("معاينة بطاقة المنتج", "Preview product card")}</b><small>${adminCopy(`${readyCount} من ${checks.length} عناصر جاهزة`, `${readyCount} of ${checks.length} items ready`)}</small></div><i>⌄</i></summary>
     <aside class="product-editor-preview ${state.adminCardPreviewMode} ${state.adminCardPreviewTheme}">
     <div class="admin-card-preview-head"><span class="eyebrow">LIVE PRODUCT CARD</span><div><button type="button" data-action="admin-card-preview-mode" data-mode="desktop" class="${state.adminCardPreviewMode === "desktop" ? "active" : ""}">${adminCopy("سطح المكتب", "Desktop")}</button><button type="button" data-action="admin-card-preview-mode" data-mode="mobile" class="${state.adminCardPreviewMode === "mobile" ? "active" : ""}">${adminCopy("هاتف", "Mobile")}</button><button type="button" data-action="admin-card-preview-theme" data-theme="light" class="active">${adminCopy("فاتح", "Light")}</button></div></div>
     <div id="admin-live-product-card">${productCardMarkup(previewProduct, { context: "admin", interactive: false })}</div>
@@ -6841,13 +6841,13 @@ function renderImportReview(product) {
   $("#import-workspace").innerHTML = `
     <form class="catalog-review" id="import-review-form" data-editor-mode="${escapeHTML(state.productEditorMode)}">
       <div class="product-editor-modes">
-        <button type="button" data-action="product-editor-mode" data-mode="smart" class="${state.productEditorMode === "smart" ? "active" : ""}">${adminCopy("الحقول الأساسية", "Essential fields")}</button>
-        <button type="button" data-action="product-editor-mode" data-mode="advanced" class="${state.productEditorMode === "advanced" ? "active" : ""}">${adminCopy("خيارات متقدمة", "Advanced options")}</button>
+        <button type="button" data-action="product-editor-mode" data-mode="smart" class="${state.productEditorMode === "smart" ? "active" : ""}" title="${adminCopy("الحقول الأساسية", "Essential fields")}" aria-label="${adminCopy("الحقول الأساسية", "Essential fields")}"><span aria-hidden="true">▤</span></button>
+        <button type="button" data-action="product-editor-mode" data-mode="advanced" class="${state.productEditorMode === "advanced" ? "active" : ""}" title="${adminCopy("خيارات متقدمة", "Advanced options")}" aria-label="${adminCopy("خيارات متقدمة", "Advanced options")}"><span aria-hidden="true">⚙</span></button>
       </div>
       ${editorPreviewMarkup(product)}
       <div class="review-summary">
-        <div class="confidence-card ${level}"><span>◉</span><div><small>${adminCopy("ثقة البيانات", "DATA CONFIDENCE")}</small><b>${confidenceLabel(level)} · ${product.confidence?.score || 0}%</b></div></div>
-        <div class="missing-card"><b>${missing.length}</b><span>${adminCopy("حقول ما زالت ناقصة ولن نملأها بتخمينات", "fields remain empty and will not be guessed")}</span></div>
+        <div class="confidence-card ${level}" title="${adminCopy("ثقة البيانات", "DATA CONFIDENCE")}: ${confidenceLabel(level)} · ${product.confidence?.score || 0}%"><span>◉</span><div><small>${adminCopy("ثقة البيانات", "DATA CONFIDENCE")}</small><b>${confidenceLabel(level)} · ${product.confidence?.score || 0}%</b></div></div>
+        <div class="missing-card" title="${adminCopy("حقول ما زالت ناقصة ولن نملأها بتخمينات", "fields remain empty and will not be guessed")}"><b>${missing.length}</b><span>${adminCopy("حقول ناقصة", "Missing fields")}</span></div>
         <div class="duplicate-alert" id="duplicate-alert" hidden></div>
       </div>
 
@@ -6984,7 +6984,6 @@ function renderImportReview(product) {
       </section>
 
       <div class="review-submit">
-        <div><b>${adminCopy("اختر الإجراء المناسب", "Choose the correct workflow action")}</b><small id="product-autosave-footer">${adminCopy("الحفظ التلقائي يحمي المسودة محليًا.", "Autosave protects the local draft.")}</small></div>
         <div class="review-submit-actions"><button class="button secondary-button" type="submit" name="workflowAction" value="draft">${adminCopy("حفظ كمسودة", "Save draft")}</button><button class="button secondary-button" type="submit" name="workflowAction" value="review">${adminCopy("إرسال للمراجعة", "Send for review")}</button><button class="button burgundy-button" type="submit" name="workflowAction" value="published">${adminCopy("نشر المنتج", "Publish product")} <span>←</span></button></div>
       </div>
     </form>`;
@@ -7690,6 +7689,20 @@ document.addEventListener("click", async (event) => {
     return;
   }
   const action = actionElement.dataset.action;
+  if (action === "toggle-catalog-sidebar" || action === "close-catalog-sidebar") {
+    const sidebar = $("#catalog-sidebar");
+    const trigger = $("[data-action='toggle-catalog-sidebar']");
+    const backdrop = $(".catalog-sidebar-backdrop");
+    const open = action === "toggle-catalog-sidebar" ? sidebar?.hidden !== false : false;
+    if (sidebar) {
+      sidebar.hidden = !open;
+      sidebar.setAttribute("aria-hidden", String(!open));
+    }
+    if (backdrop) backdrop.hidden = !open;
+    trigger?.setAttribute("aria-expanded", String(open));
+    document.body.classList.toggle("catalog-sidebar-open", open);
+    return;
+  }
   if (action === "account-menu") {
     const opening = accountMenu?.hidden !== false;
     if (accountMenu) accountMenu.hidden = !opening;
