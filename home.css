@@ -1877,10 +1877,10 @@ body:not(.dark) .home-gender-section .gender-card:is(:hover,:focus-visible,:acti
   display:flex!important;
   flex-direction:column!important;
   overflow:hidden!important;
-  border:1px solid #eadfe1!important;
+  border:1.5px solid #8d0024!important;
   border-radius:clamp(17px,1.8vw,27px)!important;
   background:#fff!important;
-  box-shadow:0 7px 22px rgba(50,24,30,.1)!important;
+  box-shadow:0 7px 22px rgba(50,24,30,.1),0 0 12px rgba(141,0,36,.2)!important;
 }
 #home .origo-exact-product-card .product-image{
   position:relative!important;
@@ -2042,7 +2042,12 @@ body:not(.dark) .home-gender-section .gender-card:is(:hover,:focus-visible,:acti
 #home .origo-exact-product-card .exact-card-specs>span{gap:4px!important;font-size:clamp(7px,.63vw,10px)!important}
 #home .origo-exact-product-card .exact-card-specs svg{width:clamp(12px,1vw,16px)!important;height:clamp(12px,1vw,16px)!important}
 #home .origo-exact-product-card .product-bottom{gap:clamp(7px,.7vw,10px)!important}
-#home .origo-exact-product-card .product-price{font-size:clamp(14px,1.15vw,19px)!important}
+#home .origo-exact-product-card .product-price{
+  font-family:var(--origo-font-body,var(--font-ar),sans-serif)!important;
+  font-size:clamp(12px,.9vw,15px)!important;
+  font-weight:700!important;
+  letter-spacing:0!important;
+}
 #home .origo-exact-product-card .exact-card-prices del{font-size:clamp(8px,.67vw,11px)!important}
 #home .origo-exact-product-card .card-add-button{
   min-height:clamp(30px,2.45vw,38px)!important;
@@ -2060,7 +2065,7 @@ body:not(.dark) .home-gender-section .gender-card:is(:hover,:focus-visible,:acti
   #home .origo-exact-product-card .exact-card-specs{padding-bottom:6px!important}
   #home .origo-exact-product-card .exact-card-specs>span{gap:2px!important;font-size:6px!important}
   #home .origo-exact-product-card .exact-card-specs svg{width:10px!important;height:10px!important}
-  #home .origo-exact-product-card .product-price{font-size:13px!important}
+  #home .origo-exact-product-card .product-price{font-size:11px!important}
   #home .origo-exact-product-card .exact-card-prices del{font-size:7px!important}
   #home .origo-exact-product-card .card-add-button{min-height:28px!important;padding:5px 6px!important;gap:5px!important;border-radius:7px!important;font-size:8px!important}
   #home .origo-exact-product-card .card-add-button svg{width:14px!important;height:14px!important}

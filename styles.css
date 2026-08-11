@@ -8428,9 +8428,11 @@ body.notes-route #storefront-main > section:not(#notes-library-page) {
 }
 
 .auth-shell {
-  min-height: 560px;
+  width: min(560px, 100%);
+  min-height: 0;
+  margin: auto;
   display: grid;
-  grid-template-columns: .8fr 1.2fr;
+  grid-template-columns: 1fr;
 }
 
 .auth-art {
@@ -8462,6 +8464,10 @@ body.notes-route #storefront-main > section:not(#notes-library-page) {
 .auth-body,
 .account-home {
   padding: 66px clamp(30px, 5vw, 58px) 45px;
+}
+
+.auth-shell .auth-body {
+  padding: 44px clamp(24px, 6vw, 52px) 38px;
 }
 
 .auth-tabs {

@@ -1,0 +1,570 @@
+/* ORIGO chromatic identity — lightweight CSS-only visual layer. */
+:root {
+  --origo-cyan: #2bc7ff;
+  --origo-violet: #9a63ff;
+  --origo-emerald: #20d99a;
+  --origo-rose: #ff4f87;
+  --origo-amber: #ffb526;
+  --origo-night: #020812;
+  --origo-glow-soft: 0 10px 28px rgba(21, 76, 124, .1);
+}
+
+body:not(.dark) {
+  --identity-surface: #fff;
+  --identity-soft: #f7f8fc;
+  --identity-text: #11131a;
+  --identity-muted: #6e7380;
+  --identity-line: rgba(45, 56, 78, .12);
+}
+
+body.dark {
+  --identity-surface: #020812;
+  --identity-soft: #070d18;
+  --identity-text: #fff;
+  --identity-muted: #aeb7c8;
+  --identity-line: rgba(43, 199, 255, .3);
+}
+
+/* Colored section markers inspired by the compact dashboard references. */
+:is(.home-section-head,.pdp-section-heading,.catalog-heading,.tracking-heading,.account-view-head,.finder-heading,.alternatives-hero,.notes-page-head) {
+  position: relative;
+}
+
+:is(.home-section-head,.pdp-section-heading,.catalog-heading,.tracking-heading,.account-view-head,.finder-heading,.notes-page-head)::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: 0;
+  top: .2em;
+  width: 3px;
+  height: 1.35em;
+  border-radius: 99px;
+  background: linear-gradient(180deg,var(--origo-cyan),var(--origo-violet));
+  box-shadow: 0 0 9px rgba(43,199,255,.42);
+}
+
+/* Reusable neon-edge cards without blur or animated paint effects. */
+:is(
+  .origo-reference-product-card,
+  .pdp-purchase,
+  .pdp-profile-section,
+  .pdp-recommendations,
+  .home-benefits article,
+  .home-categories a,
+  .checkout-main-card,
+  .checkout-summary-card,
+  .tracking-card,
+  .timeline-card,
+  .profile-card,
+  .membership-card,
+  .finder-card,
+  .home-alt-card,
+  .alternative-narrative article,
+  .library-note-card
+) {
+  position: relative;
+  overflow: hidden;
+  border-radius: 18px !important;
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+
+:is(
+  .origo-reference-product-card,
+  .pdp-purchase,
+  .pdp-profile-section,
+  .pdp-recommendations,
+  .checkout-main-card,
+  .checkout-summary-card,
+  .tracking-card,
+  .timeline-card,
+  .profile-card,
+  .membership-card,
+  .finder-card,
+  .home-alt-card,
+  .alternative-narrative article,
+  .library-note-card
+)::before {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  right: 12%;
+  left: 12%;
+  height: 2px;
+  border-radius: 0 0 99px 99px;
+  background: linear-gradient(90deg,transparent,var(--card-accent,var(--origo-cyan)),transparent);
+  box-shadow: 0 0 10px var(--card-glow,rgba(43,199,255,.5));
+  pointer-events: none;
+}
+
+:is(.origo-reference-product-card,.pdp-profile-section,.home-benefits article,.home-categories a,.home-alt-card,.library-note-card):hover {
+  transform: translateY(-3px);
+}
+
+/* A restrained accent rhythm gives collections identity without extra assets. */
+:is(.product-grid,.pdp-products-row) > :nth-child(4n+1){--card-accent:var(--origo-cyan);--card-glow:rgba(43,199,255,.48)}
+:is(.product-grid,.pdp-products-row) > :nth-child(4n+2){--card-accent:var(--origo-violet);--card-glow:rgba(154,99,255,.45)}
+:is(.product-grid,.pdp-products-row) > :nth-child(4n+3){--card-accent:var(--origo-emerald);--card-glow:rgba(32,217,154,.42)}
+:is(.product-grid,.pdp-products-row) > :nth-child(4n){--card-accent:var(--origo-rose);--card-glow:rgba(255,79,135,.42)}
+
+body.dark :is(.origo-reference-product-card,.pdp-purchase,.checkout-main-card,.checkout-summary-card,.tracking-card,.timeline-card,.profile-card,.membership-card,.finder-card,.home-alt-card,.library-note-card) {
+  border-color: color-mix(in srgb,var(--card-accent,var(--origo-cyan)) 50%,transparent) !important;
+  background-color: var(--origo-night) !important;
+  box-shadow: 0 10px 28px rgba(0,0,0,.5),0 0 14px color-mix(in srgb,var(--card-accent,var(--origo-cyan)) 17%,transparent) !important;
+}
+
+body:not(.dark) :is(.home-benefits article,.membership-card,.finder-card,.alternative-narrative article) {
+  border-color: var(--identity-line) !important;
+  background: linear-gradient(145deg,#fff,var(--card-pastel,#f5f9ff)) !important;
+  box-shadow: var(--origo-glow-soft) !important;
+}
+
+body:not(.dark) :is(.home-benefits article,.alternative-narrative article):nth-child(4n+1){--card-pastel:#eafaff}
+body:not(.dark) :is(.home-benefits article,.alternative-narrative article):nth-child(4n+2){--card-pastel:#f3edff}
+body:not(.dark) :is(.home-benefits article,.alternative-narrative article):nth-child(4n+3){--card-pastel:#eafff6}
+body:not(.dark) :is(.home-benefits article,.alternative-narrative article):nth-child(4n){--card-pastel:#fff0f6}
+
+/* Compact status chips and feature markers. */
+:is(.product-feature-badge,.product-badge,.pdp-tags span,.alt-badge,.status-badge,.chip.active) {
+  border-radius: 999px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0 !important;
+}
+
+body.dark :is(.pdp-tags span,.alt-badge,.status-badge,.chip.active) {
+  color: var(--origo-cyan) !important;
+  border-color: rgba(43,199,255,.42) !important;
+  background: rgba(43,199,255,.08) !important;
+}
+
+/* Strong calls to action use the blue/green language from the references. */
+:is(.pdp-price-add,.checkout-submit,.account-primary,.finder-primary,.alt-primary,.burgundy-button) {
+  border: 0 !important;
+  color: #fff !important;
+  background: linear-gradient(100deg,#078dd0,var(--origo-cyan)) !important;
+  box-shadow: 0 8px 20px rgba(43,199,255,.2) !important;
+}
+
+:is(.pdp-price-add,.checkout-submit,.account-primary,.finder-primary,.alt-primary,.burgundy-button):hover {
+  background: linear-gradient(100deg,#0ca875,var(--origo-emerald)) !important;
+  box-shadow: 0 9px 22px rgba(32,217,154,.22) !important;
+}
+
+/* Prices and key values carry a clear electric highlight. */
+:is(.product-price,.pdp-price>b,.grand,.comparison-price,.membership-progress p>b) {
+  color: var(--origo-cyan) !important;
+  text-shadow: 0 0 9px rgba(43,199,255,.32) !important;
+}
+
+:is(.exact-card-rating b,.footer-spark,.premium-badge) {
+  color: var(--origo-amber) !important;
+  text-shadow: 0 0 8px rgba(255,181,38,.38) !important;
+}
+
+/* Identity lines in monochrome zones such as the footer and dark navigation. */
+body.dark :is(.site-header,.category-nav,.origo-footer,.store-bottom-nav,.mobile-menu-panel) {
+  border-color: rgba(43,199,255,.24) !important;
+}
+
+body.dark .origo-footer .footer-column {
+  border-color: rgba(154,99,255,.24) !important;
+}
+
+body.dark .origo-footer :is(.footer-column h3,.footer-newsletter h2) {
+  color: #fff !important;
+  text-decoration: underline;
+  text-decoration-color: var(--origo-violet);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 7px;
+}
+
+/* Respect accessibility and keep the identity cheap to render. */
+@media (prefers-reduced-motion: reduce) {
+  :is(.origo-reference-product-card,.pdp-profile-section,.home-benefits article,.home-categories a,.home-alt-card,.library-note-card) {
+    transition: none !important;
+    transform: none !important;
+  }
+}
+
+@media (max-width:700px) {
+  :is(.origo-reference-product-card,.pdp-profile-section,.pdp-recommendations,.home-benefits article,.home-alt-card) {
+    border-radius: 14px !important;
+  }
+  :is(.home-section-head,.pdp-section-heading)::before{height:1.1em}
+}
+
+/* Reference-matched surfaces: clean light drawer + charcoal dark drawer language. */
+body:not(.dark) {
+  --identity-page:#fff;
+  --identity-surface:#f4f4f6;
+  --identity-raised:#fff;
+  --identity-text:#17171b;
+  --identity-muted:#71737c;
+  --identity-line:#e3e4e8;
+  background:#fff!important;
+  color:var(--identity-text)!important;
+}
+
+body.dark {
+  --identity-page:#101012;
+  --identity-surface:#242427;
+  --identity-raised:#18181b;
+  --identity-text:#f6f6f7;
+  --identity-muted:#aaaab2;
+  --identity-line:#3a3a40;
+  background:#101012!important;
+  color:var(--identity-text)!important;
+}
+
+body:not(.dark) :is(#storefront-main,.origo-home,.catalog-page,.commerce-page,.account-route-page,.fragrance-finder-page,.alternatives-route-page,.notes-route-page,.brands-route-page,.benefits-route-page,.benefit-detail-page){background:#fff!important;color:#17171b!important}
+body.dark :is(#storefront-main,.origo-home,.catalog-page,.commerce-page,.account-route-page,.fragrance-finder-page,.alternatives-route-page,.notes-route-page,.brands-route-page,.benefits-route-page,.benefit-detail-page){background:#101012!important;color:#f6f6f7!important}
+
+/* The thin two-color app bar is a strong recurring reference motif. */
+.site-header::before {
+  content:"";
+  position:absolute;
+  z-index:20;
+  top:0;
+  right:0;
+  left:0;
+  height:4px;
+  background:linear-gradient(90deg,#ef174c 0 52%,#16cdb6 52% 100%);
+  pointer-events:none;
+}
+
+body:not(.dark) :is(.site-header,.header-main,.category-nav,.store-bottom-nav,.mobile-menu-panel){background:#fff!important;color:#17171b!important;border-color:#e3e4e8!important}
+body.dark :is(.site-header,.header-main,.category-nav,.store-bottom-nav,.mobile-menu-panel){background:#151517!important;color:#f6f6f7!important;border-color:#303035!important}
+
+/* Neutral quick-link surfaces shared by navigation, filters and service links. */
+body:not(.dark) :is(.category-nav>a,.brands-nav>button,.home-categories a,.footer-column>a,.footer-column>button,.footer-brand-list>button,.catalog-filter-section,.account-nav button,.finder-choice,.pdp-tags span){background:#f3f3f5!important;color:#24242a!important;border-color:#e1e1e5!important;box-shadow:none!important}
+body.dark :is(.category-nav>a,.brands-nav>button,.home-categories a,.footer-column>a,.footer-column>button,.footer-brand-list>button,.catalog-filter-section,.account-nav button,.finder-choice,.pdp-tags span){background:#27272b!important;color:#f2f2f4!important;border-color:#3c3c42!important;box-shadow:none!important}
+
+/* Store cards adopt the rounded neutral frames from the profile references. */
+body:not(.dark) :is(.origo-reference-product-card,.pdp-purchase,.checkout-main-card,.checkout-summary-card,.tracking-card,.timeline-card,.profile-card,.membership-card,.finder-card,.home-alt-card,.library-note-card){background:#fff!important;border:1px solid #e5e6ea!important;box-shadow:0 8px 22px rgba(35,38,48,.07)!important}
+body.dark :is(.origo-reference-product-card,.pdp-purchase,.checkout-main-card,.checkout-summary-card,.tracking-card,.timeline-card,.profile-card,.membership-card,.finder-card,.home-alt-card,.library-note-card){background:#19191c!important;border:1px solid #38383e!important;box-shadow:0 9px 24px rgba(0,0,0,.38)!important}
+
+/* Replace large glows with a restrained colored edge. */
+:is(.origo-reference-product-card,.pdp-purchase,.pdp-profile-section,.pdp-recommendations,.checkout-main-card,.checkout-summary-card,.tracking-card,.timeline-card,.profile-card,.membership-card,.finder-card,.home-alt-card,.alternative-narrative article,.library-note-card)::before{right:0;left:0;height:2px;box-shadow:none;background:var(--card-accent,var(--origo-cyan))}
+
+/* Pastel feature tiles in light mode, translucent chromatic tiles in dark mode. */
+body:not(.dark) .home-benefits article:nth-child(5n+1){background:#e9fbf7!important;color:#158f7d!important}
+body:not(.dark) .home-benefits article:nth-child(5n+2){background:#fff8df!important;color:#b57900!important}
+body:not(.dark) .home-benefits article:nth-child(5n+3){background:#f2ebff!important;color:#7540d5!important}
+body:not(.dark) .home-benefits article:nth-child(5n+4){background:#e9f7ff!important;color:#197dac!important}
+body:not(.dark) .home-benefits article:nth-child(5n){background:#fff0f6!important;color:#c52f69!important}
+body.dark .home-benefits article:nth-child(5n+1){background:#07352f!important;color:#26d8bb!important;border-color:#096a5d!important}
+body.dark .home-benefits article:nth-child(5n+2){background:#35250d!important;color:#f3b72b!important;border-color:#6d4910!important}
+body.dark .home-benefits article:nth-child(5n+3){background:#2a1350!important;color:#ad7aff!important;border-color:#5a2b9d!important}
+body.dark .home-benefits article:nth-child(5n+4){background:#0c3048!important;color:#39bdf8!important;border-color:#155f88!important}
+body.dark .home-benefits article:nth-child(5n){background:#3b1024!important;color:#ff659f!important;border-color:#7b1d45!important}
+
+/* Section labels mirror the short pink, teal and amber markers in the references. */
+:is(.home-section-head,.pdp-section-heading,.catalog-heading,.tracking-heading,.account-view-head,.finder-heading,.notes-page-head)::before{width:3px;height:18px;top:4px;background:var(--section-marker,#18c9b3);box-shadow:none}
+:is(.home-section-head,.pdp-section-heading,.catalog-heading,.tracking-heading,.account-view-head,.finder-heading,.notes-page-head):nth-of-type(3n+2)::before{--section-marker:#ef4082}
+:is(.home-section-head,.pdp-section-heading,.catalog-heading,.tracking-heading,.account-view-head,.finder-heading,.notes-page-head):nth-of-type(3n)::before{--section-marker:#f4a719}
+
+/* Primary actions follow the black/purple pills of the references. */
+:is(.pdp-price-add,.checkout-submit,.account-primary,.finder-primary,.alt-primary,.burgundy-button,.card-add-button){border-radius:12px!important;font-weight:800!important}
+body:not(.dark) :is(.pdp-price-add,.checkout-submit,.account-primary,.finder-primary,.alt-primary,.burgundy-button){background:#17171b!important;color:#fff!important;box-shadow:none!important}
+body.dark :is(.pdp-price-add,.checkout-submit,.account-primary,.finder-primary,.alt-primary,.burgundy-button){background:#6040bd!important;color:#fff!important;box-shadow:none!important}
+:is(.pdp-price-add,.checkout-submit,.account-primary,.finder-primary,.alt-primary,.burgundy-button):hover{background:#18ad91!important;color:#fff!important;box-shadow:none!important}
+
+/* White and charcoal product image stages match each theme cleanly. */
+body:not(.dark) :is(.product-card-media-link,.pdp-main-image,.pdp-thumbnails button){background:#fff!important;border-color:#ececf0!important}
+body.dark :is(.product-card-media-link,.pdp-main-image,.pdp-thumbnails button){background:#101012!important;border-color:#34343a!important}
+
+/* Fullscreen/gallery controls use the compact circular action language. */
+.pdp-fullscreen-button,.card-action-button,.theme-toggle{border-radius:50%!important}
+body:not(.dark) :is(.pdp-fullscreen-button,.card-action-button,.theme-toggle){background:#f1f1f3!important;color:#303038!important;border-color:#e3e3e7!important;box-shadow:none!important}
+body.dark :is(.pdp-fullscreen-button,.card-action-button,.theme-toggle){background:#2b2b2f!important;color:#f5f5f6!important;border-color:#3d3d43!important;box-shadow:none!important}
+
+/* Keep the product-detail gateways deliberately white as requested. */
+body.dark .product-overlay :is(.pdp-profile-section,.pdp-profile-section>button,.pdp-profile-panel,.pdp-similar-fragrances){background:#fff!important;color:#17171b!important}
+
+body.dark :is(.catalog-page,.commerce-page,.account-route-page,.fragrance-finder-page,.alternatives-route-page,.notes-route-page,.brands-route-page,.benefits-route-page,.benefit-detail-page) :is(.checkout-main-card,.checkout-summary-card,.tracking-card,.timeline-card,.profile-card,.membership-card,.finder-card,.home-alt-card,.library-note-card,[class*="toolbar"],[class*="quick-link"]){background:#242427!important;color:#f6f6f7!important;border-color:#3a3a40!important;background-image:none!important}
+body.dark :is(.catalog-page,.commerce-page,.account-route-page,.fragrance-finder-page,.alternatives-route-page,.notes-route-page,.brands-route-page,.benefits-route-page,.benefit-detail-page) :is(button,input,textarea,select){border-color:#3d3d43!important}
+body.dark :is(.catalog-page,.commerce-page,.account-route-page,.fragrance-finder-page,.alternatives-route-page,.notes-route-page,.brands-route-page,.benefits-route-page,.benefit-detail-page) :is(button,[role="button"]):not(.primary):not(.active){background-color:#29292d!important;color:#f4f4f5!important}
+:is(.home-benefits article) :is(b,small,span){color:inherit!important}
+
+@media(max-width:700px){
+  .site-header::before{height:3px}
+  :is(.origo-reference-product-card,.home-benefits article,.home-categories a,.pdp-profile-section){border-radius:13px!important}
+}
+
+/* Customer account — reference-inspired profile directory. */
+.account-preferences,.account-customer-data{margin-top:0;padding:18px;border:1px solid #e4e5e9;border-radius:18px;background:#fff;color:#202126;box-shadow:0 8px 24px rgba(35,38,48,.06)}
+.account-preferences>header,.account-customer-data>header{display:flex;align-items:center;gap:10px;margin:0 0 14px}
+.account-preferences>header>span,.account-customer-data>header>span{width:34px;height:34px;display:grid;place-items:center;border-radius:11px;background:#e9fbf7;color:#109b86;font-weight:900}
+.account-preferences>header>div,.account-customer-data>header>div{display:grid;gap:2px}
+.account-preferences>header b,.account-customer-data>header b{font-size:14px}
+.account-preferences>header small,.account-customer-data>header small{font-size:10px;color:#777a82}
+.account-preference-block{display:grid;gap:8px;margin-top:12px}
+.account-preference-block>b{font-size:11px;color:#686b73}
+.account-segmented{display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:5px;border-radius:13px;background:#f3f3f5}
+.account-segmented button{min-height:42px;border:0!important;border-radius:10px!important;background:transparent!important;color:#6e7078!important;font:inherit;font-size:12px;font-weight:750}
+.account-segmented button.active{background:#fff!important;color:#18191d!important;box-shadow:0 2px 9px rgba(25,27,33,.1)!important}
+.account-segmented button span{margin-inline-end:5px;color:#12aa91}
+.account-customer-data>div{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.account-customer-data article{min-width:0;min-height:72px;padding:11px;border-radius:13px;background:#f4f4f6;display:grid;align-content:center;gap:4px}
+.account-customer-data article span{font-size:9px;color:#797b83}
+.account-customer-data article b{overflow:hidden;text-overflow:ellipsis;font-size:11px;color:#202126}
+
+body.dark .account-preferences,body.dark .account-customer-data{background:#1b1b1e!important;border-color:#37373d!important;color:#f5f5f6!important;box-shadow:0 10px 26px rgba(0,0,0,.32)}
+body.dark .account-preferences>header>span,body.dark .account-customer-data>header>span{background:#073a33!important;color:#24d2b7!important}
+body.dark .account-preferences>header small,body.dark .account-customer-data>header small,body.dark .account-preference-block>b{color:#a9a9b1!important}
+body.dark .account-segmented{background:#242427!important}
+body.dark .account-segmented button{background:transparent!important;color:#a8a8b0!important}
+body.dark .account-segmented button.active{background:#424249!important;color:#fff!important;box-shadow:none!important}
+body.dark .account-customer-data article{background:#252529!important}
+body.dark .account-customer-data article span{color:#a5a5ad!important}
+body.dark .account-customer-data article b{color:#f6f6f7!important}
+
+@media(max-width:780px){
+  body.account-route .account-route-page{background:#fff!important;color:#1b1c20!important}
+  body.dark.account-route .account-route-page{background:#151517!important;color:#f6f6f7!important}
+  .account-mobile-identity{min-height:112px!important;border:0!important;border-radius:19px!important;background:#fff!important;box-shadow:0 8px 24px rgba(35,38,48,.06)!important}
+  .account-mobile-identity:after{display:none!important}
+  .account-mobile-avatar>img,.account-mobile-avatar>span{border-radius:50%!important;background:linear-gradient(145deg,#17bda3,#6838bf)!important;box-shadow:0 0 0 4px #dffaf4,0 0 24px rgba(23,189,163,.28)}
+  .account-mobile-avatar label{width:18px!important;height:18px!important;padding:0!important;border:3px solid #fff!important;background:#16bd84!important}
+  .account-mobile-avatar label svg{display:none}
+  .account-mobile-identity small{color:#13a88f!important}
+  .account-mobile-identity div>span{background:#e9fbf7!important;color:#138a78!important}
+  .account-mobile-identity>button{background:#f3f3f5!important;color:#6e7078!important;border:0!important}
+  body.dark .account-mobile-identity{background:#1b1b1e!important;box-shadow:0 10px 26px rgba(0,0,0,.35)!important}
+  body.dark .account-mobile-avatar label{border-color:#1b1b1e!important}
+  body.dark .account-mobile-identity>button{background:#29292d!important;color:#aaaab2!important}
+  .mobile-points{background:#f3f3f5!important;color:#202126!important;box-shadow:none!important;border:1px solid #e4e5e9!important}
+  .mobile-points:after{border-color:rgba(117,64,213,.16)!important}
+  .mobile-points>span{color:#7540d5!important}
+  .mobile-points button{border:0!important;background:#18191d!important;color:#fff!important;border-radius:11px!important}
+  body.dark .mobile-points{background:#242427!important;color:#fff!important;border-color:#39393f!important}
+  body.dark .mobile-points button{background:#6040bd!important}
+  .account-mobile-stats{grid-template-columns:repeat(2,1fr)!important}
+  .account-mobile-stats button{min-height:86px!important;place-content:initial!important;align-content:center!important;justify-items:start!important;padding:13px!important;border-radius:14px!important;box-shadow:none!important}
+  .account-mobile-stats button:nth-child(1){background:#e9fbf7!important;border-color:#d0f4eb!important;color:#158f7d!important}
+  .account-mobile-stats button:nth-child(2){background:#fff8df!important;border-color:#f9edbe!important;color:#b57900!important}
+  .account-mobile-stats button:nth-child(3){background:#f2ebff!important;border-color:#e5d9fa!important;color:#7540d5!important}
+  .account-mobile-stats button:nth-child(4){background:#e9f7ff!important;border-color:#d5edf9!important;color:#197dac!important}
+  .account-mobile-stats button :is(svg,b,span){color:inherit!important}
+  body.dark .account-mobile-stats button:nth-child(1){background:#07352f!important;border-color:#096a5d!important;color:#26d8bb!important}
+  body.dark .account-mobile-stats button:nth-child(2){background:#35250d!important;border-color:#6d4910!important;color:#f3b72b!important}
+  body.dark .account-mobile-stats button:nth-child(3){background:#2a1350!important;border-color:#5a2b9d!important;color:#ad7aff!important}
+  body.dark .account-mobile-stats button:nth-child(4){background:#0c3048!important;border-color:#155f88!important;color:#39bdf8!important}
+  .account-mobile-menu{gap:8px!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;overflow:visible!important}
+  .account-mobile-menu button{min-height:56px!important;border:1px solid #e1e2e6!important;border-radius:12px!important;background:#f4f4f5!important;padding:0 14px!important}
+  .account-mobile-menu button:last-child{border:1px solid #e1e2e6!important}
+  .account-mobile-menu svg{color:#13aa92!important}
+  body.dark .account-mobile-menu{background:transparent!important}
+  body.dark .account-mobile-menu button{background:#29292d!important;border-color:#3d3d43!important;color:#f5f5f6!important}
+  .account-preferences,.account-customer-data{margin-top:22px}
+  .account-social-hub a,.account-support-list,.account-controls>div{box-shadow:none!important}
+  body.dark .account-support-list,body.dark .account-controls>div,body.dark .account-social-hub a{background:#242427!important;border-color:#3b3b41!important}
+}
+
+/* Header page strip stays visually open in both themes. */
+body:not(.dark) .site-header .category-nav,
+body.dark .site-header .category-nav{
+  background:transparent!important;
+  background-image:none!important;
+  border-top-color:transparent!important;
+  box-shadow:none!important;
+}
+body:not(.dark) .site-header .category-nav>a,
+body:not(.dark) .site-header .category-nav>.brands-nav>button,
+body.dark .site-header .category-nav>a,
+body.dark .site-header .category-nav>.brands-nav>button{
+  background:transparent!important;
+  border:1px solid #3b3b42!important;
+  border-radius:999px!important;
+  box-shadow:none!important;
+  padding:8px 14px!important;
+  transition:border-color .2s ease,color .2s ease,box-shadow .2s ease,transform .2s ease!important;
+}
+body:not(.dark) .site-header .category-nav>a,
+body:not(.dark) .site-header .category-nav>.brands-nav>button{
+  border-color:#dedfe4!important;
+}
+.site-header .category-nav>a::after{display:none!important}
+.site-header .category-nav>a:hover,
+.site-header .category-nav>.brands-nav>button:hover{
+  border-color:#18ad91!important;
+  color:#118b77!important;
+  box-shadow:0 0 0 3px rgba(24,173,145,.09)!important;
+  transform:translateY(-1px);
+}
+.site-header .category-nav>a.active{
+  border-color:#7540d5!important;
+  color:#7540d5!important;
+  box-shadow:0 0 0 3px rgba(117,64,213,.09)!important;
+  font-weight:800!important;
+}
+body.dark .site-header .category-nav>a:hover,
+body.dark .site-header .category-nav>.brands-nav>button:hover{
+  color:#29d7ba!important;
+  box-shadow:0 0 0 3px rgba(41,215,186,.1)!important;
+}
+body.dark .site-header .category-nav>a.active{
+  border-color:#a77cff!important;
+  color:#c3a6ff!important;
+  box-shadow:0 0 0 3px rgba(167,124,255,.11)!important;
+}
+
+/* Footer page links use outlines only. */
+body:not(.dark) :is(.footer-column>a,.footer-column>button,.footer-brand-list>button){
+  background:transparent!important;
+  background-image:none!important;
+  border:1px solid #dedfe4!important;
+  color:#24242a!important;
+  box-shadow:none!important;
+}
+body.dark :is(.footer-column>a,.footer-column>button,.footer-brand-list>button){
+  background:transparent!important;
+  background-image:none!important;
+  border:1px solid #3b3b42!important;
+  color:#f2f2f4!important;
+  box-shadow:none!important;
+}
+:is(.footer-column>a,.footer-column>button,.footer-brand-list>button):hover{
+  background:transparent!important;
+  border-color:#18ad91!important;
+  color:#18ad91!important;
+  box-shadow:0 0 0 3px rgba(24,173,145,.08)!important;
+}
+
+/* Remove the red/green decorative divider below the news ticker. */
+.site-header::before{display:none!important;content:none!important}
+
+/* Product-card price reduced by 35% from the previous 20–32px scale. */
+body #storefront-main .origo-exact-product-card .product-price,
+body .product-overlay .origo-exact-product-card .product-price,
+body #home .origo-exact-product-card .product-price{
+  font-size:clamp(13px,1.3vw,21px)!important;
+}
+@media(max-width:640px){
+  body #storefront-main .origo-exact-product-card .product-price,
+  body .product-overlay .origo-exact-product-card .product-price,
+  body #home .origo-exact-product-card .product-price{
+    font-size:10.5px!important;
+  }
+}
+
+/* One restrained store accent replaces the unrelated rainbow card edges. */
+:is(.product-grid,.pdp-products-row)>*{
+  --card-accent:#7a1630!important;
+  --card-glow:rgba(122,22,48,.18)!important;
+}
+:is(.origo-reference-product-card,.pdp-purchase,.pdp-profile-section,.pdp-recommendations,.checkout-main-card,.checkout-summary-card,.tracking-card,.timeline-card,.profile-card,.membership-card,.finder-card,.home-alt-card,.alternative-narrative article,.library-note-card)::before{
+  background:#7a1630!important;
+  box-shadow:none!important;
+}
+body.dark :is(.product-grid,.pdp-products-row)>*{
+  --card-accent:#c9953f!important;
+  --card-glow:rgba(201,149,63,.14)!important;
+}
+body.dark :is(.origo-reference-product-card,.pdp-purchase,.pdp-profile-section,.pdp-recommendations,.checkout-main-card,.checkout-summary-card,.tracking-card,.timeline-card,.profile-card,.membership-card,.finder-card,.home-alt-card,.alternative-narrative article,.library-note-card)::before{
+  background:#c9953f!important;
+}
+
+/* Strong footer override: page and brand containers are outlines only in light mode. */
+body:not(.dark) footer.origo-footer .footer-directory .footer-column>a,
+body:not(.dark) footer.origo-footer .footer-directory .footer-column>button,
+body:not(.dark) footer.origo-footer .footer-directory .footer-brand-list>button{
+  background:transparent!important;
+  background-color:transparent!important;
+  background-image:none!important;
+  border:1px solid #d8d9de!important;
+  color:#111216!important;
+  box-shadow:none!important;
+}
+body:not(.dark) footer.origo-footer .footer-directory .footer-column>a:hover,
+body:not(.dark) footer.origo-footer .footer-directory .footer-column>button:hover,
+body:not(.dark) footer.origo-footer .footer-directory .footer-brand-list>button:hover{
+  background:transparent!important;
+  border-color:#7a1630!important;
+  color:#7a1630!important;
+}
+
+/* Brand logos and benefit tiles stay fully contained; hover never scales them. */
+.home-brand-directory .brand-marquee-set>button,
+.home-benefits-directory .benefit-marquee-set>button,
+.brands-page-grid>button{
+  overflow:hidden!important;
+  transform:none!important;
+  scale:1!important;
+}
+.home-brand-directory .brand-marquee-set>button:hover,
+.home-brand-directory .brand-marquee-set>button:focus-visible,
+.home-benefits-directory .benefit-marquee-set>button:hover,
+.home-benefits-directory .benefit-marquee-set>button:focus-visible,
+.brands-page-grid>button:hover,
+.brands-page-grid>button:focus-visible{
+  transform:none!important;
+  scale:1!important;
+}
+.home-brand-directory .brand-marquee-set>button>img,
+.home-benefits-directory .benefit-marquee-set>button>img{
+  width:calc(100% - 16px)!important;
+  height:calc(100% - 16px)!important;
+  max-width:100%!important;
+  max-height:100%!important;
+  margin:auto!important;
+  display:block!important;
+  object-fit:contain!important;
+  object-position:center!important;
+  transform:none!important;
+  scale:1!important;
+}
+.brands-page-grid>button>img{
+  width:100%!important;
+  height:68px!important;
+  max-width:100%!important;
+  margin:auto!important;
+  display:block!important;
+  object-fit:contain!important;
+  object-position:center!important;
+  transform:none!important;
+  scale:1!important;
+}
+.home-brand-directory .brand-marquee-set>button:hover>img,
+.home-benefits-directory .benefit-marquee-set>button:hover>img,
+.brands-page-grid>button:hover>img{
+  transform:none!important;
+  scale:1!important;
+}
+@media(max-width:600px){
+  .brands-page-grid>button>img{height:54px!important}
+}
+
+/* Benefits remain stationary on hover, focus and selection. */
+.home-benefits article,
+.home-benefits article:hover,
+.home-benefits-directory .benefit-marquee-item,
+.home-benefits-directory .benefit-marquee-item:is(:hover,:focus-visible,.is-selected),
+.footer-benefit-card,
+.footer-benefit-card:hover,
+.benefits-page-grid>a,
+.benefits-page-grid>a:hover{
+  transform:none!important;
+  scale:1!important;
+}
+.home-benefits article :is(img,svg,i),
+.home-benefits article:hover :is(img,svg,i),
+.home-benefits-directory .benefit-marquee-item :is(img,svg,i),
+.home-benefits-directory .benefit-marquee-item:is(:hover,:focus-visible,.is-selected) :is(img,svg,i){
+  transform:none!important;
+  scale:1!important;
+}
+
+/* Product cards use one thin burgundy outline with no colored top strip. */
+body :is(.origo-exact-product-card,.origo-reference-product-card,.origo-product-card.perfume-product-card){
+  border:1px solid #7a1630!important;
+  border-color:#7a1630!important;
+}
+body :is(.origo-exact-product-card,.origo-reference-product-card,.origo-product-card.perfume-product-card)::before{
+  display:none!important;
+  content:none!important;
+  background:none!important;
+  box-shadow:none!important;
+}
+body.dark :is(.origo-exact-product-card,.origo-reference-product-card,.origo-product-card.perfume-product-card){
+  border-color:#a43b58!important;
+}

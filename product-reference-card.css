@@ -140,6 +140,88 @@ body .product-overlay .origo-exact-product-card:is(:hover, :focus-within, .show-
   transform: none !important;
 }
 
+/* Keep availability/new status with the other image features instead of covering the product. */
+body #storefront-main .origo-exact-product-card .product-card-image-meta > .product-feature-badge,
+body .product-overlay .origo-exact-product-card .product-card-image-meta > .product-feature-badge {
+  position: static !important;
+  inset: auto !important;
+  z-index: auto !important;
+  flex: 0 1 auto !important;
+  max-width: 42% !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 4px !important;
+  color: #7d001f !important;
+  background: rgba(255, 255, 255, .95) !important;
+  box-shadow: 0 3px 10px rgba(35, 20, 24, .07) !important;
+  transform: none !important;
+}
+
+body #storefront-main .origo-exact-product-card .product-card-image-meta > .product-feature-badge svg,
+body .product-overlay .origo-exact-product-card .product-card-image-meta > .product-feature-badge svg {
+  width: 12px !important;
+  height: 12px !important;
+  flex: none !important;
+}
+
+/* Brand and rating share one row; the complete perfume name owns the row below. */
+body #storefront-main .origo-exact-product-card .exact-card-heading,
+body .product-overlay .origo-exact-product-card .exact-card-heading {
+  width: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 10px !important;
+}
+
+body #storefront-main .origo-exact-product-card h3.exact-card-product-name,
+body .product-overlay .origo-exact-product-card h3.exact-card-product-name {
+  width: 100% !important;
+  overflow: visible !important;
+  font-family: var(--origo-font-display, var(--origo-font-body, var(--font-ar)), sans-serif) !important;
+  font-size: clamp(15px, 1.4vw, 22px) !important;
+  line-height: 1.25 !important;
+  text-overflow: clip !important;
+  white-space: normal !important;
+  overflow-wrap: anywhere !important;
+}
+
+body #storefront-main .origo-exact-product-card h3.exact-card-product-name.product-name-long,
+body .product-overlay .origo-exact-product-card h3.exact-card-product-name.product-name-long {
+  font-size: clamp(13px, 1.15vw, 18px) !important;
+}
+
+body #storefront-main .origo-exact-product-card h3.exact-card-product-name.product-name-very-long,
+body .product-overlay .origo-exact-product-card h3.exact-card-product-name.product-name-very-long {
+  font-size: clamp(11px, .95vw, 15px) !important;
+}
+
+body #storefront-main .origo-exact-product-card h3.exact-card-product-name button,
+body .product-overlay .origo-exact-product-card h3.exact-card-product-name button {
+  overflow: visible !important;
+  text-overflow: clip !important;
+  white-space: normal !important;
+  -webkit-line-clamp: unset !important;
+}
+
+@media (max-width: 700px) {
+  body #storefront-main .origo-exact-product-card h3.exact-card-product-name,
+  body .product-overlay .origo-exact-product-card h3.exact-card-product-name {
+    font-size: 13px !important;
+  }
+
+  body #storefront-main .origo-exact-product-card h3.exact-card-product-name.product-name-long,
+  body .product-overlay .origo-exact-product-card h3.exact-card-product-name.product-name-long {
+    font-size: 11px !important;
+  }
+
+  body #storefront-main .origo-exact-product-card h3.exact-card-product-name.product-name-very-long,
+  body .product-overlay .origo-exact-product-card h3.exact-card-product-name.product-name-very-long {
+    font-size: 9.5px !important;
+  }
+}
+
 body #storefront-main .origo-exact-product-card .product-card-top-actions .card-action-button,
 body .product-overlay .origo-exact-product-card .product-card-top-actions .card-action-button {
   position: static !important;
@@ -607,6 +689,27 @@ body .product-overlay .origo-exact-product-card .exact-card-actions .card-add-bu
   body .product-overlay .origo-exact-product-card .exact-card-actions .card-add-button svg {
     width: 15px !important;
     height: 15px !important;
+  }
+}
+
+/* Make the discount percentage easier to read without overpowering the image. */
+body #storefront-main #home .origo-exact-product-card .product-image > .product-badge,
+body .product-overlay .origo-exact-product-card .product-image > .product-badge {
+  min-width: 45px !important;
+  padding: 7px 11px !important;
+  border-radius: 9px !important;
+  font-size: clamp(10px, .9vw, 14px) !important;
+  font-weight: 900 !important;
+  line-height: 1.05 !important;
+  text-align: center !important;
+}
+
+@media (max-width: 700px) {
+  body #storefront-main #home .origo-exact-product-card .product-image > .product-badge,
+  body .product-overlay .origo-exact-product-card .product-image > .product-badge {
+    min-width: 39px !important;
+    padding: 6px 9px !important;
+    font-size: 10px !important;
   }
 }
 

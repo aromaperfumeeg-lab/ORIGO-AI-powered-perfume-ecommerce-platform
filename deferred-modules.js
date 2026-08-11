@@ -1,10 +1,10 @@
 (() => {
   const route = window.location.pathname;
   const routeScripts = [
-    ["alternatives.js?v=2", /\/alternatives(?:\/|$)/],
+  ["alternatives.js?v=3", /\/alternatives(?:\/|$)/],
     ["performance-insights.js?v=2", /\/performance(?:\/|$)/],
     ["commerce.js?v=2", /\/(?:cart|checkout|payment|track(?:ing)?|orders?)(?:\/|$)/],
-    ["account.js?v=2", /\/(?:account|login|register|profile)(?:\/|$)/],
+    ["account.js?v=3", /\/(?:account|login|register|profile)(?:\/|$)/],
     ["fragrance-finder.js?v=1", /\/fragrance-finder(?:\/|$)/, true]
   ];
 

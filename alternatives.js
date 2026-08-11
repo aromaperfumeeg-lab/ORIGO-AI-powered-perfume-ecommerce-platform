@@ -108,7 +108,7 @@
   }
   function actionButtons(item, compact = false) {
     return `<div class="alt-actions${compact ? " compact" : ""}">
-      <button class="alt-primary" data-alt="add" data-product="${esc(item.product.id)}" data-reference="${esc(item.reference.id)}"${available(item) ? "" : " disabled"}>♧ ${available(item) ? t("add") : t("unavailable")}</button>
+          <button class="alt-primary" data-alt="add" data-product="${esc(item.product.id)}" data-reference="${esc(item.reference.id)}"${available(item) ? "" : " disabled"}>${available(item) ? "🛒" : "◇"} ${available(item) ? t("add") : t("unavailable")}</button>
       <button class="alt-icon" data-alt="wishlist" data-product="${esc(item.product.id)}" data-reference="${esc(item.reference.id)}" aria-label="${t("favorite")}">♡</button>
       <button class="alt-secondary alt-product-link" data-alt="product" data-product="${esc(item.product.id)}" data-reference="${esc(item.reference.id)}">${t("product")} ◇</button>
       <button class="alt-secondary" data-alt="compare" data-slug="${esc(item.reference.slug)}">${t("comparison")} ◉</button>

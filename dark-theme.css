@@ -1,0 +1,579 @@
+/* ORIGO pitch-black theme — final override layer. */
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --night-black: #000;
+  --night-surface: #08080b;
+  --night-raised: #111116;
+  --night-line: rgba(255,255,255,.18);
+  --night-text: #fff;
+  --night-muted: #c8c8d0;
+  --night-burgundy: #d4144d;
+  --night-gold: #ffd24a;
+  --night-blue: #4db8ff;
+  --night-violet: #a970ff;
+  --night-green: #42e58d;
+}
+
+body.dark,
+body.dark #storefront-main,
+body.dark .origo-home,
+body.dark .catalog-page,
+body.dark .commerce-page,
+body.dark .account-route-page,
+body.dark .fragrance-finder-page {
+  color: var(--night-text) !important;
+  background: var(--night-black) !important;
+}
+
+body.dark :is(.site-header,.header-main,.category-nav,.mobile-menu,.drawer,.overlay>section,.search-panel,.account-panel,.product-overlay-panel,.origo-footer,.footer-directory,.footer-bottom-bar,.store-bottom-nav) {
+  color: var(--night-text) !important;
+  border-color: var(--night-line) !important;
+  background-color: var(--night-black) !important;
+}
+
+body.dark :is(.home-benefits,.home-brand-directory,.home-brand-showcase,.home-categories a,.mega-dropdown,.filter-panel,.catalog-toolbar,.catalog-sidebar,.commerce-card,.account-card,.finder-card) {
+  color: var(--night-text) !important;
+  border-color: var(--night-line) !important;
+  background: var(--night-surface) !important;
+  box-shadow: 0 12px 34px rgba(0,0,0,.72) !important;
+}
+
+body.dark :is(h1,h2,h3,h4,h5,h6,p,b,strong,label,legend,th,td,.section-title,.product-brand,.product-price,.product-info h3) {
+  color: var(--night-text);
+}
+
+body.dark :is(input,textarea,select,.global-search,.header-search,.mobile-header-search) {
+  color: var(--night-text) !important;
+  border-color: var(--night-line) !important;
+  background: var(--night-raised) !important;
+  caret-color: var(--night-gold) !important;
+}
+
+body.dark :is(input,textarea)::placeholder { color:#92929d !important; opacity:1; }
+
+body.dark #storefront-main .origo-exact-product-card,
+body.dark .product-overlay .origo-exact-product-card,
+body.dark .origo-reference-product-card,
+body.dark .home-best-sellers .product-card {
+  color: var(--night-text) !important;
+  border-color: var(--night-burgundy) !important;
+  background: var(--night-surface) !important;
+  box-shadow: 0 0 0 1px rgba(212,20,77,.34),0 0 18px rgba(212,20,77,.3),0 18px 38px rgba(0,0,0,.82) !important;
+}
+
+body.dark #storefront-main .origo-exact-product-card :is(.product-image,.product-card-media-link,.product-info),
+body.dark .product-overlay .origo-exact-product-card :is(.product-image,.product-card-media-link,.product-info),
+body.dark .origo-reference-product-card :is(.product-image,.product-card-media-link,.product-info) {
+  color: var(--night-text) !important;
+  border-color: var(--night-line) !important;
+  background: var(--night-surface) !important;
+}
+
+body.dark #storefront-main .origo-exact-product-card :is(.exact-card-product-name,.exact-card-product-name button,.exact-card-rating,.product-price),
+body.dark .product-overlay .origo-exact-product-card :is(.exact-card-product-name,.exact-card-product-name button,.exact-card-rating,.product-price) {
+  color: var(--night-text) !important;
+}
+
+body.dark #storefront-main .origo-exact-product-card .product-brand,
+body.dark .product-overlay .origo-exact-product-card .product-brand {
+  color: var(--night-gold) !important;
+  text-shadow: 0 0 8px rgba(255,210,74,.58) !important;
+}
+
+body.dark :is(.product-price,.exact-card-rating b,.footer-column a:hover,.category-nav>a:hover) {
+  color: var(--night-gold) !important;
+  text-shadow: 0 0 8px rgba(255,210,74,.55) !important;
+}
+
+body.dark :is(.card-add-button,.product-badge,.active[data-action],.theme-toggle) {
+  border-color: var(--night-burgundy) !important;
+  box-shadow: 0 0 12px rgba(212,20,77,.42) !important;
+}
+
+body.dark :is(a,button) { color:inherit; }
+body.dark :is(.eyebrow,.home-section-head>a,.footer-all-link) { color:var(--night-blue) !important; text-shadow:0 0 8px rgba(77,184,255,.45); }
+body.dark :is(.product-feature-badge,.chip.active,.status-success) { color:var(--night-green) !important; border-color:rgba(66,229,141,.5) !important; box-shadow:0 0 10px rgba(66,229,141,.2) !important; }
+body.dark :is(.wishlist-button.active,.card-favorite-button.active,.footer-spark) { color:var(--night-violet) !important; text-shadow:0 0 9px rgba(169,112,255,.55) !important; }
+
+body.dark .product-card-image-meta>span {
+  color: var(--night-text) !important;
+  border-color: var(--night-line) !important;
+  background: rgba(8,8,11,.96) !important;
+}
+
+body.dark hr { border-color:var(--night-line) !important; }
+body.dark ::selection { color:#000; background:var(--night-gold); }
+
+body.dark .theme-toggle .sun { display:none !important; }
+body.dark .theme-toggle .moon { display:block !important; color:var(--night-gold) !important; filter:drop-shadow(0 0 7px rgba(255,210,74,.75)); }
+body:not(.dark) .theme-toggle .sun { display:block; }
+body:not(.dark) .theme-toggle .moon { display:none; }
+
+/* Footer: monochrome surfaces, with color reserved for type and icons only. */
+body.dark .origo-footer,
+body.dark .origo-footer .footer-directory,
+body.dark .origo-footer .footer-bottom-bar,
+body.dark .origo-footer .footer-column,
+body.dark .origo-footer .footer-newsletter,
+body.dark .origo-footer .footer-contact-app {
+  background: #000 !important;
+  background-image: none !important;
+  color: #fff !important;
+  border-color: rgba(255,255,255,.34) !important;
+}
+
+body.dark .origo-footer :is(.footer-column>a,.footer-column>button,.footer-brand-list>button,.footer-brand-list>a,.footer-app-links>small,.footer-app-links>a) {
+  color: #fff !important;
+  border: 1px solid rgba(255,255,255,.42) !important;
+  background: #000 !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+body.dark .origo-footer :is(.footer-column>a,.footer-column>button,.footer-brand-list>button,.footer-brand-list>a,.footer-app-links>small,.footer-app-links>a):hover {
+  color: #000 !important;
+  border-color: #fff !important;
+  background: #fff !important;
+}
+
+body.dark .origo-footer .footer-email-field {
+  color: #fff !important;
+  border: 1px solid rgba(255,255,255,.5) !important;
+  background: #000 !important;
+  box-shadow: none !important;
+}
+
+body.dark .origo-footer .footer-email-field input {
+  color: #fff !important;
+  background: transparent !important;
+}
+
+body.dark .origo-footer .footer-newsletter button[type="submit"] {
+  color: #fff !important;
+  border: 1px solid #fff !important;
+  background: #000 !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+body.dark .origo-footer .footer-newsletter button[type="submit"]:hover {
+  color: #000 !important;
+  background: #fff !important;
+}
+
+body.dark .origo-footer .footer-socials :is(a,span) {
+  color: #fff !important;
+  border: 1px solid rgba(255,255,255,.5) !important;
+  background: #000 !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+body.dark .origo-footer .footer-socials a:hover {
+  color: #000 !important;
+  background: #fff !important;
+}
+
+body.dark .origo-footer :is(.footer-column h3,.footer-newsletter h2) {
+  color: #fff !important;
+  text-shadow: none !important;
+}
+
+body.dark .origo-footer :is(.footer-column a span,.footer-column button span,.footer-contact p span,.footer-email-field>span,.footer-spark) {
+  color: var(--night-burgundy) !important;
+  text-shadow: 0 0 8px rgba(212,20,77,.48) !important;
+}
+
+body.dark .origo-footer :is(.footer-all-link,.footer-contact>small) {
+  color: var(--night-gold) !important;
+  text-shadow: 0 0 7px rgba(255,210,74,.42) !important;
+}
+
+/* Product-image overlays must stay crisp against both light and dark photos. */
+body.dark #storefront-main .origo-exact-product-card .product-card-image-meta,
+body.dark .product-overlay .origo-exact-product-card .product-card-image-meta {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  transform: translateY(4px) !important;
+  filter: none !important;
+}
+
+body.dark #storefront-main .origo-exact-product-card:is(:hover,:focus-within,.show-card-actions) .product-card-image-meta,
+body.dark .product-overlay .origo-exact-product-card:is(:hover,:focus-within,.show-card-actions) .product-card-image-meta {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: none !important;
+}
+
+body.dark #storefront-main .origo-exact-product-card .product-card-image-meta > span,
+body.dark .product-overlay .origo-exact-product-card .product-card-image-meta > span {
+  color: #fff !important;
+  border: 1.5px solid #fff !important;
+  background: #000 !important;
+  background-image: none !important;
+  box-shadow: 0 3px 12px rgba(0,0,0,.72) !important;
+  text-shadow: none !important;
+  opacity: 1 !important;
+}
+
+body.dark #storefront-main .origo-exact-product-card .product-card-image-meta > .product-feature-badge,
+body.dark .product-overlay .origo-exact-product-card .product-card-image-meta > .product-feature-badge {
+  color: #fff !important;
+  border-color: #fff !important;
+  background: #000 !important;
+  box-shadow: 0 3px 12px rgba(0,0,0,.72),0 0 9px rgba(255,255,255,.24) !important;
+}
+
+body.dark #storefront-main .origo-exact-product-card .product-card-image-meta > .product-feature-badge svg,
+body.dark .product-overlay .origo-exact-product-card .product-card-image-meta > .product-feature-badge svg {
+  color: var(--night-burgundy) !important;
+  fill: currentColor !important;
+  filter: drop-shadow(0 0 4px rgba(212,20,77,.55)) !important;
+}
+
+body.dark #storefront-main .origo-exact-product-card .product-card-top-actions .card-action-button,
+body.dark .product-overlay .origo-exact-product-card .product-card-top-actions .card-action-button {
+  color: #050505 !important;
+  border: 1.5px solid #fff !important;
+  background: #fff !important;
+  box-shadow: 0 3px 12px rgba(0,0,0,.72) !important;
+}
+
+body.dark #storefront-main .origo-exact-product-card .product-card-top-actions .card-action-button.active,
+body.dark .product-overlay .origo-exact-product-card .product-card-top-actions .card-action-button.active {
+  color: #fff !important;
+  border-color: var(--night-burgundy) !important;
+  background: var(--night-burgundy) !important;
+}
+
+body.dark #storefront-main .origo-exact-product-card .product-image > .product-badge,
+body.dark .product-overlay .origo-exact-product-card .product-image > .product-badge {
+  color: #fff !important;
+  border: 1.5px solid #fff !important;
+  background: #000 !important;
+  background-image: none !important;
+  box-shadow: 0 3px 12px rgba(0,0,0,.75),0 0 9px rgba(255,255,255,.25) !important;
+  text-shadow: none !important;
+}
+
+body.dark #storefront-main .origo-exact-product-card .product-image,
+body.dark .product-overlay .origo-exact-product-card .product-image {
+  outline: 1px solid rgba(255,255,255,.22) !important;
+  outline-offset: -1px !important;
+}
+
+body.dark #storefront-main .origo-exact-product-card .card-add-button,
+body.dark .product-overlay .origo-exact-product-card .card-add-button,
+body.dark .origo-reference-product-card .card-add-button {
+  color: #fff !important;
+  border: 1.5px solid #fff !important;
+  background: #000 !important;
+  background-image: none !important;
+  box-shadow: 0 0 10px rgba(212,20,77,.34) !important;
+}
+
+body.dark #storefront-main .origo-exact-product-card .card-add-button:hover,
+body.dark .product-overlay .origo-exact-product-card .card-add-button:hover,
+body.dark .origo-reference-product-card .card-add-button:hover {
+  color: #000 !important;
+  border-color: #fff !important;
+  background: #fff !important;
+  box-shadow: 0 0 12px rgba(255,255,255,.28) !important;
+}
+
+/* Image stages follow the active theme while preserving transparent artwork. */
+body.dark #storefront-main .origo-exact-product-card .product-card-media-link,
+body.dark .product-overlay .origo-exact-product-card .product-card-media-link,
+body.dark .origo-reference-product-card .product-card-media-link,
+body.dark .pdp-main-image,
+body.dark .pdp-thumbnails button,
+body.dark :is(.dialog-note-chip,.library-note-image,.note-detail-image,.note-product-card),
+body.dark .brand-marquee-set > button {
+  border-color: rgba(255,255,255,.22) !important;
+  background: #000 !important;
+  background-image: none !important;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.08),0 6px 16px rgba(0,0,0,.5) !important;
+}
+
+body.dark #storefront-main .origo-exact-product-card .product-card-media-link img,
+body.dark .product-overlay .origo-exact-product-card .product-card-media-link img,
+body.dark .origo-reference-product-card .product-card-media-link img,
+body.dark .pdp-main-image > img,
+body.dark .pdp-thumbnails img,
+body.dark :is(.dialog-note-chip,.library-note-image,.note-detail-image,.note-product-card) img,
+body.dark .brand-marquee-set > button > img {
+  background: transparent !important;
+  mix-blend-mode: normal !important;
+  filter: none !important;
+  isolation: isolate !important;
+}
+
+body.dark .pdp-main-image > img,
+body.dark #storefront-main .origo-exact-product-card .product-card-media-link img,
+body.dark .product-overlay .origo-exact-product-card .product-card-media-link img {
+  object-fit: contain !important;
+}
+
+body.dark :is(.dialog-note-chip,.note-product-card) :is(b,small,span) {
+  color: #fff !important;
+  text-shadow: none !important;
+}
+
+body:not(.dark) #storefront-main .origo-exact-product-card .product-card-media-link,
+body:not(.dark) .product-overlay .origo-exact-product-card .product-card-media-link,
+body:not(.dark) .origo-reference-product-card .product-card-media-link,
+body:not(.dark) .pdp-main-image,
+body:not(.dark) .pdp-thumbnails button,
+body:not(.dark) :is(.dialog-note-chip,.library-note-image,.note-detail-image,.note-product-card) {
+  background: #fff !important;
+  background-image: none !important;
+}
+
+body:not(.dark) #storefront-main .origo-exact-product-card .product-card-media-link img,
+body:not(.dark) .product-overlay .origo-exact-product-card .product-card-media-link img,
+body:not(.dark) .origo-reference-product-card .product-card-media-link img,
+body:not(.dark) .pdp-main-image > img,
+body:not(.dark) .pdp-thumbnails img,
+body:not(.dark) :is(.dialog-note-chip,.library-note-image,.note-detail-image,.note-product-card) img {
+  background: transparent !important;
+  mix-blend-mode: normal !important;
+}
+
+/* Brand rail follows the active theme and preserves transparent logo artwork. */
+body.dark :is(.home-brand-directory,.brand-carousel-track,.brand-marquee,.brand-marquee-set),
+body.dark .brand-marquee-set > button {
+  border-color: rgba(255,255,255,.18) !important;
+  background: #000 !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+body.dark .brand-marquee-set > button > img {
+  background: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  mix-blend-mode: normal !important;
+}
+
+body:not(.dark) :is(.home-brand-directory,.brand-carousel-track,.brand-marquee,.brand-marquee-set),
+body:not(.dark) .brand-marquee-set > button {
+  background-color: #fff !important;
+}
+
+body:not(.dark) .brand-marquee-set > button > img {
+  background: transparent !important;
+}
+
+/* Product cards use one uninterrupted pitch-black surface at night. */
+body.dark #storefront-main .origo-exact-product-card,
+body.dark .product-overlay .origo-exact-product-card,
+body.dark .origo-reference-product-card,
+body.dark #storefront-main .origo-exact-product-card :is(.product-image,.product-card-media-link,.product-info),
+body.dark .product-overlay .origo-exact-product-card :is(.product-image,.product-card-media-link,.product-info),
+body.dark .origo-reference-product-card :is(.product-image,.product-card-media-link,.product-info) {
+  background: #000 !important;
+  background-image: none !important;
+}
+
+/* Keep the arrow legible inside the light scroll-progress circle. */
+body.dark .back-to-top {
+  color: #000 !important;
+  background: #fff !important;
+}
+
+body.dark .back-to-top::before {
+  background: #fff !important;
+  background-image: none !important;
+}
+
+body.dark .back-to-top .back-to-top-arrow {
+  stroke: #000 !important;
+  filter: none !important;
+}
+
+/* Unified customer-facing night system across every storefront route. */
+body.dark {
+  --white: #000;
+  --paper: #000;
+  --paper-2: #000;
+  --card: #000;
+  --surface: #000;
+  --surface-soft: #000;
+  --ink: #fff;
+  --text: #fff;
+  --muted: #c8c8c8;
+  --line: rgba(255,255,255,.32);
+  --shell-bg: #000;
+  --shell-surface: #000;
+  --shell-text: #fff;
+  --shell-muted: #c8c8c8;
+  --shell-line: rgba(255,255,255,.32);
+}
+
+body.dark :is(
+  #storefront-main,
+  .origo-home,
+  .catalog-page,
+  .commerce-page,
+  .account-route-page,
+  .fragrance-finder-page,
+  .alternatives-route-page,
+  .notes-route-page,
+  .brands-route-page,
+  .benefits-route-page,
+  .benefit-detail-page,
+  .product-overlay,
+  .search-overlay,
+  .account-overlay,
+  .checkout-overlay,
+  .cart-drawer,
+  .mobile-menu-panel
+) {
+  color: #fff !important;
+  background-color: #000 !important;
+}
+
+body.dark :is(
+  .catalog-page,
+  .commerce-page,
+  .account-route-page,
+  .fragrance-finder-page,
+  .alternatives-route-page,
+  .notes-route-page,
+  .brands-route-page,
+  .benefits-route-page,
+  .benefit-detail-page,
+  .product-overlay,
+  .search-overlay,
+  .account-overlay,
+  .checkout-overlay,
+  .cart-drawer,
+  .mobile-menu-panel
+) :is(section,article,aside,header,footer,nav,form,fieldset,[class*="panel"],[class*="card"],[class*="shell"],[class*="toolbar"],[class*="summary"],[class*="drawer"]) {
+  color: #fff !important;
+  border-color: rgba(255,255,255,.32) !important;
+  background-color: #000 !important;
+  background-image: none !important;
+}
+
+body.dark #storefront-main :is(.section,.service-strip,.brand-carousel-section,.featured-section,.collection-story,.discover-section,.notes-library,.profile-section,.alternative-section,.journal-section,.newsletter,.home-benefits-directory,.home-gender-section,.home-best-sellers,.home-new-arrivals,.home-brand-showcase) {
+  color: #fff !important;
+  border-color: rgba(255,255,255,.28) !important;
+  background-color: #000 !important;
+}
+
+body.dark :is(
+  .catalog-page,
+  .commerce-page,
+  .account-route-page,
+  .fragrance-finder-page,
+  .alternatives-route-page,
+  .notes-route-page,
+  .brands-route-page,
+  .benefits-route-page,
+  .benefit-detail-page,
+  .product-overlay,
+  .search-overlay,
+  .account-overlay,
+  .checkout-overlay,
+  .cart-drawer,
+  .mobile-menu-panel
+) :is(input,textarea,select,button,[role="button"]) {
+  color: #fff !important;
+  border-color: rgba(255,255,255,.52) !important;
+  background-color: #000 !important;
+  background-image: none !important;
+}
+
+body.dark :is(
+  .catalog-page,
+  .commerce-page,
+  .account-route-page,
+  .fragrance-finder-page,
+  .alternatives-route-page,
+  .notes-route-page,
+  .brands-route-page,
+  .benefits-route-page,
+  .benefit-detail-page,
+  .product-overlay,
+  .search-overlay,
+  .account-overlay,
+  .checkout-overlay,
+  .cart-drawer,
+  .mobile-menu-panel
+) :is(h1,h2,h3,h4,h5,h6,p,b,strong,small,label,legend,li,dt,dd,th,td) {
+  color: #fff;
+}
+
+body.dark :is(.overlay,.mobile-menu-backdrop) {
+  background-color: rgba(0,0,0,.88) !important;
+}
+
+body.dark :is(.site-header,.header-main,.category-nav,.store-bottom-nav,.pdp-mobile-cart) {
+  color: #fff !important;
+  border-color: rgba(255,255,255,.3) !important;
+  background: #000 !important;
+  background-image: none !important;
+}
+
+body.dark :is(.site-header,.category-nav,.store-bottom-nav) :is(a,button) {
+  color: #fff !important;
+  background-color: #000 !important;
+}
+
+body.dark :is(.eyebrow,.footer-all-link,.home-section-head>a,.smart-scent-nav) {
+  color: var(--night-blue) !important;
+  text-shadow: 0 0 7px rgba(77,184,255,.45) !important;
+}
+
+body.dark :is(.product-price,.exact-card-rating b,.pdp-price,.cart-total b) {
+  color: var(--night-gold) !important;
+  text-shadow: 0 0 7px rgba(255,210,74,.45) !important;
+}
+
+body.dark :is(.active,.selected,[aria-selected="true"]) {
+  border-color: var(--night-burgundy) !important;
+}
+
+/* Product-detail gateways intentionally stay white for strong visual separation. */
+body.dark .product-overlay .pdp-profile-section,
+body.dark .product-overlay .pdp-profile-section > button,
+body.dark .product-overlay .pdp-profile-section.is-open > button,
+body.dark .product-overlay .pdp-profile-panel,
+body.dark .product-overlay .pdp-profile-panel :is(section,article),
+body.dark .product-overlay .pdp-similar-fragrances {
+  color: #111 !important;
+  border: 0 !important;
+  background: #fff !important;
+  background-image: none !important;
+}
+
+body.dark .product-overlay .pdp-profile-section :is(h2,h3,h4,p,b,strong,small,dt,dd,label) {
+  color: #111 !important;
+}
+
+body.dark .product-overlay .pdp-profile-section > button > small,
+body.dark .product-overlay .pdp-overview-gate dt {
+  color: #6e6669 !important;
+}
+
+body.dark .product-overlay .pdp-profile-section > button > span {
+  color: #790020 !important;
+  background: #f7f3f4 !important;
+}
+
+body.dark .product-overlay .pdp-overview-gate dl > div {
+  color: #111 !important;
+  background: #f7f5f5 !important;
+}
+
+body.dark .product-overlay .pdp-back {
+  color: #111 !important;
+  background: #fff !important;
+}
+
+body.dark .product-overlay .pdp-back span {
+  color: #fff !important;
+  background: #790020 !important;
+}
