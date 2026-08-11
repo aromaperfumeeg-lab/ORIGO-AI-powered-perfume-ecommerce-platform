@@ -666,6 +666,11 @@ body.dark .product-media-stage,body.dark .product-media-thumbnails .review-image
 .catalog-review>.review-summary .duplicate-alert:not([hidden]){width:min(420px,80vw);min-height:34px;padding:6px 9px}
 @media(max-width:760px){.catalog-review>.product-editor-tabs{top:auto;right:50%;inset-inline-end:auto;bottom:8px;width:auto;max-width:calc(100vw - 24px);max-height:none;flex-direction:row;overflow-x:auto;transform:translateX(50%)}.catalog-review>.product-editor-tabs button>b{display:none!important}.catalog-review>.review-summary{flex-wrap:wrap}.catalog-review>.review-summary :where(.confidence-card,.missing-card){min-height:30px;padding:3px 6px}}
 
+.image-upload-requirements{width:100%;margin-top:5px;display:block;color:var(--admin-text-muted,var(--muted));font-size:11px;line-height:1.55;font-weight:600}
+body.dark .image-upload-requirements,html[data-theme="dark"] .image-upload-requirements{color:#f1f1f2}
+
+.perfume-bundle-import{border-style:dashed!important}.perfume-bundle-textarea{display:grid;gap:7px}.perfume-bundle-textarea textarea{min-height:230px;padding:14px;border:1px solid var(--admin-border);border-radius:10px;background:var(--admin-surface-muted);color:var(--admin-text);font:500 13px/1.7 Consolas,monospace;resize:vertical}.perfume-bundle-actions{margin-top:10px;display:flex;flex-wrap:wrap;gap:8px}.perfume-bundle-feedback{margin-top:12px;padding:12px;border:1px solid var(--admin-border);border-radius:10px}.perfume-bundle-feedback.success{border-color:#79b696;background:color-mix(in srgb,#2f9b66 9%,var(--admin-surface))}.perfume-bundle-feedback.error{direction:ltr;border-color:#d58b98;color:#9b1731;background:color-mix(in srgb,#b41335 8%,var(--admin-surface));font-family:Consolas,monospace}.perfume-bundle-feedback>div{margin-block:8px;display:flex;flex-wrap:wrap;gap:6px}.perfume-bundle-feedback>div span{padding:5px 8px;border-radius:7px;background:var(--admin-surface);font-size:12px}.perfume-bundle-feedback small{display:block;color:var(--admin-text-muted)}
+
 /* The language label must remain readable on narrow phones. */
 @media(max-width:640px){.header-main,.compact .header-main{grid-template-columns:38px minmax(72px,1fr) minmax(96px,28vw) 94px}.header-preference-actions .lang-button{width:clamp(58px,18vw,70px);min-width:58px;padding-inline:4px;overflow:visible;font-size:10px}.header-preference-actions{min-width:96px}}
 

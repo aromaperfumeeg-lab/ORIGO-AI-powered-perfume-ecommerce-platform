@@ -252,6 +252,7 @@ html[dir="ltr"] .pdp-hero-profile{direction:ltr}
 .pdp-main-image>.pdp-fullscreen-button i{font-size:17px;font-style:normal}.pdp-main-image>.pdp-fullscreen-button b{font:inherit}
 .pdp-price-add{width:100%;min-height:50px;margin-top:4px;padding:10px 18px;display:flex;align-items:center;justify-content:center;gap:9px;border:0;border-radius:10px;color:#fff;background:#790020;font-size:13px;font-weight:850;cursor:pointer;box-shadow:0 9px 22px rgba(121,0,32,.2)}
 .pdp-price-add:hover{background:#000}.pdp-price-add span{font-size:20px}.pdp-price-add b{font:inherit}
+.pdp-purchase-controls{display:grid;grid-template-columns:minmax(150px,.72fr) minmax(190px,1.28fr);gap:10px;align-items:end}.pdp-purchase-controls .pdp-quantity{height:100%;align-items:end}.pdp-purchase-controls .pdp-price-add{height:50px;margin:0}.pdp-purchase-controls .pdp-secondary-actions{grid-column:1/-1;margin-top:0}
 .pdp-secondary-actions{grid-template-columns:1fr 1fr!important}
 .pdp-profile-accordions{gap:14px!important}
 .pdp-profile-section{border:0!important;border-radius:16px!important;background:#fff!important;box-shadow:0 10px 30px rgba(32,20,23,.08)!important}
@@ -274,12 +275,15 @@ html[dir="ltr"] .pdp-hero-profile{direction:ltr}
   .pdp-hero{display:flex!important}
   .pdp-back{min-height:39px;padding:7px 12px!important;font-size:11px}
   .pdp-main-image>.pdp-fullscreen-button{right:10px!important;bottom:10px!important;height:38px!important;padding:7px 10px!important}
-  .pdp-price-add{display:none}
+  .pdp-purchase-controls{grid-template-columns:minmax(125px,.72fr) minmax(160px,1.28fr)}
+  .pdp-price-add{display:flex}
+  .pdp-mobile-cart{display:none!important}
   .pdp-profile-section>button{grid-template-columns:40px 1fr 22px!important;padding:12px 14px!important}
   .pdp-overview-gate dl{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 
 @media(max-width:560px){
+  .pdp-purchase-controls{grid-template-columns:1fr}.pdp-purchase-controls .pdp-price-add,.pdp-purchase-controls .pdp-secondary-actions{grid-column:1}.pdp-purchase-controls .pdp-quantity{justify-content:flex-start;gap:14px}.pdp-purchase-controls .pdp-quantity>span{margin:0}
   .pdp-overview-gate dl{grid-template-columns:1fr}
   .pdp-main-image>.pdp-fullscreen-button b{display:none}
   .pdp-main-image>.pdp-fullscreen-button{width:40px!important;justify-content:center;padding:0!important}

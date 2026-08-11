@@ -989,6 +989,9 @@ function productFromRow(row, includeMetadata = false) {
     mainIngredients: Array.isArray(metadata.mainIngredients) ? metadata.mainIngredients : [],
     accordProfile: Array.isArray(metadata.accordProfile) ? metadata.accordProfile : [],
     profileImages: metadata.profileImages && typeof metadata.profileImages === "object" ? metadata.profileImages : {},
+    images: Array.isArray(metadata.images)
+      ? metadata.images.filter((item) => item && (typeof item === "string" || item.url))
+      : (row.image ? [{ url:row.image, provider:"ORIGO", selected:true }] : []),
     mainAccords: Array.isArray(metadata.mainAccords) ? metadata.mainAccords : (Array.isArray(metadata.accords) ? metadata.accords : []),
     perfumeProfile: parseJSON(row.perfume_profile_json, metadata.perfumeProfile || {}),
     profileStatus: row.profile_status || metadata.profileStatus || "stale",
@@ -1500,6 +1503,9 @@ export function upsertProductOption(input = {}) {
   const slug = optionSlug(input.slug || nameEn || nameAr);
   if (!group || !slug || (!nameAr && !nameEn)) throw new Error("بيانات الخيار غير مكتملة.");
   const metadata = input.metadata && typeof input.metadata === "object" ? input.metadata : {};
+  if (group === "note" && (!clean(metadata.familyId, 120) || metadata.familyId === "uncategorized")) {
+    throw new Error("يجب تحديد العائلة العطرية للنوتة.");
+  }
   db.prepare(`
     INSERT INTO product_options (option_group, slug, name_ar, name_en, image, icon, color, metadata_json, sort_order, active, updated_at)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
