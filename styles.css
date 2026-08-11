@@ -9573,3 +9573,44 @@ html[data-theme=dark] .pricing-live-metrics span{background:#211719;color:#d8c9c
 .inspired-reference-create > .review-grid {
   padding: 0 16px 16px;
 }
+.occasion-suggestion-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px 14px;
+  margin-top: 14px;
+  padding: 12px 14px;
+  border: 1px solid rgba(122, 0, 29, .14);
+  border-radius: 12px;
+  background: #fffaf7;
+}
+
+.occasion-suggestion-controls > label {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: #171717;
+  font-weight: 700;
+}
+
+.occasion-suggestion-controls input {
+  width: 18px;
+  height: 18px;
+  accent-color: #7a001d;
+}
+
+.occasion-suggestion-controls small {
+  grid-column: 1 / -1;
+  color: #2b2b2b;
+  line-height: 1.65;
+}
+
+@media (max-width: 720px) {
+  .occasion-suggestion-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .occasion-suggestion-controls .button {
+    width: 100%;
+  }
+}

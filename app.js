@@ -1449,7 +1449,8 @@ async function hydrateServer() {
       window.ORIGOFragranceNotes?.setState(notesState.state);
       localStorage.setItem("origoFragranceNotesState", JSON.stringify(notesState.state));
     }
-    state.products = (catalog.products || []).map(serverProduct);
+    if (!Array.isArray(catalog.products)) throw new Error("INVALID_PRODUCTS_PAYLOAD");
+    state.products = catalog.products.map(serverProduct);
     state.user = session.user || null;
     if (state.user) {
       if (cartOwner === String(state.user.id)) {
@@ -1501,7 +1502,8 @@ async function loadAdminCatalog() {
     api("/api/admin/products"),
     api("/api/admin/product-options").catch(() => ({ options: [] }))
   ]);
-  state.catalogProducts = result.products || [];
+  if (!Array.isArray(result.products)) throw new Error("INVALID_ADMIN_PRODUCTS_PAYLOAD");
+  state.catalogProducts = result.products;
   state.productOptions = optionResult.options || [];
   rebuildStorefrontProducts();
   renderCatalogList();
@@ -1645,8 +1647,8 @@ function customerRows() {
 async function loadAdminDashboardData() {
   try {
     await loadAdminCatalog();
-  } catch {
-    state.catalogProducts = [];
+  } catch (error) {
+    console.warn("[ORIGO ADMIN CATALOG] Preserving the last loaded products:", error.message);
   }
   try {
     const [ordersResult, workspaceResult, staffResult, integrationsResult, alternativesResult] = await Promise.all([
@@ -3107,6 +3109,9 @@ function updateLanguage() {
   const isArabic = state.lang === "ar";
   document.documentElement.lang = state.lang;
   document.documentElement.dir = isArabic ? "rtl" : "ltr";
+  document.body.lang = state.lang;
+  document.body.dir = isArabic ? "rtl" : "ltr";
+  document.body.dataset.language = state.lang;
   $$("[data-i18n]").forEach((node) => {
     const value = translations[state.lang][node.dataset.i18n];
     if (value) node.innerHTML = value;
@@ -5482,17 +5487,16 @@ function productCardDetailsMarkup(product, isArabic) {
   };
   const usage = [...new Set([...(product.usageTimes || []), ...(product.occasions || [])].map((item) => ORIGOCatalog.normalize(item)).filter(Boolean))];
   const hours = product.performanceInsights?.editorialDetails || product.editorialDetails || product.performance?.editorialDetails || {};
-  const minHours = Number(hours.longevityMinHours ?? hours.longevityHours);
-  const maxHours = Number(hours.longevityMaxHours ?? hours.longevityHours);
-  const hasHours = Number.isFinite(minHours) && minHours >= 0;
+  const explicitHours = Number(hours.longevityHours ?? hours.longevityMaxHours ?? hours.longevityMinHours);
+  const hasHours = Number.isFinite(explicitHours) && explicitHours >= 0;
   const rawLongevity = Number(product.performance?.longevity ?? product.performance?.longevityScore ?? product.filters?.longevity ?? product.insights?.longevity);
   const longevityScore = Number.isFinite(rawLongevity) ? Math.max(0, Math.min(10, rawLongevity <= 5 ? rawLongevity * 2 : rawLongevity)) : NaN;
   const estimatedHours = Number.isFinite(longevityScore)
-    ? longevityScore >= 9 ? [10, 12] : longevityScore >= 8 ? [8, 10] : longevityScore >= 7 ? [7, 9] : longevityScore >= 6 ? [6, 8] : longevityScore >= 4 ? [4, 6] : [2, 4]
+    ? longevityScore >= 9 ? 12 : longevityScore >= 8 ? 10 : longevityScore >= 7 ? 8 : longevityScore >= 6 ? 7 : longevityScore >= 4 ? 5 : 3
     : null;
-  const estimatedHoursLabel = estimatedHours ? `${estimatedHours[0]}–${estimatedHours[1]}${isArabic ? " ساعات" : " hours"}` : (isArabic ? "غير محدد" : "Not specified");
+  const estimatedHoursLabel = estimatedHours ? `${estimatedHours}${isArabic ? " ساعات" : " hours"}` : (isArabic ? "غير محدد" : "Not specified");
   const hoursLabel = hasHours
-    ? (Number.isFinite(maxHours) && maxHours > minHours ? `${minHours}–${maxHours}` : `${minHours}`) + (isArabic ? " ساعات" : " hours")
+    ? `${explicitHours}${isArabic ? " ساعات" : " hours"}`
     : estimatedHoursLabel;
   const notesMarkup = noteGroups.length ? noteGroups.map((group) => `<div class="card-note-level"><strong>${escapeHTML(group.label)}</strong><div class="card-note-scroll" data-inner-horizontal-scroll>${group.items.map((note) => `<span>${note.image ? `<img src="${escapeHTML(note.image)}" alt="" width="46" height="46" loading="lazy"/>` : `<i aria-hidden="true">✦</i>`}<b>${escapeHTML(note.label)}</b></span>`).join("")}</div></div>`).join("") : `<p class="product-card-panel-empty">${isArabic ? "لم تُضف نوتات لهذا المنتج بعد." : "No notes have been added for this product."}</p>`;
   const accordsMarkup = accords.length ? `<div class="card-accord-list">${accords.map((accord) => `<div style="--accord:${escapeHTML(accord.color)}"><span><i></i><b>${escapeHTML(accord.label)}</b>${accord.strength != null ? `<em>${accord.strength}%</em>` : ""}</span>${accord.strength != null ? `<small><i style="width:${accord.strength}%"></i></small>` : ""}</div>`).join("")}</div>` : `<p class="product-card-panel-empty">${isArabic ? "لم تُضف أكوردات لهذا المنتج بعد." : "No accords have been added for this product."}</p>`;
@@ -5523,9 +5527,8 @@ function productCardMarkup(product, options = {}) {
   const normalizedNames = ORIGOCatalog.normalize(`${product.nameAr || ""} ${product.nameEn || ""}`);
   const khamrahFallback = /khamrah|خمر[ةه]/.test(normalizedNames) ? "KHAMRAH" : "";
   const name = isArabic
-    ? (product.nameAr || product.nameEn || localizedProductName(product, "ar"))
+    ? (product.nameAr || localizedProductName(product, "ar"))
     : (product.nameEn || khamrahFallback || localizedProductName(product, "en"));
-  const secondaryName = isArabic ? (product.nameEn || khamrahFallback) : "";
   const interactive = options.interactive !== false;
   const media = productMedia(product);
   if (product.hoverImage && !media.some((item) => item.url === product.hoverImage)) media.push({ url: product.hoverImage, type: "image" });
@@ -5545,12 +5548,15 @@ function productCardMarkup(product, options = {}) {
   const normalizedBadge = ORIGOCatalog.normalize(explicitBadge);
   const isNew = Boolean(product.isNew) || /new|جديد|وصل حديثا/.test(normalizedBadge);
   const saved = state.wishlist.includes(product.id);
+  const compared = state.comparison.includes(product.id);
   const rating = catalogRating(product);
   const genderLabel = productCardGenderLabel(product, isArabic);
-  const sizeLabel = formatProductSize(variant?.size || product.size || product.sizes?.[0] || "");
+  const formattedSize = formatProductSize(variant?.size || product.size || product.sizes?.[0] || "");
+  const sizeLabel = isArabic ? formattedSize.replace(/\bml\b/gi, "مل") : formattedSize;
   const delayStyle = Number.isFinite(options.delay) ? ` style="transition-delay:${options.delay}ms"` : "";
   const disabled = interactive ? "" : " disabled tabindex=\"-1\"";
   const favoriteLabel = saved ? translations[state.lang].removeFavorite : translations[state.lang].favorites;
+  const compareLabel = isArabic ? "إضافة إلى المقارنة" : "Add to comparison";
   const availableStock = Number(variant?.stock ?? product.inventory?.available ?? product.inventory?.quantity);
   const hasKnownAvailability = Number.isFinite(availableStock);
   const limitedStock = !outOfStock && hasKnownAvailability && availableStock > 0 && availableStock <= 5;
@@ -5561,26 +5567,29 @@ function productCardMarkup(product, options = {}) {
       : isNew
         ? (isArabic ? "جديد" : "New")
         : (isArabic ? "متوفر" : "Available");
-  return `<article class="product-card origo-reference-product-card origo-exact-product-card${options.reveal ? " reveal" : ""}${outOfStock ? " is-out" : ""}" data-id="${escapeHTML(product.id)}"${delayStyle}>
+  return `<article class="product-card origo-reference-product-card origo-exact-product-card${options.reveal ? " reveal" : ""}${outOfStock ? " is-out" : ""}" data-id="${escapeHTML(product.id)}" dir="${isArabic ? "rtl" : "ltr"}" lang="${state.lang}"${delayStyle}>
     <div class="product-image">
       ${discount ? `<span class="product-badge" data-badge-kind="sale">-${discount}%</span>` : ""}
-      ${featureBadge ? `<span class="product-feature-badge">${escapeHTML(featureBadge)}</span>` : ""}
+      ${featureBadge ? `<span class="product-feature-badge"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 1.65 5.35L19 9l-5.35 1.65L12 16l-1.65-5.35L5 9l5.35-1.65L12 2Z"/><path d="m19 15 .7 2.3L22 18l-2.3.7L19 21l-.7-2.3L16 18l2.3-.7L19 15Z"/></svg><span>${escapeHTML(featureBadge)}</span></span>` : ""}
+      <div class="product-card-top-actions">
+        <button class="card-action-button card-favorite-button${saved ? " active" : ""}"${interactive ? ` data-action="toggle-wishlist"` : disabled} aria-label="${escapeHTML(favoriteLabel)}" aria-pressed="${saved}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/></svg></button>
+        <button class="card-action-button card-compare-button${compared ? " active" : ""}"${interactive ? ` data-action="toggle-product-compare"` : disabled} aria-label="${escapeHTML(compareLabel)}" aria-pressed="${compared}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h12m0 0-3-3m3 3-3 3M17 17H5m0 0 3 3m-3-3 3-3"/></svg></button>
+      </div>
+      <div class="product-card-image-meta" aria-label="${escapeHTML(isArabic ? "بيانات المنتج" : "Product details")}">
+        <span class="product-card-image-gender">${escapeHTML(genderLabel || (isArabic ? "للجنسين" : "Unisex"))}</span>
+        <span class="product-card-image-size"><bdi dir="auto">${escapeHTML(sizeLabel || (isArabic ? "100 مل" : "100 ml"))}</bdi></span>
+      </div>
       <button type="button" class="product-card-media-link"${interactive ? ` data-action="open-product" data-id="${escapeHTML(product.id)}"` : disabled} aria-label="${escapeHTML(isArabic ? `عرض ${name}` : `View ${name}`)}">${hasProductImage
         ? `<img src="${escapeHTML(mainImage)}" alt="${escapeHTML(`${product.brand || "ORIGO"} ${name}`)}" width="640" height="700" loading="lazy" decoding="async" draggable="false" />`
         : `<span class="product-image-missing" role="img" aria-label="${escapeHTML(isArabic ? "صورة المنتج غير متاحة" : "Product image unavailable")}"><i aria-hidden="true">◇</i><small>${isArabic ? "الصورة غير متاحة" : "Image unavailable"}</small></span>`}</button>
     </div>
     <div class="product-info">
-      <div class="exact-card-heading"><div class="product-brand">${escapeHTML(product.brand || "ORIGO")}</div><span class="exact-card-rating"><b aria-hidden="true">★</b>${rating > 0 ? rating.toFixed(1) : "—"}</span></div>
-      <h3><button type="button"${interactive ? ` data-action="open-product" data-id="${escapeHTML(product.id)}"` : disabled}>${escapeHTML(name || (isArabic ? "منتج جديد" : "New product"))}</button></h3>
-      <div class="exact-card-specs">
-        <span><b>${escapeHTML(genderLabel || (isArabic ? "للجنسين" : "Unisex"))}</b></span>
-        <span><b><bdi dir="ltr">${escapeHTML(sizeLabel || "100ml")}</bdi></b></span>
-      </div>
+      <div class="product-brand" dir="auto">${escapeHTML(product.brand || "ORIGO")}</div>
+      <div class="exact-card-title-row"><h3><button type="button"${interactive ? ` data-action="open-product" data-id="${escapeHTML(product.id)}"` : disabled}>${escapeHTML(name || (isArabic ? "منتج جديد" : "New product"))}</button></h3><span class="exact-card-rating">${rating > 0 ? rating.toFixed(1) : "—"}<b aria-hidden="true">★</b></span></div>
       <div class="product-bottom">
         <div class="exact-card-prices"><b class="product-price">${formatPrice(price)}</b>${oldPrice > price ? `<del>${formatPrice(oldPrice)}</del>` : ""}</div>
         <div class="exact-card-actions">
-          <button class="card-add-button${outOfStock ? " is-restock" : ""}"${interactive ? ` data-action="${outOfStock ? "notify-restock" : "add-to-cart"}"` : disabled} aria-label="${escapeHTML(outOfStock ? (isArabic ? "أخبرني عند توفره" : "Notify me when available") : translations[state.lang].addToBag)}"><span>${escapeHTML(outOfStock ? (isArabic ? "أخبرني عند توفره" : "Notify me when available") : translations[state.lang].addToBag)}</span></button>
-          <button class="heart-button card-favorite-button exact-card-favorite${saved ? " active" : ""}"${interactive ? ` data-action="toggle-wishlist"` : disabled} aria-label="${escapeHTML(favoriteLabel)}" aria-pressed="${saved}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/></svg></button>
+          <button class="card-add-button${outOfStock ? " is-restock" : ""}"${interactive ? ` data-action="${outOfStock ? "notify-restock" : "add-to-cart"}"` : disabled} aria-label="${escapeHTML(outOfStock ? (isArabic ? "أخبرني عند توفره" : "Notify me when available") : translations[state.lang].addToBag)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14l-1 12H6L5 8Z"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/></svg><span>${escapeHTML(outOfStock ? (isArabic ? "أخبرني عند توفره" : "Notify me when available") : translations[state.lang].addToBag)}</span></button>
         </div>
       </div>
     </div>
@@ -6313,7 +6322,7 @@ const PRODUCT_OPTION_DEFAULTS = {
   family: [["oriental","شرقي","Oriental","✦"],["woody","خشبي","Woody","♧"],["floral","زهري","Floral","✿"],["citrus","حمضي","Citrus","◉"],["aromatic","أروماتيك","Aromatic","❋"],["leather","جلدي","Leather","◫"],["fruity","فواكه","Fruity","●"],["gourmand","غورماند","Gourmand","♨"],["chypre","تشيبر","Chypre","△"],["aquatic","أكواتيك","Aquatic","≈"],["fougere","فوجير","Fougère","♿"],["musky","مسكي","Musky","◌"],["amber","عنبري","Amber","◆"],["green","أخضر","Green","❧"],["powdery","بودري","Powdery","☁"],["spicy","حار","Spicy","♨"],["smoky","دخاني","Smoky","≋"],["tobacco","تبغي","Tobacco","♜"]],
   season: [["spring","الربيع","Spring","❧"],["summer","الصيف","Summer","☀"],["autumn","الخريف","Autumn","⌁"],["winter","الشتاء","Winter","❄"],["all","جميع المواسم","All seasons","◉"]],
   usage_time: [["morning","صباحي","Morning","◒"],["day","نهاري","Daytime","☀"],["evening","مسائي","Evening","◓"],["night","ليلي","Night","☾"],["all-day","طوال اليوم","All day","◷"]],
-  occasion: ["يومي|Daily","العمل|Work","الجامعة|University","رسمي|Formal","اجتماعات|Meetings","مناسبات|Occasions","حفلات|Parties","زفاف|Wedding","موعد رومانسي|Date night","رياضة|Sport","سفر|Travel","رمضان|Ramadan","العيد|Eid","هدية|Gift"].map((v) => { const [ar,en]=v.split("|"); return [en.toLowerCase().replaceAll(" ","-"),ar,en,"◇"]; }),
+  occasion: ["يومي|Daily","العمل|Work","الجامعة|University","كاجوال|Casual","رومانسي|Romantic","موعد رومانسي|Date night","حفلات|Party","رسمي|Formal","زفاف|Wedding","مناسبة خاصة|Special occasion","مناسبة شرقية|Oriental occasion","إجازة|Vacation","شاطئ|Beach","رياضة|Sport","سفر|Travel","اجتماعات|Meetings","رمضان|Ramadan","العيد|Eid","هدية|Gift"].map((v) => { const [ar,en]=v.split("|"); return [en.toLowerCase().replaceAll(" ","-"),ar,en,"◇"]; }),
   personality: ["قيادي|Leader","هادئ|Calm","اجتماعي|Social","انطوائي|Introvert","جريء|Bold","رومانسي|Romantic","عملي|Practical","أنيق|Elegant","كلاسيكي|Classic","عصري|Modern","فنان|Artistic","غامض|Mysterious","واثق|Confident","مغامر|Adventurous","رياضي|Sporty","فاخر|Luxurious"].map((v) => { const [ar,en]=v.split("|"); return [en.toLowerCase(),ar,en,"♙"]; }),
   mood: ["منعش|Fresh","مريح|Comforting","دافئ|Warm","جذاب|Attractive","حيوي|Energetic","رومانسي|Romantic","رسمي|Formal","غامض|Mysterious","فاخر|Luxurious","نظيف|Clean","حلو|Sweet","جريء|Bold","هادئ|Calm"].map((v) => { const [ar,en]=v.split("|"); return [en.toLowerCase(),ar,en,"◌"]; }),
   country: [["egypt","مصر","Egypt","🇪🇬"],["france","فرنسا","France","🇫🇷"],["italy","إيطاليا","Italy","🇮🇹"],["spain","إسبانيا","Spain","🇪🇸"],["uk","المملكة المتحدة","United Kingdom","🇬🇧"],["usa","الولايات المتحدة","United States","🇺🇸"],["uae","الإمارات","United Arab Emirates","🇦🇪"],["saudi-arabia","السعودية","Saudi Arabia","🇸🇦"],["turkey","تركيا","Türkiye","🇹🇷"],["oman","عُمان","Oman","🇴🇲"]],
@@ -6453,6 +6462,120 @@ function performanceAdminDistribution(metric, editorial = {}) {
   return `<fieldset class="performance-admin-distribution"><legend>${adminCopy(...titles[metric])}<small>${metric === "wear" ? adminCopy("لا يشترط أن يكون المجموع 100%", "The total does not need to equal 100%") : adminCopy("يجب أن يكون المجموع 100%", "The total must equal 100%")}</small></legend><div>${performanceAdminOptions[metric].map(([key, ar, en]) => `<label><span>${adminCopy(ar,en)}</span><input type="number" min="0" max="100" step="0.1" name="performance.${metric}.${key}" value="${escapeHTML(editorial?.[metric]?.[key] ?? 0)}"/><i>%</i></label>`).join("")}</div></fieldset>`;
 }
 
+const PERFUME_OCCASION_AUTOMATION_FIELDS = new Set([
+  "topNotes", "heartNotes", "baseNotes", "seasons",
+  "performanceProjection", "performanceLongevityHours", "occasionsAuto"
+]);
+
+function normalizeAdminProjection(value) {
+  if (["weak", "moderate", "strong", "very_strong"].includes(String(value || ""))) return String(value);
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric) || numeric <= 0) return "";
+  return numeric >= 8.5 ? "very_strong" : numeric >= 6.5 ? "strong" : numeric >= 3.5 ? "moderate" : "weak";
+}
+
+function projectionScore(value) {
+  return { weak:2.5, moderate:5, strong:7.5, very_strong:9 }[normalizeAdminProjection(value)] || 0;
+}
+
+function perfumeOccasionSuggestions(form) {
+  if (!form) return [];
+  const values = (name) => csvValues(form.elements[name]?.value || "");
+  const notes = normalizeOptionSearch([...values("topNotes"), ...values("heartNotes"), ...values("baseNotes")].join(" "));
+  const seasons = new Set(values("seasons").map(normalizeOptionSearch));
+  const sillage = projectionScore(form.elements.performanceProjection?.value);
+  const longevityHours = Number(form.elements.performanceLongevityHours?.value || 0);
+  const scores = Object.fromEntries((PRODUCT_OPTION_DEFAULTS.occasion || []).map(([value]) => [value, 0]));
+  const add = (keys, score) => keys.forEach((key) => { if (key in scores) scores[key] += score; });
+  const has = (...terms) => terms.some((term) => notes.includes(normalizeOptionSearch(term)));
+
+  add(["daily"], 22);
+  add(["gift"], 12);
+
+  if (has("bergamot", "lemon", "lime", "orange", "grapefruit", "citrus", "mint", "marine", "aquatic", "green", "برغموت", "ليمون", "برتقال", "جريب فروت", "حمضيات", "نعناع", "بحري", "مائي", "أخضر")) {
+    add(["daily", "work", "university", "sport", "travel"], 25);
+  }
+  if (has("lavender", "neroli", "soap", "cotton", "clean", "white musk", "لافندر", "نيرولي", "صابون", "قطن", "نظيف", "مسك أبيض")) {
+    add(["work", "daily", "university", "meetings"], 24);
+  }
+  if (has("rose", "jasmine", "tuberose", "peony", "floral", "vanilla", "musk", "powder", "fruit", "ورد", "ياسمين", "تيوبروز", "فاوانيا", "زهري", "فانيليا", "مسك", "بودري", "فواكه")) {
+    add(["date-night", "wedding", "gift", "parties"], 25);
+  }
+  if (has("oud", "agarwood", "incense", "frankincense", "amber", "leather", "tobacco", "smoke", "saffron", "عود", "بخور", "لبان", "عنبر", "جلد", "تبغ", "دخاني", "زعفران")) {
+    add(["formal", "occasions", "wedding", "ramadan", "eid", "gift"], 29);
+  }
+  if (has("cinnamon", "clove", "cardamom", "pepper", "coffee", "cacao", "chocolate", "caramel", "tonka", "قرفة", "قرنفل", "هيل", "فلفل", "قهوة", "كاكاو", "شوكولاتة", "كراميل", "تونكا")) {
+    add(["parties", "date-night", "occasions", "formal"], 24);
+  }
+  if (has("cedar", "sandalwood", "vetiver", "patchouli", "oakmoss", "خشب الأرز", "صندل", "فيتيفر", "باتشولي", "طحلب")) {
+    add(["formal", "meetings", "work", "occasions"], 20);
+  }
+
+  if (seasons.has("summer")) add(["daily", "sport", "travel", "work"], 23);
+  if (seasons.has("spring")) add(["daily", "date-night", "wedding", "gift"], 20);
+  if (seasons.has("autumn")) add(["formal", "date-night", "occasions", "meetings"], 22);
+  if (seasons.has("winter")) add(["formal", "occasions", "parties", "wedding", "ramadan", "eid"], 23);
+  if (seasons.has("all")) add(["daily", "work", "travel", "gift"], 15);
+
+  if (sillage >= 7.5) {
+    add(["parties", "formal", "occasions", "wedding"], 22);
+    add(["work", "university"], -18);
+  } else if (sillage > 0 && sillage <= 5) {
+    add(["daily", "work", "university", "meetings"], 20);
+  }
+
+  if (longevityHours >= 8) add(["formal", "occasions", "wedding", "travel", "parties"], 18);
+  if (longevityHours > 0 && longevityHours <= 4) add(["daily", "work", "sport"], 15);
+
+  const ranked = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+  const suggested = ranked.filter(([, score]) => score >= 34).slice(0, 6).map(([key]) => key);
+  return suggested.length >= 3 ? suggested : ranked.slice(0, 3).map(([key]) => key);
+}
+
+function updatePerfumeOccasionSuggestions(form, { force = false, notify = false } = {}) {
+  const auto = form?.elements.occasionsAuto;
+  if (!form || (!force && auto && !auto.checked)) return [];
+  const holder = form.querySelector('[data-smart-select][data-name="occasions"]');
+  if (!holder) return [];
+  if (auto && force) auto.checked = true;
+  const suggestions = perfumeOccasionSuggestions(form);
+  holder.dataset.automationWriting = "true";
+  setSmartSelectValues(holder, suggestions);
+  delete holder.dataset.automationWriting;
+  const labels = productOptionItems("occasion");
+  const summary = suggestions.map((value) => {
+    const item = labels.find((candidate) => normalizeOptionSearch(candidate.value) === normalizeOptionSearch(value));
+    return state.lang === "ar" ? item?.nameAr || value : item?.nameEn || value;
+  });
+  const status = form.querySelector("[data-occasion-suggestion-status]");
+  if (status) status.textContent = summary.length
+    ? adminCopy(`اقتراح ذكي: ${summary.join("، ")}`, `Smart suggestion: ${summary.join(", ")}`)
+    : adminCopy("أضف النوتات أو بيانات الأداء لتوليد الاقتراح.", "Add notes or performance data to generate suggestions.");
+  if (notify) showToast(adminCopy("تم تحديث المناسبات المقترحة ويمكنك تعديلها يدويًا.", "Suggested occasions updated; you can still edit them manually."));
+  return suggestions;
+}
+
+function perfumePerformanceEditorSection(product) {
+  if (product.category && product.category !== "perfume") return "";
+  const performance = product.performance || {};
+  const details = product.performanceInsights?.editorialDetails || {};
+  return `<section class="review-section perfume-performance-editor" data-editor-tier="smart" data-perfume-section>
+    <div class="review-section-head"><span>04</span><div><b>${adminCopy("الأداء والاستخدام", "Performance & usage")}</b><small>${adminCopy("حدد الثبات بالساعات، مستوى الفوحان، المواسم، أوقات الاستخدام والمناسبات.", "Set longevity in hours, sillage level, seasons, wear times, and occasions.")}</small></div></div>
+    <div class="review-grid performance-core-grid">
+      <label>${adminCopy("الثبات بالساعات", "Longevity in hours")}<input type="number" name="performanceLongevityHours" min="0" max="72" step="0.5" value="${escapeHTML(details.longevityHours ?? details.longevityMaxHours ?? details.longevityMinHours ?? "")}" placeholder="8"/></label>
+      <label>${adminCopy("قوة الفوحان", "Projection strength")}<select name="performanceProjection"><option value="">${adminCopy("غير محدد", "Not specified")}</option>${selectOptions([["weak",adminCopy("ضعيف", "Weak")],["moderate",adminCopy("متوسط", "Moderate")],["strong",adminCopy("قوي", "Strong")],["very_strong",adminCopy("قوي جدًا", "Very strong")]], normalizeAdminProjection(performance.projection ?? performance.sillage))}</select></label>
+      ${searchableCreatableSelect({ name:"seasons", group:"season", labelAr:"المواسم المناسبة", labelEn:"Best seasons", selected:product.seasons, multiple:true })}
+      ${searchableCreatableSelect({ name:"usageTimes", group:"usage_time", labelAr:"أوقات الاستخدام", labelEn:"Wear times", selected:product.usageTimes, multiple:true })}
+      ${searchableCreatableSelect({ name:"occasions", group:"occasion", labelAr:"المناسبات", labelEn:"Occasions", selected:product.occasions, multiple:true })}
+    </div>
+    <div class="occasion-suggestion-controls">
+      <label><input type="checkbox" name="occasionsAuto" checked /> <span>${adminCopy("تحديد المناسبات تلقائيًا من النوتات والفوحان والثبات والمواسم", "Automatically suggest occasions from notes, sillage, longevity, and seasons")}</span></label>
+      <button type="button" class="button secondary-button" data-action="suggest-occasions">✦ ${adminCopy("تحديث الاقتراحات", "Refresh suggestions")}</button>
+      <small data-occasion-suggestion-status>${adminCopy("يتحدث الاقتراح تلقائيًا عند تعديل أي من البيانات السابقة، ويمكن إيقافه للتعديل اليدوي.", "Suggestions update when the inputs above change; disable this option for manual editing.")}</small>
+    </div>
+  </section>`;
+}
+
 function performanceAdminSection(product) {
   if (product.category && product.category !== "perfume") return "";
   const admin = product.performanceInsights || {};
@@ -6461,8 +6584,8 @@ function performanceAdminSection(product) {
   const visible = new Set(settings.visibleMetrics || Object.keys(performanceAdminOptions));
   const votes = admin.votes || [];
   const canImport = state.user?.role === "owner";
-  return `<section class="review-section performance-admin-section" data-editor-tier="smart" data-perfume-section>
-    <div class="review-section-head"><span>04</span><div><b>${adminCopy("تقييم ومؤشرات الأداء", "Ratings & performance insights")}</b><small>${adminCopy("تقييم ORIGO منفصل عن أصوات العملاء ومتوسط النجوم", "ORIGO editorial data stays separate from customer votes and star ratings")}</small></div></div>
+  return `<section class="review-section performance-admin-section" data-editor-tier="advanced" data-perfume-section>
+    <div class="review-section-head"><span>06</span><div><b>${adminCopy("تقييمات الأداء المتقدمة", "Advanced performance ratings")}</b><small>${adminCopy("إعدادات التقييم والتوزيعات المتقدمة؛ أما بيانات المنتج الأساسية فتوجد في قسم الأداء والاستخدام.", "Advanced rating settings and distributions; core product data lives in Performance & usage.")}</small></div></div>
     <div class="performance-admin-controls">
       <label class="performance-admin-toggle"><input type="checkbox" name="performanceEnabled"${settings.enabled !== false ? " checked" : ""}/><span>${adminCopy("إظهار القسم في صفحة المنتج", "Show on product page")}</span></label>
       <label class="performance-admin-toggle"><input type="checkbox" name="performanceShowOverall"${settings.showOverallResult !== false ? " checked" : ""}/><span>${adminCopy("إظهار النتيجة الإجمالية عند اكتمال الحد", "Show the overall result after reaching the threshold")}</span></label>
@@ -6474,7 +6597,7 @@ function performanceAdminSection(product) {
     </div>
     <div class="performance-admin-visible"><b>${adminCopy("المؤشرات الظاهرة", "Visible metrics")}</b>${Object.keys(performanceAdminOptions).map((metric) => `<label><input type="checkbox" name="performanceVisible" value="${metric}"${visible.has(metric) ? " checked" : ""}/><span>${adminCopy({scent:"الرائحة",wear:"الموسم والوقت",longevity:"الثبات",sillage:"الفوحان",gender:"النوع",value:"القيمة"}[metric],{scent:"Scent",wear:"Season & time",longevity:"Longevity",sillage:"Sillage",gender:"Gender",value:"Value"}[metric])}</span></label>`).join("")}</div>
     <div class="performance-admin-distributions">${Object.keys(performanceAdminOptions).map((metric) => performanceAdminDistribution(metric, admin.editorial || {})).join("")}</div>
-    <div class="review-grid performance-editorial-details"><label>${adminCopy("ساعات الثبات الدنيا", "Minimum longevity hours")}<input type="number" name="performanceLongevityMinHours" min="0" max="72" step="0.5" value="${escapeHTML(admin.editorialDetails?.longevityMinHours ?? "")}"/></label><label>${adminCopy("ساعات الثبات العليا", "Maximum longevity hours")}<input type="number" name="performanceLongevityMaxHours" min="0" max="72" step="0.5" value="${escapeHTML(admin.editorialDetails?.longevityMaxHours ?? "")}"/></label><label>${adminCopy("اسم مراجع ORIGO", "ORIGO reviewer name")}<input name="performanceReviewerName" value="${escapeHTML(admin.editorialDetails?.reviewerName || "")}"/></label><label>${adminCopy("تاريخ المراجعة", "Reviewed at")}<input type="date" name="performanceReviewedAt" value="${escapeHTML((admin.editorialDetails?.reviewedAt || "").slice(0,10))}"/></label><label class="wide">${adminCopy("ملاحظات خبير العطور", "Fragrance expert notes")}<textarea name="performanceReviewerNotes">${escapeHTML(admin.editorialDetails?.reviewerNotes || "")}</textarea></label></div>
+    <div class="review-grid performance-editorial-details"><label>${adminCopy("اسم مراجع ORIGO", "ORIGO reviewer name")}<input name="performanceReviewerName" value="${escapeHTML(admin.editorialDetails?.reviewerName || "")}"/></label><label>${adminCopy("تاريخ المراجعة", "Reviewed at")}<input type="date" name="performanceReviewedAt" value="${escapeHTML((admin.editorialDetails?.reviewedAt || "").slice(0,10))}"/></label><label class="wide">${adminCopy("ملاحظات خبير العطور", "Fragrance expert notes")}<textarea name="performanceReviewerNotes">${escapeHTML(admin.editorialDetails?.reviewerNotes || "")}</textarea></label></div>
     <div class="performance-admin-summary"><article><b>${Number(aggregate.counts?.customers || 0)}</b><span>${adminCopy("تقييمات عملاء ORIGO", "ORIGO customer ratings")}</span></article><article><b>${Number(aggregate.counts?.verifiedCustomers || 0)}</b><span>${adminCopy("مشترون موثقون", "Verified purchasers")}</span></article><article><b>${Number(aggregate.counts?.imported || 0)}</b><span>${adminCopy("تقييمات سابقة مستوردة", "Imported prior ratings")}</span></article><button type="button" data-action="recalculate-performance" data-id="${escapeHTML(product.id)}">↻ ${adminCopy("إعادة احتساب النتائج", "Recalculate")}</button></div>
     ${votes.length ? `<div class="performance-admin-votes"><h4>${adminCopy("أحدث تقييمات الأداء", "Recent performance votes")}</h4>${votes.map((vote) => `<article><div><b>${escapeHTML(vote.customerName)}</b><small>${vote.verifiedPurchase ? adminCopy("شراء موثق", "Verified purchase") : adminCopy("عميل ORIGO", "ORIGO customer")} · ${escapeHTML(vote.updatedAt || "")}</small></div><button type="button" data-action="toggle-performance-vote" data-id="${vote.id}" data-product-id="${escapeHTML(product.id)}" data-status="${vote.status === "hidden" ? "active" : "hidden"}">${vote.status === "hidden" ? adminCopy("استعادة", "Restore") : adminCopy("إخفاء", "Hide")}</button></article>`).join("")}</div>` : ""}
     ${canImport ? `<details class="performance-admin-import"><summary>${adminCopy("استيراد تقييمات حقيقية من نظام سابق", "Import real ratings from a previous system")}</summary><p>${adminCopy("يُنشئ سجلًا جديدًا ولا يغيّر عدد عملاء ORIGO.", "Creates a separate record and never changes the ORIGO customer count.")}</p><div class="review-grid"><label>${adminCopy("عدد التقييمات السابقة المستوردة", "Imported prior rating count")}<input type="number" name="performanceImportedCount" min="0" value=""/></label><label>${adminCopy("المصدر", "Source")}<input name="performanceImportedSource" value=""/></label><label>${adminCopy("تاريخ الاستيراد", "Import date")}<input type="date" name="performanceImportedDate" value=""/></label><label>${adminCopy("سبب الإضافة أو التعديل", "Reason for change")}<input name="performanceImportedReason" value=""/></label></div></details>` : ""}
@@ -6623,7 +6746,7 @@ function perfumeAnalysisPreviewMarkup(product = {}) {
   const accords = perfumeResolvedAccords(product).slice(0, 8);
   const character = (profile.character || []).slice(0, 5);
   const seasonLabels = { winter:["الشتاء","Winter"], spring:["الربيع","Spring"], summer:["الصيف","Summer"], autumn:["الخريف","Autumn"] };
-  const occasionLabels = { daily:["يومي","Daily"], work:["العمل","Work"], formal:["رسمي","Formal"], evening:["المساء","Evening"], party:["حفلات","Party"], date:["موعد","Date"], specialOccasion:["مناسبة خاصة","Special occasion"], casual:["كاجوال","Casual"] };
+  const occasionLabels = { daily:["يومي","Daily"], work:["العمل","Work"], university:["الجامعة","University"], casual:["كاجوال","Casual"], romantic:["رومانسي","Romantic"], dateNight:["موعد رومانسي","Date night"], formal:["رسمي","Formal"], evening:["المساء","Evening"], party:["حفلات","Party"], date:["موعد","Date"], wedding:["زفاف","Wedding"], specialOccasion:["مناسبة خاصة","Special occasion"], orientalOccasion:["مناسبة شرقية","Oriental occasion"], vacation:["إجازة","Vacation"], beach:["شاطئ","Beach"], sport:["رياضة","Sport"] };
   const seasons = Object.entries(profile.seasons || {}).sort((a,b) => b[1]-a[1]);
   const occasions = Object.entries(profile.occasions || {}).sort((a,b) => b[1]-a[1]).slice(0, 5);
   const unknown = Object.values(profile.normalizedNotes || {}).flat().filter((note) => note.unknownNote);
@@ -6649,9 +6772,34 @@ async function runPerfumeAnalysisPreview(form, button) {
     const manualOverrides = draft.perfumeProfile?.manualOverrides || [];
     const result = await api("/api/admin/perfume-analysis", {
       method: "POST",
-      body: JSON.stringify({ name:draft.nameAr || draft.nameEn, releaseYear:draft.releaseYear, topNotes:draft.noteSelections?.top || [], middleNotes:draft.noteSelections?.heart || [], baseNotes:draft.noteSelections?.base || [], manualOverrides })
+      body: JSON.stringify({
+        name:draft.nameAr || draft.nameEn,
+        releaseYear:draft.releaseYear,
+        topNotes:draft.noteSelections?.top || [],
+        middleNotes:draft.noteSelections?.heart || [],
+        baseNotes:draft.noteSelections?.base || [],
+        fragranceFamilies:draft.families || [],
+        accords:draft.accordProfile || draft.mainAccords || [],
+        longevityHours:draft.performanceInsights?.editorialDetails?.longevityHours ?? null,
+        projection:draft.performance?.projection ?? null,
+        manualOverrides
+      })
     });
     state.activeImportDraft = { ...draft, perfumeProfile:result.profile, profileStatus:"fresh", profileEngineVersion:result.profile.engineVersion, profileSource:result.profile.source };
+    const recommended = result.profile.recommended || {};
+    const occasionKeys = (recommended.occasions || []).map((key) => ({ dateNight:"date-night", specialOccasion:"special-occasion", orientalOccasion:"oriental-occasion" })[key] || key).filter((key) => !["evening", "date"].includes(key));
+    const recommendationTargets = [
+      ["seasons", recommended.seasons || []],
+      ["usageTimes", recommended.timeOfDay || []],
+      ["occasions", occasionKeys]
+    ];
+    for (const [name, values] of recommendationTargets) {
+      const holder = form.querySelector(`[data-smart-select][data-name="${name}"]`);
+      if (!holder || !values.length) continue;
+      if (name === "occasions") holder.dataset.automationWriting = "true";
+      setSmartSelectValues(holder, values);
+      delete holder.dataset.automationWriting;
+    }
     const preview = form.querySelector("#perfume-analysis-preview");
     if (preview) preview.innerHTML = perfumeAnalysisPreviewMarkup(state.activeImportDraft);
     showToast(adminCopy("اكتمل التحليل. راجع المعاينة ثم احفظ المنتج.", "Analysis complete. Review the preview, then save the product."));
@@ -6833,8 +6981,10 @@ function renderImportReview(product) {
         <details class="perfume-manual-override"${product.perfumeProfile?.source === "manual_override" ? " open" : ""}><summary>${adminCopy("تعديل يدوي متقدم — اختياري", "Advanced manual override — optional")}</summary><label class="perfume-manual-toggle"><input type="checkbox" name="profileManualOverride"${product.perfumeProfile?.source === "manual_override" ? " checked" : ""}/> ${adminCopy("استخدام درجات الأكوردات اليدوية بدل التحليل المولد", "Use manual accord scores instead of generated analysis")}</label>${adminAccordEditor(product)}</details>
       </section>
 
+      ${perfumePerformanceEditorSection(product)}
+
       <section class="review-section inspired-reference-section" data-editor-tier="smart" data-perfume-section>
-        <div class="review-section-head"><span>04</span><div><b>${adminCopy("العطر المستوحى منه", "Inspired-by fragrance")}</b><small>${adminCopy("اختر عطرًا مرجعيًا موجودًا أو أضف عطرًا جديدًا؛ سيظهر الربط تلقائيًا في قسم البدائل.", "Choose an existing reference fragrance or add a new one; the relationship is saved automatically in Alternatives.")}</small></div></div>
+        <div class="review-section-head"><span>05</span><div><b>${adminCopy("العطر المستوحى منه", "Inspired-by fragrance")}</b><small>${adminCopy("اختر عطرًا مرجعيًا موجودًا أو أضف عطرًا جديدًا؛ سيظهر الربط تلقائيًا في قسم البدائل.", "Choose an existing reference fragrance or add a new one; the relationship is saved automatically in Alternatives.")}</small></div></div>
         <div class="review-grid inspired-reference-grid">
           <label class="wide">${adminCopy("العطر المرجعي", "Reference fragrance")}<select name="inspiredReferenceId"><option value="">${adminCopy("غير محدد", "Not specified")}</option>${inspiredReferenceOptions}</select><small>${adminCopy("يمكن البحث وإدارة جميع العلاقات لاحقًا من قسم إدارة البدائل.", "All relationships can be reviewed later in Alternatives management.")}</small></label>
         </div>
@@ -6969,6 +7119,10 @@ function collectReviewProduct(form) {
     position,
     sortOrder
   })));
+  const longevityHoursValue = data.has("performanceLongevityHours") && data.get("performanceLongevityHours") !== ""
+    ? Math.max(0, Math.min(72, Number(data.get("performanceLongevityHours"))))
+    : null;
+  const projectionValue = normalizeAdminProjection(data.get("performanceProjection"));
   const product = {
     ...base,
     id: base.id || `catalog-${Date.now()}`,
@@ -7007,7 +7161,12 @@ function collectReviewProduct(form) {
       minimum: Number(data.get("minimumStock") || 0),
       cost: Number(data.get("cost") || 0)
     },
-    performance: base.performance || {},
+    performance: {
+      ...(base.performance || {}),
+      longevity: longevityHoursValue == null ? (base.performance?.longevity ?? null) : Math.min(10, longevityHoursValue),
+      projection: projectionValue || null,
+      sillage: projectionValue ? projectionScore(projectionValue) : (base.performance?.sillage ?? null)
+    },
     releaseYear: data.get("releaseYear") === "" ? null : Number(data.get("releaseYear")),
     perfumer: data.has("perfumers") ? perfumers.map((item) => item.nameEn || item.nameAr).join(", ") : (base.perfumer || ""),
     perfumers: data.has("perfumers") ? perfumers.map((item) => item.value) : (base.perfumers || []),
@@ -7063,8 +7222,7 @@ function collectReviewProduct(form) {
       minimumVerifiedVotes: Number(data.get("performanceMinimumVerified") ?? 5),
       editorial: Object.fromEntries(Object.entries(performanceAdminOptions).map(([metric, options]) => [metric, Object.fromEntries(options.map(([key]) => [key, Number(data.get(`performance.${metric}.${key}`) || 0)]))])),
       editorialDetails: {
-        longevityMinHours: data.get("performanceLongevityMinHours") === "" ? null : Number(data.get("performanceLongevityMinHours")),
-        longevityMaxHours: data.get("performanceLongevityMaxHours") === "" ? null : Number(data.get("performanceLongevityMaxHours")),
+        longevityHours: longevityHoursValue,
         reviewerName: String(data.get("performanceReviewerName") || "").trim(),
         reviewerNotes: String(data.get("performanceReviewerNotes") || "").trim(),
         reviewedAt: String(data.get("performanceReviewedAt") || "").trim()
@@ -7540,6 +7698,19 @@ function setSmartSelectValues(holder, values) {
   }).join("") : `<small>${adminCopy("ابحث أو اختر…","Search or select…")}</small>`;
   holder.querySelectorAll("[role='option']").forEach((option) => option.setAttribute("aria-selected", String(next.some((value) => normalizeOptionSearch(value) === normalizeOptionSearch(option.dataset.value)))));
   holder.closest("form")?.dispatchEvent(new Event("input", { bubbles:true }));
+  const form = holder.closest("#import-review-form");
+  if (form && holder.dataset.name !== "occasions" && PERFUME_OCCASION_AUTOMATION_FIELDS.has(holder.dataset.name)) {
+    updatePerfumeOccasionSuggestions(form);
+  }
+}
+
+function markOccasionsAsManual(holder) {
+  if (!holder || holder.dataset.name !== "occasions" || holder.dataset.automationWriting === "true") return;
+  const form = holder.closest("#import-review-form");
+  const auto = form?.elements.occasionsAuto;
+  if (auto) auto.checked = false;
+  const status = form?.querySelector("[data-occasion-suggestion-status]");
+  if (status) status.textContent = adminCopy("تم تفعيل التعديل اليدوي. فعّل الاقتراح التلقائي لإعادة حساب المناسبات.", "Manual editing is active. Enable automatic suggestions to recalculate occasions.");
 }
 
 function closeSmartSelects(except = null) {
@@ -7605,6 +7776,16 @@ document.addEventListener("click", async (event) => {
     }
     return;
   }
+  const touchedCardMedia = actionElement.matches(".origo-exact-product-card .product-card-media-link")
+    ? actionElement.closest(".origo-exact-product-card")
+    : null;
+  if (touchedCardMedia && window.matchMedia("(hover: none), (pointer: coarse)").matches && !touchedCardMedia.classList.contains("show-card-actions")) {
+    event.preventDefault();
+    event.stopPropagation();
+    $$(".origo-exact-product-card.show-card-actions").forEach((card) => card.classList.remove("show-card-actions"));
+    touchedCardMedia.classList.add("show-card-actions");
+    return;
+  }
   const action = actionElement.dataset.action;
   if (action === "account-menu") {
     const opening = accountMenu?.hidden !== false;
@@ -7655,6 +7836,7 @@ document.addEventListener("click", async (event) => {
   }
   if (action === "smart-select-option") {
     const holder = actionElement.closest("[data-smart-select]");
+    markOccasionsAsManual(holder);
     const current = smartSelectValues(holder);
     const value = actionElement.dataset.value;
     const exists = current.some((item) => normalizeOptionSearch(item) === normalizeOptionSearch(value));
@@ -7680,6 +7862,7 @@ document.addEventListener("click", async (event) => {
   if (action === "smart-select-remove") {
     event.stopPropagation();
     const holder = actionElement.closest("[data-smart-select]");
+    markOccasionsAsManual(holder);
     setSmartSelectValues(holder, smartSelectValues(holder).filter((item) => normalizeOptionSearch(item) !== normalizeOptionSearch(actionElement.dataset.value)));
     return;
   }
@@ -7691,7 +7874,9 @@ document.addEventListener("click", async (event) => {
     return;
   }
   if (action === "smart-select-clear") {
-    setSmartSelectValues(actionElement.closest("[data-smart-select]"), []);
+    const holder = actionElement.closest("[data-smart-select]");
+    markOccasionsAsManual(holder);
+    setSmartSelectValues(holder, []);
     return;
   }
   if (action === "smart-select-all") {
@@ -8725,6 +8910,9 @@ document.addEventListener("click", async (event) => {
   if (action === "analyze-perfume-profile") {
     await runPerfumeAnalysisPreview(actionElement.closest("#import-review-form"), actionElement);
   }
+  if (action === "suggest-occasions") {
+    updatePerfumeOccasionSuggestions(actionElement.closest("#import-review-form"), { force:true, notify:true });
+  }
   if (action === "reanalyze-perfume-profile") {
     const draft = state.activeImportDraft;
     if (!draft?.id) return;
@@ -9665,6 +9853,7 @@ document.addEventListener("input", (event) => {
       if (editorForm.elements.availableStock) editorForm.elements.availableStock.value = Math.max(0, Number(event.target.value || 0) - reserved);
     }
     if (event.target.name === "category") updateProductTypeFields(editorForm);
+    if (PERFUME_OCCASION_AUTOMATION_FIELDS.has(event.target.name)) updatePerfumeOccasionSuggestions(editorForm);
     updateDuplicateWarning($("#import-review-form"));
     renderNoteMatchPreview($("#import-review-form"));
     updateProductEditorPreview($("#import-review-form"));

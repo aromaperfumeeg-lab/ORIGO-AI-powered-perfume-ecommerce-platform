@@ -1,5 +1,5 @@
-import { mkdirSync } from "node:fs";
-import { dirname, resolve } from "node:path";
+import { copyFileSync, existsSync, mkdirSync } from "node:fs";
+import { basename, dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { openPortableDatabase } from "./portable-database.mjs";
 import {
@@ -12,7 +12,14 @@ import {
 import { promisify } from "node:util";
 
 const ROOT = resolve(fileURLToPath(new URL(".", import.meta.url)));
-const DB_PATH = resolve(process.env.ORIGO_DB_PATH || resolve(ROOT, "data", "origo.db"));
+const LEGACY_DB_PATH = resolve(ROOT, "data", "origo.db");
+const IS_DEPLOYMENT_RUNTIME = process.env.NODE_ENV === "production" || basename(ROOT).toLowerCase() === "nodejs";
+const PERSISTENT_DATA_ROOT = process.env.ORIGO_DATA_DIR
+  ? resolve(process.env.ORIGO_DATA_DIR)
+  : IS_DEPLOYMENT_RUNTIME && process.env.HOME
+    ? resolve(process.env.HOME, ".origo-data")
+    : resolve(ROOT, "data");
+const DB_PATH = resolve(process.env.ORIGO_DB_PATH || resolve(PERSISTENT_DATA_ROOT, "origo.db"));
 const SESSION_DAYS = Math.max(1, Number(process.env.ORIGO_SESSION_DAYS || 30));
 const scrypt = promisify(scryptCallback);
 
@@ -32,6 +39,12 @@ export const ROLE_PERMISSIONS = {
 const allowedRoles = new Set(["customer", ...Object.keys(ROLE_PERMISSIONS)]);
 
 mkdirSync(dirname(DB_PATH), { recursive: true });
+if (DB_PATH !== LEGACY_DB_PATH && !existsSync(DB_PATH) && existsSync(LEGACY_DB_PATH)) {
+  for (const suffix of ["", "-wal", "-shm"]) {
+    const source = `${LEGACY_DB_PATH}${suffix}`;
+    if (existsSync(source)) copyFileSync(source, `${DB_PATH}${suffix}`);
+  }
+}
 
 export const db = await openPortableDatabase(DB_PATH);
 db.exec(`

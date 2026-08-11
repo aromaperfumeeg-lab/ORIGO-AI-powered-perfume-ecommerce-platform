@@ -143,6 +143,9 @@ function scoreKeys(values = {}, threshold = 52, limit = 5) {
   return Object.entries(values).sort((a, b) => Number(b[1]) - Number(a[1])).filter(([, score]) => Number(score) >= threshold).slice(0, limit).map(([key]) => key);
 }
 
+const PRODUCT_OCCASION_KEYS = Object.freeze({ dateNight:"date-night", specialOccasion:"special-occasion", orientalOccasion:"oriental-occasion" });
+const productOccasionKeys = (values = []) => values.map((key) => PRODUCT_OCCASION_KEYS[key] || key).filter((key) => !["evening", "date"].includes(key));
+
 function preparePerfumeProduct(input = {}, { force = false } = {}) {
   const product = { ...input };
   if ((product.category || "perfume") !== "perfume") return product;
@@ -167,9 +170,9 @@ function preparePerfumeProduct(input = {}, { force = false } = {}) {
   product.profileSource = profile.source;
   product.descriptionAr = profile.descriptions?.fullDescriptionAr || product.descriptionAr || "";
   product.descriptionEn = profile.descriptions?.fullDescriptionEn || product.descriptionEn || "";
-  product.seasons = scoreKeys(profile.seasons, 55, 4);
-  product.usageTimes = scoreKeys(profile.time, 45, 2);
-  product.occasions = scoreKeys(profile.occasions, 48, 6);
+  product.seasons = profile.recommended?.seasons || scoreKeys(profile.seasons, 55, 4);
+  product.usageTimes = profile.recommended?.timeOfDay || scoreKeys(profile.time, 45, 2);
+  product.occasions = productOccasionKeys(profile.recommended?.occasions || scoreKeys(profile.occasions, 48, 6));
   product.personalities = (profile.character || []).map((item) => item.labelAr);
   product.moods = (profile.character || []).map((item) => item.labelAr);
   product.families = profile.scentFamilies || [];
