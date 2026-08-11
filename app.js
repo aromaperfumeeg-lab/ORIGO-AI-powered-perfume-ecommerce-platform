@@ -6383,23 +6383,23 @@ function renderSmartSelectSearch(select, query = "") {
   return matches.length;
 }
 
-function searchableCreatableSelect({ name, group, labelAr, labelEn, selected = [], multiple = false, required = false, allowCreate = true, all = false, hintAr = "", hintEn = "" }) {
+function searchableCreatableSelect({ name, group, labelAr, labelEn, selected = [], multiple = false, required = false, allowCreate = true, all = false, readonly = false, hintAr = "", hintEn = "" }) {
   const values = (Array.isArray(selected) ? selected : [selected]).map(String).map((item) => item.trim()).filter(Boolean);
   const items = productOptionItems(group);
   const selectedItems = values.map((value) => items.find((item) => normalizeOptionSearch(item.value) === normalizeOptionSearch(value)) || { value, nameAr: value, nameEn: value, icon: "" });
   const visible = items.slice(0, 80);
-  return `<label class="smart-select-label${multiple ? " is-multiple" : ""}"><span>${adminCopy(labelAr,labelEn)}${required ? " <b aria-hidden='true'>*</b>" : ""}</span>
-    <div class="smart-select" data-smart-select data-group="${escapeHTML(group)}" data-name="${escapeHTML(name)}" data-multiple="${multiple}" data-create="${allowCreate}">
+  return `<label class="smart-select-label${multiple ? " is-multiple" : ""}${readonly ? " is-readonly" : ""}"><span>${adminCopy(labelAr,labelEn)}${required ? " <b aria-hidden='true'>*</b>" : ""}</span>
+    <div class="smart-select" data-smart-select data-group="${escapeHTML(group)}" data-name="${escapeHTML(name)}" data-multiple="${multiple}" data-create="${allowCreate}" data-readonly="${readonly}">
       <input type="hidden" name="${escapeHTML(name)}" value="${escapeHTML(values.join(", "))}" />
-      <div class="smart-select-control" data-action="smart-select-open" role="button" tabindex="0" aria-haspopup="listbox" aria-expanded="false">
-        <span class="smart-select-chips">${selectedItems.length ? selectedItems.map((item) => smartSelectChipMarkup(item, item.value, { multiple, group })).join("") : `<small>${adminCopy("ابحث أو اختر…","Search or select…")}</small>`}</span><strong>⌄</strong>
+      <div class="smart-select-control"${readonly ? ` aria-readonly="true"` : ` data-action="smart-select-open" role="button" tabindex="0" aria-haspopup="listbox" aria-expanded="false"`}>
+        <span class="smart-select-chips">${selectedItems.length ? selectedItems.map((item) => smartSelectChipMarkup(item, item.value, { multiple:multiple && !readonly, group })).join("") : `<small>${adminCopy("سيولده النظام تلقائيًا","Generated automatically")}</small>`}</span>${readonly ? "" : "<strong>⌄</strong>"}
       </div>
-      <div class="smart-select-menu" hidden>
+      ${readonly ? "" : `<div class="smart-select-menu" hidden>
         <div class="smart-select-search"><input type="search" data-smart-search placeholder="${adminCopy("ابحث بالعربية أو الإنجليزية…","Search in Arabic or English…")}" autocomplete="off"/><button type="button" data-action="smart-select-settings" title="${adminCopy("إدارة الخيارات","Manage options")}">⚙</button></div>
         <div class="smart-select-actions">${all && multiple ? `<button type="button" data-action="smart-select-all">${adminCopy("تحديد الكل","Select all")}</button>` : ""}<button type="button" data-action="smart-select-clear">${adminCopy("مسح الكل","Clear all")}</button></div>
         <div class="smart-select-options" role="listbox"${multiple ? ` aria-multiselectable="true"` : ""}>${visible.map((item) => smartSelectOptionMarkup(item, values)).join("")}</div>
         ${allowCreate ? `<button type="button" class="smart-select-create" data-action="smart-select-create">＋ ${adminCopy("إضافة خيار جديد","Add new option")}</button>` : ""}
-      </div>
+      </div>`}
     </div>${hintAr || hintEn ? `<small>${adminCopy(hintAr,hintEn)}</small>` : ""}</label>`;
 }
 
@@ -6462,10 +6462,7 @@ function performanceAdminDistribution(metric, editorial = {}) {
   return `<fieldset class="performance-admin-distribution"><legend>${adminCopy(...titles[metric])}<small>${metric === "wear" ? adminCopy("لا يشترط أن يكون المجموع 100%", "The total does not need to equal 100%") : adminCopy("يجب أن يكون المجموع 100%", "The total must equal 100%")}</small></legend><div>${performanceAdminOptions[metric].map(([key, ar, en]) => `<label><span>${adminCopy(ar,en)}</span><input type="number" min="0" max="100" step="0.1" name="performance.${metric}.${key}" value="${escapeHTML(editorial?.[metric]?.[key] ?? 0)}"/><i>%</i></label>`).join("")}</div></fieldset>`;
 }
 
-const PERFUME_OCCASION_AUTOMATION_FIELDS = new Set([
-  "topNotes", "heartNotes", "baseNotes", "seasons",
-  "performanceProjection", "performanceLongevityHours", "occasionsAuto"
-]);
+const PERFUME_OCCASION_AUTOMATION_FIELDS = new Set(["topNotes", "heartNotes", "baseNotes", "seasons"]);
 
 function normalizeAdminProjection(value) {
   if (["weak", "moderate", "strong", "very_strong"].includes(String(value || ""))) return String(value);
@@ -6534,7 +6531,7 @@ function perfumeOccasionSuggestions(form) {
 
 function updatePerfumeOccasionSuggestions(form, { force = false, notify = false } = {}) {
   const auto = form?.elements.occasionsAuto;
-  if (!form || (!force && auto && !auto.checked)) return [];
+  if (!form || !auto || auto.disabled || (!force && !auto.checked)) return [];
   const holder = form.querySelector('[data-smart-select][data-name="occasions"]');
   if (!holder) return [];
   if (auto && force) auto.checked = true;
@@ -6560,18 +6557,20 @@ function perfumePerformanceEditorSection(product) {
   const performance = product.performance || {};
   const details = product.performanceInsights?.editorialDetails || {};
   return `<section class="review-section perfume-performance-editor" data-editor-tier="smart" data-perfume-section>
-    <div class="review-section-head"><span>04</span><div><b>${adminCopy("الأداء والاستخدام", "Performance & usage")}</b><small>${adminCopy("حدد الثبات بالساعات، مستوى الفوحان، المواسم، أوقات الاستخدام والمناسبات.", "Set longevity in hours, sillage level, seasons, wear times, and occasions.")}</small></div></div>
+    <div class="review-section-head"><span>04</span><div><b>${adminCopy("الأداء والاستخدام", "Performance & usage")}</b><small>${adminCopy("أدخل الثبات والفوحان فقط؛ ويكمل نظام ORIGO المواسم وأوقات الاستخدام والمناسبات تلقائيًا.", "Enter only longevity and projection; ORIGO generates seasons, wear times, and occasions automatically.")}</small></div></div>
     <div class="review-grid performance-core-grid">
       <label>${adminCopy("الثبات بالساعات", "Longevity in hours")}<input type="number" name="performanceLongevityHours" min="0" max="72" step="0.5" value="${escapeHTML(details.longevityHours ?? details.longevityMaxHours ?? details.longevityMinHours ?? "")}" placeholder="8"/></label>
       <label>${adminCopy("قوة الفوحان", "Projection strength")}<select name="performanceProjection"><option value="">${adminCopy("غير محدد", "Not specified")}</option>${selectOptions([["weak",adminCopy("ضعيف", "Weak")],["moderate",adminCopy("متوسط", "Moderate")],["strong",adminCopy("قوي", "Strong")],["very_strong",adminCopy("قوي جدًا", "Very strong")]], normalizeAdminProjection(performance.projection ?? performance.sillage))}</select></label>
-      ${searchableCreatableSelect({ name:"seasons", group:"season", labelAr:"المواسم المناسبة", labelEn:"Best seasons", selected:product.seasons, multiple:true })}
-      ${searchableCreatableSelect({ name:"usageTimes", group:"usage_time", labelAr:"أوقات الاستخدام", labelEn:"Wear times", selected:product.usageTimes, multiple:true })}
-      ${searchableCreatableSelect({ name:"occasions", group:"occasion", labelAr:"المناسبات", labelEn:"Occasions", selected:product.occasions, multiple:true })}
     </div>
-    <div class="occasion-suggestion-controls">
-      <label><input type="checkbox" name="occasionsAuto" checked /> <span>${adminCopy("تحديد المناسبات تلقائيًا من النوتات والفوحان والثبات والمواسم", "Automatically suggest occasions from notes, sillage, longevity, and seasons")}</span></label>
-      <button type="button" class="button secondary-button" data-action="suggest-occasions">✦ ${adminCopy("تحديث الاقتراحات", "Refresh suggestions")}</button>
-      <small data-occasion-suggestion-status>${adminCopy("يتحدث الاقتراح تلقائيًا عند تعديل أي من البيانات السابقة، ويمكن إيقافه للتعديل اليدوي.", "Suggestions update when the inputs above change; disable this option for manual editing.")}</small>
+    <div class="performance-auto-panel">
+      <input type="checkbox" name="occasionsAuto" checked hidden disabled />
+      <button type="button" data-action="suggest-occasions" hidden disabled aria-hidden="true"></button>
+      <header><div><b>✦ ${adminCopy("نتائج يولدها النظام", "System-generated results")}</b><small>${adminCopy("تُملأ تلقائيًا، ويمكنك تعديلها أو حذفها أو إضافة خيارات جديدة قبل الحفظ.", "Generated automatically; you can edit, remove, or add options before saving.")}</small></div><button type="button" class="button secondary-button" data-action="analyze-perfume-profile" data-perfume-auto-generate>↻ ${adminCopy("تحديث الآن", "Refresh now")}</button></header>
+      <div class="review-grid performance-generated-grid">
+        ${searchableCreatableSelect({ name:"seasons", group:"season", labelAr:"المواسم المناسبة", labelEn:"Best seasons", selected:product.seasons, multiple:true })}
+        ${searchableCreatableSelect({ name:"usageTimes", group:"usage_time", labelAr:"أوقات الاستخدام", labelEn:"Wear times", selected:product.usageTimes, multiple:true })}
+        ${searchableCreatableSelect({ name:"occasions", group:"occasion", labelAr:"المناسبات", labelEn:"Occasions", selected:product.occasions, multiple:true })}
+      </div>
     </div>
   </section>`;
 }
@@ -6762,7 +6761,7 @@ function perfumeAnalysisPreviewMarkup(product = {}) {
   </div>`;
 }
 
-async function runPerfumeAnalysisPreview(form, button) {
+async function runPerfumeAnalysisPreview(form, button, { silent = false, overwriteRecommendations = true } = {}) {
   if (!form || !button || button.dataset.running === "true") return;
   button.dataset.running = "true";
   button.disabled = true;
@@ -6796,21 +6795,35 @@ async function runPerfumeAnalysisPreview(form, button) {
     for (const [name, values] of recommendationTargets) {
       const holder = form.querySelector(`[data-smart-select][data-name="${name}"]`);
       if (!holder || !values.length) continue;
+      if (!overwriteRecommendations && holder.dataset.userEdited === "true") continue;
       if (name === "occasions") holder.dataset.automationWriting = "true";
       setSmartSelectValues(holder, values);
       delete holder.dataset.automationWriting;
     }
     const preview = form.querySelector("#perfume-analysis-preview");
     if (preview) preview.innerHTML = perfumeAnalysisPreviewMarkup(state.activeImportDraft);
-    showToast(adminCopy("اكتمل التحليل. راجع المعاينة ثم احفظ المنتج.", "Analysis complete. Review the preview, then save the product."));
+    if (!silent) showToast(adminCopy("اكتمل التحليل. راجع المعاينة ثم احفظ المنتج.", "Analysis complete. Review the preview, then save the product."));
   } catch (error) {
     console.error("[ORIGO PERFUME ANALYSIS]", error);
-    showToast(error.message || adminCopy("تعذر تحليل العطر.", "Unable to analyze the fragrance."), "error");
+    if (!silent) showToast(error.message || adminCopy("تعذر تحليل العطر.", "Unable to analyze the fragrance."), "error");
   } finally {
     button.disabled = false;
     button.classList.remove("is-loading");
     delete button.dataset.running;
   }
+}
+
+let perfumeAutoAnalysisTimer;
+function schedulePerfumeAutoAnalysis(form) {
+  if (!form || form.elements.category?.value !== "perfume") return;
+  const longevity = Number(form.elements.performanceLongevityHours?.value || 0);
+  const projection = normalizeAdminProjection(form.elements.performanceProjection?.value);
+  if (!(longevity > 0) || !projection) return;
+  clearTimeout(perfumeAutoAnalysisTimer);
+  perfumeAutoAnalysisTimer = setTimeout(() => {
+    const button = form.querySelector("[data-perfume-auto-generate]") || form.querySelector('[data-action="analyze-perfume-profile"]');
+    if (button) runPerfumeAnalysisPreview(form, button, { silent:true, overwriteRecommendations:false });
+  }, 650);
 }
 
 function initializePerfumeAnalysisEditor(form) {
@@ -6893,6 +6906,39 @@ function setAdminStudioImage(studio, nextIndex) {
   });
   $$(".product-media-stage>img,.product-media-lightbox>img", studio).forEach((image) => image.src = source || image.src);
   $$(".studio-count b,.product-media-lightbox footer b", studio).forEach((count) => count.textContent = String(index + 1));
+}
+
+function productSeoDraft(form) {
+  if (!form) return { title:"", description:"", keywords:[] };
+  const value = (name) => String(form.elements[name]?.value || "").trim();
+  const nameAr = value("nameAr");
+  const nameEn = value("nameEn");
+  const name = state.lang === "ar" ? (nameAr || nameEn) : (nameEn || nameAr);
+  const brand = value("brand");
+  const concentration = value("concentration");
+  const size = value("size");
+  const productName = [brand, name].filter(Boolean).join(" ").trim();
+  const details = [concentration, size].filter(Boolean).join(" · ");
+  const title = productName
+    ? (state.lang === "ar" ? `${productName} أصلي 100% | ORIGO` : `${productName} 100% Authentic | ORIGO`)
+    : adminCopy("منتجات أصلية 100% | ORIGO", "100% Authentic Products | ORIGO");
+  const description = state.lang === "ar"
+    ? `${productName ? `تسوق ${productName} الأصلي 100% من ORIGO` : "تسوق منتجات ORIGO الأصلية 100%"}${details ? `، ${details}` : ""}. نبيع منتجات أصلية فقط مع توصيل آمن وخدمة موثوقة.`
+    : `${productName ? `Shop 100% authentic ${productName} at ORIGO` : "Shop 100% authentic products at ORIGO"}${details ? `, ${details}` : ""}. We sell original products only, with secure delivery and trusted service.`;
+  const keywords = [...new Set([nameAr, nameEn, brand, nameAr && `${nameAr} أصلي`, nameEn && `${nameEn} original`, brand && `${brand} أصلي`, brand && `${brand} authentic`, "عطر أصلي", "عطور أصلية", "original perfume", "authentic fragrance", "ORIGO"].filter(Boolean))];
+  return { title:title.slice(0, 68), description:description.slice(0, 165), keywords };
+}
+
+function updateGeneratedProductSeo(form, { force = false } = {}) {
+  if (!form) return;
+  const generated = productSeoDraft(form);
+  [["seoTitle", generated.title], ["seoDescription", generated.description], ["seoKeywords", generated.keywords.join("، ")]].forEach(([name, value]) => {
+    const field = form.elements[name];
+    if (!field || (!force && field.value.trim() && field.dataset.autoGenerated !== "true")) return;
+    field.value = value;
+    field.dataset.autoGenerated = "true";
+    field.dataset.userEdited = "false";
+  });
 }
 
 function renderImportReview(product) {
@@ -7035,12 +7081,14 @@ function renderImportReview(product) {
         ${productMediaStudioMarkup(images)}
       </section>
 
-      <section class="review-section" data-editor-tier="advanced">
-        <div class="review-section-head"><span>06</span><div><b>${adminCopy("SEO والمتغيرات والربط", "SEO, variants & relationships")}</b><small>${adminCopy("تستخدمها صفحات المنتج والفلاتر الديناميكية مباشرة", "Used directly by product pages and dynamic filters")}</small></div></div>
+      <section class="review-section seo-automation-section" data-editor-tier="advanced">
+        <div class="review-section-head"><span>06</span><div><b>${adminCopy("SEO والمتغيرات والربط", "SEO, variants & relationships")}</b><small>${adminCopy("يولّد النظام بيانات SEO تلقائيًا مع بقائها قابلة للتعديل والإضافة.", "SEO is generated automatically and remains fully editable.")}</small></div></div>
+        <div class="seo-automation-note"><div><b>✓ ${adminCopy("صياغة موثوقة للمنتجات الأصلية", "Authenticity-first copy")}</b><small>${adminCopy("تؤكد الصياغة أن ORIGO يبيع منتجات أصلية فقط، ولا تستبدل تعديلاتك اليدوية تلقائيًا.", "Copy states that ORIGO sells original products only and never silently overwrites your manual edits.")}</small></div><button type="button" class="button secondary-button" data-action="generate-product-seo">✦ ${adminCopy("توليد SEO من جديد", "Regenerate SEO")}</button></div>
         <div class="review-grid">
           <label>${adminCopy("رابط المنتج", "URL slug")}<input name="slug" dir="ltr" value="${escapeHTML(product.slug || "")}" placeholder="nocturne-01" /></label>
-          <label>SEO title<input name="seoTitle" value="${escapeHTML(product.seo?.title || "")}" /></label>
+          <label>${adminCopy("عنوان SEO", "SEO title")}<input name="seoTitle" value="${escapeHTML(product.seo?.title || "")}" maxlength="68" /></label>
           <label class="wide">${adminCopy("وصف SEO", "SEO description")}<textarea name="seoDescription">${escapeHTML(product.seo?.description || "")}</textarea></label>
+          <label class="wide">${adminCopy("كلمات SEO المفتاحية", "SEO keywords")}<input name="seoKeywords" value="${escapeHTML(csv(product.seo?.keywords))}" placeholder="${adminCopy("اسم العطر، العلامة التجارية، عطر أصلي", "product name, brand, authentic fragrance")}" /></label>
           <label>${adminCopy("المقاسات/المتغيرات", "Variants")}<input name="variants" value="${escapeHTML(csv(product.variants))}" placeholder="30 ML, 50 ML, 100 ML" /></label>
           <label>${adminCopy("نوتات البطاقة البارزة", "Featured card notes")}<input name="featuredNotes" value="${escapeHTML(csv(product.featuredNotes))}" placeholder="${adminCopy("برغموت، عنبر، عود", "Bergamot, Amber, Oud")}" /></label>
           <label>${adminCopy("صورة البطاقة عند المرور", "Card hover image")}<input name="hoverImage" value="${escapeHTML(product.hoverImage || "")}" placeholder="https://..." /></label>
@@ -7076,6 +7124,7 @@ function renderImportReview(product) {
   updateAdminAccordEditor($("#import-review-form"));
   updateProductTypeFields($("#import-review-form"));
   initializePerfumeAnalysisEditor($("#import-review-form"));
+  updateGeneratedProductSeo($("#import-review-form"));
   initializeProductEditorTabs();
 }
 
@@ -7185,7 +7234,8 @@ function collectReviewProduct(form) {
     slug: String(data.get("slug") || "").trim(),
     seo: {
       title: String(data.get("seoTitle") || "").trim(),
-      description: String(data.get("seoDescription") || "").trim()
+      description: String(data.get("seoDescription") || "").trim(),
+      keywords: csvValues(data.get("seoKeywords"))
     },
     variants: csvValues(data.get("variants")),
     featuredNotes: csvValues(data.get("featuredNotes")),
@@ -7694,14 +7744,15 @@ function setSmartSelectValues(holder, values) {
   const chips = holder.querySelector(".smart-select-chips");
   chips.innerHTML = next.length ? next.map((value) => {
     const item = items.find((candidate) => normalizeOptionSearch(candidate.value) === normalizeOptionSearch(value)) || { value, nameAr:value, nameEn:value };
-    return smartSelectChipMarkup(item, value, { multiple, group });
+    return smartSelectChipMarkup(item, value, { multiple:multiple && holder.dataset.readonly !== "true", group });
   }).join("") : `<small>${adminCopy("ابحث أو اختر…","Search or select…")}</small>`;
   holder.querySelectorAll("[role='option']").forEach((option) => option.setAttribute("aria-selected", String(next.some((value) => normalizeOptionSearch(value) === normalizeOptionSearch(option.dataset.value)))));
   holder.closest("form")?.dispatchEvent(new Event("input", { bubbles:true }));
   const form = holder.closest("#import-review-form");
-  if (form && holder.dataset.name !== "occasions" && PERFUME_OCCASION_AUTOMATION_FIELDS.has(holder.dataset.name)) {
+  if (form && form.elements.occasionsAuto && !form.elements.occasionsAuto.disabled && holder.dataset.name !== "occasions" && PERFUME_OCCASION_AUTOMATION_FIELDS.has(holder.dataset.name)) {
     updatePerfumeOccasionSuggestions(form);
   }
+  if (form && ["topNotes", "heartNotes", "baseNotes", "families"].includes(holder.dataset.name)) schedulePerfumeAutoAnalysis(form);
 }
 
 function markOccasionsAsManual(holder) {
@@ -7711,6 +7762,10 @@ function markOccasionsAsManual(holder) {
   if (auto) auto.checked = false;
   const status = form?.querySelector("[data-occasion-suggestion-status]");
   if (status) status.textContent = adminCopy("تم تفعيل التعديل اليدوي. فعّل الاقتراح التلقائي لإعادة حساب المناسبات.", "Manual editing is active. Enable automatic suggestions to recalculate occasions.");
+}
+
+function markGeneratedPerfumeFieldAsManual(holder) {
+  if (holder && ["seasons", "usageTimes", "occasions"].includes(holder.dataset.name)) holder.dataset.userEdited = "true";
 }
 
 function closeSmartSelects(except = null) {
@@ -7836,6 +7891,7 @@ document.addEventListener("click", async (event) => {
   }
   if (action === "smart-select-option") {
     const holder = actionElement.closest("[data-smart-select]");
+    markGeneratedPerfumeFieldAsManual(holder);
     markOccasionsAsManual(holder);
     const current = smartSelectValues(holder);
     const value = actionElement.dataset.value;
@@ -7862,6 +7918,7 @@ document.addEventListener("click", async (event) => {
   if (action === "smart-select-remove") {
     event.stopPropagation();
     const holder = actionElement.closest("[data-smart-select]");
+    markGeneratedPerfumeFieldAsManual(holder);
     markOccasionsAsManual(holder);
     setSmartSelectValues(holder, smartSelectValues(holder).filter((item) => normalizeOptionSearch(item) !== normalizeOptionSearch(actionElement.dataset.value)));
     return;
@@ -7875,12 +7932,14 @@ document.addEventListener("click", async (event) => {
   }
   if (action === "smart-select-clear") {
     const holder = actionElement.closest("[data-smart-select]");
+    markGeneratedPerfumeFieldAsManual(holder);
     markOccasionsAsManual(holder);
     setSmartSelectValues(holder, []);
     return;
   }
   if (action === "smart-select-all") {
     const holder = actionElement.closest("[data-smart-select]");
+    markGeneratedPerfumeFieldAsManual(holder);
     setSmartSelectValues(holder, productOptionItems(holder.dataset.group).map((item) => item.value));
     return;
   }
@@ -8910,6 +8969,11 @@ document.addEventListener("click", async (event) => {
   if (action === "analyze-perfume-profile") {
     await runPerfumeAnalysisPreview(actionElement.closest("#import-review-form"), actionElement);
   }
+  if (action === "generate-product-seo") {
+    const form = actionElement.closest("#import-review-form");
+    updateGeneratedProductSeo(form, { force:true });
+    showToast(adminCopy("تم توليد SEO ويمكنك تعديله قبل الحفظ.", "SEO generated. You can edit it before saving."));
+  }
   if (action === "suggest-occasions") {
     updatePerfumeOccasionSuggestions(actionElement.closest("#import-review-form"), { force:true, notify:true });
   }
@@ -9840,6 +9904,11 @@ document.addEventListener("input", (event) => {
   }
   if (event.target.closest("#import-review-form")) {
     const editorForm = $("#import-review-form");
+    if (["seoTitle", "seoDescription", "seoKeywords"].includes(event.target.name)) {
+      event.target.dataset.userEdited = "true";
+      event.target.dataset.autoGenerated = "false";
+    }
+    if (["nameAr", "nameEn", "brand", "concentration", "size"].includes(event.target.name)) updateGeneratedProductSeo(editorForm);
     if (event.target.name === "sku" && event.isTrusted) {
       event.target.dataset.userEdited = "true";
       event.target.dataset.autoGenerated = "false";
@@ -9853,6 +9922,7 @@ document.addEventListener("input", (event) => {
       if (editorForm.elements.availableStock) editorForm.elements.availableStock.value = Math.max(0, Number(event.target.value || 0) - reserved);
     }
     if (event.target.name === "category") updateProductTypeFields(editorForm);
+    if (["performanceLongevityHours", "performanceProjection"].includes(event.target.name)) schedulePerfumeAutoAnalysis(editorForm);
     if (PERFUME_OCCASION_AUTOMATION_FIELDS.has(event.target.name)) updatePerfumeOccasionSuggestions(editorForm);
     updateDuplicateWarning($("#import-review-form"));
     renderNoteMatchPreview($("#import-review-form"));

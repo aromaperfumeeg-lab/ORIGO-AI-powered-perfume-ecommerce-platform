@@ -29,7 +29,7 @@
       body.origo-hydrating #home{visibility:hidden;opacity:0}
       body:not(.origo-hydrating) #home{visibility:visible;opacity:1;transition:opacity .12s ease-out}
     </style>
-    <link rel="stylesheet" href="styles.css?v=36" />
+  <link rel="stylesheet" href="styles.css?v=37" />
     <link rel="stylesheet" href="home.css?v=73" />
   <link rel="stylesheet" href="components/product-card/storefront-product-card.css?v=4" />
     <link rel="stylesheet" href="product-detail.css?v=10" media="print" onload="this.media='all'" />
@@ -42,7 +42,9 @@
     <link rel="stylesheet" href="performance-insights.css?v=3" media="print" onload="this.media='all'" />
 <link rel="stylesheet" href="shell.css?v=17" />
     <link rel="stylesheet" href="appearance.css?v=31" />
-    <link rel="stylesheet" href="product-reference-card.css?v=4" />
+    <link rel="stylesheet" href="product-reference-card.css?v=5" />
+    <link rel="stylesheet" href="home-gender-slider.css?v=3" />
+    <script defer src="home-brand-navigation.js?v=1"></script>
     <link rel="stylesheet" href="admin-ui-fixes.css?v=6" />
     <link rel="stylesheet" href="notes-admin-fixes.css?v=2" media="print" onload="this.media='all'" />
   </head>
@@ -212,18 +214,15 @@
             <div><h2 id="home-gender-title">تسوّق حسب الجنس</h2></div>
             <span aria-hidden="true"></span>
           </div>
-          <div class="home-gender-grid">
+          <div class="home-gender-grid home-gender-slider" aria-label="تسوّق حسب الجنس">
             <a class="home-gender-card gender-men" href="/perfumes?quick=men" data-action="home-gender-filter" data-gender="men">
-              <span class="gender-card-art" aria-hidden="true"></span>
-              <span class="gender-card-copy"><b>للرجال</b><small>عطور تعكس القوة والأناقة والثقة</small></span>
+              <img class="gender-card-image" src="assets/home/gender/gender-men.png" alt="تسوّق عطور للرجال" loading="lazy" decoding="async" />
             </a>
             <a class="home-gender-card gender-women" href="/perfumes?quick=women" data-action="home-gender-filter" data-gender="women">
-              <span class="gender-card-art" aria-hidden="true"></span>
-              <span class="gender-card-copy"><b>للنساء</b><small>عطور تمنحك الجمال والجاذبية</small></span>
+              <img class="gender-card-image" src="assets/home/gender/gender-women.png" alt="تسوّق عطور للنساء" loading="lazy" decoding="async" />
             </a>
             <a class="home-gender-card gender-unisex" href="/perfumes?quick=unisex" data-action="home-gender-filter" data-gender="unisex">
-              <span class="gender-card-art" aria-hidden="true"></span>
-              <span class="gender-card-copy"><b>للجنسين</b><small>عطور تناسب الجميع بلا حدود</small></span>
+              <img class="gender-card-image" src="assets/home/gender/gender-unisex.png" alt="تسوّق عطور للجنسين" loading="lazy" decoding="async" />
             </a>
           </div>
         </section>
@@ -1024,7 +1023,7 @@
     <script src="fragrance-notes-library.js?v=7"></script>
     <script src="catalog-providers.js?v=6"></script>
     <script src="external-tracking.js?v=1"></script>
-    <script src="app.js?v=119"></script>
+  <script src="app.js?v=122"></script>
     <script src="components/product-card/storefront-product-card.js?v=3"></script>
     <script src="deferred-modules.js?v=3"></script>
   </body>

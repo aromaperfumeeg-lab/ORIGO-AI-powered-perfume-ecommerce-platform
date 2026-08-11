@@ -619,3 +619,52 @@ body .product-overlay .origo-exact-product-card .exact-card-actions .card-add-bu
     transition: none !important;
   }
 }
+
+/*
+ * Keep every image control in its own physical corner.  Older storefront
+ * styles use logical RTL insets, so reset those first and declare the final
+ * physical positions last.  This prevents the status/discount chips from
+ * being pushed beneath the favorite and compare controls in Arabic.
+ */
+body #storefront-main #home .origo-exact-product-card .product-image > .product-card-top-actions,
+body .product-overlay .origo-exact-product-card .product-image > .product-card-top-actions {
+  inset-inline-start: auto !important;
+  inset-inline-end: auto !important;
+  left: auto !important;
+  right: clamp(7px, 0.7vw, 11px) !important;
+}
+
+body #storefront-main #home .origo-exact-product-card .product-image > .product-feature-badge,
+body .product-overlay .origo-exact-product-card .product-image > .product-feature-badge {
+  inset-inline-start: auto !important;
+  inset-inline-end: auto !important;
+  right: auto !important;
+  left: clamp(7px, 0.7vw, 11px) !important;
+}
+
+body #storefront-main #home .origo-exact-product-card .product-image > .product-badge,
+body .product-overlay .origo-exact-product-card .product-image > .product-badge {
+  inset-inline-start: auto !important;
+  inset-inline-end: auto !important;
+  right: auto !important;
+  left: clamp(7px, 0.7vw, 11px) !important;
+}
+
+@media (max-width: 700px) {
+  body #storefront-main #home .origo-exact-product-card .product-image > .product-card-top-actions,
+  body .product-overlay .origo-exact-product-card .product-image > .product-card-top-actions {
+    right: 7px !important;
+  }
+
+  body #storefront-main #home .origo-exact-product-card .product-image > .product-feature-badge,
+  body .product-overlay .origo-exact-product-card .product-image > .product-feature-badge {
+    top: 7px !important;
+    left: 7px !important;
+  }
+
+  body #storefront-main #home .origo-exact-product-card .product-image > .product-badge,
+  body .product-overlay .origo-exact-product-card .product-image > .product-badge {
+    top: 37px !important;
+    left: 7px !important;
+  }
+}
