@@ -4888,7 +4888,7 @@ function productSuitabilityMarkup(product) {
 function productAccordMarkup(product) {
   const accords = perfumeResolvedAccords(product).slice(0, 8);
   if (!accords.length) return `<div class="pdp-empty-compact">${state.lang === "ar" ? "لم تُضف البصمة العطرية بعد." : "The fragrance fingerprint is not configured yet."}</div>`;
-  return `<section class="pdp-accord-profile"><p>${state.lang === "ar" ? "أبرز الروائح التي ستشعر بها في هذا العطر." : "The leading impressions you will experience in this fragrance."}</p><div>${accords.map((item, index) => { const intensity = Number(item.strength ?? item.intensity); const hasIntensity = Number.isFinite(intensity) && intensity > 0; return `<article title="${escapeHTML(item.descriptionAr || item.descriptionEn || "")}"><span><i style="--accord-color:${escapeHTML(item.color || ["#bc173d","#d79b26","#e97198","#9b7fba","#e67656","#7aaa4d"][index % 6])}"></i><b>${escapeHTML(item[state.lang === "ar" ? "nameAr" : "nameEn"] || item.name || item.label || "")}</b>${hasIntensity ? `<em>${Math.min(100, intensity)}%</em>` : ""}</span>${hasIntensity ? `<div><i style="width:${Math.min(100, intensity)}%;--accord-color:${escapeHTML(item.color || "#8b0d2b")}"></i></div>` : ""}${item.descriptionAr || item.descriptionEn ? `<small>${escapeHTML(item[state.lang === "ar" ? "descriptionAr" : "descriptionEn"] || item.descriptionAr || item.descriptionEn)}</small>` : ""}</article>`; }).join("")}</div><button type="button" class="pdp-accord-help" data-action="accord-help">${state.lang === "ar" ? "كيف نقرأ البصمة العطرية؟" : "How to read the fragrance fingerprint"}</button></section>`;
+  return `<section class="pdp-accord-profile"><p>${state.lang === "ar" ? "أبرز الروائح التي ستشعر بها في هذا العطر." : "The leading impressions you will experience in this fragrance."}</p><div>${accords.map((item, index) => { const strength=Math.max(0,Math.min(100,Number(item.strength??item.score??item.intensity)||0));const color=item.color||["#8d1735","#c58a24","#aa4f82","#6750a4","#b95e3d","#43856e","#397da8","#755038"][index%8];const name=item[state.lang==="ar"?"nameAr":"nameEn"]||item.name||item.label||"";const visual=item.image?`<img src="${escapeHTML(item.image)}" alt=""/>`:`<span aria-hidden="true">${escapeHTML(item.icon||item.symbol||["◇","◆","✦","❀","◉","♧","≈","◌"][index%8])}</span>`;return `<article class="pdp-accord-row" style="--accord-color:${escapeHTML(color)};--accord-strength:${strength}"><i class="pdp-accord-visual">${visual}</i><div class="pdp-accord-track"><i class="pdp-accord-fill"><b>${escapeHTML(name)}</b><em>${strength}%</em></i></div></article>`;}).join("")}</div><button type="button" class="pdp-accord-help" data-action="accord-help">${state.lang === "ar" ? "كيف نقرأ البصمة العطرية؟" : "How to read the fragrance fingerprint"}</button></section>`;
 }
 
 function productProfileImage(product, key) {
@@ -5797,12 +5797,12 @@ function showProductDetails(product, shouldOpen = true) {
 
   $("#product-dialog-content").innerHTML = `
     <main class="pdp-page" aria-labelledby="product-dialog-title">
-      <div class="pdp-topbar"><button class="pdp-back" data-action="close-product-page" aria-label="${isArabic ? "العودة للمتجر" : "Back to store"}"><span aria-hidden="true">${isArabic ? "→" : "←"}</span><b>${isArabic ? "متابعة التسوق" : "Continue shopping"}</b></button></div>
+      <div class="pdp-topbar"><button class="pdp-back" data-action="close-product-page" aria-label="${isArabic ? "رجوع" : "Back"}"><span aria-hidden="true">${isArabic ? "→" : "←"}</span><b>${isArabic ? "رجوع" : "Back"}</b></button></div>
       <nav class="pdp-breadcrumb" aria-label="${isArabic ? "مسار الصفحة" : "Breadcrumb"}"><a href="#home-hero" data-action="close-product-page">${isArabic ? "الرئيسية" : "Home"}</a><i>‹</i><a href="#featured" data-action="close-product-page">${isArabic ? "العطور" : "Perfumes"}</a><i>‹</i><span>${escapeHTML(product.brand)}</span><i>‹</i><b>${escapeHTML(name)}</b></nav>
       <section class="pdp-hero">
         <div class="pdp-gallery">
           <div class="pdp-thumbnails" aria-label="${isArabic ? "صور المنتج" : "Product media"}">${media.map((item, index) => `<button class="${index === state.activeProductImageIndex ? "active" : ""}" data-action="product-image" data-index="${index}" aria-label="${isArabic ? `الصورة ${index + 1}` : `Image ${index + 1}`}" aria-pressed="${index === state.activeProductImageIndex}"><img src="${escapeHTML(item.url)}" alt="" loading="${index ? "lazy" : "eager"}" /></button>`).join("")}</div>
-          <div class="pdp-main-image" data-action="product-zoom" role="button" tabindex="0" aria-label="${isArabic ? "فتح صورة المنتج بملء الشاشة" : "Open product image fullscreen"}"><span>${escapeHTML(isArabic ? product.badgeAr || "" : product.badgeEn || "")}</span><button type="button" class="pdp-fullscreen-button" data-action="product-zoom" aria-label="${isArabic ? "عرض الصورة بملء الشاشة" : "View image fullscreen"}"><i aria-hidden="true">⛶</i><b>${isArabic ? "عرض كامل" : "Fullscreen"}</b></button><img src="${escapeHTML(activeMedia.url)}" alt="${escapeHTML(`${product.brand} ${name}`)}" /></div>
+          <div class="pdp-main-image" data-action="product-zoom" role="button" tabindex="0" aria-label="${isArabic ? "فتح صورة المنتج بملء الشاشة" : "Open product image fullscreen"}"><span>${escapeHTML(isArabic ? product.badgeAr || "" : product.badgeEn || "")}</span><button type="button" class="pdp-fullscreen-button" data-action="product-zoom" aria-label="${isArabic ? "عرض الصورة بملء الشاشة" : "View image fullscreen"}"><i aria-hidden="true">⛶</i><b>${isArabic ? "عرض كامل" : "Fullscreen"}</b></button>${media.length > 1 ? `<button type="button" class="pdp-media-arrow previous" data-action="product-image-step" data-change="-1" aria-label="${isArabic ? "الصورة السابقة" : "Previous image"}">‹</button><button type="button" class="pdp-media-arrow next" data-action="product-image-step" data-change="1" aria-label="${isArabic ? "الصورة التالية" : "Next image"}">›</button><small class="pdp-media-count">${state.activeProductImageIndex + 1} / ${media.length}</small>` : ""}<img src="${escapeHTML(activeMedia.url)}" alt="${escapeHTML(`${product.brand} ${name}`)}" /></div>
         </div>
         <aside class="pdp-purchase">
           <span class="pdp-brand">${escapeHTML(product.brand)}</span><h1 id="product-dialog-title">${escapeHTML(name)}</h1>${secondName && secondName !== name ? `<p class="pdp-english-name">${escapeHTML(secondName)}</p>` : ""}
@@ -6465,22 +6465,6 @@ function editorPreviewMarkup(product) {
   </details>`;
 }
 
-const performanceAdminOptions = {
-  scent: [["dislike","لم يعجبني","Dislike"],["not_for_me","لم يناسبني","Not for me"],["acceptable","مقبول","Acceptable"],["good","جيد","Good"],["loved","أعجبني جدًا","Loved it"]],
-  wear: [["winter","الشتاء","Winter"],["spring","الربيع","Spring"],["summer","الصيف","Summer"],["autumn","الخريف","Autumn"],["day","النهار","Day"],["night","الليل","Night"]],
-  longevity: [["very_weak","ضعيف جدًا","Very weak"],["weak","ضعيف","Weak"],["moderate","متوسط","Moderate"],["long","ثابت","Long-lasting"],["very_long","طويل جدًا","Very long"]],
-  sillage: [["skin","قريب من الجلد","Skin scent"],["soft","ناعم","Soft"],["moderate","متوسط","Moderate"],["strong","قوي","Strong"],["very_strong","قوي جدًا","Very strong"]],
-  gender: [["women","نسائي","Women"],["unisex","يونيسكس","Unisex"],["men","رجالي","Men"]],
-  value: [["overpriced","مبالغ في سعره","Overpriced"],["high","مرتفع","High"],["acceptable","مقبول","Acceptable"],["good","جيد","Good"],["great","قيمة رائعة","Great value"]]
-};
-
-function performanceAdminDistribution(metric, editorial = {}) {
-  const titles = { scent:["تقييم الرائحة","Scent rating"], wear:["متى ترتديه؟","When to wear"], longevity:["الثبات","Longevity"], sillage:["الفوحان","Sillage"], gender:["النوع","Gender"], value:["القيمة مقابل السعر","Value for money"] };
-  return `<fieldset class="performance-admin-distribution"><legend>${adminCopy(...titles[metric])}<small>${metric === "wear" ? adminCopy("لا يشترط أن يكون المجموع 100%", "The total does not need to equal 100%") : adminCopy("يجب أن يكون المجموع 100%", "The total must equal 100%")}</small></legend><div>${performanceAdminOptions[metric].map(([key, ar, en]) => `<label><span>${adminCopy(ar,en)}</span><input type="number" min="0" max="100" step="0.1" name="performance.${metric}.${key}" value="${escapeHTML(editorial?.[metric]?.[key] ?? 0)}"/><i>%</i></label>`).join("")}</div></fieldset>`;
-}
-
-const PERFUME_OCCASION_AUTOMATION_FIELDS = new Set(["topNotes", "heartNotes", "baseNotes", "seasons"]);
-
 function normalizeAdminProjection(value) {
   if (["weak", "moderate", "strong", "very_strong"].includes(String(value || ""))) return String(value);
   const numeric = Number(value);
@@ -6488,135 +6472,25 @@ function normalizeAdminProjection(value) {
   return numeric >= 8.5 ? "very_strong" : numeric >= 6.5 ? "strong" : numeric >= 3.5 ? "moderate" : "weak";
 }
 
-function projectionScore(value) {
-  return { weak:2.5, moderate:5, strong:7.5, very_strong:9 }[normalizeAdminProjection(value)] || 0;
-}
-
-function perfumeOccasionSuggestions(form) {
-  if (!form) return [];
-  const values = (name) => csvValues(form.elements[name]?.value || "");
-  const notes = normalizeOptionSearch([...values("topNotes"), ...values("heartNotes"), ...values("baseNotes")].join(" "));
-  const seasons = new Set(values("seasons").map(normalizeOptionSearch));
-  const sillage = projectionScore(form.elements.performanceProjection?.value);
-  const longevityHours = Number(form.elements.performanceLongevityHours?.value || 0);
-  const scores = Object.fromEntries((PRODUCT_OPTION_DEFAULTS.occasion || []).map(([value]) => [value, 0]));
-  const add = (keys, score) => keys.forEach((key) => { if (key in scores) scores[key] += score; });
-  const has = (...terms) => terms.some((term) => notes.includes(normalizeOptionSearch(term)));
-
-  add(["daily"], 22);
-  add(["gift"], 12);
-
-  if (has("bergamot", "lemon", "lime", "orange", "grapefruit", "citrus", "mint", "marine", "aquatic", "green", "برغموت", "ليمون", "برتقال", "جريب فروت", "حمضيات", "نعناع", "بحري", "مائي", "أخضر")) {
-    add(["daily", "work", "university", "sport", "travel"], 25);
-  }
-  if (has("lavender", "neroli", "soap", "cotton", "clean", "white musk", "لافندر", "نيرولي", "صابون", "قطن", "نظيف", "مسك أبيض")) {
-    add(["work", "daily", "university", "meetings"], 24);
-  }
-  if (has("rose", "jasmine", "tuberose", "peony", "floral", "vanilla", "musk", "powder", "fruit", "ورد", "ياسمين", "تيوبروز", "فاوانيا", "زهري", "فانيليا", "مسك", "بودري", "فواكه")) {
-    add(["date-night", "wedding", "gift", "parties"], 25);
-  }
-  if (has("oud", "agarwood", "incense", "frankincense", "amber", "leather", "tobacco", "smoke", "saffron", "عود", "بخور", "لبان", "عنبر", "جلد", "تبغ", "دخاني", "زعفران")) {
-    add(["formal", "occasions", "wedding", "ramadan", "eid", "gift"], 29);
-  }
-  if (has("cinnamon", "clove", "cardamom", "pepper", "coffee", "cacao", "chocolate", "caramel", "tonka", "قرفة", "قرنفل", "هيل", "فلفل", "قهوة", "كاكاو", "شوكولاتة", "كراميل", "تونكا")) {
-    add(["parties", "date-night", "occasions", "formal"], 24);
-  }
-  if (has("cedar", "sandalwood", "vetiver", "patchouli", "oakmoss", "خشب الأرز", "صندل", "فيتيفر", "باتشولي", "طحلب")) {
-    add(["formal", "meetings", "work", "occasions"], 20);
-  }
-
-  if (seasons.has("summer")) add(["daily", "sport", "travel", "work"], 23);
-  if (seasons.has("spring")) add(["daily", "date-night", "wedding", "gift"], 20);
-  if (seasons.has("autumn")) add(["formal", "date-night", "occasions", "meetings"], 22);
-  if (seasons.has("winter")) add(["formal", "occasions", "parties", "wedding", "ramadan", "eid"], 23);
-  if (seasons.has("all")) add(["daily", "work", "travel", "gift"], 15);
-
-  if (sillage >= 7.5) {
-    add(["parties", "formal", "occasions", "wedding"], 22);
-    add(["work", "university"], -18);
-  } else if (sillage > 0 && sillage <= 5) {
-    add(["daily", "work", "university", "meetings"], 20);
-  }
-
-  if (longevityHours >= 8) add(["formal", "occasions", "wedding", "travel", "parties"], 18);
-  if (longevityHours > 0 && longevityHours <= 4) add(["daily", "work", "sport"], 15);
-
-  const ranked = Object.entries(scores).sort((a, b) => b[1] - a[1]);
-  const suggested = ranked.filter(([, score]) => score >= 34).slice(0, 6).map(([key]) => key);
-  return suggested.length >= 3 ? suggested : ranked.slice(0, 3).map(([key]) => key);
-}
-
-function updatePerfumeOccasionSuggestions(form, { force = false, notify = false } = {}) {
-  const auto = form?.elements.occasionsAuto;
-  if (!form || !auto || auto.disabled || (!force && !auto.checked)) return [];
-  const holder = form.querySelector('[data-smart-select][data-name="occasions"]');
-  if (!holder) return [];
-  if (auto && force) auto.checked = true;
-  const suggestions = perfumeOccasionSuggestions(form);
-  holder.dataset.automationWriting = "true";
-  setSmartSelectValues(holder, suggestions);
-  delete holder.dataset.automationWriting;
-  const labels = productOptionItems("occasion");
-  const summary = suggestions.map((value) => {
-    const item = labels.find((candidate) => normalizeOptionSearch(candidate.value) === normalizeOptionSearch(value));
-    return state.lang === "ar" ? item?.nameAr || value : item?.nameEn || value;
-  });
-  const status = form.querySelector("[data-occasion-suggestion-status]");
-  if (status) status.textContent = summary.length
-    ? adminCopy(`اقتراح ذكي: ${summary.join("، ")}`, `Smart suggestion: ${summary.join(", ")}`)
-    : adminCopy("أضف النوتات أو بيانات الأداء لتوليد الاقتراح.", "Add notes or performance data to generate suggestions.");
-  if (notify) showToast(adminCopy("تم تحديث المناسبات المقترحة ويمكنك تعديلها يدويًا.", "Suggested occasions updated; you can still edit them manually."));
-  return suggestions;
-}
-
 function perfumePerformanceEditorSection(product) {
   if (product.category && product.category !== "perfume") return "";
   const performance = product.performance || {};
   const details = product.performanceInsights?.editorialDetails || {};
   return `<section class="review-section perfume-performance-editor" data-editor-tier="smart" data-perfume-section>
-    <div class="review-section-head"><span>04</span><div><b>${adminCopy("الأداء والاستخدام", "Performance & usage")}</b><small>${adminCopy("أدخل الثبات والفوحان فقط؛ ويكمل نظام ORIGO المواسم وأوقات الاستخدام والمناسبات تلقائيًا.", "Enter only longevity and projection; ORIGO generates seasons, wear times, and occasions automatically.")}</small></div></div>
+    <div class="review-section-head"><span>04</span><div><b>${adminCopy("الأداء والاستخدام", "Performance & usage")}</b><small>${adminCopy("أدخل التقييم العام والثبات والفوحان؛ وتُحدد المواسم والأوقات والمناسبات من الأكوردات وهذه القيم فقط.", "Enter the overall rating, longevity, and projection; seasons, times, and occasions are derived only from these values and the accords.")}</small></div></div>
     <div class="review-grid performance-core-grid">
+      <label>${adminCopy("التقييم العام من 5", "Overall rating out of 5")}<input type="number" name="overallRating" min="0" max="5" step="0.1" value="${escapeHTML(product.reviewSummary?.average ?? product.rating ?? "")}" placeholder="4.5"/><small>${adminCopy("هو نفس التقييم الظاهر في بطاقة المنتج.", "This is the same rating shown on the product card.")}</small></label>
       <label>${adminCopy("الثبات بالساعات", "Longevity in hours")}<input type="number" name="performanceLongevityHours" min="0" max="72" step="0.5" value="${escapeHTML(details.longevityHours ?? details.longevityMaxHours ?? details.longevityMinHours ?? "")}" placeholder="8"/></label>
       <label>${adminCopy("قوة الفوحان", "Projection strength")}<select name="performanceProjection"><option value="">${adminCopy("غير محدد", "Not specified")}</option>${selectOptions([["weak",adminCopy("ضعيف", "Weak")],["moderate",adminCopy("متوسط", "Moderate")],["strong",adminCopy("قوي", "Strong")],["very_strong",adminCopy("قوي جدًا", "Very strong")]], normalizeAdminProjection(performance.projection ?? performance.sillage))}</select></label>
     </div>
     <div class="performance-auto-panel">
-      <input type="checkbox" name="occasionsAuto" checked hidden disabled />
-      <button type="button" data-action="suggest-occasions" hidden disabled aria-hidden="true"></button>
-      <header><div><b>✦ ${adminCopy("نتائج يولدها النظام", "System-generated results")}</b><small>${adminCopy("تُملأ تلقائيًا، ويمكنك تعديلها أو حذفها أو إضافة خيارات جديدة قبل الحفظ.", "Generated automatically; you can edit, remove, or add options before saving.")}</small></div><button type="button" class="button secondary-button" data-action="analyze-perfume-profile" data-perfume-auto-generate>↻ ${adminCopy("تحديث الآن", "Refresh now")}</button></header>
+      <header><div><b>✦ ${adminCopy("نتائج محسوبة عند الحفظ", "Calculated on save")}</b><small>${adminCopy("تعتمد فقط على الأكوردات اليدوية والثبات والفوحان.", "Based only on manual accords, longevity, and projection.")}</small></div></header>
       <div class="review-grid performance-generated-grid">
-        ${searchableCreatableSelect({ name:"seasons", group:"season", labelAr:"المواسم المناسبة", labelEn:"Best seasons", selected:product.seasons, multiple:true })}
-        ${searchableCreatableSelect({ name:"usageTimes", group:"usage_time", labelAr:"أوقات الاستخدام", labelEn:"Wear times", selected:product.usageTimes, multiple:true })}
-        ${searchableCreatableSelect({ name:"occasions", group:"occasion", labelAr:"المناسبات", labelEn:"Occasions", selected:product.occasions, multiple:true })}
+        <label>${adminCopy("المواسم المناسبة", "Best seasons")}<input readonly value="${escapeHTML(csv(product.seasons || []))}" placeholder="${adminCopy("تُحسب عند الحفظ", "Calculated on save")}"/></label>
+        <label>${adminCopy("أوقات الاستخدام", "Wear times")}<input readonly value="${escapeHTML(csv(product.usageTimes || []))}" placeholder="${adminCopy("تُحسب عند الحفظ", "Calculated on save")}"/></label>
+        <label>${adminCopy("المناسبات", "Occasions")}<input readonly value="${escapeHTML(csv(product.occasions || []))}" placeholder="${adminCopy("تُحسب عند الحفظ", "Calculated on save")}"/></label>
       </div>
     </div>
-  </section>`;
-}
-
-function performanceAdminSection(product) {
-  if (product.category && product.category !== "perfume") return "";
-  const admin = product.performanceInsights || {};
-  const settings = admin.settings || {};
-  const aggregate = admin.aggregate || {};
-  const visible = new Set(settings.visibleMetrics || Object.keys(performanceAdminOptions));
-  const votes = admin.votes || [];
-  const canImport = state.user?.role === "owner";
-  return `<section class="review-section performance-admin-section" data-editor-tier="advanced" data-perfume-section>
-    <div class="review-section-head"><span>06</span><div><b>${adminCopy("تقييمات الأداء المتقدمة", "Advanced performance ratings")}</b><small>${adminCopy("إعدادات التقييم والتوزيعات المتقدمة؛ أما بيانات المنتج الأساسية فتوجد في قسم الأداء والاستخدام.", "Advanced rating settings and distributions; core product data lives in Performance & usage.")}</small></div></div>
-    <div class="performance-admin-controls">
-      <label class="performance-admin-toggle"><input type="checkbox" name="performanceEnabled"${settings.enabled !== false ? " checked" : ""}/><span>${adminCopy("إظهار القسم في صفحة المنتج", "Show on product page")}</span></label>
-      <label class="performance-admin-toggle"><input type="checkbox" name="performanceShowOverall"${settings.showOverallResult !== false ? " checked" : ""}/><span>${adminCopy("إظهار النتيجة الإجمالية عند اكتمال الحد", "Show the overall result after reaching the threshold")}</span></label>
-      <label class="performance-admin-toggle"><input type="checkbox" name="performanceAllowUnverified"${settings.allowUnverified ? " checked" : ""}/><span>${adminCopy("السماح بتقييم غير المشترين (لا يدخل المتوسط الرسمي)", "Allow non-purchaser ratings (excluded from the official average)")}</span></label>
-      <label>${adminCopy("وزن ORIGO %", "ORIGO weight %")}<input type="number" name="performanceEditorialWeight" min="0" max="100" step="1" value="${Number(settings.editorialWeight ?? 30)}"/></label>
-      <label>${adminCopy("وزن العملاء %", "Customer weight %")}<input type="number" name="performanceCustomerWeight" min="0" max="100" step="1" value="${Number(settings.customerWeight ?? 70)}"/></label>
-      <label>${adminCopy("الحد الأدنى للمشترين الموثقين", "Minimum verified purchasers")}<input type="number" name="performanceMinimumVerified" min="0" max="1000" step="1" value="${Number(settings.minimumVerifiedVotes ?? 5)}"/></label>
-      <label class="wide">${adminCopy("ترتيب البطاقات", "Card order")}<input name="performanceCardOrder" dir="ltr" value="${escapeHTML((settings.cardOrder || ["scent","wear","longevity","sillage","gender","value"]).join(", "))}"/><small>scent, wear, longevity, sillage, gender, value</small></label>
-    </div>
-    <div class="performance-admin-visible"><b>${adminCopy("المؤشرات الظاهرة", "Visible metrics")}</b>${Object.keys(performanceAdminOptions).map((metric) => `<label><input type="checkbox" name="performanceVisible" value="${metric}"${visible.has(metric) ? " checked" : ""}/><span>${adminCopy({scent:"الرائحة",wear:"الموسم والوقت",longevity:"الثبات",sillage:"الفوحان",gender:"النوع",value:"القيمة"}[metric],{scent:"Scent",wear:"Season & time",longevity:"Longevity",sillage:"Sillage",gender:"Gender",value:"Value"}[metric])}</span></label>`).join("")}</div>
-    <div class="performance-admin-distributions">${Object.keys(performanceAdminOptions).map((metric) => performanceAdminDistribution(metric, admin.editorial || {})).join("")}</div>
-    <div class="review-grid performance-editorial-details"><label>${adminCopy("اسم مراجع ORIGO", "ORIGO reviewer name")}<input name="performanceReviewerName" value="${escapeHTML(admin.editorialDetails?.reviewerName || "")}"/></label><label>${adminCopy("تاريخ المراجعة", "Reviewed at")}<input type="date" name="performanceReviewedAt" value="${escapeHTML((admin.editorialDetails?.reviewedAt || "").slice(0,10))}"/></label><label class="wide">${adminCopy("ملاحظات خبير العطور", "Fragrance expert notes")}<textarea name="performanceReviewerNotes">${escapeHTML(admin.editorialDetails?.reviewerNotes || "")}</textarea></label></div>
-    <div class="performance-admin-summary"><article><b>${Number(aggregate.counts?.customers || 0)}</b><span>${adminCopy("تقييمات عملاء ORIGO", "ORIGO customer ratings")}</span></article><article><b>${Number(aggregate.counts?.verifiedCustomers || 0)}</b><span>${adminCopy("مشترون موثقون", "Verified purchasers")}</span></article><article><b>${Number(aggregate.counts?.imported || 0)}</b><span>${adminCopy("تقييمات سابقة مستوردة", "Imported prior ratings")}</span></article><button type="button" data-action="recalculate-performance" data-id="${escapeHTML(product.id)}">↻ ${adminCopy("إعادة احتساب النتائج", "Recalculate")}</button></div>
-    ${votes.length ? `<div class="performance-admin-votes"><h4>${adminCopy("أحدث تقييمات الأداء", "Recent performance votes")}</h4>${votes.map((vote) => `<article><div><b>${escapeHTML(vote.customerName)}</b><small>${vote.verifiedPurchase ? adminCopy("شراء موثق", "Verified purchase") : adminCopy("عميل ORIGO", "ORIGO customer")} · ${escapeHTML(vote.updatedAt || "")}</small></div><button type="button" data-action="toggle-performance-vote" data-id="${vote.id}" data-product-id="${escapeHTML(product.id)}" data-status="${vote.status === "hidden" ? "active" : "hidden"}">${vote.status === "hidden" ? adminCopy("استعادة", "Restore") : adminCopy("إخفاء", "Hide")}</button></article>`).join("")}</div>` : ""}
-    ${canImport ? `<details class="performance-admin-import"><summary>${adminCopy("استيراد تقييمات حقيقية من نظام سابق", "Import real ratings from a previous system")}</summary><p>${adminCopy("يُنشئ سجلًا جديدًا ولا يغيّر عدد عملاء ORIGO.", "Creates a separate record and never changes the ORIGO customer count.")}</p><div class="review-grid"><label>${adminCopy("عدد التقييمات السابقة المستوردة", "Imported prior rating count")}<input type="number" name="performanceImportedCount" min="0" value=""/></label><label>${adminCopy("المصدر", "Source")}<input name="performanceImportedSource" value=""/></label><label>${adminCopy("تاريخ الاستيراد", "Import date")}<input type="date" name="performanceImportedDate" value=""/></label><label>${adminCopy("سبب الإضافة أو التعديل", "Reason for change")}<input name="performanceImportedReason" value=""/></label></div></details>` : ""}
   </section>`;
 }
 
@@ -6720,28 +6594,12 @@ const ORIGO_ACCORD_LIBRARY = [
 
 function adminAccordEditor(product) {
   const existingValues = product.perfumeProfile?.manualOverrides || product.perfumeProfile?.accords || product.accordProfile || [];
-  const existing = new Map(existingValues.map((item) => [item.id || item.nameEn || item.nameAr, item]));
-  const fallback = new Set((product.mainAccords || product.accords || []).map((item) => ORIGOCatalog.normalize(typeof item === "object" ? (item.nameAr || item.nameEn) : item)));
-  const savedAccord = ([id, arName, enName]) => existing.get(id) || [...existing.values()].find((value) => [arName,enName].some((name) => ORIGOCatalog.normalize(value.nameAr || value.nameEn) === ORIGOCatalog.normalize(name)));
-  const isSelected = (accord) => Boolean(savedAccord(accord)) || fallback.has(ORIGOCatalog.normalize(accord[1])) || fallback.has(ORIGOCatalog.normalize(accord[2]));
-  const selectedCount = ORIGO_ACCORD_LIBRARY.filter(isSelected).length;
+  const fallback = (product.mainAccords || product.accords || []).map((value) => typeof value === "object" ? value : { nameAr:value, nameEn:value, strength:50 });
+  const values = existingValues.length ? existingValues : fallback;
+  const lines = values.map((item) => `${item.nameAr || item.name || item.id || ""} | ${item.nameEn || item.name || item.id || ""} | ${Math.max(0,Math.min(100,Number(item.score ?? item.strength ?? 0)))}`).join("\n");
   return `<div class="accord-admin-editor">
-    <div class="accord-admin-toolbar"><div><b>${adminCopy("الأكوردات الرئيسية — البصمة العطرية", "Main accords — fragrance fingerprint")}</b><small>${adminCopy("اختر الأكورد واضبط قوته؛ كل نسبة مستقلة.", "Select accords and set each independent strength.")}</small></div><button type="button" data-action="sort-admin-accords">${adminCopy("ترتيب حسب القوة", "Sort by strength")}</button></div>
-    <div class="accord-admin-search">
-      <label><span aria-hidden="true">⌕</span><input type="search" data-accord-search autocomplete="off" placeholder="${adminCopy("ابحث باسم الأكورد بالعربية أو الإنجليزية…", "Search accords in Arabic or English…")}" aria-label="${adminCopy("البحث في الأكوردات", "Search accords")}"/></label>
-      <span class="accord-search-count" aria-live="polite"><b>${selectedCount}</b> ${adminCopy("مختار من", "selected of")} ${ORIGO_ACCORD_LIBRARY.length}</span>
-      <button type="button" data-action="accord-selected-only" aria-pressed="false">${adminCopy("عرض المختار", "Selected only")}</button>
-      <button type="button" data-action="clear-admin-accords">${adminCopy("مسح الاختيارات", "Clear selection")}</button>
-    </div>
-    <p class="accord-search-empty" hidden>${adminCopy("لا توجد أكوردات مطابقة للبحث.", "No accords match your search.")}</p>
-    <div class="accord-admin-list">${ORIGO_ACCORD_LIBRARY.map(([id, arName, enName, color, icon], index) => {
-      const item = savedAccord([id, arName, enName]);
-      const checked = isSelected([id, arName, enName]);
-      const strength = Number(item?.strength ?? (checked ? Math.max(42, 92 - index * 6) : 50));
-      const search = escapeHTML(normalizeOptionSearch(`${id} ${arName} ${enName}`));
-      return `<label class="accord-admin-item${checked ? " selected" : ""}" data-accord-search-value="${search}" style="--accord:${color}"><input type="checkbox" name="accordSelected" value="${id}"${checked ? " checked" : ""}/><span class="accord-symbol">${icon}</span><span><b>${adminCopy(arName,enName)}</b><small>${adminCopy(enName,arName)}</small></span><input aria-label="${adminCopy(`قوة ${arName}`,`${enName} strength`)}" type="range" name="accordStrength.${id}" min="0" max="100" value="${strength}"/><output>${strength}%</output></label>`;
-    }).join("")}</div>
-    <div class="accord-admin-live" id="accord-admin-live"></div>
+    <div class="accord-admin-toolbar"><div><b>${adminCopy("الأكوردات الرئيسية — إدخال يدوي", "Main accords — manual entry")}</b><small>${adminCopy("اكتب كل أكورد في سطر: الاسم العربي | الاسم الإنجليزي | النسبة.", "One accord per line: Arabic name | English name | percentage.")}</small></div></div>
+    <label class="manual-accord-text"><textarea name="manualAccords" rows="8" dir="auto" placeholder="خشبي | Woody | 85&#10;عنبري | Amber | 70">${escapeHTML(lines)}</textarea><small>${adminCopy("مثال: خشبي | Woody | 85 — يمكنك إضافة أي أكورد حتى لو لم يكن موجودًا سابقًا.", "Example: خشبي | Woody | 85 — any new accord is accepted.")}</small></label>
   </div>`;
 }
 
@@ -6902,7 +6760,7 @@ function productMediaStudioMarkup(images = []) {
   const active = images[activeIndex] || images[0];
   return `<div class="product-media-studio" data-product-media-studio data-index="${activeIndex}">
     <div class="product-media-stage"><img src="${escapeHTML(active.url)}" alt="${adminCopy("معاينة صورة المنتج", "Product image preview")}"/><div class="product-media-stage-actions"><button type="button" data-action="admin-studio-fullscreen" aria-label="${adminCopy("عرض ملء الشاشة", "View fullscreen")}">⛶</button></div>${images.length > 1 ? `<button type="button" class="studio-arrow previous" data-action="admin-studio-step" data-change="-1" aria-label="${adminCopy("الصورة السابقة", "Previous image")}">‹</button><button type="button" class="studio-arrow next" data-action="admin-studio-step" data-change="1" aria-label="${adminCopy("الصورة التالية", "Next image")}">›</button>` : ""}<span class="studio-count"><b>${activeIndex + 1}</b> / ${images.length}</span></div>
-    <div class="product-media-thumbnails" role="list">${images.map((image, index) => `<label class="review-image${index === activeIndex ? " selected" : ""}" data-studio-thumbnail="${index}" role="listitem"><input type="radio" name="selectedImage" value="${index}"${index === activeIndex ? " checked" : ""}/><button type="button" data-action="admin-studio-image" data-index="${index}" aria-label="${adminCopy(`اختيار الصورة ${index + 1}`, `Select image ${index + 1}`)}"><img src="${escapeHTML(image.url)}" alt=""/></button><span>${escapeHTML(image.fileName || image.provider || `Image ${index + 1}`)}</span></label>`).join("")}</div>
+    <div class="product-media-thumbnails" role="list">${images.map((image, index) => `<label class="review-image${index === activeIndex ? " selected" : ""}" data-studio-thumbnail="${index}" role="listitem" draggable="true" title="${adminCopy("اسحب لتغيير الترتيب", "Drag to reorder")}"><input type="radio" name="selectedImage" value="${index}"${index === activeIndex ? " checked" : ""}/><button type="button" data-action="admin-studio-image" data-index="${index}" aria-label="${adminCopy(`اختيار الصورة ${index + 1}`, `Select image ${index + 1}`)}"><img src="${escapeHTML(image.url)}" alt=""/></button><span><i aria-hidden="true">⠿</i>${escapeHTML(image.fileName || image.provider || `Image ${index + 1}`)}</span><button type="button" class="studio-image-delete" data-action="admin-studio-delete" data-index="${index}" aria-label="${adminCopy("حذف الصورة", "Delete image")}">×</button></label>`).join("")}</div>
     <dialog class="product-media-lightbox"><button type="button" class="studio-lightbox-close" data-action="admin-studio-close" aria-label="${adminCopy("إغلاق", "Close")}">×</button><img src="${escapeHTML(active.url)}" alt="${adminCopy("صورة المنتج بالحجم الكامل", "Full-size product image")}"/><footer><button type="button" data-action="admin-studio-step" data-change="-1" aria-label="${adminCopy("السابق", "Previous")}">‹</button><span><b>${activeIndex + 1}</b> / ${images.length}</span><button type="button" data-action="admin-studio-step" data-change="1" aria-label="${adminCopy("التالي", "Next")}">›</button></footer></dialog>
   </div>`;
 }
@@ -7037,11 +6895,10 @@ function renderImportReview(product) {
           ${searchableCreatableSelect({ name:"heartNotes", group:"note", labelAr:"نوتات القلب", labelEn:"Heart notes", selected:product.noteSelections?.heart || product.notes.heartEn || product.notes.heartAr, multiple:true })}
           ${searchableCreatableSelect({ name:"baseNotes", group:"note", labelAr:"نوتات القاعدة", labelEn:"Base notes", selected:product.noteSelections?.base || product.notes.baseEn || product.notes.baseAr, multiple:true })}
         </div>
-        <p class="product-note-edit-help">✎ ${adminCopy("بعد اختيار أي نوتة اضغط زر القلم بجانبها لتعديل الاسم والترجمة والعائلة والوصف أو رفع صورتها من جهازك. تُحفظ الصورة في مكتبة النوتات وتظهر في المنتج والمتجر.", "After selecting a note, use its pencil button to edit the names, family, descriptions, or upload artwork. The image is saved to the note library and used in the product and storefront.")}</p>
+        <p class="product-note-edit-help">✎ ${adminCopy("كل نوتة تحتاج اسمًا عربيًا واسمًا إنجليزيًا وصورة فقط. يمكنك إنشاء أي نوتة جديدة حتى إن لم تكن موجودة في المكتبة.", "Each note only needs an Arabic name, English name, and image. You can create any new note even if it is not in the library.")}</p>
         <div class="note-library-match-preview" id="note-library-match-preview"></div>
-        <div class="perfume-analysis-actions"><label>${adminCopy("سنة الإصدار (اختياري)", "Release year (optional)")}<input name="releaseYear" type="number" min="1800" max="2200" value="${escapeHTML(product.releaseYear ?? "")}" /></label><button type="button" class="button burgundy-button" data-action="analyze-perfume-profile">✦ ${adminCopy("تحليل ومعاينة", "Analyze & preview")}</button>${product.id ? `<button type="button" class="button secondary-button" data-action="reanalyze-perfume-profile">↻ ${adminCopy("إعادة التحليل", "Reanalyze")}</button>` : ""}</div>
-        <div id="perfume-analysis-preview" aria-live="polite">${perfumeAnalysisPreviewMarkup(product)}</div>
-        <details class="perfume-manual-override"${product.perfumeProfile?.source === "manual_override" ? " open" : ""}><summary>${adminCopy("تعديل يدوي متقدم — اختياري", "Advanced manual override — optional")}</summary><label class="perfume-manual-toggle"><input type="checkbox" name="profileManualOverride"${product.perfumeProfile?.source === "manual_override" ? " checked" : ""}/> ${adminCopy("استخدام درجات الأكوردات اليدوية بدل التحليل المولد", "Use manual accord scores instead of generated analysis")}</label>${adminAccordEditor(product)}</details>
+        <div class="perfume-analysis-actions"><label>${adminCopy("سنة الإصدار (اختياري)", "Release year (optional)")}<input name="releaseYear" type="number" min="1800" max="2200" value="${escapeHTML(product.releaseYear ?? "")}" /></label></div>
+        ${adminAccordEditor(product)}
       </section>
 
       ${perfumePerformanceEditorSection(product)}
@@ -7063,8 +6920,6 @@ function renderImportReview(product) {
         </details>
       </section>
 
-      ${performanceAdminSection(product)}
-
       <section class="review-section" data-editor-tier="smart" data-nonperfume-section hidden>
         <div class="review-section-head"><span>03</span><div><b>${adminCopy("خصائص القسم", "Category-specific attributes")}</b><small>${adminCopy("تظهر الحقول المناسبة لنوع المنتج فقط.", "Only fields relevant to the selected product type are shown.")}</small></div></div>
         <div class="review-grid dynamic-product-fields">
@@ -7083,7 +6938,7 @@ function renderImportReview(product) {
 
       <section class="review-section" data-editor-tier="core">
         <div class="review-section-head"><span>05</span><div><b>${adminCopy("الوصف والصور", "Descriptions & images")}</b></div></div>
-        <div class="review-grid description-grid" data-nonperfume-section${product.category === "perfume" ? " hidden" : ""}>
+        <div class="review-grid description-grid">
           <label>${adminCopy("الوصف بالعربية", "Arabic description")}<textarea name="descriptionAr" dir="rtl">${escapeHTML(product.descriptionAr)}</textarea></label>
           <label>${adminCopy("الوصف بالإنجليزية", "English description")}<textarea name="descriptionEn" dir="ltr">${escapeHTML(product.descriptionEn)}</textarea></label>
         </div>
@@ -7138,9 +6993,7 @@ function renderImportReview(product) {
   updateDuplicateWarning($("#import-review-form"));
   renderNoteMatchPreview($("#import-review-form"));
   updateProductEditorPreview($("#import-review-form"));
-  updateAdminAccordEditor($("#import-review-form"));
   updateProductTypeFields($("#import-review-form"));
-  initializePerfumeAnalysisEditor($("#import-review-form"));
   updateGeneratedProductSeo($("#import-review-form"));
   initializeProductEditorTabs();
 }
@@ -7154,6 +7007,33 @@ function optionValuesForProduct(group, rawValue) {
   });
 }
 
+function parseManualAccords(value = "") {
+  const colors = ["#8d1735","#c58a24","#aa4f82","#6750a4","#b95e3d","#43856e","#397da8","#755038"];
+  const icons = ["◇","◆","✦","❀","◉","♧","≈","◌"];
+  return String(value).split(/\r?\n/).map((line, index) => {
+    const [nameAr = "", nameEn = "", rawStrength = ""] = line.split("|").map((part) => part.trim());
+    if (!nameAr && !nameEn) return null;
+    const strength = Math.max(0, Math.min(100, Number(String(rawStrength).replace("%", "")) || 0));
+    const identity = normalizeOptionSearch(nameEn || nameAr).replaceAll(" ", "-") || `accord-${index + 1}`;
+    return { id:identity, nameAr:nameAr || nameEn, nameEn:nameEn || nameAr, strength, score:strength, color:colors[index % colors.length], icon:icons[index % icons.length], source:"manual" };
+  }).filter(Boolean).sort((a,b) => b.strength - a.strength);
+}
+
+function derivePerfumeUsageFromAccords(accords = [], longevity = 0, projection = "") {
+  const text = normalizeOptionSearch(accords.map((item) => `${item.nameAr} ${item.nameEn}`).join(" "));
+  const has = (...words) => words.some((word) => text.includes(normalizeOptionSearch(word)));
+  const seasons = new Set(), usageTimes = new Set(), occasions = new Set(["daily"]);
+  if (has("fresh","citrus","marine","aquatic","green","منعش","حمضي","بحري","مائي","أخضر")) { seasons.add("summer"); seasons.add("spring"); usageTimes.add("day"); occasions.add("work"); }
+  if (has("amber","oud","leather","tobacco","warm","spicy","vanilla","عنبر","عود","جلد","تبغ","دافئ","حار","فانيليا")) { seasons.add("winter"); seasons.add("autumn"); usageTimes.add("night"); occasions.add("formal"); occasions.add("occasions"); }
+  if (has("floral","rose","powdery","fruity","زهري","ورد","بودري","فاكهي")) { seasons.add("spring"); usageTimes.add("evening"); occasions.add("date-night"); occasions.add("wedding"); }
+  if (!seasons.size) ["spring","autumn"].forEach((item) => seasons.add(item));
+  if (!usageTimes.size) usageTimes.add("day");
+  const projectionScoreValue = projectionScore(projection);
+  if (projectionScoreValue >= 7.5 || Number(longevity) >= 8) { usageTimes.add("night"); occasions.add("parties"); }
+  if (projectionScoreValue > 0 && projectionScoreValue <= 5) { occasions.add("work"); occasions.add("meetings"); }
+  return { seasons:[...seasons], usageTimes:[...usageTimes], occasions:[...occasions] };
+}
+
 function collectReviewProduct(form) {
   const data = new FormData(form);
   const base = state.activeImportDraft || ORIGOCatalog.emptyProduct();
@@ -7161,13 +7041,7 @@ function collectReviewProduct(form) {
   const inspiredReference = (state.alternativesAdmin?.references || []).find((reference) => String(reference.id) === inspiredReferenceId);
   const newInspiredNameAr = String(data.get("newInspiredNameAr") || "").trim();
   const newInspiredNameEn = String(data.get("newInspiredNameEn") || "").trim();
-  const useManualOverride = data.get("profileManualOverride") === "on";
-  const selectedAccordIds = new Set(data.getAll("accordSelected").map(String));
-  const accordProfile = ORIGO_ACCORD_LIBRARY.filter(([id]) => selectedAccordIds.has(id)).map(([id, nameAr, nameEn, color, icon]) => ({
-    id, nameAr, nameEn, color, icon,
-    strength: Math.max(0, Math.min(100, Number(data.get(`accordStrength.${id}`) || 0))),
-    source: "ORIGO editorial"
-  })).sort((a, b) => b.strength - a.strength);
+  const accordProfile = parseManualAccords(data.get("manualAccords"));
   const images = [...(base.images || [])].map((image, index) => ({ ...image, selected: String(index) === String(data.get("selectedImage")) }));
   if (String(data.get("imageUrl") || "").trim()) images.unshift({ url: String(data.get("imageUrl")).trim(), provider: "Manager", selected: true });
   const genders = optionValuesForProduct("gender", data.get("gender"));
@@ -7189,6 +7063,7 @@ function collectReviewProduct(form) {
     ? Math.max(0, Math.min(72, Number(data.get("performanceLongevityHours"))))
     : null;
   const projectionValue = normalizeAdminProjection(data.get("performanceProjection"));
+  const generatedUsage = derivePerfumeUsageFromAccords(accordProfile, longevityHoursValue, projectionValue);
   const product = {
     ...base,
     id: base.id || `catalog-${Date.now()}`,
@@ -7207,8 +7082,8 @@ function collectReviewProduct(form) {
     families: data.has("families") ? families.map((item) => item.value) : (base.families || []),
     familyAr: data.has("families") ? families.map((item) => item.nameAr || item.nameEn).filter(Boolean).join("، ") : (base.familyAr || ""),
     familyEn: data.has("families") ? families.map((item) => item.nameEn || item.nameAr).filter(Boolean).join(", ") : (base.familyEn || ""),
-    seasons: data.has("seasons") ? csvValues(data.get("seasons")) : (base.seasons || []),
-    usageTimes: data.has("usageTimes") ? csvValues(data.get("usageTimes")) : (base.usageTimes || []),
+    seasons: String(data.get("category") || "") === "perfume" ? generatedUsage.seasons : (data.has("seasons") ? csvValues(data.get("seasons")) : (base.seasons || [])),
+    usageTimes: String(data.get("category") || "") === "perfume" ? generatedUsage.usageTimes : (data.has("usageTimes") ? csvValues(data.get("usageTimes")) : (base.usageTimes || [])),
     originCountry: country?.value || "",
     originCountryAr: country?.nameAr || country?.nameEn || "",
     originCountryEn: country?.nameEn || country?.nameAr || "",
@@ -7233,16 +7108,22 @@ function collectReviewProduct(form) {
       projection: projectionValue || null,
       sillage: projectionValue ? projectionScore(projectionValue) : (base.performance?.sillage ?? null)
     },
+    rating: Math.max(0, Math.min(5, Number(data.get("overallRating") || base.reviewSummary?.average || base.rating || 0))),
+    reviewSummary: {
+      ...(base.reviewSummary || {}),
+      average: Math.max(0, Math.min(5, Number(data.get("overallRating") || base.reviewSummary?.average || base.rating || 0))),
+      count: Number(base.reviewSummary?.count || 0)
+    },
     releaseYear: data.get("releaseYear") === "" ? null : Number(data.get("releaseYear")),
     perfumer: data.has("perfumers") ? perfumers.map((item) => item.nameEn || item.nameAr).join(", ") : (base.perfumer || ""),
     perfumers: data.has("perfumers") ? perfumers.map((item) => item.value) : (base.perfumers || []),
-    occasions: data.has("occasions") ? csvValues(data.get("occasions")) : (base.occasions || []),
+    occasions: String(data.get("category") || "") === "perfume" ? generatedUsage.occasions : (data.has("occasions") ? csvValues(data.get("occasions")) : (base.occasions || [])),
     mainIngredients: [],
-    accordProfile: useManualOverride ? accordProfile : (base.accordProfile || []),
-    mainAccords: useManualOverride ? accordProfile.map((item) => item.nameAr) : (base.mainAccords || []),
-    perfumeProfile: useManualOverride ? { ...(base.perfumeProfile || {}), source:"manual_override", manualOverrides:accordProfile.map((item) => ({ id:item.id, score:item.strength, source:"manual_override" })) } : (base.perfumeProfile || {}),
-    profileSource: useManualOverride ? "manual_override" : (base.profileSource || "generated"),
-    profileStatus: useManualOverride ? "stale" : (base.profileStatus || (base.perfumeProfile?.engineVersion ? "fresh" : "stale")),
+    accordProfile,
+    mainAccords: accordProfile.map((item) => item.nameAr),
+    perfumeProfile: { ...(base.perfumeProfile || {}), source:"manual", accords:accordProfile, manualOverrides:accordProfile.map((item) => ({ ...item, score:item.strength, source:"manual" })) },
+    profileSource: "manual",
+    profileStatus: "fresh",
     personalities: data.has("personalities") ? csvValues(data.get("personalities")) : (base.personalities || []),
     moods: data.has("moods") ? csvValues(data.get("moods")) : (base.moods || []),
     inspiredBy: newInspiredNameEn || newInspiredNameAr || inspiredReference?.nameEn || inspiredReference?.nameAr || (inspiredReferenceId ? base.inspiredBy || "" : ""),
@@ -7277,29 +7158,9 @@ function collectReviewProduct(form) {
       en: String(data.get(`profileImage.${key}.en`) || "").trim()
     }])),
     performanceInsights: {
-      enabled: data.get("performanceEnabled") === "on",
-      showOverallResult: data.get("performanceShowOverall") === "on",
-      allowUnverified: data.get("performanceAllowUnverified") === "on",
-      visibleMetrics: data.getAll("performanceVisible"),
-      cardOrder: csvValues(data.get("performanceCardOrder")),
-      weights: {
-        editorial: Number(data.get("performanceEditorialWeight") ?? 30),
-        customers: Number(data.get("performanceCustomerWeight") ?? 70)
-      },
-      minimumVerifiedVotes: Number(data.get("performanceMinimumVerified") ?? 5),
-      editorial: Object.fromEntries(Object.entries(performanceAdminOptions).map(([metric, options]) => [metric, Object.fromEntries(options.map(([key]) => [key, Number(data.get(`performance.${metric}.${key}`) || 0)]))])),
-      editorialDetails: {
-        longevityHours: longevityHoursValue,
-        reviewerName: String(data.get("performanceReviewerName") || "").trim(),
-        reviewerNotes: String(data.get("performanceReviewerNotes") || "").trim(),
-        reviewedAt: String(data.get("performanceReviewedAt") || "").trim()
-      },
-      imported: Number(data.get("performanceImportedCount") || 0) > 0 ? {
-        count: Number(data.get("performanceImportedCount")),
-        source: String(data.get("performanceImportedSource") || "").trim(),
-        importDate: String(data.get("performanceImportedDate") || "").trim(),
-        reason: String(data.get("performanceImportedReason") || "").trim()
-      } : null
+      ...(base.performanceInsights || {}),
+      enabled:false,
+      editorialDetails:{ ...(base.performanceInsights?.editorialDetails || {}), longevityHours:longevityHoursValue }
     },
     dynamicAttributes: {
       skinType: String(data.get("skinType") || "").trim(), hairType: String(data.get("hairType") || "").trim(), concern: String(data.get("concern") || "").trim(),
@@ -7765,24 +7626,6 @@ function setSmartSelectValues(holder, values) {
   }).join("") : `<small>${adminCopy("ابحث أو اختر…","Search or select…")}</small>`;
   holder.querySelectorAll("[role='option']").forEach((option) => option.setAttribute("aria-selected", String(next.some((value) => normalizeOptionSearch(value) === normalizeOptionSearch(option.dataset.value)))));
   holder.closest("form")?.dispatchEvent(new Event("input", { bubbles:true }));
-  const form = holder.closest("#import-review-form");
-  if (form && form.elements.occasionsAuto && !form.elements.occasionsAuto.disabled && holder.dataset.name !== "occasions" && PERFUME_OCCASION_AUTOMATION_FIELDS.has(holder.dataset.name)) {
-    updatePerfumeOccasionSuggestions(form);
-  }
-  if (form && ["topNotes", "heartNotes", "baseNotes", "families"].includes(holder.dataset.name)) schedulePerfumeAutoAnalysis(form);
-}
-
-function markOccasionsAsManual(holder) {
-  if (!holder || holder.dataset.name !== "occasions" || holder.dataset.automationWriting === "true") return;
-  const form = holder.closest("#import-review-form");
-  const auto = form?.elements.occasionsAuto;
-  if (auto) auto.checked = false;
-  const status = form?.querySelector("[data-occasion-suggestion-status]");
-  if (status) status.textContent = adminCopy("تم تفعيل التعديل اليدوي. فعّل الاقتراح التلقائي لإعادة حساب المناسبات.", "Manual editing is active. Enable automatic suggestions to recalculate occasions.");
-}
-
-function markGeneratedPerfumeFieldAsManual(holder) {
-  if (holder && ["seasons", "usageTimes", "occasions"].includes(holder.dataset.name)) holder.dataset.userEdited = "true";
 }
 
 function closeSmartSelects(except = null) {
@@ -7803,12 +7646,10 @@ function openProductOptionDialog(holder) {
   dialog.dataset.targetName = holder.dataset.name || "";
   dialog.dataset.group = group;
   dialog.dataset.context = holder.closest?.("#import-review-form") ? "editor" : "manager";
-  const noteFields = group === "note" ? `<label class="wide">${adminCopy("تعديل نوتة موجودة (اختياري)","Edit an existing note (optional)")}<select name="existingOption"><option value="">${adminCopy("إضافة نوتة جديدة","Add a new note")}</option>${productOptionItems("note").map((item) => `<option value="${escapeHTML(item.value)}">${escapeHTML(item.nameAr)} · ${escapeHTML(item.nameEn)}</option>`).join("")}</select></label>
-    <label>${adminCopy("الوصف بالعربية","Arabic description")}<textarea name="descriptionAr" dir="rtl" maxlength="1000"></textarea></label><label>${adminCopy("الوصف بالإنجليزية","English description")}<textarea name="descriptionEn" dir="ltr" maxlength="1000"></textarea></label>
-    <label>${adminCopy("العائلة العطرية","Fragrance family")}<select name="familyId">${window.ORIGOFragranceNotes.families.map((family) => `<option value="${escapeHTML(family.id)}">${escapeHTML(family.nameAr)} · ${escapeHTML(family.nameEn)}</option>`).join("")}</select></label>
-    <label>${adminCopy("الموضع الافتراضي","Default position")}<select name="position"><option value="multiple">${adminCopy("متعدد","Multiple")}</option><option value="top">${adminCopy("المقدمة","Top")}</option><option value="heart">${adminCopy("القلب","Heart")}</option><option value="base">${adminCopy("القاعدة","Base")}</option></select></label>` : "";
+  const noteFields = group === "note" ? `<label class="wide">${adminCopy("تعديل نوتة موجودة (اختياري)","Edit an existing note (optional)")}<select name="existingOption"><option value="">${adminCopy("إضافة نوتة جديدة","Add a new note")}</option>${productOptionItems("note").map((item) => `<option value="${escapeHTML(item.value)}">${escapeHTML(item.nameAr)} · ${escapeHTML(item.nameEn)}</option>`).join("")}</select></label>` : "";
   const uploadFields = ["note", "brand"].includes(group) ? `<input type="hidden" name="image"/><input type="hidden" name="icon"/><label class="wide option-image-upload"><span>${group === "brand" ? adminCopy("شعار العلامة التجارية من الملفات","Brand logo from files") : adminCopy("صورة النوتة من الملفات","Note image from files")}</span><input type="file" accept="image/jpeg,image/png,image/webp,image/avif,image/svg+xml" data-product-option-image-upload/><small>${adminCopy("تُضغط الصورة تلقائيًا إلى WEBP شفاف وسريع — بحد أقصى 10 MB للملف الأصلي","Artwork is automatically optimized to a fast transparent WEBP — source up to 10 MB")}</small><em class="option-image-status" aria-live="polite"></em></label><figure class="option-image-preview" hidden><img alt=""/><figcaption></figcaption><button type="button" data-action="remove-product-option-image">×</button></figure>` : `<input type="hidden" name="image"/><input type="hidden" name="icon"/>`;
-  dialog.innerHTML = `<form method="dialog"><header><div><small>${adminCopy("إدارة خصائص المنتج","Product attributes")}</small><h3>${group === "note" ? adminCopy("إضافة أو تعديل نوتة عطرية","Add or edit a fragrance note") : group === "brand" ? adminCopy("إضافة أو تعديل علامة تجارية","Add or edit a brand") : adminCopy("إضافة خيار جديد","Add a new option")}</h3></div><button type="button" data-action="close-product-option">×</button></header><input type="hidden" name="slug"/><div class="option-dialog-grid">${noteFields}<label>${adminCopy("الاسم بالعربية","Arabic name")}<input name="nameAr" dir="rtl" required maxlength="160"/></label><label>${adminCopy("الاسم بالإنجليزية","English name")}<input name="nameEn" dir="ltr" required maxlength="160"/></label>${uploadFields}<label>${adminCopy("لون اختياري","Optional color")}<input name="color" type="color" value="#7a001d"/></label><label>${adminCopy("ترتيب الظهور","Sort order")}<input name="sortOrder" type="number" min="0" value="0"/></label><label class="option-active"><input name="active" type="checkbox" checked/><span>${adminCopy("الخيار نشط","Option is active")}</span></label></div><footer><button type="button" class="button secondary-button" data-action="close-product-option">${adminCopy("إلغاء","Cancel")}</button><button type="button" class="button burgundy-button" data-action="save-product-option">${adminCopy("حفظ وإضافة","Save & add")}</button></footer><p class="option-dialog-error" hidden></p></form>`;
+  const optionMetaFields = group === "note" ? `<input type="hidden" name="color" value="#7a001d"/><input type="hidden" name="sortOrder" value="0"/><input type="hidden" name="active" value="on"/>` : `<label>${adminCopy("لون اختياري","Optional color")}<input name="color" type="color" value="#7a001d"/></label><label>${adminCopy("ترتيب الظهور","Sort order")}<input name="sortOrder" type="number" min="0" value="0"/></label><label class="option-active"><input name="active" type="checkbox" checked/><span>${adminCopy("الخيار نشط","Option is active")}</span></label>`;
+  dialog.innerHTML = `<form method="dialog"><header><div><small>${adminCopy("إدارة خصائص المنتج","Product attributes")}</small><h3>${group === "note" ? adminCopy("إضافة أو تعديل نوتة عطرية","Add or edit a fragrance note") : group === "brand" ? adminCopy("إضافة أو تعديل علامة تجارية","Add or edit a brand") : adminCopy("إضافة خيار جديد","Add a new option")}</h3></div><button type="button" data-action="close-product-option">×</button></header><input type="hidden" name="slug"/><div class="option-dialog-grid">${noteFields}<label>${adminCopy("الاسم بالعربية","Arabic name")}<input name="nameAr" dir="rtl" required maxlength="160"/></label><label>${adminCopy("الاسم بالإنجليزية","English name")}<input name="nameEn" dir="ltr" required maxlength="160"/></label>${uploadFields}${optionMetaFields}</div><footer><button type="button" class="button secondary-button" data-action="close-product-option">${adminCopy("إلغاء","Cancel")}</button><button type="button" class="button burgundy-button" data-action="save-product-option">${adminCopy("حفظ وإضافة","Save & add")}</button></footer><p class="option-dialog-error" hidden></p></form>`;
   document.body.append(dialog);
   dialog.showModal();
   dialog.querySelector("[name='nameAr']")?.focus();
@@ -7827,7 +7668,7 @@ function populateProductOptionDialog(dialog, value = "") {
   if (form.elements.image) form.elements.image.value = source.image || "";
   form.elements.color.value = source.color || "#7a001d";
   form.elements.sortOrder.value = Number(source.sortOrder || 0);
-  form.elements.active.checked = source.active !== false;
+  if (form.elements.active?.type === "checkbox") form.elements.active.checked = source.active !== false;
   if (form.elements.existingOption) form.elements.existingOption.value = item.value;
   if (form.elements.descriptionAr) form.elements.descriptionAr.value = source.descriptionAr || "";
   if (form.elements.descriptionEn) form.elements.descriptionEn.value = source.descriptionEn || "";
@@ -7846,16 +7687,6 @@ document.addEventListener("click", async (event) => {
       accountMenu.hidden = true;
       accountMenuButton?.setAttribute("aria-expanded", "false");
     }
-    return;
-  }
-  const touchedCardMedia = actionElement.matches(".origo-exact-product-card .product-card-media-link")
-    ? actionElement.closest(".origo-exact-product-card")
-    : null;
-  if (touchedCardMedia && window.matchMedia("(hover: none), (pointer: coarse)").matches && !touchedCardMedia.classList.contains("show-card-actions")) {
-    event.preventDefault();
-    event.stopPropagation();
-    $$(".origo-exact-product-card.show-card-actions").forEach((card) => card.classList.remove("show-card-actions"));
-    touchedCardMedia.classList.add("show-card-actions");
     return;
   }
   const action = actionElement.dataset.action;
@@ -7908,8 +7739,6 @@ document.addEventListener("click", async (event) => {
   }
   if (action === "smart-select-option") {
     const holder = actionElement.closest("[data-smart-select]");
-    markGeneratedPerfumeFieldAsManual(holder);
-    markOccasionsAsManual(holder);
     const current = smartSelectValues(holder);
     const value = actionElement.dataset.value;
     const exists = current.some((item) => normalizeOptionSearch(item) === normalizeOptionSearch(value));
@@ -7935,8 +7764,6 @@ document.addEventListener("click", async (event) => {
   if (action === "smart-select-remove") {
     event.stopPropagation();
     const holder = actionElement.closest("[data-smart-select]");
-    markGeneratedPerfumeFieldAsManual(holder);
-    markOccasionsAsManual(holder);
     setSmartSelectValues(holder, smartSelectValues(holder).filter((item) => normalizeOptionSearch(item) !== normalizeOptionSearch(actionElement.dataset.value)));
     return;
   }
@@ -7949,14 +7776,11 @@ document.addEventListener("click", async (event) => {
   }
   if (action === "smart-select-clear") {
     const holder = actionElement.closest("[data-smart-select]");
-    markGeneratedPerfumeFieldAsManual(holder);
-    markOccasionsAsManual(holder);
     setSmartSelectValues(holder, []);
     return;
   }
   if (action === "smart-select-all") {
     const holder = actionElement.closest("[data-smart-select]");
-    markGeneratedPerfumeFieldAsManual(holder);
     setSmartSelectValues(holder, productOptionItems(holder.dataset.group).map((item) => item.value));
     return;
   }
@@ -8727,6 +8551,12 @@ document.addEventListener("click", async (event) => {
     state.activeProductImageIndex = Math.max(0, Number(actionElement.dataset.index) || 0);
     showProductDetails(getProduct(state.activeProductId), false);
   }
+  if (action === "product-image-step") {
+    const product = getProduct(state.activeProductId);
+    const mediaLength = Math.max(1, productMedia(product).length);
+    state.activeProductImageIndex = (state.activeProductImageIndex + Number(actionElement.dataset.change || 0) + mediaLength) % mediaLength;
+    showProductDetails(product, false);
+  }
   if (action === "product-zoom") {
     const image = actionElement.closest(".pdp-main-image")?.querySelector("img");
     if (image) openProductImageLightbox(image.currentSrc || image.src, image.alt);
@@ -8814,6 +8644,18 @@ document.addEventListener("click", async (event) => {
   }
   if (action === "admin-studio-image") {
     setAdminStudioImage(actionElement.closest("[data-product-media-studio]"), Number(actionElement.dataset.index || 0));
+  }
+  if (action === "admin-studio-delete") {
+    const form = actionElement.closest("#import-review-form");
+    if (!form || !window.confirm(adminCopy("حذف هذه الصورة من المنتج؟", "Remove this image from the product?"))) return;
+    const draft = collectReviewProduct(form);
+    const index = Number(actionElement.dataset.index || 0);
+    draft.images.splice(index, 1);
+    if (draft.images.length && !draft.images.some((image) => image.selected)) draft.images[0].selected = true;
+    state.activeImportDraft = draft;
+    renderImportReview(draft);
+    showToast(adminCopy("تم حذف الصورة", "Image removed"));
+    return;
   }
   if (action === "admin-studio-step") {
     const studio = actionElement.closest("[data-product-media-studio]");
@@ -8966,46 +8808,10 @@ document.addEventListener("click", async (event) => {
     card?.classList.remove("has-image");
     updateProductEditorPreview(form);
   }
-  if (action === "sort-admin-accords") {
-    const list = actionElement.closest(".accord-admin-editor")?.querySelector(".accord-admin-list");
-    if (list) [...list.children].sort((a, b) => Number(b.querySelector("input[type='range']")?.value || 0) - Number(a.querySelector("input[type='range']")?.value || 0)).forEach((item) => list.append(item));
-  }
-  if (action === "accord-selected-only") {
-    const editor = actionElement.closest(".accord-admin-editor");
-    const enabled = editor?.dataset.selectedOnly !== "true";
-    if (editor) editor.dataset.selectedOnly = String(enabled);
-    actionElement.classList.toggle("active", enabled);
-    actionElement.setAttribute("aria-pressed", String(enabled));
-    filterAdminAccords(editor);
-  }
-  if (action === "clear-admin-accords") {
-    const editor = actionElement.closest(".accord-admin-editor");
-    editor?.querySelectorAll("[name='accordSelected']").forEach((input) => { input.checked = false; });
-    updateAdminAccordEditor(actionElement.closest("#import-review-form"));
-  }
-  if (action === "analyze-perfume-profile") {
-    await runPerfumeAnalysisPreview(actionElement.closest("#import-review-form"), actionElement);
-  }
   if (action === "generate-product-seo") {
     const form = actionElement.closest("#import-review-form");
     updateGeneratedProductSeo(form, { force:true });
     showToast(adminCopy("تم توليد SEO ويمكنك تعديله قبل الحفظ.", "SEO generated. You can edit it before saving."));
-  }
-  if (action === "suggest-occasions") {
-    updatePerfumeOccasionSuggestions(actionElement.closest("#import-review-form"), { force:true, notify:true });
-  }
-  if (action === "reanalyze-perfume-profile") {
-    const draft = state.activeImportDraft;
-    if (!draft?.id) return;
-    actionElement.disabled = true;
-    try {
-      const result = await api(`/api/admin/products/${encodeURIComponent(draft.id)}/perfume-profile/reanalyze`, { method:"POST" });
-      state.activeImportDraft = result.product;
-      renderImportReview(result.product);
-      showToast(adminCopy("تم تحديث التحليل وحفظه.", "Analysis was refreshed and saved."));
-    } catch (error) {
-      showToast(error.message || adminCopy("تعذرت إعادة التحليل.", "Reanalysis failed."));
-    }
   }
   if (action === "accord-help") {
     showToast(state.lang === "ar" ? "طول كل خط يعبّر عن قوة الأكورد بصورة مستقلة، ولا يشترط أن يكون المجموع 100%." : "Each bar independently represents accord strength; totals do not need to equal 100%. ");
@@ -9810,10 +9616,6 @@ $("#web-product-query").addEventListener("input", (event) => {
 
 let notesSearchTimer;
 document.addEventListener("input", (event) => {
-  if (event.target.matches("[data-accord-search]")) {
-    filterAdminAccords(event.target.closest(".accord-admin-editor"));
-    return;
-  }
   if (event.target.matches("[data-smart-search]")) {
     const menu = event.target.closest(".smart-select-menu");
     const query = normalizeOptionSearch(event.target.value);
@@ -9939,12 +9741,9 @@ document.addEventListener("input", (event) => {
       if (editorForm.elements.availableStock) editorForm.elements.availableStock.value = Math.max(0, Number(event.target.value || 0) - reserved);
     }
     if (event.target.name === "category") updateProductTypeFields(editorForm);
-    if (["performanceLongevityHours", "performanceProjection"].includes(event.target.name)) schedulePerfumeAutoAnalysis(editorForm);
-    if (PERFUME_OCCASION_AUTOMATION_FIELDS.has(event.target.name)) updatePerfumeOccasionSuggestions(editorForm);
     updateDuplicateWarning($("#import-review-form"));
     renderNoteMatchPreview($("#import-review-form"));
     updateProductEditorPreview($("#import-review-form"));
-    updateAdminAccordEditor(editorForm);
   }
 });
 
@@ -9960,6 +9759,40 @@ document.addEventListener("error", (event) => {
   image.dataset.noteFallback = "true";
   image.src = window.ORIGOFragranceNotes.artwork({ ...note, image: "" });
 }, true);
+
+let draggedProductImageIndex = null;
+document.addEventListener("dragstart", (event) => {
+  const thumbnail = event.target.closest?.("[data-studio-thumbnail]");
+  if (!thumbnail) return;
+  draggedProductImageIndex = Number(thumbnail.dataset.studioThumbnail);
+  thumbnail.classList.add("is-dragging");
+  event.dataTransfer?.setData("text/plain", String(draggedProductImageIndex));
+  if (event.dataTransfer) event.dataTransfer.effectAllowed = "move";
+});
+document.addEventListener("dragover", (event) => {
+  if (draggedProductImageIndex == null || !event.target.closest?.("[data-studio-thumbnail]")) return;
+  event.preventDefault();
+  if (event.dataTransfer) event.dataTransfer.dropEffect = "move";
+});
+document.addEventListener("drop", (event) => {
+  const target = event.target.closest?.("[data-studio-thumbnail]");
+  if (!target || draggedProductImageIndex == null) return;
+  event.preventDefault();
+  const form = target.closest("#import-review-form");
+  const targetIndex = Number(target.dataset.studioThumbnail);
+  if (!form || targetIndex === draggedProductImageIndex) return;
+  const draft = collectReviewProduct(form);
+  const [moved] = draft.images.splice(draggedProductImageIndex, 1);
+  if (moved) draft.images.splice(targetIndex, 0, moved);
+  state.activeImportDraft = draft;
+  draggedProductImageIndex = null;
+  renderImportReview(draft);
+  showToast(adminCopy("تم تحديث ترتيب الصور", "Image order updated"));
+});
+document.addEventListener("dragend", () => {
+  draggedProductImageIndex = null;
+  document.querySelectorAll("[data-studio-thumbnail].is-dragging").forEach((item) => item.classList.remove("is-dragging"));
+});
 
 document.addEventListener("change", async (event) => {
   if (event.target.matches("#admin-home-slide-form [name='mediaFile']")) {

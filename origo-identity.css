@@ -568,3 +568,256 @@ body :is(.origo-exact-product-card,.origo-reference-product-card,.origo-product-
 body.dark :is(.origo-exact-product-card,.origo-reference-product-card,.origo-product-card.perfume-product-card){
   border-color:#a43b58!important;
 }
+
+/* A clear, labelled return control on product details. */
+.product-overlay .pdp-topbar{
+  position:fixed!important;
+  z-index:10020!important;
+  top:112px!important;
+  inset-inline-start:18px!important;
+  width:max-content!important;
+  height:0!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:0!important;
+  overflow:visible!important;
+  pointer-events:none!important;
+}
+.product-overlay .pdp-back{
+  position:absolute!important;
+  top:0!important;
+  inset-inline-start:0!important;
+  min-width:96px!important;
+  min-height:42px!important;
+  padding:7px 13px!important;
+  justify-content:center!important;
+  gap:9px!important;
+  border:1px solid #7a1630!important;
+  border-radius:12px!important;
+  background:#7a1630!important;
+  color:#fff!important;
+  box-shadow:0 7px 18px rgba(122,22,48,.2)!important;
+  font-size:14px!important;
+  font-weight:850!important;
+  opacity:1!important;
+  visibility:visible!important;
+  pointer-events:auto!important;
+  isolation:isolate!important;
+}
+.product-overlay .pdp-back span{
+  width:auto!important;
+  height:auto!important;
+  background:transparent!important;
+  color:#fff!important;
+  font-size:21px!important;
+  line-height:1!important;
+}
+.product-overlay .pdp-back:hover{
+  border-color:#541020!important;
+  background:#541020!important;
+  color:#fff!important;
+  transform:none!important;
+}
+body.dark .product-overlay .pdp-topbar .pdp-back{
+  border-color:#d36a86!important;
+  background:#8f2744!important;
+  background-color:#8f2744!important;
+  background-image:none!important;
+  color:#fff!important;
+  box-shadow:0 7px 20px rgba(0,0,0,.5),0 0 0 2px rgba(255,255,255,.14)!important;
+  filter:none!important;
+  mix-blend-mode:normal!important;
+}
+body.dark .product-overlay .pdp-topbar .pdp-back :is(span,b){color:#fff!important}
+@media(max-width:900px){
+  .product-overlay .pdp-topbar{top:82px!important;inset-inline-start:10px!important}
+  .product-overlay .pdp-back{min-width:88px!important;min-height:40px!important;font-size:13px!important}
+}
+
+/* Pure product-image stages: white in light mode, pitch black in dark mode. */
+body:not(.dark) :is(.origo-exact-product-card,.origo-reference-product-card,.perfume-product-card) :is(.product-image,.product-card-media-link),
+body:not(.dark) :is(.pdp-gallery,.pdp-main-image,.pdp-thumbnails button,.product-media-stage,.product-media-thumbnails .review-image),
+body:not(.dark) .product-image-lightbox :is(.product-image-lightbox-stage,.product-image-lightbox-media){
+  background:#fff!important;
+  background-color:#fff!important;
+  background-image:none!important;
+}
+body.dark :is(.origo-exact-product-card,.origo-reference-product-card,.perfume-product-card) :is(.product-image,.product-card-media-link),
+body.dark :is(.pdp-gallery,.pdp-main-image,.pdp-thumbnails button,.product-media-stage,.product-media-thumbnails .review-image),
+body.dark .product-image-lightbox :is(.product-image-lightbox-stage,.product-image-lightbox-media){
+  background:#000!important;
+  background-color:#000!important;
+  background-image:none!important;
+}
+body :is(.product-card-media-link,.pdp-main-image,.pdp-thumbnails button,.product-media-stage,.product-media-thumbnails .review-image)>img,
+body :is(.product-card-media-link,.pdp-main-image,.pdp-thumbnails button,.product-media-stage,.product-media-thumbnails .review-image) img{
+  background:transparent!important;
+  background-image:none!important;
+  mix-blend-mode:normal!important;
+}
+
+/* Product image frames are always true squares. */
+body :is(.origo-exact-product-card,.origo-reference-product-card,.perfume-product-card) .product-image{
+  width:100%!important;
+  height:auto!important;
+  min-height:0!important;
+  aspect-ratio:1/1!important;
+  overflow:hidden!important;
+}
+body :is(.origo-exact-product-card,.origo-reference-product-card,.perfume-product-card) .product-card-media-link{
+  width:100%!important;
+  height:100%!important;
+  min-height:0!important;
+  aspect-ratio:1/1!important;
+}
+body :is(.origo-exact-product-card,.origo-reference-product-card,.perfume-product-card) .product-card-media-link>img{
+  width:100%!important;
+  height:100%!important;
+  object-fit:contain!important;
+  object-position:center!important;
+}
+.product-overlay .pdp-gallery{
+  align-self:start!important;
+  align-items:start!important;
+}
+.product-overlay .pdp-main-image{
+  width:100%!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  aspect-ratio:1/1!important;
+  align-self:start!important;
+}
+.product-overlay .pdp-main-image>img{
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  max-height:none!important;
+  object-fit:contain!important;
+  object-position:center!important;
+}
+.product-overlay .pdp-thumbnails button{
+  height:auto!important;
+  min-height:0!important;
+  aspect-ratio:1/1!important;
+}
+.product-overlay .pdp-thumbnails img{
+  width:100%!important;
+  height:100%!important;
+  object-fit:contain!important;
+  object-position:center!important;
+}
+
+/* Card image details are hover-only; a tap/click opens the product immediately. */
+@media(hover:hover) and (pointer:fine){
+  body #storefront-main .origo-exact-product-card .product-card-image-meta{
+    opacity:0!important;
+    visibility:hidden!important;
+    transform:translateY(4px)!important;
+  }
+  body #storefront-main .origo-exact-product-card:hover .product-card-image-meta{
+    opacity:1!important;
+    visibility:visible!important;
+    transform:none!important;
+  }
+}
+@media(hover:none),(pointer:coarse){
+  body #storefront-main .origo-exact-product-card :is(.product-card-image-meta),
+  body #storefront-main .origo-exact-product-card:is(:focus-within,.show-card-actions) .product-card-image-meta{
+    opacity:0!important;
+    visibility:hidden!important;
+    pointer-events:none!important;
+    transform:translateY(4px)!important;
+  }
+}
+
+/* Open, borderless note pyramid with transparent artwork and separated levels. */
+.product-overlay .pdp-profile-section[data-pdp-section="notes"].is-open{
+  border:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+.product-overlay .pdp-profile-section[data-pdp-section="notes"] .pdp-profile-panel{
+  padding:10px 0 0!important;
+  border:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+.product-overlay .pdp-profile-section[data-pdp-section="notes"] .dialog-note-pyramid{
+  display:block!important;
+  padding:0!important;
+  border:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+.product-overlay .pdp-profile-section[data-pdp-section="notes"] .dialog-note-pyramid>.panel-title{
+  display:none!important;
+}
+.product-overlay .pdp-profile-section[data-pdp-section="notes"] .dialog-pyramid-row{
+  padding:16px 0!important;
+  border:0!important;
+  border-bottom:1px solid #dedfe4!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+.product-overlay .pdp-profile-section[data-pdp-section="notes"] .dialog-pyramid-row:last-child{
+  border-bottom:0!important;
+}
+.product-overlay .pdp-profile-section[data-pdp-section="notes"] .dialog-pyramid-row>span{
+  margin:0 0 10px!important;
+  padding:0 4px!important;
+}
+.product-overlay .pdp-profile-section[data-pdp-section="notes"] .dialog-pyramid-row>span b{
+  color:#7a1630!important;
+  font-size:13px!important;
+}
+.product-overlay .pdp-profile-section[data-pdp-section="notes"] .dialog-pyramid-row>div{
+  display:flex!important;
+  align-items:flex-start!important;
+  flex-wrap:wrap!important;
+  gap:8px!important;
+}
+.product-overlay .pdp-profile-section[data-pdp-section="notes"] .dialog-note-chip{
+  width:76px!important;
+  min-width:76px!important;
+  padding:0!important;
+  display:grid!important;
+  place-items:center!important;
+  gap:5px!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  color:#17171b!important;
+}
+.product-overlay .pdp-profile-section[data-pdp-section="notes"] .dialog-note-chip img{
+  width:64px!important;
+  height:64px!important;
+  display:block!important;
+  object-fit:contain!important;
+  object-position:center!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  mix-blend-mode:normal!important;
+}
+.product-overlay .pdp-profile-section[data-pdp-section="notes"] .dialog-note-chip b{
+  width:100%!important;
+  overflow:visible!important;
+  color:#17171b!important;
+  font-size:10px!important;
+  line-height:1.35!important;
+  text-align:center!important;
+  text-overflow:clip!important;
+  white-space:normal!important;
+}
+.product-overlay .pdp-profile-section[data-pdp-section="notes"] .dialog-note-chip small{display:none!important}
+body.dark .product-overlay .pdp-profile-section[data-pdp-section="notes"] .dialog-pyramid-row{border-bottom-color:#39393f!important}
+body.dark .product-overlay .pdp-profile-section[data-pdp-section="notes"] .dialog-pyramid-row>span b{color:#c9953f!important}
+@media(max-width:560px){
+  .product-overlay .pdp-profile-section[data-pdp-section="notes"] .dialog-pyramid-row>div{gap:6px!important}
+  .product-overlay .pdp-profile-section[data-pdp-section="notes"] .dialog-note-chip{width:68px!important;min-width:68px!important}
+  .product-overlay .pdp-profile-section[data-pdp-section="notes"] .dialog-note-chip img{width:58px!important;height:58px!important}
+}
