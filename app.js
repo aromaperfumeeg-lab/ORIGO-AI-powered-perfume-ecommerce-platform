@@ -1158,7 +1158,7 @@ const state = {
   productRatings: readStoredObject("origoProductRatings"),
   selectedNotes: [],
   catalogProducts: initialCatalogProducts,
-  products: initialCatalogProducts.filter((product) => product.status === "published").map(toStorefrontProduct),
+  products: [...baseProducts, ...initialCatalogProducts.filter((product) => product.status === "published").map(toStorefrontProduct)],
   webResults: [],
   activeProductId: null,
   activeProductQuantity: 1,
@@ -1310,7 +1310,8 @@ function mergeCartItems(first, second) {
 }
 
 function serverProduct(product) {
-  return toStorefrontProduct(product);
+  const local = baseProducts.find((item) => item.id === product.id);
+  return local ? { ...local, ...product, insights: local.insights } : toStorefrontProduct(product);
 }
 
 let cartSyncTimer;
@@ -1387,7 +1388,7 @@ function localizedProductName(product, lang = state.lang) {
 }
 
 function rebuildStorefrontProducts() {
-  const productsById = new Map();
+  const productsById = new Map(baseProducts.map((product) => [product.id, product]));
   state.catalogProducts
     .filter((product) => product.status === "published")
     .forEach((product) => productsById.set(product.id, serverProduct(product)));
@@ -1459,7 +1460,7 @@ async function hydrateServer() {
       window.ORIGOFragranceNotes?.setState(notesState.state);
       localStorage.setItem("origoFragranceNotesState", JSON.stringify(notesState.state));
     }
-    if (Array.isArray(catalog.products)) state.products = catalog.products.map(serverProduct);
+    if (Array.isArray(catalog.products) && catalog.products.length) state.products = catalog.products.map(serverProduct);
     state.user = session.user || null;
     if (state.user) {
       if (cartOwner === String(state.user.id)) {
@@ -6444,7 +6445,7 @@ function normalizeOptionSearch(value = "") {
 function productOptionItems(group) {
   const defaults = (PRODUCT_OPTION_DEFAULTS[group] || []).map(([value,nameAr,nameEn,icon]) => ({ group, value, slug: value, nameAr, nameEn, icon, active: true, builtIn: true }));
   if (group === "brand") {
-    const brands = [...new Set([...ORIGO_PERFUME_BRANDS, ...state.catalogProducts].map((product) => typeof product === "string" ? product : product.brand).filter(Boolean))];
+    const brands = [...new Set([...ORIGO_PERFUME_BRANDS, ...baseProducts, ...state.catalogProducts].map((product) => typeof product === "string" ? product : product.brand).filter(Boolean))];
     defaults.push(...brands.map((brand) => ({ group, value: brand, slug: normalizeOptionSearch(brand).replaceAll(" ", "-"), nameAr: brand, nameEn: brand, icon: "◇", active: true, builtIn: true })));
   }
   if (group === "note") {
@@ -6520,7 +6521,7 @@ function findDuplicate(product, excludeId = "") {
   const nameAr = ORIGOCatalog.normalize(product.nameAr);
   const nameEn = ORIGOCatalog.normalize(product.nameEn);
   const brand = ORIGOCatalog.normalize(product.brand);
-  return state.catalogProducts.find((item) => {
+  return [...baseProducts, ...state.catalogProducts].find((item) => {
     if (item.id === excludeId) return false;
     if (product.sku && item.sku && ORIGOCatalog.normalize(product.sku) === ORIGOCatalog.normalize(item.sku)) return true;
     if (product.barcode && item.barcode && product.barcode === item.barcode) return true;

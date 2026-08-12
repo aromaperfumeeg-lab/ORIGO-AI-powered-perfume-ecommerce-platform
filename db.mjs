@@ -834,24 +834,6 @@ try {
   throw error;
 }
 
-// The storefront is managed exclusively from the product dashboard. Remove
-// legacy/demo fixtures from existing databases and after fresh initialization,
-// while leaving every administrator-created product untouched.
-const legacyDefaultProductIds = [
-  "nocturne", "velvet-iris", "smoked", "citrus-veil",
-  "demo-lattafa-khamrah", "demo-lattafa-asad",
-  "demo-xerjoff-naxos", "demo-initio-oud-for-greatness"
-];
-const legacyDefaultPlaceholders = legacyDefaultProductIds.map(() => "?").join(",");
-db.prepare(`DELETE FROM products WHERE id IN (${legacyDefaultPlaceholders})`).run(...legacyDefaultProductIds);
-const homepageAlternativesRow = db.prepare("SELECT payload_json FROM homepage_alternatives_settings WHERE id=1").get();
-if (homepageAlternativesRow) {
-  const settings = parseJSON(homepageAlternativesRow.payload_json, {});
-  const featuredProductIds = (settings.featuredProductIds || []).filter((id) => !legacyDefaultProductIds.includes(id));
-  db.prepare("UPDATE homepage_alternatives_settings SET payload_json=?, updated_at=CURRENT_TIMESTAMP WHERE id=1")
-    .run(JSON.stringify({ ...settings, featuredProductIds }));
-}
-
 const defaultFilters = {
   perfume: [
     ["notes", "النوتات", "Notes", "note"], ["family", "العائلة العطرية", "Fragrance family", "select"],
