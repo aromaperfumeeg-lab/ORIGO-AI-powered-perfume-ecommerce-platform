@@ -9686,6 +9686,8 @@ html[data-theme=dark] .pricing-live-metrics span{background:#211719;color:#d8c9c
 .accord-admin-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;max-height:430px;overflow:auto;padding:8px}
 .accord-admin-item{display:grid;grid-template-columns:auto auto 1fr;align-items:center;gap:9px;border:1px solid var(--line,#e4d6d0);border-radius:12px;padding:10px;opacity:.72}
 .accord-admin-item.selected{opacity:1;border-color:var(--accord-color);box-shadow:inset 3px 0 var(--accord-color)}
+.accord-admin-item>i{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:color-mix(in srgb,var(--accord-color) 22%,white);color:var(--accord-color);border:2px solid var(--accord-color);font-style:normal}
+.accord-admin-item>span{display:grid;line-height:1.25}.accord-admin-item>span small{opacity:.7}
 .accord-admin-item>input[type=range]{grid-column:1/-2;width:100%;accent-color:var(--accord-color)}
 .accord-admin-toolbar>div:last-child{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .accord-admin-toolbar input[type=search]{min-width:220px}

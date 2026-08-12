@@ -164,15 +164,16 @@ function preparePerfumeProduct(input = {}, { force = false } = {}) {
     || currentProfile.inputFingerprint !== fingerprint || product.profileStatus === "stale";
   const manualOverrides = Array.isArray(currentProfile.manualOverrides) ? currentProfile.manualOverrides : [];
   const profile = needsAnalysis ? analyzePerfume(engineInput, { manualOverrides }) : currentProfile;
+  const bundleManaged = product.perfumeBundle && typeof product.perfumeBundle === "object";
   product.perfumeProfile = profile;
   product.profileStatus = "fresh";
   product.profileEngineVersion = profile.engineVersion;
   product.profileSource = profile.source;
   product.descriptionAr = profile.descriptions?.fullDescriptionAr || product.descriptionAr || "";
   product.descriptionEn = profile.descriptions?.fullDescriptionEn || product.descriptionEn || "";
-  product.seasons = profile.recommended?.seasons || scoreKeys(profile.seasons, 55, 4);
-  product.usageTimes = profile.recommended?.timeOfDay || scoreKeys(profile.time, 45, 2);
-  product.occasions = productOccasionKeys(profile.recommended?.occasions || scoreKeys(profile.occasions, 48, 6));
+  if (!bundleManaged || !Array.isArray(product.seasons) || !product.seasons.length) product.seasons = profile.recommended?.seasons || scoreKeys(profile.seasons, 55, 4);
+  if (!bundleManaged || !Array.isArray(product.usageTimes) || !product.usageTimes.length) product.usageTimes = profile.recommended?.timeOfDay || scoreKeys(profile.time, 45, 2);
+  if (!bundleManaged || !Array.isArray(product.occasions) || !product.occasions.length) product.occasions = productOccasionKeys(profile.recommended?.occasions || scoreKeys(profile.occasions, 48, 6));
   product.personalities = (profile.character || []).map((item) => item.labelAr);
   product.moods = (profile.character || []).map((item) => item.labelAr);
   product.families = profile.scentFamilies || [];
@@ -509,7 +510,7 @@ async function saveStorefrontImageUpload(body = {}) {
     error.code = "STOREFRONT_IMAGE_TOO_LARGE";
     throw error;
   }
-  const folder = ["hero", "gender", "brand"].includes(String(body.folder || "")) ? String(body.folder) : "hero";
+  const folder = ["hero", "gender", "brand", "product"].includes(String(body.folder || "")) ? String(body.folder) : "hero";
   const extension = match[1].toLowerCase() === "jpeg" ? "jpg" : match[1].toLowerCase();
   const directory = resolve(STOREFRONT_UPLOAD_ROOT, folder);
   if (!directory.startsWith(`${STOREFRONT_UPLOAD_ROOT}${sep}`)) throw new Error("INVALID_UPLOAD_PATH");
@@ -785,7 +786,7 @@ async function handleAPI(request, response, url, origin) {
     } catch (error) {
       const tooLarge = error.code === "STOREFRONT_IMAGE_TOO_LARGE" || error.message === "REQUEST_TOO_LARGE";
       return jsonResponse(response, tooLarge ? 413 : 400, {
-        error: tooLarge ? "حجم صورة السلايدر أكبر من الحد المسموح." : "تعذّر حفظ صورة السلايدر على الخادم."
+        error: tooLarge ? "حجم الصورة أكبر من الحد المسموح." : "تعذّر حفظ الصورة على الخادم."
       }, origin);
     }
   }

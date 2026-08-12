@@ -7155,7 +7155,22 @@ function applyPerfumeBundleToEditor(form, normalized) {
   setField("nameEn", normalized.perfume.nameEn);
   setSmart("brand", normalized.perfume.brandEn || normalized.perfume.brandAr);
   setSmart("category", "perfume");
-  setField("manualAccords", normalized.accords.map((item) => `${item.ar || item.en} | ${item.en || item.ar} | ${item.percentage}`).join("\n"));
+  const customAccords = [];
+  form.querySelectorAll('[name="accordSelected"]').forEach((input) => { input.checked = false; });
+  normalized.accords.forEach((item) => {
+    const normalizedNames = [item.ar, item.en].filter(Boolean).map(normalizeOptionSearch);
+    const catalog = ORIGO_ACCORD_LIBRARY.find(([id,nameAr,nameEn]) => [id,nameAr,nameEn].some((value) => normalizedNames.includes(normalizeOptionSearch(value))));
+    if (!catalog) {
+      customAccords.push(`${item.ar || item.en} | ${item.en || item.ar} | ${item.percentage}`);
+      return;
+    }
+    const selected = form.querySelector(`[name="accordSelected"][value="${CSS.escape(catalog[0])}"]`);
+    const strength = form.elements[`accordStrength.${catalog[0]}`];
+    if (selected) selected.checked = true;
+    if (strength) strength.value = String(Math.max(1, Math.min(100, Number(item.percentage) || 50)));
+  });
+  setField("manualAccords", customAccords.join("\n"));
+  updateAdminAccordEditor(form);
 
   const noteValues = {};
   for (const level of ["top","heart","base"]) {
@@ -7183,6 +7198,19 @@ function applyPerfumeBundleToEditor(form, normalized) {
   if (unknown.longevity_hours != null) setField("performanceLongevityHours", Number(unknown.longevity_hours));
   if (unknown.sillage != null) setField("performanceProjection", normalizeAdminProjection(unknown.sillage));
 
+  const seasonAliases = { winter:["winter","الشتاء","شتاء"], autumn:["autumn","fall","الخريف","خريف"], spring:["spring","الربيع","ربيع"], summer:["summer","الصيف","صيف"] };
+  const timeAliases = { day:["day","daytime","النهار","نهار"], evening:["evening","المساء","مساء"], night:["night","الليل","ليل"] };
+  const occasionAliases = { daily:["daily","everyday","يومي"], work:["work","office","العمل"], formal:["formal","رسمي"], parties:["party","parties","حفلات","السهرات"], wedding:["wedding","زفاف"], "date-night":["date","dates","date night","موعد","المواعيد"], occasions:["occasion","occasions","special occasions","المناسبات"] };
+  const bundleSeasons = normalized.derived.seasons.map((item) => bundleCanonical(item.en || item.ar, seasonAliases));
+  const bundleTimes = normalized.derived.timeOfDay.map((item) => bundleCanonical(item.en || item.ar, timeAliases));
+  const bundleOccasions = normalized.derived.occasions.map((item) => bundleCanonical(item.en || item.ar, occasionAliases));
+  setSmart("seasons", bundleSeasons);
+  setSmart("usageTimes", bundleTimes);
+  setSmart("occasions", bundleOccasions);
+  if (form.elements.generatedSeasons) form.elements.generatedSeasons.value = csv(bundleSeasons);
+  if (form.elements.generatedUsageTimes) form.elements.generatedUsageTimes.value = csv(bundleTimes);
+  if (form.elements.generatedOccasions) form.elements.generatedOccasions.value = csv(bundleOccasions);
+
   form.elements.perfumeBundleData.value = JSON.stringify(normalized);
   const feedback = form.querySelector("[data-perfume-bundle-feedback]");
   if (feedback) {
@@ -7192,6 +7220,7 @@ function applyPerfumeBundleToEditor(form, normalized) {
     feedback.innerHTML = `<b>✓ ${adminCopy("تم تحليل الحزمة بنجاح", "Bundle parsed successfully")}</b><div><span>${adminCopy("الاسم", "Name")}: ${escapeHTML(`${p.nameAr || "—"} / ${p.nameEn || "—"}`)}</span><span>${adminCopy("العلامة", "Brand")}: ${escapeHTML(`${p.brandAr || "—"} / ${p.brandEn || "—"}`)}</span><span>${adminCopy("الأكوردات", "Accords")}: ${normalized.accords.length}</span><span>${adminCopy("المقدمة", "Top")}: ${n.top.length}</span><span>${adminCopy("القلب", "Heart")}: ${n.heart.length}</span><span>${adminCopy("القاعدة", "Base")}: ${n.base.length}</span><span>${adminCopy("المواسم", "Seasons")}: ${d.seasons.length}</span><span>${adminCopy("المناسبات", "Occasions")}: ${d.occasions.length}</span></div><small>${adminCopy("تم تعبئة حقول المنتج ويمكنك مراجعتها قبل الحفظ.", "Product fields were populated and can be reviewed before saving.")}</small>`;
   }
   updateProductTypeFields(form);
+  state.activeImportDraft = collectReviewProduct(form);
   updateProductEditorPreview(form);
 }
 
@@ -7536,19 +7565,26 @@ async function handleGalleryUpload(input) {
   }
   input.closest(".gallery-upload").classList.add("loading");
   try {
-    const uploaded = await Promise.all(files.map(async (file) => ({
-      url: await optimizeGalleryImage(file),
-      provider: "Manager gallery",
-      fileName: file.name,
-      selected: false
-    })));
+    const uploaded = await Promise.all(files.map(async (file) => {
+      const dataUrl = await optimizeGalleryImage(file);
+      let url = dataUrl;
+      if (state.serverAvailable) {
+        const stored = await api("/api/admin/uploads/storefront-image", { method:"POST", body:JSON.stringify({ folder:"product", dataUrl }) });
+        url = stored.url;
+      }
+      return { url, provider:"Manager gallery", fileName:file.name, selected:false };
+    }));
     if (!draft.images.some((image) => image.selected) && uploaded[0]) uploaded[0].selected = true;
     draft.images = [...draft.images, ...uploaded];
     state.activeImportDraft = draft;
     renderImportReview(draft);
     showToast(adminCopy(`تمت إضافة ${uploaded.length} صورة من المعرض`, `${uploaded.length} gallery images added`));
   } catch (error) {
-    showToast(adminCopy("تعذر إضافة صورة؛ الحد الأقصى 10MB للصورة", "Could not add image; maximum 10MB per image"));
+    console.error("[ORIGO PRODUCT IMAGE]", error);
+    input.value = "";
+    showToast(error.message || adminCopy("تعذر إضافة الصورة.", "Could not add image."), "error");
+  } finally {
+    input.closest(".gallery-upload")?.classList.remove("loading");
   }
 }
 
@@ -7636,9 +7672,15 @@ async function saveCatalogProduct(form, workflowAction = "draft") {
     return;
   }
   if (product.status === "published") {
-    const missing = [!product.nameAr && !product.nameEn, !product.brand, !product.size, !(product.images || []).length, !(Number(product.price) > 0)].some(Boolean);
-    if (missing) {
-      showToast(adminCopy("لا يمكن النشر: أكمل الاسم والعلامة والحجم والسعر والصورة الرئيسية.", "Cannot publish: complete name, brand, size, price, and main image."));
+    const missing = [
+      [!product.nameAr && !product.nameEn, adminCopy("الاسم", "name")],
+      [!product.brand, adminCopy("العلامة التجارية", "brand")],
+      [!product.size, adminCopy("الحجم", "size")],
+      [!(Number(product.price) > 0), adminCopy("السعر", "price")],
+      [!(product.images || []).length, adminCopy("صورة المنتج", "product image")]
+    ].filter(([invalid]) => invalid).map(([,label]) => label);
+    if (missing.length) {
+      showToast(`${adminCopy("لا يمكن النشر. الحقول الناقصة:", "Cannot publish. Missing:")} ${missing.join(adminCopy("، ", ", "))}`, "error");
       return;
     }
     if (!window.confirm(adminCopy("هل تريد نشر المنتج الآن وإظهاره للعملاء؟", "Publish this product and make it visible to customers now?"))) return;
