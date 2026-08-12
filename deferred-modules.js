@@ -1,6 +1,7 @@
 (() => {
+  const route = window.location.pathname;
   const routeScripts = [
-    ["alternatives.js?v=3", /\/alternatives(?:\/|$)/],
+  ["alternatives.js?v=3", /\/alternatives(?:\/|$)/],
     ["performance-insights.js?v=2", /\/performance(?:\/|$)/],
     ["commerce.js?v=2", /\/(?:cart|checkout|payment|track(?:ing)?|orders?)(?:\/|$)/],
     ["account.js?v=3", /\/(?:account|login|register|profile)(?:\/|$)/],
@@ -16,26 +17,18 @@
     document.body.append(script);
   };
 
-  const loadForCurrentRoute = () => {
-    const route = window.location.pathname;
-    routeScripts
-      .filter((entry) => entry[1].test(route))
-      .forEach(loadScript);
+  const routeSpecific = routeScripts.filter((entry) => entry[1].test(route));
+  routeSpecific.forEach(loadScript);
+
+  const deferred = routeScripts.filter((entry) => !routeSpecific.includes(entry));
+  const loadDeferred = () => deferred.forEach(loadScript);
+
+  const scheduleDeferred = () => {
+    if ("requestIdleCallback" in window) requestIdleCallback(loadDeferred, { timeout: 5000 });
+    else setTimeout(loadDeferred, 1200);
   };
-
-  loadForCurrentRoute();
-
-  window.addEventListener("popstate", loadForCurrentRoute);
-
-  const originalPushState = history.pushState;
-  history.pushState = function (...args) {
-    originalPushState.apply(this, args);
-    queueMicrotask(loadForCurrentRoute);
-  };
-
-  const originalReplaceState = history.replaceState;
-  history.replaceState = function (...args) {
-    originalReplaceState.apply(this, args);
-    queueMicrotask(loadForCurrentRoute);
-  };
+  // Starting every route bundle before `load` made the homepage navigation
+  // wait for code that the visitor had not requested yet.
+  if (document.readyState === "complete") scheduleDeferred();
+  else window.addEventListener("load", scheduleDeferred, { once: true });
 })();
