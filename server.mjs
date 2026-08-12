@@ -1948,7 +1948,9 @@ async function serveStatic(request, response, url) {
       const hero = (Array.isArray(workspace?.settings?.homeMedia) ? workspace.settings.homeMedia : [])
         .filter((item) => item?.placement === "hero" && item?.url && item?.active !== false)
         .sort((a, b) => Number(a?.sortOrder || 0) - Number(b?.sortOrder || 0))[0];
-      const safeHeroUrl = String(hero?.url || "").replace(/["'()\\\n\r]/g, "").replace(/&/g, "&amp;").replace(/</g, "%3C").replace(/>/g, "%3E");
+      const mobileRequest = /Android|iPhone|iPad|iPod|Mobile/i.test(String(request.headers["user-agent"] || ""));
+      const initialHeroUrl = mobileRequest && hero?.mobileUrl ? hero.mobileUrl : hero?.url;
+      const safeHeroUrl = String(initialHeroUrl || "").replace(/["'()\\\n\r]/g, "").replace(/&/g, "&amp;").replace(/</g, "%3C").replace(/>/g, "%3E");
       const html = data.toString("utf8")
         .replace("ORIGO_INITIAL_HERO_STATE", hero ? "data-initial-hero=\"true\"" : "hidden data-initial-hero=\"false\"")
         .replace("ORIGO_INITIAL_HERO_STYLE", hero ? `style=\"background-image:url(&quot;${safeHeroUrl}&quot;)\"` : "")

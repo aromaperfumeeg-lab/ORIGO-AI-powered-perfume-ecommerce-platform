@@ -2106,7 +2106,7 @@ function bannerHeroSliderMarkup() {
   const settings = mergeStoreSettings(state.adminWorkspace.settings || {});
   const slides = settings.homeMedia.filter((item) => item.placement === "hero");
   const cards = slides.map((item) => `<article class="banner-slider-card">
-    <img src="${escapeHTML(item.url)}" alt="${escapeHTML(item.altAr || item.name || "صورة بنر")}"/>
+    <div class="banner-responsive-previews"><figure><img src="${escapeHTML(item.url)}" alt="${escapeHTML(item.altAr || item.name || "صورة بنر")}"/><figcaption>Desktop</figcaption></figure><figure class="mobile"><img src="${escapeHTML(item.mobileUrl || item.url)}" alt=""/><figcaption>Mobile</figcaption></figure></div>
     <div class="banner-slider-card-head"><span><b>${escapeHTML(item.name || "صورة بنر")}</b><small>${item.active !== false ? "ظاهرة في المتجر" : "مخفية"}</small></span><div><button type="button" data-action="edit-home-slide" data-id="${escapeHTML(item.id)}" aria-label="تعديل الشريحة">✎</button><button type="button" data-action="delete-home-media" data-id="${escapeHTML(item.id)}" aria-label="حذف الصورة">×</button></div></div>
     <div class="banner-slider-fields">
       <label>اسم الصورة<input data-home-media-field="name" data-id="${escapeHTML(item.id)}" value="${escapeHTML(item.name || "")}"/></label>
@@ -2115,6 +2115,8 @@ function bannerHeroSliderMarkup() {
       <label>رابط هدف مخصص<input dir="ltr" data-home-media-field="href" data-id="${escapeHTML(item.id)}" value="${escapeHTML(item.href || "#new-arrivals")}"/></label>
       <label>ملء الصورة<select data-home-media-field="sizeMode" data-id="${escapeHTML(item.id)}"><option value="default"${!item.sizeMode || item.sizeMode === "default" ? " selected" : ""}>تلقائي</option><option value="cover"${item.sizeMode === "cover" ? " selected" : ""}>تغطية كاملة</option><option value="contain"${item.sizeMode === "contain" ? " selected" : ""}>الصورة كاملة</option></select></label>
       <label class="banner-slider-active"><span>عرض الصورة</span><input type="checkbox" data-home-media-field="active" data-id="${escapeHTML(item.id)}"${item.active !== false ? " checked" : ""}/></label>
+      <label class="wide">صورة الهاتف<input type="file" accept="image/png,image/jpeg,image/webp,image/avif" data-home-mobile-upload data-id="${escapeHTML(item.id)}"/><small>يفضل 1080×1350 — تظل صورة Desktop بديلًا تلقائيًا.</small></label>
+      ${item.mobileUrl ? `<label class="banner-slider-active wide"><span>حذف صورة الهاتف</span><input type="checkbox" data-home-mobile-clear data-id="${escapeHTML(item.id)}"/></label>` : ""}
     </div>
   </article>`).join("");
   return `<form id="admin-banner-slider-settings" class="banner-slider-admin">
@@ -2122,6 +2124,7 @@ function bannerHeroSliderMarkup() {
     <div class="banner-slider-controls">
       <label>زمن التبديل بالثواني<input name="heroIntervalSeconds" type="number" min="1" max="30" step="0.5" value="${Number(settings.homeHero.intervalSeconds || 3)}"/></label>
       <label class="banner-slider-upload">إضافة صور جديدة<input name="mediaFile" type="file" multiple accept="image/png,image/jpeg,image/webp,image/avif"/></label>
+      <label class="banner-slider-upload">صور الهاتف بالترتيب<input name="mobileMediaFile" type="file" multiple accept="image/png,image/jpeg,image/webp,image/avif"/></label>
       <label>المنتج الافتراضي للصور الجديدة<select name="mediaProductId">${homeHeroProductOptions("")}</select></label>
       <label>رابط هدف افتراضي<input name="mediaHref" dir="ltr" value="#new-arrivals"/></label>
       <button class="button burgundy-button" type="submit">حفظ السلايدر</button>
@@ -2656,7 +2659,7 @@ function homepageRailsAdminMarkup() {
   const mediaCards = heroMedia.map((item) => {
     const isHero = true;
     return `<article class="home-hero-media-card">
-      <img src="${escapeHTML(item.url)}" alt="${escapeHTML(ar ? item.altAr : item.altEn)}"/>
+      <div class="home-slide-responsive-previews"><figure><img src="${escapeHTML(item.url)}" alt="${escapeHTML(ar ? item.altAr : item.altEn)}"/><figcaption>${ar ? "سطح المكتب" : "Desktop"}</figcaption></figure><figure class="mobile"><img src="${escapeHTML(item.mobileUrl || item.url)}" alt=""/><figcaption>${ar ? "الهاتف" : "Mobile"}</figcaption></figure></div>
       <span><b>${escapeHTML(item.name)}</b><small>${escapeHTML(item.placement || "general")}${item.brand ? ` · ${escapeHTML(item.brand)}` : ""}</small></span>
       <button type="button" data-action="delete-home-media" data-id="${escapeHTML(item.id)}" aria-label="${ar ? "حذف" : "Delete"}">×</button>
       ${isHero ? `<div class="home-hero-slide-fields">
@@ -2668,6 +2671,8 @@ function homepageRailsAdminMarkup() {
         <label class="admin-toggle-row"><span>${ar ? "عرض الصورة" : "Show image"}</span><input type="checkbox" data-home-media-field="active" data-id="${escapeHTML(item.id)}"${item.active !== false ? " checked" : ""}/></label>
         <label class="wide">${ar ? "المنتج المرتبط بالصورة" : "Product linked to the image"}<select data-home-media-field="productId" data-id="${escapeHTML(item.id)}">${homeHeroProductOptions(item.productId || "")}</select></label>
         <label class="wide">${ar ? "رابط هدف مخصص" : "Custom target link"}<input data-home-media-field="href" data-id="${escapeHTML(item.id)}" dir="ltr" value="${escapeHTML(item.href || "#new-arrivals")}"/></label>
+        <label class="wide home-slide-mobile-upload">${ar ? "صورة الهاتف لهذه الشريحة" : "Mobile image for this slide"}<input type="file" accept="image/png,image/jpeg,image/webp,image/avif" data-home-mobile-upload data-id="${escapeHTML(item.id)}"/><small>${ar ? "يفضل مقاسًا رأسيًا 1080×1350 أو قريبًا منه. إذا تُرك فارغًا ستُستخدم صورة سطح المكتب." : "A portrait 1080×1350 image is recommended. Desktop is used when empty."}</small></label>
+        ${item.mobileUrl ? `<label class="admin-toggle-row wide"><span>${ar ? "حذف صورة الهاتف واستخدام صورة سطح المكتب" : "Remove mobile image and use desktop"}</span><input type="checkbox" data-home-mobile-clear data-id="${escapeHTML(item.id)}"/></label>` : ""}
       </div>` : `<small>${escapeHTML(ar ? item.altAr : item.altEn)}</small>`}
     </article>`;
   }).join("");
@@ -2677,6 +2682,7 @@ function homepageRailsAdminMarkup() {
       <div class="review-grid">
         <label>${ar ? "زمن عرض كل صورة بالثواني" : "Seconds per slide"}<input name="heroIntervalSeconds" type="number" min="1" max="30" step="0.5" value="${Number(settings.homeHero.intervalSeconds || 2.5)}"/></label>
         <label>${ar ? "رفع صور البنر من الملفات" : "Upload banner images"}<input name="mediaFile" type="file" multiple accept="image/png,image/jpeg,image/webp,image/avif"/></label>
+        <label>${ar ? "صور الهاتف بالترتيب نفسه" : "Mobile images in the same order"}<input name="mobileMediaFile" type="file" multiple accept="image/png,image/jpeg,image/webp,image/avif"/><small>${ar ? "اختياري — كل صورة هاتف تقابل صورة سطح المكتب بالترتيب." : "Optional — each mobile image matches the desktop image at the same position."}</small></label>
         <label>${ar ? "المنتج الافتراضي للصور الجديدة" : "Default product for new images"}<select name="mediaProductId">${homeHeroProductOptions("")}</select></label>
         <label>${ar ? "رابط هدف افتراضي" : "Default target link"}<input name="mediaHref" dir="ltr" value="#new-arrivals"/></label>
       </div>
@@ -3336,6 +3342,10 @@ function renderHomeNavigation() {
 
 let homeHeroTimer;
 let homeHeroIndex = 0;
+const homeHeroMobileQuery = matchMedia("(max-width: 900px)");
+function homeHeroImageUrl(item) {
+  return homeHeroMobileQuery.matches && item?.mobileUrl ? item.mobileUrl : item?.url || "";
+}
 function renderHomeHero() {
   const hero = $("#home-hero");
   const visual = hero?.querySelector(".home-hero-products");
@@ -3362,9 +3372,10 @@ function renderHomeHero() {
   const show = (index) => {
     homeHeroIndex = (index + slides.length) % slides.length;
     const item = slides[homeHeroIndex];
-    hero.classList.toggle("has-image", Boolean(item.url));
-    hero.classList.toggle("no-image", !item.url);
-    visual.style.backgroundImage = item.url ? `url("${String(item.url).replace(/["\\]/g, "")}")` : "none";
+    const responsiveUrl = homeHeroImageUrl(item);
+    hero.classList.toggle("has-image", Boolean(responsiveUrl));
+    hero.classList.toggle("no-image", !responsiveUrl);
+    visual.style.backgroundImage = responsiveUrl ? `url("${String(responsiveUrl).replace(/["\\]/g, "")}")` : "none";
     // Uploaded hero artwork always fills the frame. `contain`, custom scales,
     // and the old `auto 100%` fallback all exposed empty side columns.
     visual.style.backgroundSize = "cover";
@@ -3424,6 +3435,8 @@ function renderHomeHero() {
   if (slides.length > 1 && !matchMedia("(prefers-reduced-motion: reduce)").matches) homeHeroTimer = setInterval(() => show(homeHeroIndex + 1), intervalMs);
   show(homeHeroIndex);
 }
+
+homeHeroMobileQuery.addEventListener?.("change", () => renderHomeHero());
 
 function productDateScore(product, index = 0) {
   const date = Date.parse(product.createdAt || product.updatedAt || product.releaseDate || "");
@@ -6560,10 +6573,18 @@ function perfumePerformanceEditorSection(product) {
     <div class="performance-auto-panel">
       <header><div><b>✦ ${adminCopy("نتائج محسوبة عند الحفظ", "Calculated on save")}</b><small>${adminCopy("تعتمد فقط على الأكوردات اليدوية والثبات والفوحان.", "Based only on manual accords, longevity, and projection.")}</small></div></header>
       <div class="review-grid performance-generated-grid">
-        <label>${adminCopy("المواسم المناسبة", "Best seasons")}<input readonly value="${escapeHTML(csv(product.seasons || []))}" placeholder="${adminCopy("تُحسب عند الحفظ", "Calculated on save")}"/></label>
-        <label>${adminCopy("أوقات الاستخدام", "Wear times")}<input readonly value="${escapeHTML(csv(product.usageTimes || []))}" placeholder="${adminCopy("تُحسب عند الحفظ", "Calculated on save")}"/></label>
-        <label>${adminCopy("المناسبات", "Occasions")}<input readonly value="${escapeHTML(csv(product.occasions || []))}" placeholder="${adminCopy("تُحسب عند الحفظ", "Calculated on save")}"/></label>
+        <label>${adminCopy("المواسم المناسبة", "Best seasons")}<input name="generatedSeasons" readonly value="${escapeHTML(csv(product.seasons || []))}" placeholder="${adminCopy("اضغط زر التوليد", "Select generate")}"/></label>
+        <label>${adminCopy("أوقات الاستخدام", "Wear times")}<input name="generatedUsageTimes" readonly value="${escapeHTML(csv(product.usageTimes || []))}" placeholder="${adminCopy("اضغط زر التوليد", "Select generate")}"/></label>
+        <label>${adminCopy("المناسبات", "Occasions")}<input name="generatedOccasions" readonly value="${escapeHTML(csv(product.occasions || []))}" placeholder="${adminCopy("اضغط زر التوليد", "Select generate")}"/></label>
       </div>
+      <div class="review-grid performance-manual-grid">
+        ${searchableCreatableSelect({ name:"seasons", group:"season", labelAr:"تعديل المواسم", labelEn:"Edit seasons", selected:product.seasons, multiple:true })}
+        ${searchableCreatableSelect({ name:"usageTimes", group:"usage_time", labelAr:"تعديل الأوقات", labelEn:"Edit times", selected:product.usageTimes, multiple:true })}
+        ${searchableCreatableSelect({ name:"occasions", group:"occasion", labelAr:"تعديل المناسبات", labelEn:"Edit occasions", selected:product.occasions, multiple:true })}
+      </div>
+      <label class="occasion-suggestion-controls"><input type="checkbox" name="occasionsAuto" checked/> ${adminCopy("تحديث الاقتراحات تلقائياً", "Update suggestions automatically")}</label>
+      <button type="button" class="button burgundy-button performance-generate-button" data-action="generate-perfume-usage" data-perfume-auto-generate>✦ ${adminCopy("توليد المواسم والأوقات والمناسبات", "Generate seasons, times & occasions")}</button>
+      <button type="button" class="button secondary-button" data-action="suggest-occasions">${adminCopy("اقتراح المناسبات", "Suggest occasions")}</button>
     </div>
   </section>`;
 }
@@ -6671,9 +6692,14 @@ function adminAccordEditor(product) {
   const fallback = (product.mainAccords || product.accords || []).map((value) => typeof value === "object" ? value : { nameAr:value, nameEn:value, strength:50 });
   const values = existingValues.length ? existingValues : fallback;
   const lines = values.map((item) => `${item.nameAr || item.name || item.id || ""} | ${item.nameEn || item.name || item.id || ""} | ${Math.max(0,Math.min(100,Number(item.score ?? item.strength ?? 0)))}`).join("\n");
+  const selected = new Map(values.map((item) => [String(item.id || ""), Number(item.score ?? item.strength ?? 50)]));
   return `<div class="accord-admin-editor">
-    <div class="accord-admin-toolbar"><div><b>${adminCopy("الأكوردات الرئيسية — إدخال يدوي", "Main accords — manual entry")}</b><small>${adminCopy("اكتب كل أكورد في سطر: الاسم العربي | الاسم الإنجليزي | النسبة.", "One accord per line: Arabic name | English name | percentage.")}</small></div></div>
-    <label class="manual-accord-text"><textarea name="manualAccords" rows="8" dir="auto" placeholder="خشبي | Woody | 85&#10;عنبري | Amber | 70">${escapeHTML(lines)}</textarea><small>${adminCopy("مثال: خشبي | Woody | 85 — يمكنك إضافة أي أكورد حتى لو لم يكن موجودًا سابقًا.", "Example: خشبي | Woody | 85 — any new accord is accepted.")}</small></label>
+    <div class="accord-admin-toolbar"><div><b>${adminCopy("الأكوردات الرئيسية", "Main accords")}</b><small>${adminCopy("اختر الأكورد واضبط قوته؛ ويمكنك البحث بالعربية أو الإنجليزية.", "Select an accord, adjust its strength, and search in Arabic or English.")}</small></div><div><input type="search" data-accord-search placeholder="${adminCopy("بحث عن أكورد…", "Search accords…")}"/><button type="button" data-action="accord-selected-only">${adminCopy("المختارة", "Selected")}</button><button type="button" data-action="clear-admin-accords">${adminCopy("مسح", "Clear")}</button></div></div>
+    <div class="accord-search-count">${adminCopy("المحدد:", "Selected:")} <b>${selected.size}</b></div>
+    <div class="accord-admin-list">${ORIGO_ACCORD_LIBRARY.map(([id,nameAr,nameEn,color,icon]) => { const strength=selected.get(id) ?? 50; const checked=selected.has(id); return `<label class="accord-admin-item${checked ? " selected" : ""}" data-accord-search-value="${escapeHTML(normalizeOptionSearch(`${id} ${nameAr} ${nameEn}`))}" style="--accord-color:${color}"><input type="checkbox" name="accordSelected" value="${id}"${checked ? " checked" : ""}/><i>${icon}</i><span><b>${escapeHTML(nameAr)}</b><small>${escapeHTML(nameEn)}</small></span><input type="range" name="accordStrength.${id}" min="1" max="100" value="${strength}"/><output>${strength}%</output></label>`; }).join("")}</div>
+    <p class="accord-search-empty" hidden>${adminCopy("لا توجد أكوردات مطابقة.", "No matching accords.")}</p>
+    <label class="manual-accord-text"><span>${adminCopy("أكوردات مخصصة إضافية", "Additional custom accords")}</span><textarea name="manualAccords" rows="4" dir="auto" placeholder="خشبي | Woody | 85">${escapeHTML(lines)}</textarea><small>${adminCopy("يمكنك إضافة أكورد غير موجود في القائمة هنا.", "Add an accord not found in the list here.")}</small></label>
+    <div class="accord-admin-live">${productAccordMarkup(product)}</div>
   </div>`;
 }
 
@@ -6834,7 +6860,7 @@ function productMediaStudioMarkup(images = []) {
   const active = images[activeIndex] || images[0];
   return `<div class="product-media-studio" data-product-media-studio data-index="${activeIndex}">
     <div class="product-media-stage"><img src="${escapeHTML(active.url)}" alt="${adminCopy("معاينة صورة المنتج", "Product image preview")}"/><div class="product-media-stage-actions"><button type="button" data-action="admin-studio-fullscreen" aria-label="${adminCopy("عرض ملء الشاشة", "View fullscreen")}">⛶</button></div>${images.length > 1 ? `<button type="button" class="studio-arrow previous" data-action="admin-studio-step" data-change="-1" aria-label="${adminCopy("الصورة السابقة", "Previous image")}">‹</button><button type="button" class="studio-arrow next" data-action="admin-studio-step" data-change="1" aria-label="${adminCopy("الصورة التالية", "Next image")}">›</button>` : ""}<span class="studio-count"><b>${activeIndex + 1}</b> / ${images.length}</span></div>
-    <div class="product-media-thumbnails" role="list">${images.map((image, index) => `<label class="review-image${index === activeIndex ? " selected" : ""}" data-studio-thumbnail="${index}" role="listitem" draggable="true" title="${adminCopy("اسحب لتغيير الترتيب", "Drag to reorder")}"><input type="radio" name="selectedImage" value="${index}"${index === activeIndex ? " checked" : ""}/><button type="button" data-action="admin-studio-image" data-index="${index}" aria-label="${adminCopy(`اختيار الصورة ${index + 1}`, `Select image ${index + 1}`)}"><img src="${escapeHTML(image.url)}" alt=""/></button><span><i aria-hidden="true">⠿</i>${escapeHTML(image.fileName || image.provider || `Image ${index + 1}`)}</span><button type="button" class="studio-image-delete" data-action="admin-studio-delete" data-index="${index}" aria-label="${adminCopy("حذف الصورة", "Delete image")}">×</button></label>`).join("")}</div>
+    <div class="product-media-thumbnails" role="list">${images.map((image, index) => `<label class="review-image${index === activeIndex ? " selected" : ""}" data-studio-thumbnail="${index}" role="listitem" draggable="true" title="${adminCopy("اسحب أو استخدم الأسهم لتغيير الترتيب", "Drag or use arrows to reorder")}"><input type="radio" name="selectedImage" value="${index}"${index === activeIndex ? " checked" : ""}/><button type="button" data-action="admin-studio-image" data-index="${index}" aria-label="${adminCopy(`اختيار الصورة ${index + 1}`, `Select image ${index + 1}`)}"><img src="${escapeHTML(image.url)}" alt=""/></button><span><i aria-hidden="true">⠿</i>${escapeHTML(image.fileName || image.provider || `Image ${index + 1}`)}</span><button type="button" class="studio-image-move" data-action="admin-studio-move" data-index="${index}" data-change="-1" aria-label="${adminCopy("تحريك للخلف", "Move backward")}">‹</button><button type="button" class="studio-image-move" data-action="admin-studio-move" data-index="${index}" data-change="1" aria-label="${adminCopy("تحريك للأمام", "Move forward")}">›</button><button type="button" class="studio-image-delete" data-action="admin-studio-delete" data-index="${index}" aria-label="${adminCopy("حذف الصورة", "Delete image")}">×</button></label>`).join("")}</div>
     <dialog class="product-media-lightbox"><button type="button" class="studio-lightbox-close" data-action="admin-studio-close" aria-label="${adminCopy("إغلاق", "Close")}">×</button><img src="${escapeHTML(active.url)}" alt="${adminCopy("صورة المنتج بالحجم الكامل", "Full-size product image")}"/><footer><button type="button" data-action="admin-studio-step" data-change="-1" aria-label="${adminCopy("السابق", "Previous")}">‹</button><span><b>${activeIndex + 1}</b> / ${images.length}</span><button type="button" data-action="admin-studio-step" data-change="1" aria-label="${adminCopy("التالي", "Next")}">›</button></footer></dialog>
   </div>`;
 }
@@ -6929,8 +6955,8 @@ function renderImportReview(product) {
       <section class="review-section" data-editor-tier="core">
         <div class="review-section-head"><span>01</span><div><b>${adminCopy("هوية المنتج", "Product identity")}</b><small>${adminCopy("العربية والإنجليزية محفوظتان في حقول منفصلة", "Arabic and English are stored separately")}</small></div></div>
         <div class="review-grid">
-          <label>${adminCopy("الاسم بالعربية", "Arabic name")} <b aria-hidden="true">*</b><input name="nameAr" dir="rtl" required maxlength="140" value="${escapeHTML(product.nameAr)}" /><small data-character-count="nameAr">${String(product.nameAr || "").length}/140</small></label>
-          <label>${adminCopy("الاسم بالإنجليزية", "English name")} <b aria-hidden="true">*</b><input name="nameEn" dir="ltr" required maxlength="140" value="${escapeHTML(product.nameEn)}" /><small data-character-count="nameEn">${String(product.nameEn || "").length}/140</small></label>
+          <label>${adminCopy("الاسم بالعربية", "Arabic name")} <b aria-hidden="true">*</b><input name="nameAr" dir="rtl" maxlength="140" value="${escapeHTML(product.nameAr)}" /><small data-character-count="nameAr">${String(product.nameAr || "").length}/140</small></label>
+          <label>${adminCopy("الاسم بالإنجليزية", "English name")} <b aria-hidden="true">*</b><input name="nameEn" dir="ltr" maxlength="140" value="${escapeHTML(product.nameEn)}" /><small data-character-count="nameEn">${String(product.nameEn || "").length}/140</small></label>
           ${searchableCreatableSelect({ name:"brand", group:"brand", labelAr:"البراند", labelEn:"Brand", selected:product.brand, required:true })}
           ${searchableCreatableSelect({ name:"category", group:"category", labelAr:"نوع المنتج", labelEn:"Product type", selected:product.category || "perfume", required:true })}
           ${searchableCreatableSelect({ name:"gender", group:"gender", labelAr:"الجنس المستهدف", labelEn:"Target gender", selected:product.genders || product.gender, multiple:true })}
@@ -7069,6 +7095,7 @@ function renderImportReview(product) {
   updateProductEditorPreview($("#import-review-form"));
   updateProductTypeFields($("#import-review-form"));
   updateGeneratedProductSeo($("#import-review-form"));
+  filterAdminAccords($("#import-review-form")?.querySelector(".accord-admin-editor"));
   initializeProductEditorTabs();
 }
 
@@ -7183,6 +7210,19 @@ function derivePerfumeUsageFromAccords(accords = [], longevity = 0, projection =
   return { seasons:[...seasons], usageTimes:[...usageTimes], occasions:[...occasions] };
 }
 
+function perfumeOccasionSuggestions(form) {
+  const values = (name) => optionValuesForProduct("note", new FormData(form).get(name)).map((item) => item.value);
+  const notes = [...values("topNotes"), ...values("heartNotes"), ...values("baseNotes")];
+  const seasons = values("seasons");
+  const accords = collectReviewProduct(form).accordProfile || [];
+  const derived = derivePerfumeUsageFromAccords(accords.length ? accords : notes.map((name) => ({ nameAr:name, nameEn:name })), form.elements.performanceLongevityHours?.value, form.elements.performanceProjection?.value);
+  return { ...derived, seasons:seasons.length ? seasons : derived.seasons };
+}
+
+function markOccasionsAsManual(form) {
+  if (form?.elements.occasionsAuto) form.elements.occasionsAuto.checked = false;
+}
+
 function collectReviewProduct(form) {
   const data = new FormData(form);
   const base = state.activeImportDraft || ORIGOCatalog.emptyProduct();
@@ -7192,7 +7232,12 @@ function collectReviewProduct(form) {
   const inspiredReference = (state.alternativesAdmin?.references || []).find((reference) => String(reference.id) === inspiredReferenceId);
   const newInspiredNameAr = String(data.get("newInspiredNameAr") || "").trim();
   const newInspiredNameEn = String(data.get("newInspiredNameEn") || "").trim();
-  const accordProfile = parseManualAccords(data.get("manualAccords"));
+  const libraryAccords = data.getAll("accordSelected").map((id) => {
+    const item = ORIGO_ACCORD_LIBRARY.find(([key]) => key === id);
+    return item ? { id:item[0], nameAr:item[1], nameEn:item[2], color:item[3], icon:item[4], strength:Math.max(1, Math.min(100, Number(data.get(`accordStrength.${id}`) || 50))) } : null;
+  }).filter(Boolean);
+  const customAccords = parseManualAccords(data.get("manualAccords")).filter((item) => !libraryAccords.some((known) => known.id === item.id));
+  const accordProfile = [...libraryAccords, ...customAccords];
   const images = [...(base.images || [])].map((image, index) => ({ ...image, selected: String(index) === String(data.get("selectedImage")) }));
   if (String(data.get("imageUrl") || "").trim()) images.unshift({ url: String(data.get("imageUrl")).trim(), provider: "Manager", selected: true });
   const genders = optionValuesForProduct("gender", data.get("gender"));
@@ -7240,8 +7285,8 @@ function collectReviewProduct(form) {
     families: data.has("families") ? families.map((item) => item.value) : (base.families || []),
     familyAr: perfumeBundle?.derived?.olfactiveFamily?.ar || (data.has("families") ? families.map((item) => item.nameAr || item.nameEn).filter(Boolean).join("، ") : (base.familyAr || "")),
     familyEn: perfumeBundle?.derived?.olfactiveFamily?.en || (data.has("families") ? families.map((item) => item.nameEn || item.nameAr).filter(Boolean).join(", ") : (base.familyEn || "")),
-    seasons: String(data.get("category") || "") === "perfume" ? (bundleUsage?.seasons.length ? bundleUsage.seasons : generatedUsage.seasons) : (data.has("seasons") ? csvValues(data.get("seasons")) : (base.seasons || [])),
-    usageTimes: String(data.get("category") || "") === "perfume" ? (bundleUsage?.usageTimes.length ? bundleUsage.usageTimes : generatedUsage.usageTimes) : (data.has("usageTimes") ? csvValues(data.get("usageTimes")) : (base.usageTimes || [])),
+    seasons: String(data.get("category") || "") === "perfume" ? (data.has("seasons") && csvValues(data.get("seasons")).length ? csvValues(data.get("seasons")) : (bundleUsage?.seasons.length ? bundleUsage.seasons : generatedUsage.seasons)) : (data.has("seasons") ? csvValues(data.get("seasons")) : (base.seasons || [])),
+    usageTimes: String(data.get("category") || "") === "perfume" ? (data.has("usageTimes") && csvValues(data.get("usageTimes")).length ? csvValues(data.get("usageTimes")) : (bundleUsage?.usageTimes.length ? bundleUsage.usageTimes : generatedUsage.usageTimes)) : (data.has("usageTimes") ? csvValues(data.get("usageTimes")) : (base.usageTimes || [])),
     originCountry: country?.value || "",
     originCountryAr: country?.nameAr || country?.nameEn || "",
     originCountryEn: country?.nameEn || country?.nameAr || "",
@@ -7275,7 +7320,7 @@ function collectReviewProduct(form) {
     releaseYear: data.get("releaseYear") === "" ? null : Number(data.get("releaseYear")),
     perfumer: data.has("perfumers") ? perfumers.map((item) => item.nameEn || item.nameAr).join(", ") : (base.perfumer || ""),
     perfumers: data.has("perfumers") ? perfumers.map((item) => item.value) : (base.perfumers || []),
-    occasions: String(data.get("category") || "") === "perfume" ? (bundleUsage?.occasions.length ? bundleUsage.occasions : generatedUsage.occasions) : (data.has("occasions") ? csvValues(data.get("occasions")) : (base.occasions || [])),
+    occasions: String(data.get("category") || "") === "perfume" ? (data.has("occasions") && csvValues(data.get("occasions")).length ? csvValues(data.get("occasions")) : (bundleUsage?.occasions.length ? bundleUsage.occasions : generatedUsage.occasions)) : (data.has("occasions") ? csvValues(data.get("occasions")) : (base.occasions || [])),
     mainIngredients: [],
     accordProfile,
     mainAccords: accordProfile.map((item) => item.nameAr),
@@ -8861,6 +8906,20 @@ document.addEventListener("click", async (event) => {
     showToast(adminCopy("تم حذف الصورة", "Image removed"));
     return;
   }
+  if (action === "admin-studio-move") {
+    const form = actionElement.closest("#import-review-form");
+    const draft = collectReviewProduct(form);
+    const from = Number(actionElement.dataset.index || 0);
+    const to = Math.max(0, Math.min(draft.images.length - 1, from + Number(actionElement.dataset.change || 0)));
+    if (form && from !== to) {
+      const [moved] = draft.images.splice(from, 1);
+      draft.images.splice(to, 0, moved);
+      state.activeImportDraft = draft;
+      renderImportReview(draft);
+      showToast(adminCopy("تم تحديث ترتيب الصور", "Image order updated"));
+    }
+    return;
+  }
   if (action === "admin-studio-step") {
     const studio = actionElement.closest("[data-product-media-studio]");
     setAdminStudioImage(studio, Number(studio?.dataset.index || 0) + Number(actionElement.dataset.change || 0));
@@ -9019,6 +9078,31 @@ document.addEventListener("click", async (event) => {
   }
   if (action === "accord-help") {
     showToast(state.lang === "ar" ? "طول كل خط يعبّر عن قوة الأكورد بصورة مستقلة، ولا يشترط أن يكون المجموع 100%." : "Each bar independently represents accord strength; totals do not need to equal 100%. ");
+  }
+  if (action === "accord-selected-only") {
+    const editor = actionElement.closest(".accord-admin-editor");
+    editor.dataset.selectedOnly = editor.dataset.selectedOnly === "true" ? "false" : "true";
+    actionElement.classList.toggle("active", editor.dataset.selectedOnly === "true");
+    filterAdminAccords(editor);
+  }
+  if (action === "clear-admin-accords") {
+    const form = actionElement.closest("#import-review-form");
+    form?.querySelectorAll('[name="accordSelected"]').forEach((input) => input.checked = false);
+    updateAdminAccordEditor(form);
+  }
+  if (action === "generate-perfume-usage" || action === "suggest-occasions") {
+    const form = actionElement.closest("#import-review-form");
+    const suggestions = perfumeOccasionSuggestions(form);
+    [["seasons",suggestions.seasons],["usageTimes",suggestions.usageTimes],["occasions",suggestions.occasions]].forEach(([name,values]) => {
+      const holder = form?.querySelector(`[data-smart-select][data-name="${name}"]`);
+      if (holder) setSmartSelectValues(holder, values);
+    });
+    const draft = collectReviewProduct(form);
+    if (form?.elements.generatedSeasons) form.elements.generatedSeasons.value = csv(suggestions.seasons);
+    if (form?.elements.generatedUsageTimes) form.elements.generatedUsageTimes.value = csv(suggestions.usageTimes);
+    if (form?.elements.generatedOccasions) form.elements.generatedOccasions.value = csv(suggestions.occasions);
+    state.activeImportDraft = draft;
+    showToast(adminCopy("تم توليد المواسم والأوقات والمناسبات", "Seasons, times and occasions generated"));
   }
   if (action === "ai-product-task") {
     const form = $("#import-review-form");
@@ -9264,6 +9348,7 @@ document.addEventListener("submit", async (event) => {
       ? homepageProductRowsFromAdminForm(event.target)
       : current.homeProductRows;
     const files = [...(event.target.elements.mediaFile?.files || [])];
+    const mobileFiles = [...(event.target.elements.mobileMediaFile?.files || [])];
     const genderImages = { ...current.homeGenderImages };
     const genderUploads = ["men", "women", "unisex"].map((key) => ({
       key,
@@ -9272,7 +9357,12 @@ document.addEventListener("submit", async (event) => {
     ["men", "women", "unisex"].forEach((key) => {
       if (data.has(`genderMediaClear.${key}`)) genderImages[key] = "";
     });
-    const totalUploadCount = files.length + genderUploads.length;
+    const existingMobileUploads = [...event.target.querySelectorAll("[data-home-mobile-upload]")].map((input) => ({
+      id: input.dataset.id,
+      file: input.files?.[0] || null,
+      clear: Boolean(event.target.querySelector(`[data-home-mobile-clear][data-id="${CSS.escape(input.dataset.id)}"]`)?.checked)
+    })).filter((item) => item.file || item.clear);
+    const totalUploadCount = files.length + Math.min(files.length, mobileFiles.length) + existingMobileUploads.filter((item) => item.file).length + genderUploads.length;
     const media = current.homeMedia.map((item) => ({ ...item }));
     event.target.querySelectorAll("[data-home-media-field]").forEach((input) => {
       const item = media.find((candidate) => String(candidate.id) === String(input.dataset.id));
@@ -9281,6 +9371,10 @@ document.addEventListener("submit", async (event) => {
       if (input.type === "checkbox") item[field] = input.checked;
       else if (input.type === "number") item[field] = Number(input.value);
       else item[field] = input.value.trim();
+    });
+    existingMobileUploads.filter((entry) => entry.clear).forEach((entry) => {
+      const item = media.find((candidate) => String(candidate.id) === String(entry.id));
+      if (item) item.mobileUrl = "";
     });
     if (totalUploadCount) {
       try {
@@ -9293,10 +9387,17 @@ document.addEventListener("submit", async (event) => {
             titleAr: "", titleEn: "", descriptionAr: "", descriptionEn: "", buttonAr: "", buttonEn: "",
             href: String(data.get("mediaHref") || "#new-arrivals").trim(), sizeMode: "default",
             imageScale: 100, imagePosition: "center", sortOrder: media.length + index + 1, active: true,
-            url: await uploadStorefrontImage(file, "hero"), createdAt: new Date().toISOString()
+            url: await uploadStorefrontImage(file, "hero"),
+            mobileUrl: mobileFiles[index] ? await uploadStorefrontImage(mobileFiles[index], "hero") : "",
+            createdAt: new Date().toISOString()
           });
         }
         media.push(...uploaded);
+        for (const [index, entry] of existingMobileUploads.filter((item) => item.file).entries()) {
+          if (uploadStatus) uploadStatus.textContent = adminCopy(`جارٍ تجهيز صورة هاتف ${index + 1}…`, `Preparing mobile image ${index + 1}…`);
+          const item = media.find((candidate) => String(candidate.id) === String(entry.id));
+          if (item) item.mobileUrl = await uploadStorefrontImage(entry.file, "hero");
+        }
         for (const [index, item] of genderUploads.entries()) {
           if (uploadStatus) uploadStatus.textContent = adminCopy(`جارٍ تجهيز صورة القسم ${index + 1} من ${genderUploads.length}…`, `Preparing section image ${index + 1} of ${genderUploads.length}…`);
           genderImages[item.key] = await uploadStorefrontImage(item.file, "gender");
@@ -9820,6 +9921,14 @@ $("#web-product-query").addEventListener("input", (event) => {
 
 let notesSearchTimer;
 document.addEventListener("input", (event) => {
+  if (event.target.matches("[data-accord-search]")) {
+    filterAdminAccords(event.target.closest(".accord-admin-editor"));
+    return;
+  }
+  if (event.target.matches('[name="accordSelected"], [name^="accordStrength."]')) {
+    updateAdminAccordEditor(event.target.closest("#import-review-form"));
+    return;
+  }
   if (event.target.matches("[data-smart-search]")) {
     const menu = event.target.closest(".smart-select-menu");
     const query = normalizeOptionSearch(event.target.value);
