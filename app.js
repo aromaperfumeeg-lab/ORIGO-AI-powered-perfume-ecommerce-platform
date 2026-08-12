@@ -2821,9 +2821,11 @@ function initializeProductEditorTabs() {
   const nav = document.createElement("nav");
   nav.className = "product-editor-tabs";
   nav.setAttribute("aria-label", adminCopy("خطوات بيانات المنتج", "Product data steps"));
+  const requestedPanel = String(state.activeProductEditorPanel ?? "0");
+  const activePanel = sections.some((_, index) => String(index) === requestedPanel) ? requestedPanel : "0";
   nav.innerHTML = sections.map((section, index) => {
     section.dataset.productPanel = String(index);
-    const active = index === 0;
+    const active = String(index) === activePanel;
     section.classList.toggle("product-tab-hidden", !active);
     const title = section.querySelector(".review-section-head b")?.textContent?.trim() || `${adminCopy("قسم", "Section")} ${index + 1}`;
     return `<button type="button" data-action="product-editor-panel" data-panel="${index}" class="${active ? "active" : ""}" aria-selected="${active}" title="${escapeHTML(title)}" aria-label="${escapeHTML(title)}"><span>${String(index + 1).padStart(2,"0")}</span><b>${escapeHTML(title)}</b></button>`;
@@ -6941,6 +6943,7 @@ function renderImportReview(product) {
   const alternativeReferenceOptions = activeAlternativeReferences.map((reference) => `<label class="product-reference-choice"><input type="checkbox" name="alternativeReferenceIds" value="${escapeHTML(reference.id)}"${linkedReferenceIds.has(reference.id) ? " checked" : ""}/><img src="${escapeHTML(reference.image)}" alt=""/><span><b>${escapeHTML(adminCopy(reference.nameAr, reference.nameEn))}</b><small>${escapeHTML(reference.brand)}</small></span></label>`).join("");
   $("#import-workspace").innerHTML = `
     <form class="catalog-review" id="import-review-form" data-editor-mode="${escapeHTML(state.productEditorMode)}">
+      <div class="product-editor-status" data-product-editor-status role="alert" aria-live="assertive" hidden></div>
       ${perfumeBundleEditorSection(product)}
       <div class="product-editor-modes">
         <button type="button" data-action="product-editor-mode" data-mode="smart" class="${state.productEditorMode === "smart" ? "active" : ""}" title="${adminCopy("الحقول الأساسية", "Essential fields")}" aria-label="${adminCopy("الحقول الأساسية", "Essential fields")}"><span aria-hidden="true">▤</span></button>
@@ -7132,7 +7135,7 @@ function perfumeBundleEditorSection(product = {}) {
     <input type="hidden" name="perfumeBundleData" value="${escapeHTML(stored ? JSON.stringify(stored) : "")}"/>
     <label class="wide perfume-bundle-textarea">${adminCopy("حزمة JSON", "JSON bundle")}<textarea name="perfumeBundleText" dir="ltr" rows="12" spellcheck="false" placeholder='{"perfume":{"name_ar":"...","name_en":"..."}}'></textarea></label>
     <div class="perfume-bundle-actions"><button type="button" class="button burgundy-button" data-action="parse-perfume-bundle">${adminCopy("تحليل واستيراد البيانات", "Parse & Import")}</button><button type="button" class="button secondary-button" data-action="clear-perfume-bundle">${adminCopy("مسح الحزمة", "Clear bundle")}</button></div>
-    <div class="perfume-bundle-feedback" data-perfume-bundle-feedback hidden></div>
+    <div class="perfume-bundle-feedback" data-perfume-bundle-feedback${product.bundleImportFeedback ? "" : " hidden"}>${product.bundleImportFeedback || ""}</div>
   </section>`;
 }
 
@@ -7223,6 +7226,54 @@ function applyPerfumeBundleToEditor(form, normalized) {
   updateProductTypeFields(form);
   state.activeImportDraft = collectReviewProduct(form);
   updateProductEditorPreview(form);
+}
+
+function safelyPersistFragranceNotes() {
+  try {
+    const value = JSON.stringify(window.ORIGOFragranceNotes?.getState?.() || {});
+    localStorage.setItem("origoFragranceNotesState", value);
+    return true;
+  } catch (error) {
+    if (error?.name === "QuotaExceededError" || /quota/i.test(String(error?.message || ""))) {
+      localStorage.removeItem("origoFragranceNotesState");
+      console.warn("[ORIGO NOTES STORAGE] Local note cache was cleared because it exceeded browser storage.");
+      return false;
+    }
+    console.warn("[ORIGO NOTES STORAGE]", error);
+    return false;
+  }
+}
+
+function productEditorStatus(form, type, title, detail = "", field = null) {
+  const holder = form?.querySelector("[data-product-editor-status]");
+  if (holder) {
+    holder.hidden = false;
+    holder.className = `product-editor-status ${type || "error"}`;
+    holder.innerHTML = `<b>${escapeHTML(title)}</b><span>${escapeHTML(detail || title)}</span><button type="button" data-action="dismiss-product-editor-status">×</button>`;
+  }
+  if (field) {
+    const section = field.closest?.("[data-product-panel]");
+    if (section) {
+      const panel = String(section.dataset.productPanel);
+      state.activeProductEditorPanel = panel;
+      form.querySelectorAll("[data-product-panel]").forEach((item) => item.classList.toggle("product-tab-hidden", item !== section));
+      form.querySelectorAll('[data-action="product-editor-panel"]').forEach((button) => {
+        const active = button.dataset.panel === panel;
+        button.classList.toggle("active", active);
+        button.setAttribute("aria-selected", String(active));
+      });
+    }
+    field.setAttribute("aria-invalid", "true");
+    (field.closest("label") || field).scrollIntoView?.({ behavior:"smooth", block:"center" });
+    if (field.type !== "file" && !field.hidden) field.focus?.({ preventScroll:true });
+  } else holder?.scrollIntoView?.({ behavior:"smooth", block:"nearest" });
+  if (type === "error") showToast(detail || title, "error");
+}
+
+function clearProductEditorStatus(form) {
+  const holder = form?.querySelector("[data-product-editor-status]");
+  if (holder) { holder.hidden = true; holder.innerHTML = ""; }
+  form?.querySelectorAll('[aria-invalid="true"]').forEach((field) => field.removeAttribute("aria-invalid"));
 }
 
 function derivePerfumeUsageFromAccords(accords = [], longevity = 0, projection = "") {
@@ -7425,7 +7476,7 @@ function collectReviewProduct(form) {
         })),
         unmatched: noteLibrary.unknown
       };
-      localStorage.setItem("origoFragranceNotesState", JSON.stringify(window.ORIGOFragranceNotes.getState()));
+      safelyPersistFragranceNotes();
     }
     const knowledge = window.ORIGOFragranceKnowledge?.enrichProduct(product);
     if (knowledge?.fields?.length) {
@@ -7561,7 +7612,7 @@ async function handleGalleryUpload(input) {
   const draft = collectReviewProduct(form);
   const files = [...input.files].slice(0, Math.max(0, 10 - (draft.images || []).length));
   if (!files.length) {
-    showToast(adminCopy("الحد الأقصى 10 صور للمنتج", "Maximum 10 product images"));
+    productEditorStatus(form, "error", adminCopy("تعذر إضافة الصور", "Could not add images"), adminCopy("اختر صورة صالحة، والحد الأقصى 10 صور للمنتج.", "Choose a valid image; the maximum is 10 product images."), input);
     return;
   }
   input.closest(".gallery-upload").classList.add("loading");
@@ -7579,11 +7630,12 @@ async function handleGalleryUpload(input) {
     draft.images = [...draft.images, ...uploaded];
     state.activeImportDraft = draft;
     renderImportReview(draft);
+    productEditorStatus($("#import-review-form"), "success", adminCopy("تم رفع الصور", "Images uploaded"), adminCopy(`تمت إضافة ${uploaded.length} صورة مع الاسم والترتيب والصورة الرئيسية.`, `${uploaded.length} images were added with filename, order, and primary-image selection.`));
     showToast(adminCopy(`تمت إضافة ${uploaded.length} صورة من المعرض`, `${uploaded.length} gallery images added`));
   } catch (error) {
     console.error("[ORIGO PRODUCT IMAGE]", error);
     input.value = "";
-    showToast(error.message || adminCopy("تعذر إضافة الصورة.", "Could not add image."), "error");
+    productEditorStatus(form, "error", adminCopy("فشل رفع الصور", "Image upload failed"), error.message || adminCopy("تحقق من نوع الصورة وحجمها واتصال الخادم.", "Check the image type, size, and server connection."), input);
   } finally {
     input.closest(".gallery-upload")?.classList.remove("loading");
   }
@@ -7627,6 +7679,7 @@ function updateDuplicateWarning(form) {
 }
 
 async function saveCatalogProduct(form, workflowAction = "draft") {
+  clearProductEditorStatus(form);
   let product = collectReviewProduct(form);
   const newInspiredReference = {
     nameAr: String(form.elements.newInspiredNameAr?.value || "").trim(),
@@ -7640,6 +7693,7 @@ async function saveCatalogProduct(form, workflowAction = "draft") {
     if (!newInspiredReference.nameAr || !newInspiredReference.nameEn || !newInspiredReference.brand) {
       showToast(adminCopy("لإضافة عطر مرجعي جديد أدخل الاسم بالعربية والإنجليزية والعلامة التجارية.", "To add a new reference, enter its Arabic name, English name, and brand."));
       const invalidField = !newInspiredReference.nameAr ? form.elements.newInspiredNameAr : !newInspiredReference.nameEn ? form.elements.newInspiredNameEn : form.elements.newInspiredBrand;
+      productEditorStatus(form, "error", adminCopy("تعذر الحفظ", "Save failed"), adminCopy("بيانات العطر المرجعي الجديد غير مكتملة.", "The new reference fragrance details are incomplete."), invalidField);
       invalidField?.focus();
       invalidField?.scrollIntoView({ behavior: "smooth", block: "center" });
       return;
@@ -7659,17 +7713,17 @@ async function saveCatalogProduct(form, workflowAction = "draft") {
   const duplicate = findDuplicate(product, product.id);
   if (duplicate) {
     updateDuplicateWarning(form);
-    showToast(adminCopy("تم إيقاف الحفظ: المنتج موجود مسبقًا", "Save blocked: product already exists"));
+    productEditorStatus(form, "error", adminCopy("تم إيقاف الحفظ", "Save blocked"), adminCopy("يوجد منتج مطابق مسبقاً؛ عدّل الاسم أو العلامة أو SKU.", "A matching product already exists; change the name, brand, or SKU."));
     return;
   }
   if (!product.nameAr && !product.nameEn) {
-    showToast(adminCopy("أدخل اسم المنتج بلغة واحدة على الأقل", "Enter the product name in at least one language"));
+    productEditorStatus(form, "error", adminCopy("تعذر الحفظ", "Save failed"), adminCopy("أدخل اسم المنتج بلغة واحدة على الأقل.", "Enter the product name in at least one language."), form.elements.nameAr || form.elements.nameEn);
     return;
   }
   if (product.oldPrice != null && product.oldPrice <= product.price) {
     form.elements.oldPrice?.setCustomValidity(adminCopy("يجب أن يكون السعر قبل الخصم أكبر من السعر الحالي.", "Compare-at price must exceed the current price."));
     form.elements.oldPrice?.reportValidity();
-    showToast(adminCopy("راجع السعر قبل الخصم.", "Check the compare-at price."));
+    productEditorStatus(form, "error", adminCopy("تعذر الحفظ", "Save failed"), adminCopy("السعر قبل الخصم يجب أن يكون أكبر من السعر الحالي.", "The compare-at price must be greater than the current price."), form.elements.oldPrice);
     return;
   }
   if (product.status === "published") {
@@ -7681,7 +7735,8 @@ async function saveCatalogProduct(form, workflowAction = "draft") {
       [!(product.images || []).length, adminCopy("صورة المنتج", "product image")]
     ].filter(([invalid]) => invalid).map(([,label]) => label);
     if (missing.length) {
-      showToast(`${adminCopy("لا يمكن النشر. الحقول الناقصة:", "Cannot publish. Missing:")} ${missing.join(adminCopy("، ", ", "))}`, "error");
+      const target = !product.brand ? form.elements.brand : !product.size ? form.elements.size : !(Number(product.price)>0) ? form.elements.price : !(product.images||[]).length ? form.elements["gallery-upload"] || form.querySelector("#gallery-upload") : form.elements.nameAr;
+      productEditorStatus(form, "error", adminCopy("لا يمكن نشر المنتج", "Product cannot be published"), `${adminCopy("الحقول الناقصة:", "Missing fields:")} ${missing.join(adminCopy("، ", ", "))}`, target);
       return;
     }
     if (!window.confirm(adminCopy("هل تريد نشر المنتج الآن وإظهاره للعملاء؟", "Publish this product and make it visible to customers now?"))) return;
@@ -7729,7 +7784,7 @@ async function saveCatalogProduct(form, workflowAction = "draft") {
   } catch (error) {
     form.querySelectorAll("[type='submit']").forEach((button) => button.disabled = false);
     submit.innerHTML = originalLabel;
-    showToast(error.message);
+    productEditorStatus(form, "error", adminCopy("فشل الحفظ النهائي", "Final save failed"), error.message || adminCopy("لم يقبل الخادم بيانات المنتج.", "The server did not accept the product data."));
     return;
   }
   const existingIndex = state.catalogProducts.findIndex((item) => item.id === product.id);
@@ -7942,13 +7997,35 @@ document.addEventListener("click", async (event) => {
     const form = actionElement.closest("#import-review-form");
     const feedback = form?.querySelector("[data-perfume-bundle-feedback]");
     try {
+      clearProductEditorStatus(form);
       const raw = window.ORIGOPerfumeBundle.parsePerfumeBundle(form.elements.perfumeBundleText.value);
       window.ORIGOPerfumeBundle.validatePerfumeBundle(raw);
       const normalized = window.ORIGOPerfumeBundle.normalizePerfumeBundle(raw);
-      applyPerfumeBundleToEditor(form, normalized);
+      const current = collectReviewProduct(form);
+      const merged = window.ORIGOPerfumeBundle.applyPerfumeBundleToProduct(current, normalized);
+      merged.category = "perfume";
+      merged.notes = {
+        ...(current.notes || {}),
+        topAr:normalized.notes.top.map((item) => item.ar || item.en), topEn:normalized.notes.top.map((item) => item.en || item.ar),
+        heartAr:normalized.notes.heart.map((item) => item.ar || item.en), heartEn:normalized.notes.heart.map((item) => item.en || item.ar),
+        baseAr:normalized.notes.base.map((item) => item.ar || item.en), baseEn:normalized.notes.base.map((item) => item.en || item.ar)
+      };
+      merged.noteSelections = {
+        top:normalized.notes.top.map((item) => item.en || item.ar),
+        heart:normalized.notes.heart.map((item) => item.en || item.ar),
+        base:normalized.notes.base.map((item) => item.en || item.ar)
+      };
+      merged.families = [normalized.derived.olfactiveFamily.en || normalized.derived.olfactiveFamily.ar].filter(Boolean);
+      merged.performance = { ...(merged.performance || {}), projection:normalizeAdminProjection(normalized.unknownFields.sillage), longevity:normalized.unknownFields.longevity_hours ?? merged.performance?.longevity };
+      merged.perfumeBundle = normalized;
+      merged.bundleImportFeedback = `<b>✓ ${adminCopy("تمت تعبئة الحزمة", "Bundle populated")}</b><small>${adminCopy("تم ملء الهوية والنوتات والأكوردات والأداء والاستخدام. راجع البوابات قبل الحفظ.", "Identity, notes, accords, performance, and usage were populated. Review the gates before saving.")}</small>`;
+      state.activeImportDraft = merged;
+      state.activeProductEditorPanel = "0";
+      renderImportReview(merged);
       showToast(adminCopy("تم استيراد الحزمة إلى النموذج دون حفظ المنتج.", "Bundle imported into the form without saving the product."));
     } catch (error) {
       if (feedback) { feedback.hidden=false; feedback.className="perfume-bundle-feedback error"; feedback.textContent=error.message; }
+      productEditorStatus(form, "error", adminCopy("تعذر تعبئة الحزمة", "Bundle import failed"), error.message || adminCopy("راجع صيغة الحزمة ثم أعد المحاولة.", "Review the bundle format and try again."), form?.elements.perfumeBundleText);
     }
     return;
   }
@@ -8510,6 +8587,7 @@ document.addEventListener("click", async (event) => {
   if (action === "product-editor-panel") {
     const form = actionElement.closest("#import-review-form");
     const panel = String(actionElement.dataset.panel || "0");
+    state.activeProductEditorPanel = panel;
     $$('[data-product-panel]', form).forEach((section) => section.classList.toggle("product-tab-hidden", section.dataset.productPanel !== panel));
     $$('.product-editor-tabs [data-action="product-editor-panel"]', form).forEach((button) => {
       const active = button.dataset.panel === panel;
@@ -8518,6 +8596,7 @@ document.addEventListener("click", async (event) => {
     });
     form.querySelector(`[data-product-panel="${panel}"]`)?.scrollIntoView({ block: "start", behavior: "smooth" });
   }
+  if (action === "dismiss-product-editor-status") clearProductEditorStatus(actionElement.closest("#import-review-form"));
   if (action === "save-alternative-match") {
     const form = actionElement.closest("[data-alternative-match]");
     const data = new FormData(form);
@@ -10436,6 +10515,13 @@ document.addEventListener("change", async (event) => {
     }
   }
 });
+
+document.addEventListener("invalid", (event) => {
+  const form = event.target.closest?.("#import-review-form");
+  if (!form) return;
+  const label = event.target.closest("label")?.querySelector(":scope > span")?.textContent?.trim() || event.target.name || adminCopy("حقل مطلوب", "Required field");
+  productEditorStatus(form, "error", adminCopy("تعذر تنفيذ الإجراء", "Action could not be completed"), `${label}: ${event.target.validationMessage || adminCopy("راجع قيمة الحقل.", "Review this field.")}`, event.target);
+}, true);
 
 $("#alternative-input")?.addEventListener("keydown", (event) => {
   if (event.key === "Enter") runAlternativeSearch();
