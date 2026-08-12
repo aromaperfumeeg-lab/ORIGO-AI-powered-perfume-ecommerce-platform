@@ -879,7 +879,7 @@ async function handleAPI(request, response, url, origin) {
 
   if (url.pathname === "/api/products" && request.method === "GET") {
     return jsonResponse(response, 200, { products: listProducts() }, origin, {
-      "Cache-Control": "public, max-age=30, stale-while-revalidate=120"
+      "Cache-Control": "no-store, max-age=0, must-revalidate"
     });
   }
 

@@ -1158,7 +1158,7 @@ const state = {
   productRatings: readStoredObject("origoProductRatings"),
   selectedNotes: [],
   catalogProducts: initialCatalogProducts,
-  products: [...baseProducts, ...initialCatalogProducts.filter((product) => product.status === "published").map(toStorefrontProduct)],
+  products: initialCatalogProducts.filter((product) => product.status === "published").map(toStorefrontProduct),
   webResults: [],
   activeProductId: null,
   activeProductQuantity: 1,
@@ -1310,8 +1310,7 @@ function mergeCartItems(first, second) {
 }
 
 function serverProduct(product) {
-  const local = baseProducts.find((item) => item.id === product.id);
-  return local ? { ...local, ...product, insights: local.insights } : toStorefrontProduct(product);
+  return toStorefrontProduct(product);
 }
 
 let cartSyncTimer;
@@ -1388,7 +1387,7 @@ function localizedProductName(product, lang = state.lang) {
 }
 
 function rebuildStorefrontProducts() {
-  const productsById = new Map(baseProducts.map((product) => [product.id, product]));
+  const productsById = new Map();
   state.catalogProducts
     .filter((product) => product.status === "published")
     .forEach((product) => productsById.set(product.id, serverProduct(product)));
@@ -1414,7 +1413,11 @@ function updateAccountIndicator() {
       : translations[state.lang].account;
   });
   $$(".mobile-admin-link").forEach((button) => {
-    button.hidden = !isStaffUser();
+    button.hidden = false;
+    const label = button.querySelector("b");
+    if (label) label.textContent = isStaffUser()
+      ? adminCopy("لوحة تحكم المتجر", "Store dashboard")
+      : adminCopy("دخول مدير المتجر", "Store manager sign in");
   });
   $$('[data-account-settings]').forEach((button) => {
     const staff = isStaffUser();
@@ -1458,9 +1461,9 @@ async function hydrateServer() {
     state.serverAvailable = results[0]?.status === "fulfilled";
     if (notesState.state && Object.keys(notesState.state).length) {
       window.ORIGOFragranceNotes?.setState(notesState.state);
-      localStorage.setItem("origoFragranceNotesState", JSON.stringify(notesState.state));
+      safelyPersistFragranceNotes();
     }
-    if (Array.isArray(catalog.products) && catalog.products.length) state.products = catalog.products.map(serverProduct);
+    if (Array.isArray(catalog.products)) state.products = catalog.products.map(serverProduct);
     state.user = session.user || null;
     if (state.user) {
       if (cartOwner === String(state.user.id)) {
@@ -4867,7 +4870,7 @@ function productNotePyramid(product) {
       }).join("")}</div>
     </div>`;
   }).join("");
-  if (stateChanged) localStorage.setItem("origoFragranceNotesState", JSON.stringify(library.getState()));
+  if (stateChanged) safelyPersistFragranceNotes();
   if (!rows) return "";
   return `<section class="dialog-note-pyramid"><div class="panel-title"><div><span class="eyebrow">${state.lang === "ar" ? "التركيبة" : "COMPOSITION"}</span>
     <h3>${state.lang === "ar" ? "هرم المكونات العطرية" : "Fragrance note pyramid"}</h3></div><span class="panel-icon">⌁</span></div>${rows}</section>`;
@@ -6444,7 +6447,7 @@ function normalizeOptionSearch(value = "") {
 function productOptionItems(group) {
   const defaults = (PRODUCT_OPTION_DEFAULTS[group] || []).map(([value,nameAr,nameEn,icon]) => ({ group, value, slug: value, nameAr, nameEn, icon, active: true, builtIn: true }));
   if (group === "brand") {
-    const brands = [...new Set([...ORIGO_PERFUME_BRANDS, ...baseProducts, ...state.catalogProducts].map((product) => typeof product === "string" ? product : product.brand).filter(Boolean))];
+    const brands = [...new Set([...ORIGO_PERFUME_BRANDS, ...state.catalogProducts].map((product) => typeof product === "string" ? product : product.brand).filter(Boolean))];
     defaults.push(...brands.map((brand) => ({ group, value: brand, slug: normalizeOptionSearch(brand).replaceAll(" ", "-"), nameAr: brand, nameEn: brand, icon: "◇", active: true, builtIn: true })));
   }
   if (group === "note") {
@@ -6520,7 +6523,7 @@ function findDuplicate(product, excludeId = "") {
   const nameAr = ORIGOCatalog.normalize(product.nameAr);
   const nameEn = ORIGOCatalog.normalize(product.nameEn);
   const brand = ORIGOCatalog.normalize(product.brand);
-  return [...baseProducts, ...state.catalogProducts].find((item) => {
+  return state.catalogProducts.find((item) => {
     if (item.id === excludeId) return false;
     if (product.sku && item.sku && ORIGOCatalog.normalize(product.sku) === ORIGOCatalog.normalize(item.sku)) return true;
     if (product.barcode && item.barcode && product.barcode === item.barcode) return true;

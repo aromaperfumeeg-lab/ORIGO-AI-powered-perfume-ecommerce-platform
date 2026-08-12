@@ -740,6 +740,17 @@ try {
   throw error;
 }
 
+// These records were development fixtures. The live storefront is controlled
+// exclusively by products created in the manager, so fixtures must not return
+// after an administrator deletes them.
+const storefrontFixtureIds = [
+  "nocturne", "velvet-iris", "smoked", "citrus-veil",
+  "demo-lattafa-khamrah", "demo-lattafa-asad",
+  "demo-xerjoff-naxos", "demo-initio-oud-for-greatness"
+];
+const storefrontFixtureMarks = storefrontFixtureIds.map(() => "?").join(",");
+db.prepare(`DELETE FROM products WHERE id IN (${storefrontFixtureMarks})`).run(...storefrontFixtureIds);
+
 const seedReferencePerfumes = [
   {
     id: "ombre-leather", slug: "ombre-leather", nameAr: "أومبري ليذر", nameEn: "Ombre Leather",
@@ -814,12 +825,15 @@ try {
     item.referencePrice, item.gender, item.familyAr, item.familyEn, JSON.stringify(item.notes),
     JSON.stringify(item.accords), JSON.stringify(item.performance), JSON.stringify(item.seasons), JSON.stringify(item.occasions)
   );
-  for (const item of seedAlternativeMatches) insertAlternativeMatch.run(
+  for (const item of seedAlternativeMatches) {
+    if (!db.prepare("SELECT 1 FROM products WHERE id=?").get(item.productId)) continue;
+    insertAlternativeMatch.run(
     item.referenceId, item.productId, item.similarity, item.confidence, item.reasonAr, item.reasonEn,
     JSON.stringify(item.similaritiesAr), JSON.stringify(item.similaritiesEn),
     JSON.stringify(item.differencesAr), JSON.stringify(item.differencesEn),
     JSON.stringify(item.sharedAr), JSON.stringify(item.sharedEn), JSON.stringify(item.comparison), item.sortOrder
-  );
+    );
+  }
   db.prepare(`INSERT OR IGNORE INTO homepage_alternatives_settings (id, payload_json) VALUES (1, ?)`).run(JSON.stringify({
     enabled: true, sectionEnabled: true, bannerEnabled: true, count: 4, mode: "manual",
     titleAr: "بدائل تستحق التجربة", titleEn: "Alternatives Worth Trying",
