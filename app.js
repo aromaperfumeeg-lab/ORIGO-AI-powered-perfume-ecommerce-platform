@@ -1158,7 +1158,7 @@ const state = {
   productRatings: readStoredObject("origoProductRatings"),
   selectedNotes: [],
   catalogProducts: initialCatalogProducts,
-  products: [...baseProducts, ...initialCatalogProducts.filter((product) => product.status === "published").map(toStorefrontProduct)],
+  products: initialCatalogProducts.filter((product) => product.status === "published").map(toStorefrontProduct),
   webResults: [],
   activeProductId: null,
   activeProductQuantity: 1,
@@ -1310,8 +1310,7 @@ function mergeCartItems(first, second) {
 }
 
 function serverProduct(product) {
-  const local = baseProducts.find((item) => item.id === product.id);
-  return local ? { ...local, ...product, insights: local.insights } : toStorefrontProduct(product);
+  return toStorefrontProduct(product);
 }
 
 let cartSyncTimer;
@@ -1388,7 +1387,7 @@ function localizedProductName(product, lang = state.lang) {
 }
 
 function rebuildStorefrontProducts() {
-  const productsById = new Map(baseProducts.map((product) => [product.id, product]));
+  const productsById = new Map();
   state.catalogProducts
     .filter((product) => product.status === "published")
     .forEach((product) => productsById.set(product.id, serverProduct(product)));
@@ -1460,7 +1459,7 @@ async function hydrateServer() {
       window.ORIGOFragranceNotes?.setState(notesState.state);
       localStorage.setItem("origoFragranceNotesState", JSON.stringify(notesState.state));
     }
-    if (Array.isArray(catalog.products) && catalog.products.length) state.products = catalog.products.map(serverProduct);
+    if (Array.isArray(catalog.products)) state.products = catalog.products.map(serverProduct);
     state.user = session.user || null;
     if (state.user) {
       if (cartOwner === String(state.user.id)) {
@@ -2821,11 +2820,14 @@ function initializeProductEditorTabs() {
   const nav = document.createElement("nav");
   nav.className = "product-editor-tabs";
   nav.setAttribute("aria-label", adminCopy("خطوات بيانات المنتج", "Product data steps"));
+  const requestedPanel = String(state.activeProductEditorPanel ?? "0");
+  const activePanel = sections.some((_, index) => String(index) === requestedPanel) ? requestedPanel : "0";
   nav.innerHTML = sections.map((section, index) => {
     section.dataset.productPanel = String(index);
-    section.classList.toggle("product-tab-hidden", index !== 0);
+    const active = String(index) === activePanel;
+    section.classList.toggle("product-tab-hidden", !active);
     const title = section.querySelector(".review-section-head b")?.textContent?.trim() || `${adminCopy("قسم", "Section")} ${index + 1}`;
-    return `<button type="button" data-action="product-editor-panel" data-panel="${index}" class="${index === 0 ? "active" : ""}" aria-selected="${index === 0}" title="${escapeHTML(title)}" aria-label="${escapeHTML(title)}"><span>${String(index + 1).padStart(2,"0")}</span><b>${escapeHTML(title)}</b></button>`;
+    return `<button type="button" data-action="product-editor-panel" data-panel="${index}" class="${active ? "active" : ""}" aria-selected="${active}" title="${escapeHTML(title)}" aria-label="${escapeHTML(title)}"><span>${String(index + 1).padStart(2,"0")}</span><b>${escapeHTML(title)}</b></button>`;
   }).join("");
   const anchor = form.querySelector(".review-summary") || form.firstElementChild;
   anchor?.insertAdjacentElement("afterend", nav);
@@ -6319,6 +6321,7 @@ function resetImportWorkspace() {
 }
 
 function startManualProduct(restore = false) {
+  state.activeProductEditorPanel = "0";
   let product = ORIGOCatalog.emptyProduct();
   if (restore) {
     try {
@@ -6441,7 +6444,7 @@ function normalizeOptionSearch(value = "") {
 function productOptionItems(group) {
   const defaults = (PRODUCT_OPTION_DEFAULTS[group] || []).map(([value,nameAr,nameEn,icon]) => ({ group, value, slug: value, nameAr, nameEn, icon, active: true, builtIn: true }));
   if (group === "brand") {
-    const brands = [...new Set([...ORIGO_PERFUME_BRANDS, ...baseProducts, ...state.catalogProducts].map((product) => typeof product === "string" ? product : product.brand).filter(Boolean))];
+    const brands = [...new Set([...ORIGO_PERFUME_BRANDS, ...state.catalogProducts].map((product) => typeof product === "string" ? product : product.brand).filter(Boolean))];
     defaults.push(...brands.map((brand) => ({ group, value: brand, slug: normalizeOptionSearch(brand).replaceAll(" ", "-"), nameAr: brand, nameEn: brand, icon: "◇", active: true, builtIn: true })));
   }
   if (group === "note") {
@@ -6517,7 +6520,7 @@ function findDuplicate(product, excludeId = "") {
   const nameAr = ORIGOCatalog.normalize(product.nameAr);
   const nameEn = ORIGOCatalog.normalize(product.nameEn);
   const brand = ORIGOCatalog.normalize(product.brand);
-  return [...baseProducts, ...state.catalogProducts].find((item) => {
+  return state.catalogProducts.find((item) => {
     if (item.id === excludeId) return false;
     if (product.sku && item.sku && ORIGOCatalog.normalize(product.sku) === ORIGOCatalog.normalize(item.sku)) return true;
     if (product.barcode && item.barcode && product.barcode === item.barcode) return true;
@@ -6940,6 +6943,11 @@ function renderImportReview(product) {
   const alternativeReferenceOptions = activeAlternativeReferences.map((reference) => `<label class="product-reference-choice"><input type="checkbox" name="alternativeReferenceIds" value="${escapeHTML(reference.id)}"${linkedReferenceIds.has(reference.id) ? " checked" : ""}/><img src="${escapeHTML(reference.image)}" alt=""/><span><b>${escapeHTML(adminCopy(reference.nameAr, reference.nameEn))}</b><small>${escapeHTML(reference.brand)}</small></span></label>`).join("");
   $("#import-workspace").innerHTML = `
     <form class="catalog-review" id="import-review-form" data-editor-mode="${escapeHTML(state.productEditorMode)}">
+      <div class="product-action-message" data-product-action-message role="status" aria-live="assertive" hidden>
+        <span class="product-action-message-icon" aria-hidden="true">!</span>
+        <div><b data-product-action-title></b><p data-product-action-detail></p></div>
+        <button type="button" data-action="dismiss-product-message" aria-label="${adminCopy("إغلاق الرسالة", "Dismiss message")}">×</button>
+      </div>
       ${perfumeBundleEditorSection(product)}
       <div class="product-editor-modes">
         <button type="button" data-action="product-editor-mode" data-mode="smart" class="${state.productEditorMode === "smart" ? "active" : ""}" title="${adminCopy("الحقول الأساسية", "Essential fields")}" aria-label="${adminCopy("الحقول الأساسية", "Essential fields")}"><span aria-hidden="true">▤</span></button>
@@ -7097,6 +7105,48 @@ function renderImportReview(product) {
   updateGeneratedProductSeo($("#import-review-form"));
   filterAdminAccords($("#import-review-form")?.querySelector(".accord-admin-editor"));
   initializeProductEditorTabs();
+}
+
+function setProductActionMessage(form, type, title, detail = "", field = null) {
+  const message = form?.querySelector?.("[data-product-action-message]");
+  const text = String(detail || title || adminCopy("تعذر إكمال الإجراء.", "The action could not be completed."));
+  if (message) {
+    message.hidden = false;
+    message.className = `product-action-message ${type || "error"}`;
+    const titleHolder = message.querySelector("[data-product-action-title]");
+    const detailHolder = message.querySelector("[data-product-action-detail]");
+    if (titleHolder) titleHolder.textContent = title || adminCopy("تعذر إكمال الإجراء", "Action could not be completed");
+    if (detailHolder) detailHolder.textContent = text;
+  }
+  if (field) {
+    const section = field.closest?.("[data-product-panel]");
+    if (section) {
+      const panel = String(section.dataset.productPanel || "0");
+      state.activeProductEditorPanel = panel;
+      form.querySelectorAll("[data-product-panel]").forEach((item) => item.classList.toggle("product-tab-hidden", item !== section));
+      form.querySelectorAll('.product-editor-tabs [data-action="product-editor-panel"]').forEach((button) => {
+        const active = button.dataset.panel === panel;
+        button.classList.toggle("active", active);
+        button.setAttribute("aria-selected", String(active));
+      });
+    }
+    field.setAttribute("aria-invalid", "true");
+    const target = field.hidden || field.type === "file" ? (field.closest("label") || field.closest("[data-product-panel]") || field) : field;
+    target.scrollIntoView?.({ behavior: "smooth", block: "center" });
+    if (!field.hidden && field.type !== "file") field.focus?.({ preventScroll: true });
+  } else {
+    message?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+  if (type === "error") showToast(text, "error");
+}
+
+function clearProductActionMessage(form) {
+  const message = form?.querySelector?.("[data-product-action-message]");
+  if (message) {
+    message.hidden = true;
+    message.className = "product-action-message";
+  }
+  form?.querySelectorAll?.('[aria-invalid="true"]').forEach((field) => field.removeAttribute("aria-invalid"));
 }
 
 function optionValuesForProduct(group, rawValue) {
@@ -7560,7 +7610,7 @@ async function handleGalleryUpload(input) {
   const draft = collectReviewProduct(form);
   const files = [...input.files].slice(0, Math.max(0, 10 - (draft.images || []).length));
   if (!files.length) {
-    showToast(adminCopy("الحد الأقصى 10 صور للمنتج", "Maximum 10 product images"));
+    setProductActionMessage(form, "error", adminCopy("تعذر إضافة الصور", "Could not add images"), adminCopy("الحد الأقصى هو 10 صور للمنتج، أو لم يتم اختيار ملف.", "The maximum is 10 product images, or no file was selected."), input);
     return;
   }
   input.closest(".gallery-upload").classList.add("loading");
@@ -7578,11 +7628,12 @@ async function handleGalleryUpload(input) {
     draft.images = [...draft.images, ...uploaded];
     state.activeImportDraft = draft;
     renderImportReview(draft);
+    setProductActionMessage($("#import-review-form"), "success", adminCopy("تم رفع الصور", "Images uploaded"), adminCopy(`ظهرت ${uploaded.length} صورة جديدة ويمكنك الآن ترتيبها أو حذفها.`, `${uploaded.length} new images are visible and can now be reordered or deleted.`));
     showToast(adminCopy(`تمت إضافة ${uploaded.length} صورة من المعرض`, `${uploaded.length} gallery images added`));
   } catch (error) {
     console.error("[ORIGO PRODUCT IMAGE]", error);
     input.value = "";
-    showToast(error.message || adminCopy("تعذر إضافة الصورة.", "Could not add image."), "error");
+    setProductActionMessage(form, "error", adminCopy("تعذر رفع الصور", "Image upload failed"), error.message || adminCopy("تعذر قراءة الصورة أو حفظها على الخادم. تحقق من النوع والحجم والاتصال.", "The image could not be read or stored. Check its type, size, and connection."), input);
   } finally {
     input.closest(".gallery-upload")?.classList.remove("loading");
   }
@@ -7626,6 +7677,7 @@ function updateDuplicateWarning(form) {
 }
 
 async function saveCatalogProduct(form, workflowAction = "draft") {
+  clearProductActionMessage(form);
   let product = collectReviewProduct(form);
   const newInspiredReference = {
     nameAr: String(form.elements.newInspiredNameAr?.value || "").trim(),
@@ -7637,8 +7689,8 @@ async function saveCatalogProduct(form, workflowAction = "draft") {
   let inspiredReferenceId = String(form.elements.inspiredReferenceId?.value || "").trim();
   if (wantsNewInspiredReference) {
     if (!newInspiredReference.nameAr || !newInspiredReference.nameEn || !newInspiredReference.brand) {
-      showToast(adminCopy("لإضافة عطر مرجعي جديد أدخل الاسم بالعربية والإنجليزية والعلامة التجارية.", "To add a new reference, enter its Arabic name, English name, and brand."));
       const invalidField = !newInspiredReference.nameAr ? form.elements.newInspiredNameAr : !newInspiredReference.nameEn ? form.elements.newInspiredNameEn : form.elements.newInspiredBrand;
+      setProductActionMessage(form, "error", adminCopy("تعذر حفظ المنتج", "Product could not be saved"), adminCopy("لإضافة عطر مرجعي جديد أدخل الاسم بالعربية والإنجليزية والعلامة التجارية.", "To add a new reference, enter its Arabic name, English name, and brand."), invalidField);
       invalidField?.focus();
       invalidField?.scrollIntoView({ behavior: "smooth", block: "center" });
       return;
@@ -7658,29 +7710,29 @@ async function saveCatalogProduct(form, workflowAction = "draft") {
   const duplicate = findDuplicate(product, product.id);
   if (duplicate) {
     updateDuplicateWarning(form);
-    showToast(adminCopy("تم إيقاف الحفظ: المنتج موجود مسبقًا", "Save blocked: product already exists"));
+    setProductActionMessage(form, "error", adminCopy("تم إيقاف الحفظ", "Save blocked"), adminCopy("يوجد منتج مطابق أو مشابه مسبقًا. راجع رسالة التكرار ثم عدّل الاسم أو العلامة أو SKU.", "A matching or similar product already exists. Review the duplicate warning, then change its name, brand, or SKU."));
     return;
   }
   if (!product.nameAr && !product.nameEn) {
-    showToast(adminCopy("أدخل اسم المنتج بلغة واحدة على الأقل", "Enter the product name in at least one language"));
+    setProductActionMessage(form, "error", adminCopy("تعذر حفظ المنتج", "Product could not be saved"), adminCopy("أدخل اسم المنتج بالعربية أو الإنجليزية على الأقل.", "Enter the product name in Arabic or English."), form.elements.nameAr || form.elements.nameEn);
     return;
   }
   if (product.oldPrice != null && product.oldPrice <= product.price) {
     form.elements.oldPrice?.setCustomValidity(adminCopy("يجب أن يكون السعر قبل الخصم أكبر من السعر الحالي.", "Compare-at price must exceed the current price."));
     form.elements.oldPrice?.reportValidity();
-    showToast(adminCopy("راجع السعر قبل الخصم.", "Check the compare-at price."));
+    setProductActionMessage(form, "error", adminCopy("تعذر حفظ المنتج", "Product could not be saved"), adminCopy("يجب أن يكون السعر قبل الخصم أكبر من السعر الحالي.", "The compare-at price must be greater than the current price."), form.elements.oldPrice);
     return;
   }
   if (product.status === "published") {
     const missing = [
-      [!product.nameAr && !product.nameEn, adminCopy("الاسم", "name")],
-      [!product.brand, adminCopy("العلامة التجارية", "brand")],
-      [!product.size, adminCopy("الحجم", "size")],
-      [!(Number(product.price) > 0), adminCopy("السعر", "price")],
-      [!(product.images || []).length, adminCopy("صورة المنتج", "product image")]
-    ].filter(([invalid]) => invalid).map(([,label]) => label);
+      [!product.nameAr && !product.nameEn, adminCopy("الاسم", "name"), form.elements.nameAr || form.elements.nameEn],
+      [!product.brand, adminCopy("العلامة التجارية", "brand"), form.elements.brand],
+      [!product.size, adminCopy("الحجم", "size"), form.elements.size],
+      [!(Number(product.price) > 0), adminCopy("السعر", "price"), form.elements.price],
+      [!(product.images || []).length, adminCopy("صورة المنتج", "product image"), form.querySelector("#gallery-upload")]
+    ].filter(([invalid]) => invalid);
     if (missing.length) {
-      showToast(`${adminCopy("لا يمكن النشر. الحقول الناقصة:", "Cannot publish. Missing:")} ${missing.join(adminCopy("، ", ", "))}`, "error");
+      setProductActionMessage(form, "error", adminCopy("لا يمكن نشر المنتج", "Product cannot be published"), `${adminCopy("الحقول الناقصة:", "Missing fields:")} ${missing.map(([, label]) => label).join(adminCopy("، ", ", "))}. ${adminCopy("تم نقلك إلى أول حقل يحتاج إلى تعديل.", "You were taken to the first field that needs attention.")}`, missing[0][2]);
       return;
     }
     if (!window.confirm(adminCopy("هل تريد نشر المنتج الآن وإظهاره للعملاء؟", "Publish this product and make it visible to customers now?"))) return;
@@ -7728,7 +7780,7 @@ async function saveCatalogProduct(form, workflowAction = "draft") {
   } catch (error) {
     form.querySelectorAll("[type='submit']").forEach((button) => button.disabled = false);
     submit.innerHTML = originalLabel;
-    showToast(error.message);
+    setProductActionMessage(form, "error", adminCopy("فشل الحفظ النهائي", "Final save failed"), error.message || adminCopy("لم يقبل الخادم بيانات المنتج. تحقق من الاتصال والحقول ثم أعد المحاولة.", "The server did not accept the product data. Check the connection and fields, then try again."));
     return;
   }
   const existingIndex = state.catalogProducts.findIndex((item) => item.id === product.id);
@@ -7742,7 +7794,7 @@ async function saveCatalogProduct(form, workflowAction = "draft") {
     try {
       localStorage.setItem("origoCatalogProducts", JSON.stringify(state.catalogProducts));
     } catch {
-      showToast(adminCopy("مساحة المتصفح لا تكفي؛ قلّل عدد الصور أو حجمها", "Browser storage is full; remove or reduce images"));
+      setProductActionMessage(form, "error", adminCopy("فشل حفظ المنتج محليًا", "Local save failed"), adminCopy("مساحة المتصفح لا تكفي؛ احذف بعض الصور أو قلّل حجمها ثم أعد الحفظ.", "Browser storage is full; remove some images or reduce their size, then save again."));
       return;
     }
   }
@@ -8509,6 +8561,7 @@ document.addEventListener("click", async (event) => {
   if (action === "product-editor-panel") {
     const form = actionElement.closest("#import-review-form");
     const panel = String(actionElement.dataset.panel || "0");
+    state.activeProductEditorPanel = panel;
     $$('[data-product-panel]', form).forEach((section) => section.classList.toggle("product-tab-hidden", section.dataset.productPanel !== panel));
     $$('.product-editor-tabs [data-action="product-editor-panel"]', form).forEach((button) => {
       const active = button.dataset.panel === panel;
@@ -9134,6 +9187,9 @@ document.addEventListener("click", async (event) => {
   }
   if (action === "generate-perfume-usage" || action === "suggest-occasions") {
     const form = actionElement.closest("#import-review-form");
+    if (!form) return;
+    clearProductActionMessage(form);
+    try {
     const suggestions = perfumeOccasionSuggestions(form);
     [["seasons",suggestions.seasons],["usageTimes",suggestions.usageTimes],["occasions",suggestions.occasions]].forEach(([name,values]) => {
       const holder = form?.querySelector(`[data-smart-select][data-name="${name}"]`);
@@ -9144,7 +9200,15 @@ document.addEventListener("click", async (event) => {
     if (form?.elements.generatedUsageTimes) form.elements.generatedUsageTimes.value = csv(suggestions.usageTimes);
     if (form?.elements.generatedOccasions) form.elements.generatedOccasions.value = csv(suggestions.occasions);
     state.activeImportDraft = draft;
+    setProductActionMessage(form, "success", adminCopy("تم التوليد بنجاح", "Generation completed"), adminCopy("تمت إضافة المواسم وأوقات الاستخدام والمناسبات إلى حقول المنتج، ويمكنك تعديلها قبل الحفظ.", "Seasons, usage times, and occasions were added to the product fields and can be edited before saving."));
     showToast(adminCopy("تم توليد المواسم والأوقات والمناسبات", "Seasons, times and occasions generated"));
+    } catch (error) {
+      setProductActionMessage(form, "error", adminCopy("تعذر توليد بيانات الاستخدام", "Usage generation failed"), error.message || adminCopy("أكمل الأكوردات والتقييم والثبات والفوحان ثم أعد المحاولة.", "Complete accords, rating, longevity, and projection, then try again."));
+    }
+  }
+
+  if (action === "dismiss-product-message") {
+    clearProductActionMessage(actionElement.closest("#import-review-form"));
   }
   if (action === "ai-product-task") {
     const form = $("#import-review-form");
@@ -10435,6 +10499,14 @@ document.addEventListener("change", async (event) => {
     }
   }
 });
+
+document.addEventListener("invalid", (event) => {
+  const form = event.target.closest?.("#import-review-form");
+  if (!form) return;
+  const label = event.target.closest("label")?.childNodes?.[0]?.textContent?.trim() || event.target.name || adminCopy("حقل مطلوب", "Required field");
+  const reason = event.target.validationMessage || adminCopy("راجع قيمة هذا الحقل قبل تنفيذ الإجراء.", "Review this field before continuing.");
+  setProductActionMessage(form, "error", adminCopy("تعذر تنفيذ الإجراء", "Action could not be completed"), `${label}: ${reason}`, event.target);
+}, true);
 
 $("#alternative-input")?.addEventListener("keydown", (event) => {
   if (event.key === "Enter") runAlternativeSearch();
