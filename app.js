@@ -2830,8 +2830,9 @@ function initializeProductEditorTabs() {
     section.dataset.productPanel = String(index);
     const active = String(index) === activePanel;
     section.classList.toggle("product-tab-hidden", !active);
+    section.classList.toggle("active", active);
     const title = section.querySelector(".review-section-head b")?.textContent?.trim() || `${adminCopy("قسم", "Section")} ${index + 1}`;
-    return `<button type="button" data-action="product-editor-panel" data-panel="${index}" class="${active ? "active" : ""}" aria-selected="${active}" title="${escapeHTML(title)}" aria-label="${escapeHTML(title)}"><span>${String(index + 1).padStart(2,"0")}</span><b>${escapeHTML(title)}</b></button>`;
+    return `<button type="button" data-action="product-editor-panel" data-panel="${index}" class="product-editor-tab ${active ? "active" : ""}" aria-selected="${active}" title="${escapeHTML(title)}" aria-label="${escapeHTML(title)}"><span>${String(index + 1).padStart(2,"0")}</span><b>${escapeHTML(title)}</b></button>`;
   }).join("");
   const anchor = form.querySelector(".review-summary") || form.firstElementChild;
   anchor?.insertAdjacentElement("afterend", nav);
@@ -6697,8 +6698,9 @@ function adminAccordEditor(product) {
   const existingValues = product.perfumeProfile?.manualOverrides || product.perfumeProfile?.accords || product.accordProfile || [];
   const fallback = (product.mainAccords || product.accords || []).map((value) => typeof value === "object" ? value : { nameAr:value, nameEn:value, strength:50 });
   const values = existingValues.length ? existingValues : fallback;
-  const lines = values.map((item) => `${item.nameAr || item.name || item.id || ""} | ${item.nameEn || item.name || item.id || ""} | ${Math.max(0,Math.min(100,Number(item.score ?? item.strength ?? 0)))}`).join("\n");
-  const selected = new Map(values.map((item) => [String(item.id || ""), Number(item.score ?? item.strength ?? 50)]));
+  const libraryIdentity = (item) => ORIGO_ACCORD_LIBRARY.find(([id,nameAr,nameEn]) => [id,nameAr,nameEn].some((value) => normalizeOptionSearch(value) === normalizeOptionSearch(item.id || item.nameAr || item.nameEn || item.name || "")));
+  const lines = values.filter((item) => !libraryIdentity(item)).map((item) => `${item.nameAr || item.name || item.id || ""} | ${item.nameEn || item.name || item.id || ""} | ${Math.max(0,Math.min(100,Number(item.score ?? item.strength ?? 0)))}`).join("\n");
+  const selected = new Map(values.map((item) => { const known=libraryIdentity(item); return known ? [known[0],Number(item.score ?? item.strength ?? 50)] : null; }).filter(Boolean));
   return `<div class="accord-admin-editor">
     <div class="accord-admin-toolbar"><div><b>${adminCopy("الأكوردات الرئيسية", "Main accords")}</b><small>${adminCopy("اختر الأكورد واضبط قوته؛ ويمكنك البحث بالعربية أو الإنجليزية.", "Select an accord, adjust its strength, and search in Arabic or English.")}</small></div><div><input type="search" data-accord-search placeholder="${adminCopy("بحث عن أكورد…", "Search accords…")}"/><button type="button" data-action="accord-selected-only">${adminCopy("المختارة", "Selected")}</button><button type="button" data-action="clear-admin-accords">${adminCopy("مسح", "Clear")}</button></div></div>
     <div class="accord-search-count">${adminCopy("المحدد:", "Selected:")} <b>${selected.size}</b></div>
@@ -6890,7 +6892,7 @@ function setAdminStudioImage(studio, nextIndex) {
 }
 
 function productSeoDraft(form) {
-  if (!form) return { title:"", description:"", keywords:[] };
+  if (!form) return { slug:"", title:"", description:"", keywords:[] };
   const value = (name) => String(form.elements[name]?.value || "").trim();
   const nameAr = value("nameAr");
   const nameEn = value("nameEn");
@@ -6907,13 +6909,17 @@ function productSeoDraft(form) {
     ? `${productName ? `تسوق ${productName} الأصلي 100% من ORIGO` : "تسوق منتجات ORIGO الأصلية 100%"}${details ? `، ${details}` : ""}. نبيع منتجات أصلية فقط مع توصيل آمن وخدمة موثوقة.`
     : `${productName ? `Shop 100% authentic ${productName} at ORIGO` : "Shop 100% authentic products at ORIGO"}${details ? `, ${details}` : ""}. We sell original products only, with secure delivery and trusted service.`;
   const keywords = [...new Set([nameAr, nameEn, brand, nameAr && `${nameAr} أصلي`, nameEn && `${nameEn} original`, brand && `${brand} أصلي`, brand && `${brand} authentic`, "عطر أصلي", "عطور أصلية", "original perfume", "authentic fragrance", "ORIGO"].filter(Boolean))];
-  return { title:title.slice(0, 68), description:description.slice(0, 165), keywords };
+  const slugSource = [brand, nameEn || nameAr].filter(Boolean).join("-");
+  const slug = window.ORIGOFragranceNotes?.slugify
+    ? window.ORIGOFragranceNotes.slugify(slugSource)
+    : slugSource.normalize("NFKD").toLowerCase().trim().replace(/[^\p{L}\p{N}]+/gu, "-").replace(/^-+|-+$/g, "");
+  return { slug, title:title.slice(0, 68), description:description.slice(0, 165), keywords };
 }
 
 function updateGeneratedProductSeo(form, { force = false } = {}) {
   if (!form) return;
   const generated = productSeoDraft(form);
-  [["seoTitle", generated.title], ["seoDescription", generated.description], ["seoKeywords", generated.keywords.join("، ")]].forEach(([name, value]) => {
+  [["slug", generated.slug], ["seoTitle", generated.title], ["seoDescription", generated.description], ["seoKeywords", generated.keywords.join("، ")]].forEach(([name, value]) => {
     const field = form.elements[name];
     if (!field || (!force && field.value.trim() && field.dataset.autoGenerated !== "true")) return;
     field.value = value;
@@ -6922,7 +6928,7 @@ function updateGeneratedProductSeo(form, { force = false } = {}) {
   });
 }
 
-function renderImportReview(product) {
+function renderImportReviewLegacy(product) {
   if (state.productEditorMode !== "advanced") state.productEditorMode = "smart";
   product = {
     ...ORIGOCatalog.emptyProduct(),
@@ -7106,6 +7112,70 @@ function renderImportReview(product) {
   initializeProductEditorTabs();
 }
 
+function productEditorHiddenFields(product) {
+  return [
+    ["id", product.id], ["inspiredReferenceId", product.inspiredReferenceId],
+    ["reservedStock", product.inventory?.reserved ?? 0], ["availableStock", product.inventory?.available ?? 0]
+  ].map(([name,value]) => `<input type="hidden" name="${name}" value="${escapeHTML(value ?? "")}"/>`).join("");
+}
+
+function productEditorGate(number, titleAr, titleEn, body, extra = "") {
+  return `<section class="product-editor-gate review-section ${extra}" data-product-gate>
+    <div class="review-section-head"><span>${String(number).padStart(2,"0")}</span><div><b>${adminCopy(titleAr,titleEn)}</b></div></div>${body}
+  </section>`;
+}
+
+function renderImportReview(product) {
+  product = { ...ORIGOCatalog.emptyProduct(), ...(product || {}), notes:{ ...ORIGOCatalog.emptyProduct().notes, ...(product?.notes || {}) } };
+  state.activeImportDraft = product;
+  const images = Array.isArray(product.images) ? product.images : [];
+  const identity = `<div class="review-grid">
+    <label>${adminCopy("الاسم بالعربية","Arabic name")}<input name="nameAr" maxlength="140" value="${escapeHTML(product.nameAr || "")}"/></label>
+    <label>${adminCopy("الاسم بالإنجليزية","English name")}<input name="nameEn" dir="ltr" maxlength="140" value="${escapeHTML(product.nameEn || "")}"/></label>
+    ${searchableCreatableSelect({name:"brand",group:"brand",labelAr:"العلامة التجارية",labelEn:"Brand",selected:product.brand,required:true})}
+    ${searchableCreatableSelect({name:"category",group:"category",labelAr:"نوع المنتج",labelEn:"Product type",selected:product.category || "perfume",required:true})}
+    ${searchableCreatableSelect({name:"gender",group:"gender",labelAr:"الجنس",labelEn:"Gender",selected:product.genders || product.gender,multiple:true})}
+    ${searchableCreatableSelect({name:"concentration",group:"concentration",labelAr:"التركيز",labelEn:"Concentration",selected:product.concentration})}
+    ${searchableCreatableSelect({name:"size",group:"size",labelAr:"الحجم",labelEn:"Size",selected:product.size || product.sizes?.[0] || ""})}
+    <label>${adminCopy("السعر","Price")}<input name="price" type="number" min="0" value="${escapeHTML(product.price || "")}"/></label>
+    <label>${adminCopy("السعر قبل الخصم","Compare-at price")}<input name="oldPrice" type="number" min="0" value="${escapeHTML(product.oldPrice ?? "")}"/></label>
+    <label>SKU<input name="sku" dir="ltr" value="${escapeHTML(product.sku || "")}"/></label>
+    <label>${adminCopy("الباركود","Barcode")}<input name="barcode" dir="ltr" value="${escapeHTML(product.barcode || "")}"/></label>
+    <label>${adminCopy("الكمية","Quantity")}<input name="quantity" type="number" min="0" value="${escapeHTML(product.inventory?.quantity ?? 0)}"/></label>
+    <label>${adminCopy("حد المخزون","Low-stock threshold")}<input name="minimumStock" type="number" min="0" value="${escapeHTML(product.inventory?.minimum ?? 8)}"/></label>
+    <label>${adminCopy("التكلفة","Cost")}<input name="cost" type="number" min="0" value="${escapeHTML(product.inventory?.cost ?? "")}"/></label>
+  </div>`;
+  const notes = `<div class="review-grid">
+    ${searchableCreatableSelect({name:"topNotes",group:"note",labelAr:"نوتات المقدمة",labelEn:"Top notes",selected:product.notes?.topEn || product.noteSelections?.top || [],multiple:true})}
+    ${searchableCreatableSelect({name:"heartNotes",group:"note",labelAr:"نوتات القلب",labelEn:"Heart notes",selected:product.notes?.heartEn || product.noteSelections?.heart || [],multiple:true})}
+    ${searchableCreatableSelect({name:"baseNotes",group:"note",labelAr:"نوتات القاعدة",labelEn:"Base notes",selected:product.notes?.baseEn || product.noteSelections?.base || [],multiple:true})}
+    ${searchableCreatableSelect({name:"families",group:"family",labelAr:"العائلات العطرية",labelEn:"Fragrance families",selected:product.families || [product.familyEn || product.familyAr].filter(Boolean),multiple:true})}
+  </div>${adminAccordEditor(product)}`;
+  const usage = perfumePerformanceEditorSection(product);
+  const media = `<div class="product-editor-upload-row"><label class="gallery-upload"><input id="gallery-upload" type="file" accept="image/jpeg,image/png,image/webp,image/avif" multiple/><span>＋</span><div><b>${adminCopy("رفع صور المنتج","Upload product images")}</b><small>${adminCopy("حتى 10 صور؛ اختر الرئيسية ورتّب بالسحب أو الأسهم","Up to 10 images; choose primary and reorder by drag or arrows")}</small></div></label></div>${productMediaStudioMarkup(images)}`;
+  const content = `<div class="review-grid product-content-grid">
+    <label class="wide">${adminCopy("الوصف العربي","Arabic description")}<textarea name="descriptionAr">${escapeHTML(product.descriptionAr || "")}</textarea></label>
+    <label class="wide">${adminCopy("الوصف الإنجليزي","English description")}<textarea name="descriptionEn">${escapeHTML(product.descriptionEn || "")}</textarea></label>
+    <label>${adminCopy("رابط المنتج","Slug")}<input name="slug" dir="ltr" value="${escapeHTML(product.slug || "")}"/></label>
+    <label>${adminCopy("عنوان SEO","SEO title")}<input name="seoTitle" value="${escapeHTML(product.seo?.title || "")}"/></label>
+    <label class="wide">${adminCopy("وصف SEO","SEO description")}<textarea name="seoDescription">${escapeHTML(product.seo?.description || "")}</textarea></label>
+    <label class="wide">${adminCopy("كلمات SEO","SEO keywords")}<input name="seoKeywords" value="${escapeHTML(csv(product.seo?.keywords || []))}"/></label>
+  </div>`;
+  const publish = `<div class="product-publish-summary"><b>${adminCopy("اختر طريقة الحفظ","Choose save action")}</b><small>${adminCopy("المسودة مخفية، والمراجعة غير منشورة، والنشر يظهر المنتج فوراً للزوار.","Draft is hidden, review is unpublished, and publish makes the product visible immediately.")}</small></div><div class="review-submit-actions"><button class="button secondary-button" type="submit" name="workflowAction" value="draft">${adminCopy("حفظ كمسودة","Save draft")}</button><button class="button secondary-button" type="submit" name="workflowAction" value="review">${adminCopy("إرسال للمراجعة","Send for review")}</button><button class="button burgundy-button" type="submit" name="workflowAction" value="published">${adminCopy("نشر المنتج","Publish product")}</button>${product.id ? `<button class="button product-delete-button" type="button" data-action="delete-admin-product" data-id="${escapeHTML(product.id)}">${adminCopy("حذف المنتج نهائياً","Delete product permanently")}</button>` : ""}</div>`;
+  $("#import-workspace").innerHTML = `<form class="catalog-review product-editor-v2" id="import-review-form" data-editor-mode="smart">
+    ${productEditorHiddenFields(product)}<div class="product-editor-status" data-product-editor-status role="alert" aria-live="assertive" hidden></div>
+    ${productEditorGate(1,"الحزمة والهوية","Bundle & identity",`${perfumeBundleEditorSection(product)}${identity}`)}
+    ${productEditorGate(2,"النوتات والأكوردات","Notes & accords",notes,"product-perfume-only")}
+    ${usage ? productEditorGate(3,"الأداء والاستخدام","Performance & usage",usage,"product-perfume-only") : ""}
+    ${productEditorGate(4,"صور المنتج","Product images",media)}
+    ${productEditorGate(5,"الوصف وSEO والحفظ","Description, SEO & save",`${content}<div class="product-save-under-seo">${publish}</div>`,"product-editor-publish-gate")}
+  </form>`;
+  updateProductTypeFields($("#import-review-form"));
+  updateAdminAccordEditor($("#import-review-form"));
+  updateGeneratedProductSeo($("#import-review-form"));
+  initializeProductEditorTabs();
+}
+
 function optionValuesForProduct(group, rawValue) {
   const values = csvValues(rawValue);
   const items = productOptionItems(group);
@@ -7217,6 +7287,16 @@ function applyPerfumeBundleToEditor(form, normalized) {
   if (form.elements.generatedSeasons) form.elements.generatedSeasons.value = csv(bundleSeasons);
   if (form.elements.generatedUsageTimes) form.elements.generatedUsageTimes.value = csv(bundleTimes);
   if (form.elements.generatedOccasions) form.elements.generatedOccasions.value = csv(bundleOccasions);
+
+  const allNotesAr = normalized.notes.top.concat(normalized.notes.heart, normalized.notes.base).map((item) => item.ar || item.en).filter(Boolean);
+  const allNotesEn = normalized.notes.top.concat(normalized.notes.heart, normalized.notes.base).map((item) => item.en || item.ar).filter(Boolean);
+  const productAr = normalized.perfume.nameAr || normalized.perfume.nameEn;
+  const productEn = normalized.perfume.nameEn || normalized.perfume.nameAr;
+  const familyAr = normalized.derived.olfactiveFamily.ar || normalized.derived.olfactiveFamily.en;
+  const familyEn = normalized.derived.olfactiveFamily.en || normalized.derived.olfactiveFamily.ar;
+  setField("descriptionAr", `${productAr} من ${normalized.perfume.brandAr || normalized.perfume.brandEn || "ORIGO"}، عطر ${familyAr || "مميز"}${allNotesAr.length ? ` بنوتات ${allNotesAr.slice(0, 6).join("، ")}` : ""}. اختيار مناسب للمواسم والأوقات والمناسبات المحددة.`);
+  setField("descriptionEn", `${productEn} by ${normalized.perfume.brandEn || normalized.perfume.brandAr || "ORIGO"}, a ${familyEn || "distinctive"} fragrance${allNotesEn.length ? ` featuring ${allNotesEn.slice(0, 6).join(", ")}` : ""}. Suited to the selected seasons, times, and occasions.`);
+  updateGeneratedProductSeo(form, { force:true });
 
   form.elements.perfumeBundleData.value = JSON.stringify(normalized);
   const feedback = form.querySelector("[data-perfume-bundle-feedback]");
@@ -8020,10 +8100,17 @@ document.addEventListener("click", async (event) => {
       };
       merged.families = [normalized.derived.olfactiveFamily.en || normalized.derived.olfactiveFamily.ar].filter(Boolean);
       merged.performance = { ...(merged.performance || {}), projection:normalizeAdminProjection(normalized.unknownFields.sillage), longevity:normalized.unknownFields.longevity_hours ?? merged.performance?.longevity };
+      merged.accordProfile = normalized.accords.map((item, index) => {
+        const known = ORIGO_ACCORD_LIBRARY.find(([id,nameAr,nameEn]) => [id,nameAr,nameEn].some((value) => [item.ar,item.en].some((name) => normalizeOptionSearch(name) === normalizeOptionSearch(value))));
+        return known
+          ? { id:known[0], nameAr:known[1], nameEn:known[2], color:known[3], icon:known[4], strength:item.percentage, score:item.percentage, source:"bundle" }
+          : { id:`custom-${normalizeOptionSearch(item.en || item.ar).replaceAll(" ","-") || index}`, nameAr:item.ar || item.en, nameEn:item.en || item.ar, color:["#8d1735","#c58a24","#6750a4"][index%3], icon:"◇", strength:item.percentage, score:item.percentage, source:"bundle-custom" };
+      });
+      merged.mainAccords = merged.accordProfile.map((item) => item.nameAr || item.nameEn);
+      merged.perfumeProfile = { ...(merged.perfumeProfile || {}), source:"bundle", accords:merged.accordProfile, manualOverrides:merged.accordProfile };
       merged.perfumeBundle = normalized;
       merged.bundleImportFeedback = `<b>✓ ${adminCopy("تمت تعبئة الحزمة", "Bundle populated")}</b><small>${adminCopy("تم ملء الهوية والنوتات والأكوردات والأداء والاستخدام. راجع البوابات قبل الحفظ.", "Identity, notes, accords, performance, and usage were populated. Review the gates before saving.")}</small>`;
       state.activeImportDraft = merged;
-      state.activeProductEditorPanel = "0";
       renderImportReview(merged);
       showToast(adminCopy("تم استيراد الحزمة إلى النموذج دون حفظ المنتج.", "Bundle imported into the form without saving the product."));
     } catch (error) {
@@ -8591,7 +8678,11 @@ document.addEventListener("click", async (event) => {
     const form = actionElement.closest("#import-review-form");
     const panel = String(actionElement.dataset.panel || "0");
     state.activeProductEditorPanel = panel;
-    $$('[data-product-panel]', form).forEach((section) => section.classList.toggle("product-tab-hidden", section.dataset.productPanel !== panel));
+    $$('[data-product-panel]', form).forEach((section) => {
+      const active = section.dataset.productPanel === panel;
+      section.classList.toggle("product-tab-hidden", !active);
+      section.classList.toggle("active", active);
+    });
     $$('.product-editor-tabs [data-action="product-editor-panel"]', form).forEach((button) => {
       const active = button.dataset.panel === panel;
       button.classList.toggle("active", active);
