@@ -874,12 +874,17 @@ footer.origo-footer{width:min(calc(100% - 48px),1450px);margin:0 auto 26px;paddi
 .benefit-carousel-track{display:block;overflow-x:auto;overflow-y:visible;scrollbar-width:none;touch-action:pan-y}
 .benefit-carousel-track::-webkit-scrollbar{display:none}
 .benefit-marquee-content{animation-name:origoBenefitMarquee;animation-duration:var(--benefit-marquee-duration,18s)}
+.benefit-carousel-track .benefit-marquee-content{animation:none!important;transform:none!important}
 @keyframes origoBenefitMarquee{to{transform:translateX(var(--benefit-marquee-shift,-25%))}}
 html[dir="rtl"] .benefit-marquee-content{animation-name:origoBenefitMarqueeRtl}
 @keyframes origoBenefitMarqueeRtl{to{transform:translateX(var(--benefit-marquee-shift-rtl,25%))}}
 .home-benefits-directory .home-section-head{margin-bottom:-12px}
 .home-benefits-directory .benefit-carousel-track{box-sizing:border-box;width:calc(100% + 48px);margin:-18px -24px;padding:28px 24px;overflow-x:auto!important;overflow-y:hidden!important;scrollbar-width:none!important;border:0!important;background:transparent!important;box-shadow:none!important;cursor:grab}
 .home-benefits-directory .benefit-carousel-track:active{cursor:grabbing}
+.home-brand-directory,.home-benefits-directory{position:relative}
+.drag-strip-hint{position:absolute;z-index:4;top:62%;width:16px;height:16px;display:grid;place-items:center;border:1px solid rgba(101,0,24,.16);border-radius:50%;color:rgba(101,0,24,.55);background:rgba(255,255,255,.82);box-shadow:0 2px 7px rgba(50,0,15,.07);font:700 11px/1 Arial;pointer-events:none;transform:translateY(-50%)}
+.drag-strip-hint--start{inset-inline-start:-7px}.drag-strip-hint--end{inset-inline-end:-7px}
+@media(max-width:700px){.drag-strip-hint{top:64%;width:14px;height:14px;font-size:9px}.drag-strip-hint--start{inset-inline-start:-4px}.drag-strip-hint--end{inset-inline-end:-4px}}
 .home-benefits-directory .benefit-marquee-content{padding-block:10px}
 .benefit-marquee-set>a{position:relative;width:clamp(138px,14.95vw,196px);height:clamp(138px,14.95vw,196px);padding:12px;display:grid;place-items:center;align-content:center;gap:5px;flex:0 0 auto;border:0!important;border-radius:18px;color:var(--ink);background:transparent!important;box-shadow:none!important;text-align:center;text-decoration:none;overflow:visible}
 .benefit-marquee-item .benefit-icon{width:70px;height:70px;display:grid;place-items:center;margin:0;color:var(--burgundy)}

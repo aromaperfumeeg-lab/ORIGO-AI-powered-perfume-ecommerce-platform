@@ -234,10 +234,10 @@ html[dir="ltr"] .pdp-hero-profile{direction:ltr}
 body:has(.pdp-page),body:has(.pdp-page) main,.pdp-page{background:#fff!important}
 .pdp-profile-accordions{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important;align-items:start}
 .pdp-profile-section{display:contents!important}
-.pdp-profile-section>button{grid-row:1;min-width:0!important;min-height:72px!important;padding:10px 12px!important;display:flex!important;justify-content:center!important;border:1px solid #eee5e8!important;border-radius:24px!important;background:#fff!important;box-shadow:0 5px 16px rgba(83,0,25,.045)!important;text-align:center!important}
+.pdp-profile-section>button{grid-row:1;min-width:0!important;min-height:72px!important;padding:10px 12px!important;display:flex!important;justify-content:center!important;border:1px solid #790020!important;border-radius:24px!important;background:#fff!important;box-shadow:0 5px 16px rgba(83,0,25,.045)!important;text-align:center!important}
 .pdp-profile-section>button>span{width:32px!important;height:32px!important;flex:0 0 32px!important;font-size:17px!important}
 .pdp-profile-section>button>div{display:block!important;min-width:0}.pdp-profile-section>button b{display:block;white-space:nowrap;font-size:14px!important}.pdp-profile-section>button small,.pdp-profile-section>button>i{display:none!important}
-.pdp-profile-section.is-open>button{border-color:#d8aeb9!important;background:#fff8fa!important;box-shadow:0 7px 20px rgba(121,0,32,.08),inset 0 -2px 0 #790020!important}
+.pdp-profile-section.is-open>button{border-color:#790020!important;background:#fff8fa!important;box-shadow:0 7px 20px rgba(121,0,32,.08),inset 0 -2px 0 #790020!important}
 .pdp-profile-panel{grid-column:1/-1;grid-row:2;padding:18px 0!important;background:#fff!important}.pdp-profile-panel[hidden]{display:none!important}
 .pdp-profile-panel .dialog-note-chip{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:flex-start!important;text-align:center!important}.pdp-profile-panel .dialog-note-chip img{display:block!important;margin:0 auto 5px!important}.pdp-profile-panel .dialog-note-chip b{display:block!important;width:100%;text-align:center!important}
 .pdp-accord-profile>div{display:flex!important;flex-direction:column!important}.pdp-accord-profile .pdp-accord-row{width:100%;grid-template-columns:48px minmax(0,1fr)!important}.pdp-accord-profile .pdp-accord-track{width:100%}.pdp-accord-profile .pdp-accord-fill{min-width:150px}

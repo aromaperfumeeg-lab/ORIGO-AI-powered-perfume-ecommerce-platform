@@ -3320,12 +3320,7 @@ function renderHomeBenefitsMarquee() {
     const short = state.lang === "ar" ? benefit.shortAr : benefit.shortEn;
     return `<a class="marquee-item benefit-marquee-item" href="/benefits/${escapeHTML(benefit.slug)}" data-action="benefit-link" data-slug="${escapeHTML(benefit.slug)}"><span class="benefit-icon">${benefit.image ? `<img src="${escapeHTML(benefit.image)}" alt="" loading="lazy"/>` : footerBenefitIcon(benefit.icon, benefit.colors)}</span><b>${escapeHTML(title)}</b><small>${escapeHTML(short || "")}</small></a>`;
   }).join("");
-  const duplicates = items.replaceAll("<a ", '<a tabindex="-1" aria-hidden="true" ');
-  // Two complete sets are sufficient for a seamless loop and avoid building
-  // several copies of the same cards during the initial homepage render.
-  const benefitSetCount = 2;
-  const benefitShift = 100 / benefitSetCount;
-  track.innerHTML = items ? `<div class="brand-marquee-content benefit-marquee-content" style="--benefit-marquee-shift:-${benefitShift}%;--benefit-marquee-shift-rtl:${benefitShift}%"><div class="brand-marquee-set benefit-marquee-set">${items}</div>${Array.from({ length: benefitSetCount - 1 }, () => `<div class="brand-marquee-set benefit-marquee-set" aria-hidden="true">${duplicates}</div>`).join("")}</div>` : "";
+  track.innerHTML = items ? `<div class="brand-marquee-content benefit-marquee-content"><div class="brand-marquee-set benefit-marquee-set">${items}</div></div>` : "";
   bindBrandMarquee(track);
 }
 
