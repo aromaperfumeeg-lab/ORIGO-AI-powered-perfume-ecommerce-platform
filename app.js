@@ -8081,6 +8081,13 @@ document.addEventListener("click", async (event) => {
     return;
   }
   const action = actionElement.dataset.action;
+  if (action === "drag-strip-scroll") {
+    const track = actionElement.closest(".home-brand-directory,.home-benefits-directory")?.querySelector(".brand-carousel-track,.benefit-carousel-track");
+    if (track) {
+      const direction = Number(actionElement.dataset.direction) || 1;
+      track.scrollBy({ left: direction * Math.max(240, track.clientWidth * .65), behavior: "smooth" });
+    }
+  }
   if (action === "parse-perfume-bundle") {
     const form = actionElement.closest("#import-review-form");
     const feedback = form?.querySelector("[data-perfume-bundle-feedback]");

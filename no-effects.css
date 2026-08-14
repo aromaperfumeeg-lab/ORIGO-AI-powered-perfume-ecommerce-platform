@@ -1,0 +1,29 @@
+/* Static storefront mode: preserve layout and imagery while removing motion and decorative effects. */
+html{scroll-behavior:auto!important}
+body:not(.admin-mode) *,body:not(.admin-mode) *::before,body:not(.admin-mode) *::after{
+  animation:none!important;
+  transition:none!important;
+  scroll-behavior:auto!important;
+  box-shadow:none!important;
+  text-shadow:none!important;
+  filter:none!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+}
+body:not(.admin-mode) :is(a,button,[data-action],.product-card,.marquee-item,.benefit-marquee-item,.home-gender-card,.category-card,.brand-card,.pdp-profile-section>button):is(:hover,:focus-visible,:active){
+  transform:none!important;
+}
+body:not(.admin-mode) :is(.brand-marquee-content,.benefit-marquee-content,.announcement>span){
+  animation:none!important;
+  transform:none!important;
+}
+body:not(.admin-mode) :is(.brand-carousel-track,.benefit-carousel-track){
+  overflow-x:auto!important;
+  scroll-behavior:auto!important;
+  touch-action:pan-y!important;
+  cursor:grab!important;
+}
+body:not(.admin-mode) :is(.brand-carousel-track,.benefit-carousel-track):active{cursor:grabbing!important}
+@media(prefers-reduced-motion:no-preference){
+  body:not(.admin-mode) *{scroll-snap-stop:normal!important}
+}
