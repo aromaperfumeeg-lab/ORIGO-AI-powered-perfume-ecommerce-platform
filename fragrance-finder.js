@@ -14,9 +14,9 @@ if (store && page && root) {
   const multi = (ids, prefix, icons = []) => ids.map((id, index) => ({ id, label: `${prefix}.${id}`, icon: icons[index] || "✦" }));
   const config = {
     forWhom: [
-      { id: "women", label: "forWhom.women", description: "forWhom.womenDesc", image: "assets/home/gender/gender-women.png" },
-      { id: "men", label: "forWhom.men", description: "forWhom.menDesc", image: "assets/home/gender/gender-men.png" },
-      { id: "unisex", label: "forWhom.unisex", description: "forWhom.unisexDesc", image: "assets/home/gender/gender-unisex.png" }
+      { id: "women", label: "forWhom.women", description: "forWhom.womenDesc", image: "" },
+      { id: "men", label: "forWhom.men", description: "forWhom.menDesc", image: "" },
+      { id: "unisex", label: "forWhom.unisex", description: "forWhom.unisexDesc", image: "" }
     ],
     feelings: multi(["warmSweet", "freshClean", "woodyDeep", "orientalLuxurious", "citrusyFresh", "floralSoft", "leatheryBold", "greenNatural"], "feeling", ["♨", "❋", "♜", "♛", "◉", "✿", "◆", "❧"]),
     families: multi(["oriental", "woody", "floral", "citrus", "aromatic", "leather", "fruity", "gourmand", "chypre", "aquatic", "fougere", "musky"], "family", ["♨", "▥", "✿", "◉", "❧", "◆", "●", "♨", "♠", "≈", "❧", "○"]),

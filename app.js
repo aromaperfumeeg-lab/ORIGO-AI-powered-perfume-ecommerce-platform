@@ -133,6 +133,7 @@ function hydrateLuxuryIcons(root = document) {
   headerIcons.forEach(([selector, name]) => $$(selector, root).forEach((icon) => icon.outerHTML = luxuryIcon(name)));
   $$(".mobile-menu-button", root).forEach((button) => setLuxuryIcon(button, "menu"));
   $$(".mobile-menu-search > span:first-child", root).forEach((icon) => setLuxuryIcon(icon, "search"));
+  $$('[data-mobile-menu-icon]', root).forEach((icon) => setLuxuryIcon(icon, icon.dataset.mobileMenuIcon || "sparkle"));
   $$(".theme-toggle .sun", root).forEach((icon) => setLuxuryIcon(icon, "sun"));
   $$(".theme-toggle .moon", root).forEach((icon) => setLuxuryIcon(icon, "moon"));
 
@@ -149,7 +150,7 @@ function hydrateLuxuryIcons(root = document) {
   navigation.forEach(([selector, name]) => $$(selector, root).forEach((icon) => setLuxuryIcon(icon, name)));
   $$(".category-nav .brands-nav > button > i", root).forEach((icon) => setLuxuryIcon(icon, "chevron"));
 
-  const bottomIcons = ["home", "grid", "sparkle", "bag", "user"];
+  const bottomIcons = ["home", "grid", "sparkle", "heart", "bag", "user"];
   $$(".store-bottom-nav > * > span:first-child", root).forEach((icon, index) => setLuxuryIcon(icon, bottomIcons[index] || "sparkle"));
   $$(".gender-card .gender-copy > span:first-child", root).forEach((icon, index) => setLuxuryIcon(icon, index === 2 ? "heart" : "user"));
   $$(".loyalty-strip article > span:first-child", root).forEach((icon, index) => setLuxuryIcon(icon, ["tag", "diamond", "sparkle", "crown"][index] || "sparkle"));
@@ -1216,7 +1217,15 @@ const state = {
 };
 
 function isStaffUser(user = state.user) {
-  return Boolean(user && user.role !== "customer");
+  const staffRoles = new Set([
+    "owner", "admin", "manager", "product_manager", "order_manager", "customer_support",
+    "accountant", "marketing_manager", "warehouse_staff", "delivery_staff", "content_editor"
+  ]);
+  return Boolean(user && staffRoles.has(String(user.role || "").toLowerCase()));
+}
+
+function isAdministratorUser(user = state.user) {
+  return Boolean(user && ["owner", "admin"].includes(String(user.role || "").toLowerCase()));
 }
 
 function hasStaffPermission(permission, user = state.user) {
@@ -1414,11 +1423,11 @@ function updateAccountIndicator() {
       : translations[state.lang].account;
   });
   $$(".mobile-admin-link").forEach((button) => {
-    button.hidden = false;
+    const administrator = isAdministratorUser();
+    button.hidden = !administrator;
+    button.setAttribute("aria-hidden", String(!administrator));
     const label = button.querySelector("b");
-    if (label) label.textContent = isStaffUser()
-      ? adminCopy("لوحة تحكم المتجر", "Store dashboard")
-      : adminCopy("دخول مدير المتجر", "Store manager sign in");
+    if (label) label.textContent = adminCopy("لوحة تحكم المتجر", "Store dashboard");
   });
   $$('[data-account-settings]').forEach((button) => {
     const staff = isStaffUser();
@@ -2616,18 +2625,6 @@ function productOptionsAdminMarkup() {
   }).join("")}</div></div>`;
 }
 
-function genderMediaAdminMarkup(settings, ar) {
-  const items = [
-    ["men", ar ? "صورة قسم الرجال" : "Men image"],
-    ["women", ar ? "صورة قسم النساء" : "Women image"],
-    ["unisex", ar ? "صورة قسم الجنسين" : "Unisex image"]
-  ];
-  return `<div class="home-gender-media-admin"><div class="review-section-head"><span>03</span><div><b>${ar ? "صور التسوق حسب الجنس" : "Shop-by-gender images"}</b><small>${ar ? "ارفع صورة مستقلة لكل بطاقة. تختفي الصورة الافتراضية عند عدم اختيار ملف." : "Upload a separate image for each card. No default image is used."}</small></div></div><div class="home-gender-media-grid">${items.map(([key, label]) => {
-    const source = String(settings.homeGenderImages?.[key] || "").trim();
-    return `<article class="home-gender-media-card"><label><span>${escapeHTML(label)}</span>${source ? `<img src="${escapeHTML(source)}" alt=""/>` : `<i>${luxuryIcon("perfume")}</i>`}<input type="file" name="genderMedia.${key}" accept="image/png,image/jpeg,image/webp,image/avif"/></label><small>${ar ? "PNG أو JPG أو WebP أو AVIF — حتى 15MB" : "PNG, JPG, WebP, or AVIF — up to 15MB"}</small>${source ? `<label class="gender-media-remove"><input type="checkbox" name="genderMediaClear.${key}"/> ${ar ? "حذف الصورة الحالية" : "Remove current image"}</label>` : ""}</article>`;
-  }).join("")}</div><output id="gender-upload-status" class="banner-upload-status" aria-live="polite"></output></div>`;
-}
-
 function homepageProductBrandOptions(selected = "") {
   const brands = [...ORIGO_PERFUME_BRANDS, ...state.products.map((product) => String(product.brand || "").trim()).filter(Boolean)]
     .filter((brand, index, values) => values.findIndex((candidate) => ORIGOCatalog.normalize(candidate) === ORIGOCatalog.normalize(brand)) === index)
@@ -2720,7 +2717,7 @@ function homepageRailsAdminMarkup() {
       <div class="home-media-library">${heroMedia.length ? mediaCards : `<p>${ar ? "لا توجد صور مخصصة؛ يتم استخدام صورة ORIGO الافتراضية المعروضة أعلاه." : "No custom slides yet; the ORIGO default shown above is in use."}</p>`}</div>
     </section>
     <section><div class="review-section-head"><span>02</span><div><b>${ar ? "إدارة أشرطة الصفحة الرئيسية" : "Homepage rails management"}</b><small>${ar ? "تحكم في ظهور الأشرطة وترتيبها وسرعة حركة المميزات والعلامات." : "Control rail visibility, order, and the benefits and brands motion speed."}</small></div></div>
-      <div class="homepage-rail-settings">${Object.entries(settings.homepageRails).map(([key, rail]) => `<article><header><b>${escapeHTML(labels[key][ar ? 0 : 1])}</b><label class="admin-toggle-row"><span>${ar ? "ظاهر" : "Visible"}</span><input name="${key}.enabled" type="checkbox"${rail.enabled !== false ? " checked" : ""}/></label></header><div class="review-grid"><label>${ar ? "العنوان العربي" : "Arabic title"}<input name="${key}.titleAr" value="${escapeHTML(rail.titleAr || "")}"/></label><label>${ar ? "العنوان الإنجليزي" : "English title"}<input name="${key}.titleEn" value="${escapeHTML(rail.titleEn || "")}"/></label><label>${ar ? "الترتيب" : "Order"}<input name="${key}.order" type="number" min="1" max="10" value="${Number(rail.order || 1)}"/></label>${key === "brands" || key === "benefits" ? `<label>${ar ? "مدة الدورة بالثواني" : "Cycle duration (seconds)"}<input name="${key}.speed" type="number" min="6" max="120" step="1" value="${Number(rail.speed || (key === "benefits" ? 18 : 34))}"/></label>` : ""}</div>${key === "gender" ? genderMediaAdminMarkup(settings, ar) : ""}</article>`).join("")}</div>
+      <div class="homepage-rail-settings">${Object.entries(settings.homepageRails).map(([key, rail]) => `<article><header><b>${escapeHTML(labels[key][ar ? 0 : 1])}</b><label class="admin-toggle-row"><span>${ar ? "ظاهر" : "Visible"}</span><input name="${key}.enabled" type="checkbox"${rail.enabled !== false ? " checked" : ""}/></label></header><div class="review-grid"><label>${ar ? "العنوان العربي" : "Arabic title"}<input name="${key}.titleAr" value="${escapeHTML(rail.titleAr || "")}"/></label><label>${ar ? "العنوان الإنجليزي" : "English title"}<input name="${key}.titleEn" value="${escapeHTML(rail.titleEn || "")}"/></label><label>${ar ? "الترتيب" : "Order"}<input name="${key}.order" type="number" min="1" max="10" value="${Number(rail.order || 1)}"/></label>${key === "brands" || key === "benefits" ? `<label>${ar ? "مدة الدورة بالثواني" : "Cycle duration (seconds)"}<input name="${key}.speed" type="number" min="6" max="120" step="1" value="${Number(rail.speed || (key === "benefits" ? 18 : 34))}"/></label>` : ""}</div></article>`).join("")}</div>
     </section>
     <section class="home-product-rows-admin"><div class="review-section-head"><span>03</span><div><b>${ar ? "أقسام المنتجات المتعددة" : "Multiple product sections"}</b><small>${ar ? "أضف أي عدد من الأقسام، واربط كل قسم بالأحدث أو الأكثر مبيعًا أو بعلامة تجارية محددة." : "Add any number of sections and connect each to newest, best sellers, or a specific brand."}</small></div></div>
       <div id="home-product-row-list" class="home-product-row-admin-list">${settings.homeProductRows.map((row, index) => homepageProductRowAdminCard(row, index)).join("")}</div>
@@ -2742,25 +2739,6 @@ function applyHomepageRailSettings() {
   });
   document.documentElement.style.setProperty("--brand-marquee-duration", `${Math.max(12, Math.min(120, Number(settings.brands?.speed || 34)))}s`);
   document.documentElement.style.setProperty("--benefit-marquee-duration", `${Math.max(6, Math.min(120, Number(settings.benefits?.speed || 18)))}s`);
-  renderHomeGenderImages(storeSettings.homeGenderImages);
-}
-
-function renderHomeGenderImages(images = mergeStoreSettings(state.adminWorkspace.settings || {}).homeGenderImages) {
-  const labels = {
-    men: state.lang === "ar" ? "مجموعة عطور للرجال" : "Men fragrance collection",
-    women: state.lang === "ar" ? "مجموعة عطور للنساء" : "Women fragrance collection",
-    unisex: state.lang === "ar" ? "مجموعة عطور للجنسين" : "Unisex fragrance collection"
-  };
-  $$(".home-gender-card").forEach((card) => {
-    const key = card.dataset.gender;
-    const art = $(".gender-card-art", card);
-    if (!art || !key) return;
-    const source = String(images?.[key] || "").trim();
-    art.innerHTML = source
-      ? `<img src="${escapeHTML(source)}" width="464" height="571" loading="lazy" decoding="async" alt="${escapeHTML(labels[key] || "")}"/>`
-      : `<span class="gender-art-placeholder" aria-hidden="true">${luxuryIcon("perfume")}</span>`;
-    art.removeAttribute("aria-hidden");
-  });
 }
 
 function renderAdminDashboard(view = state.adminView) {
@@ -3178,7 +3156,6 @@ function updateLanguage() {
   renderCart();
   renderWishlist();
   renderCatalogList();
-  refreshAIStatus();
   updateAccountIndicator();
   if ($("#account-overlay").classList.contains("open")) {
     if (state.user) renderAccount();
@@ -3246,10 +3223,8 @@ function localizeStaticStorefront() {
     if (!copy) return;
     const title = $(".gender-card-copy b", card);
     const description = $(".gender-card-copy small", card);
-    const image = $(".gender-card-art img", card);
     if (title) title.textContent = ar ? copy[0] : copy[2];
     if (description) description.textContent = ar ? copy[1] : copy[3];
-    if (image) image.alt = ar ? `مجموعة عطور ${copy[0]}` : `${copy[2]} fragrance collection`;
     card.setAttribute("aria-label", ar ? `تسوق عطور ${copy[0]}` : `Shop ${copy[2].toLowerCase()} fragrances`);
   });
   const genders = [
@@ -4353,7 +4328,6 @@ function toggleCatalogFilters(force) {
   syncBodyLock();
 }
 
-const catalogDescriptionSearchService = { async search() { return null; } };
 
 function getProduct(id) {
   return state.products.find((product) => product.id === id);
@@ -4954,11 +4928,11 @@ function useCaseArtwork(kind = "sparkles") {
 function productGenderMarkup(product) {
   const gender = catalogGender(product);
   const data = gender === "women"
-    ? { ar: "للنساء", en: "For women", symbol: "♀", image: "assets/home/gender/gender-women.png" }
+    ? { ar: "للنساء", en: "For women", symbol: "♀" }
     : gender === "men"
-      ? { ar: "للرجال", en: "For men", symbol: "♂", image: "assets/home/gender/gender-men.png" }
-      : { ar: "للجنسين", en: "Unisex", symbol: "⚥", image: "assets/home/gender/gender-unisex.png" };
-  return `<article class="pdp-gender-card"><img src="${data.image}" alt="" loading="lazy"/><span aria-hidden="true">${data.symbol}</span><div><small>${state.lang === "ar" ? "التصنيف الرسمي" : "Official classification"}</small><b>${state.lang === "ar" ? data.ar : data.en}</b></div></article>`;
+      ? { ar: "للرجال", en: "For men", symbol: "♂" }
+      : { ar: "للجنسين", en: "Unisex", symbol: "⚥" };
+  return `<article class="pdp-gender-card"><span aria-hidden="true">${data.symbol}</span><div><small>${state.lang === "ar" ? "التصنيف الرسمي" : "Official classification"}</small><b>${state.lang === "ar" ? data.ar : data.en}</b></div></article>`;
 }
 
 function productSuitabilityMarkup(product) {
@@ -5028,22 +5002,10 @@ function productIngredientsMarkup(product) {
 
 function productProfileAccordions(product) {
   const ar = state.lang === "ar";
-  const description = (ar ? product.descriptionAr : product.descriptionEn) || product.description || "";
-  const detailItems = [
-    [ar ? "الماركة" : "Brand", product.brand],
-    [ar ? "التركيز" : "Concentration", product.concentration],
-    [ar ? "العائلة العطرية" : "Fragrance family", ar ? (product.familyAr || product.familyEn) : (product.familyEn || product.familyAr)],
-    [ar ? "النوع" : "Gender", productCardGenderLabel(product, ar)],
-    [ar ? "الحجم" : "Size", formatProductSize(product.size || product.sizes?.[0] || "")],
-    [ar ? "بلد المنشأ" : "Country of origin", ar ? (product.originAr || product.origin || product.country) : (product.originEn || product.origin || product.country)],
-    [ar ? "الرقم التعريفي" : "SKU", product.sku]
-  ].filter(([, value]) => value);
-  const overview = `<div class="pdp-overview-gate">${description ? `<p>${escapeHTML(description)}</p>` : ""}${detailItems.length ? `<dl>${detailItems.map(([label, value]) => `<div><dt>${escapeHTML(label)}</dt><dd>${escapeHTML(value)}</dd></div>`).join("")}</dl>` : ""}</div>`;
   return `<section class="pdp-profile-accordions" aria-label="${ar ? "ملف العطر" : "Fragrance profile"}">
-    <article class="pdp-profile-section is-open" data-pdp-section="overview"><button type="button" data-action="pdp-profile-section" aria-expanded="true"><span>◎</span><div><b>${ar ? "تفاصيل العطر" : "Product details"}</b><small>${ar ? "الوصف · الماركة · التركيز · العائلة · الحجم" : "Description · brand · concentration · family · size"}</small></div><i>⌃</i></button><div class="pdp-profile-panel">${overview}</div></article>
     <article class="pdp-profile-section" data-pdp-section="notes"><button type="button" data-action="pdp-profile-section" aria-expanded="false"><span>△</span><div><b>${ar ? "هرم النوتات" : "Note pyramid"}</b><small>${ar ? "افتتاحية · قلب · قاعدة" : "Top · heart · base"}</small></div><i>⌄</i></button><div class="pdp-profile-panel" hidden>${productNotePyramid(product) || `<div class="pdp-empty-compact">${ar ? "لم تُضف النوتات العطرية لهذا المنتج بعد." : "Fragrance notes are not available yet."}</div>`}</div></article>
-    <article class="pdp-profile-section" data-pdp-section="analysis"><button type="button" data-action="pdp-profile-section" aria-expanded="false"><span>✦</span><div><b>${ar ? "التحليل الذكي" : "Intelligence analysis"}</b><small>${ar ? "الأكوردات · الشخصية · المواسم · الوقت · المناسبات" : "Accords · character · seasons · time · occasions"}</small></div><i>⌄</i></button><div class="pdp-profile-panel" hidden>${productIntelligenceMarkup(product)}</div></article>
-    <article class="pdp-profile-section" data-pdp-section="performance"><button type="button" data-action="pdp-profile-section" aria-expanded="false"><span>▥</span><div><b>${ar ? "مؤشرات العطر" : "Fragrance insights"}</b><small>${ar ? "الرائحة · الثبات · الفوحان · الموسم · النوع · القيمة" : "Scent · longevity · sillage · season · gender · value"}</small></div><i>⌄</i></button><div class="pdp-profile-panel" hidden>${productPerformanceImagesMarkup(product)}</div></article>
+    <article class="pdp-profile-section" data-pdp-section="analysis"><button type="button" data-action="pdp-profile-section" aria-expanded="false"><span>✦</span><div><b>${ar ? "التحليل الذكي" : "Intelligence analysis"}</b><small>${ar ? "الأكوردات · الشخصية · الوقت · المناسبات" : "Accords · character · time · occasions"}</small></div><i>⌄</i></button><div class="pdp-profile-panel" hidden>${productIntelligenceMarkup(product)}</div></article>
+    <article class="pdp-profile-section" data-pdp-section="performance"><button type="button" data-action="pdp-profile-section" aria-expanded="false"><span>▥</span><div><b>${ar ? "أداء العطر" : "Fragrance performance"}</b><small>${ar ? "الرائحة · الثبات · الفوحان · القيمة" : "Scent · longevity · sillage · value"}</small></div><i>⌄</i></button><div class="pdp-profile-panel" hidden>${productPerformanceImagesMarkup(product)}</div></article>
   </section>`;
 }
 
@@ -5677,7 +5639,7 @@ function productCardMarkup(product, options = {}) {
       </div>
       <div class="product-card-image-meta" aria-label="${escapeHTML(isArabic ? "بيانات المنتج" : "Product details")}">
         <span class="product-card-image-gender">${escapeHTML(genderLabel || (isArabic ? "للجنسين" : "Unisex"))}</span>
-        ${featureBadge ? `<span class="product-feature-badge"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 1.65 5.35L19 9l-5.35 1.65L12 16l-1.65-5.35L5 9l5.35-1.65L12 2Z"/><path d="m19 15 .7 2.3L22 18l-2.3.7L19 21l-.7-2.3L16 18l2.3-.7L19 15Z"/></svg><span>${escapeHTML(featureBadge)}</span></span>` : ""}
+        ${product.concentration ? `<span class="product-card-image-concentration">${escapeHTML(product.concentration)}</span>` : ""}
         <span class="product-card-image-size"><bdi dir="auto">${escapeHTML(sizeLabel || (isArabic ? "100 مل" : "100 ml"))}</bdi></span>
       </div>
       <button type="button" class="product-card-media-link"${interactive ? ` data-action="open-product" data-id="${escapeHTML(product.id)}"` : disabled} aria-label="${escapeHTML(isArabic ? `عرض ${name}` : `View ${name}`)}">${hasProductImage
@@ -6046,6 +6008,7 @@ function toggleMobileMenu(force) {
   const shouldOpen = force ?? !panel.classList.contains("open");
   panel.classList.toggle("open", shouldOpen);
   backdrop.classList.toggle("open", shouldOpen);
+  document.body.classList.toggle("mobile-menu-active", shouldOpen);
   panel.setAttribute("aria-hidden", String(!shouldOpen));
   $(".mobile-menu-button").setAttribute("aria-expanded", String(shouldOpen));
   syncBodyLock();
@@ -6373,7 +6336,6 @@ function resetImportWorkspace() {
     <div class="import-empty"><span>⌕</span><h3>${adminCopy("ابدأ باسم المنتج أو الباركود", "Start with a product name or barcode")}</h3>
     <p>${adminCopy("ستظهر اقتراحات مباشرة، ثم نجمع البيانات ونوضح مصدر كل معلومة ونسبة الثقة.", "Live suggestions appear first, then we collect data and show sources and confidence.")}</p>
     ${localStorage.getItem("origoProductAutosave") ? `<button class="button secondary-button" data-action="restore-product-draft">${adminCopy("استعادة آخر مسودة محفوظة", "Restore last autosaved draft")}</button>` : ""}</div>`;
-  $$(".import-steps span").forEach((step, index) => step.classList.toggle("active", index === 0));
 }
 
 function startManualProduct(restore = false) {
@@ -7152,7 +7114,6 @@ function renderImportReviewLegacy(product) {
         <div class="review-submit-actions"><button class="button secondary-button" type="submit" name="workflowAction" value="draft">${adminCopy("حفظ كمسودة", "Save draft")}</button><button class="button secondary-button" type="submit" name="workflowAction" value="review">${adminCopy("إرسال للمراجعة", "Send for review")}</button><button class="button burgundy-button" type="submit" name="workflowAction" value="published">${adminCopy("نشر المنتج", "Publish product")} <span>←</span></button></div>
       </div>
     </form>`;
-  $$(".import-steps span").forEach((step, index) => step.classList.toggle("active", index <= 1));
   $$("img", $("#import-workspace")).forEach((image) => image.addEventListener("error", () => image.closest(".review-image")?.classList.add("broken"), { once: true }));
   updateDuplicateWarning($("#import-review-form"));
   renderNoteMatchPreview($("#import-review-form"));
@@ -7939,7 +7900,6 @@ async function saveCatalogProduct(form, workflowAction = "draft") {
   rebuildStorefrontProducts();
   renderProducts($(".chip.active")?.dataset.filter || "all");
   renderCatalogList();
-  $$(".import-steps span").forEach((step) => step.classList.add("active"));
   $("#import-workspace").innerHTML = `
     <div class="import-success"><span>✓</span><h3>${product.status === "published" ? adminCopy("تم نشر المنتج في المتجر", "Product published") : product.status === "review" ? adminCopy("تم إرسال المنتج للمراجعة", "Product sent for review") : adminCopy("تم حفظ المنتج كمسودة", "Product saved as draft")}</h3>
     <p>${product.status === "published" ? adminCopy("أصبح المنتج ظاهرًا للعملاء.", "The product is now visible to customers.") : product.status === "review" ? adminCopy("المنتج مخفي عن العملاء حتى تتم مراجعته ونشره.", "The product stays hidden until reviewed and published.") : adminCopy("المسودة لا تظهر للعملاء ويمكنك استكمالها لاحقًا.", "The draft is hidden and can be completed later.")}</p>
@@ -8412,7 +8372,6 @@ document.addEventListener("click", async (event) => {
     renderCatalog();
     $("#catalog-autocomplete").hidden = true;
   }
-  if (action === "catalog-description-search") openOverlay("#catalog-description-overlay");
   if (action === "catalog-filter-accordion") {
     const expanded = actionElement.getAttribute("aria-expanded") === "true";
     actionElement.setAttribute("aria-expanded", String(!expanded));
@@ -8810,7 +8769,6 @@ document.addEventListener("click", async (event) => {
   if (action === "open-product-studio") {
     closeOverlay($("#admin-overlay"));
     await loadAdminCatalog();
-    refreshAIStatus();
     renderCatalogList();
     openOverlay("#product-admin-overlay");
     startManualProduct();
@@ -9136,7 +9094,7 @@ document.addEventListener("click", async (event) => {
     const section = actionElement.closest(".pdp-profile-section");
     const accordion = section?.closest(".pdp-profile-accordions");
     const opening = !section?.classList.contains("is-open");
-    if (opening && window.matchMedia("(max-width: 900px)").matches) {
+    if (opening) {
       accordion?.querySelectorAll(".pdp-profile-section.is-open").forEach((item) => {
         item.classList.remove("is-open");
         item.querySelector(":scope > button")?.setAttribute("aria-expanded", "false");
@@ -9444,16 +9402,6 @@ document.addEventListener("click", async (event) => {
 
 document.addEventListener("submit", async (event) => {
   event.preventDefault();
-  if (event.target.id === "catalog-description-form") {
-    const status = $("#catalog-description-status");
-    const description = $("#catalog-description-input").value.trim();
-    status.textContent = state.lang === "ar" ? "جارٍ تجهيز البحث..." : "Preparing search...";
-    const result = await catalogDescriptionSearchService.search(description);
-    status.textContent = result
-      ? (state.lang === "ar" ? "تم تجهيز نتائج البحث." : "Search results are ready.")
-      : (state.lang === "ar" ? "واجهة البحث بالوصف جاهزة، وتحتاج فقط إلى تفعيل مزود الذكاء الاصطناعي من إعدادات المتجر." : "Description search is ready; enable an AI provider in store settings to use it.");
-    return;
-  }
   if (event.target.id === "admin-brand-form") {
     const data = new FormData(event.target);
     const id = String(data.get("id") || `brand-${Date.now().toString(36)}`);
@@ -9615,7 +9563,7 @@ document.addEventListener("submit", async (event) => {
   }
   if (event.target.id === "admin-homepage-rails" || event.target.id === "admin-banner-slider-settings") {
     const submitButton = event.target.querySelector("button[type='submit']");
-    const uploadStatus = event.target.querySelector("#banner-upload-status, #gender-upload-status");
+    const uploadStatus = event.target.querySelector("#banner-upload-status");
     if (submitButton) submitButton.disabled = true;
     const data = new FormData(event.target);
     const current = mergeStoreSettings(state.adminWorkspace.settings || {});
@@ -9631,20 +9579,12 @@ document.addEventListener("submit", async (event) => {
       : current.homeProductRows;
     const files = [...(event.target.elements.mediaFile?.files || [])];
     const mobileFiles = [...(event.target.elements.mobileMediaFile?.files || [])];
-    const genderImages = { ...current.homeGenderImages };
-    const genderUploads = ["men", "women", "unisex"].map((key) => ({
-      key,
-      file: event.target.elements.namedItem(`genderMedia.${key}`)?.files?.[0] || null
-    })).filter((item) => item.file);
-    ["men", "women", "unisex"].forEach((key) => {
-      if (data.has(`genderMediaClear.${key}`)) genderImages[key] = "";
-    });
     const existingMobileUploads = [...event.target.querySelectorAll("[data-home-mobile-upload]")].map((input) => ({
       id: input.dataset.id,
       file: input.files?.[0] || null,
       clear: Boolean(event.target.querySelector(`[data-home-mobile-clear][data-id="${CSS.escape(input.dataset.id)}"]`)?.checked)
     })).filter((item) => item.file || item.clear);
-    const totalUploadCount = files.length + Math.min(files.length, mobileFiles.length) + existingMobileUploads.filter((item) => item.file).length + genderUploads.length;
+    const totalUploadCount = files.length + Math.min(files.length, mobileFiles.length) + existingMobileUploads.filter((item) => item.file).length;
     const media = current.homeMedia.map((item) => ({ ...item }));
     event.target.querySelectorAll("[data-home-media-field]").forEach((input) => {
       const item = media.find((candidate) => String(candidate.id) === String(input.dataset.id));
@@ -9680,10 +9620,6 @@ document.addEventListener("submit", async (event) => {
           const item = media.find((candidate) => String(candidate.id) === String(entry.id));
           if (item) item.mobileUrl = await uploadStorefrontImage(entry.file, "hero");
         }
-        for (const [index, item] of genderUploads.entries()) {
-          if (uploadStatus) uploadStatus.textContent = adminCopy(`جارٍ تجهيز صورة القسم ${index + 1} من ${genderUploads.length}…`, `Preparing section image ${index + 1} of ${genderUploads.length}…`);
-          genderImages[item.key] = await uploadStorefrontImage(item.file, "gender");
-        }
       } catch (error) {
         if (submitButton) submitButton.disabled = false;
         if (uploadStatus) uploadStatus.textContent = error.message;
@@ -9692,7 +9628,7 @@ document.addEventListener("submit", async (event) => {
       }
     }
     const intervalSeconds = Math.max(1, Math.min(30, Number(data.get("heroIntervalSeconds") || 3)));
-    state.adminWorkspace.settings = mergeStoreSettings({ ...current, homepageRails: nextRails, homeProductRows: nextProductRows, homeHero: { ...current.homeHero, intervalSeconds }, homeMedia: media, homeGenderImages: genderImages });
+    state.adminWorkspace.settings = mergeStoreSettings({ ...current, homepageRails: nextRails, homeProductRows: nextProductRows, homeHero: { ...current.homeHero, intervalSeconds }, homeMedia: media });
     try {
       await saveAdminWorkspaceNow("homepage");
     } catch (error) {
@@ -10773,11 +10709,7 @@ sections.forEach((section) => sectionObserver.observe(section));
 
 let mobileChromeLastScrollY = Math.max(0, window.scrollY);
 let mobileChromeFrame = 0;
-
-function isPersistentBottomNavigationRoute() {
-  return document.body.classList.contains("commerce-route")
-    || /\/(?:cart|checkout|payment|track(?:ing)?|orders?)(?:\/|$)/i.test(window.location.pathname);
-}
+let mobileChromeStopTimer = 0;
 
 function updateMobileScrollChrome() {
   mobileChromeFrame = 0;
@@ -10792,21 +10724,19 @@ function updateMobileScrollChrome() {
     document.body.classList.remove("mobile-header-condensed", "mobile-nav-hidden");
   } else if (delta > 3) {
     document.body.classList.toggle("mobile-header-condensed", currentScrollY > 90);
-    document.body.classList.toggle(
-      "mobile-nav-hidden",
-      currentScrollY > 260 && !isPersistentBottomNavigationRoute()
-    );
+    document.body.classList.toggle("mobile-nav-hidden", currentScrollY > 80);
   } else if (delta < -2) {
     document.body.classList.remove("mobile-header-condensed", "mobile-nav-hidden");
   }
 
-  if (isPersistentBottomNavigationRoute()) {
-    document.body.classList.remove("mobile-nav-hidden");
-  }
   mobileChromeLastScrollY = currentScrollY;
 }
 
 function requestMobileScrollChromeUpdate() {
+  window.clearTimeout(mobileChromeStopTimer);
+  mobileChromeStopTimer = window.setTimeout(() => {
+    document.body.classList.remove("mobile-nav-hidden");
+  }, 160);
   if (mobileChromeFrame) return;
   mobileChromeFrame = window.requestAnimationFrame(updateMobileScrollChrome);
 }

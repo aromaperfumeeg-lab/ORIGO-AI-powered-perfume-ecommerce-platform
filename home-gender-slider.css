@@ -1,86 +1,13 @@
-/* Full-image gender cards: the supplied square artwork owns all visible copy. */
-body #storefront-main .home-gender-section .home-gender-slider {
-  display: flex !important;
-  gap: clamp(12px, 1.7vw, 24px);
-  margin-top: 16px;
-  padding: 2px;
-  overflow-x: auto;
-  overscroll-behavior-inline: contain;
-  scroll-snap-type: x mandatory;
-  scroll-padding-inline: 2px;
-  scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
-}
-
-body #storefront-main .home-gender-section .home-gender-slider::-webkit-scrollbar {
-  display: none;
-}
-
-body #storefront-main .home-gender-section .home-gender-slider .home-gender-card {
-  position: relative;
-  display: block;
-  flex: 0 0 calc((100% - clamp(24px, 3.4vw, 48px)) / 3);
-  aspect-ratio: 1;
-  min-height: 0;
-  padding: 0 !important;
-  overflow: hidden;
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
-  border: 1px solid var(--line);
-  border-radius: 18px;
-  background: var(--surface);
-  box-shadow: 0 8px 22px rgba(70, 0, 20, .08);
-}
-
-body #storefront-main .home-gender-section .home-gender-slider .home-gender-card::after,
-body #storefront-main .home-gender-section .home-gender-slider .gender-card-art,
-body #storefront-main .home-gender-section .home-gender-slider .gender-card-copy {
-  display: none !important;
-}
-
-body #storefront-main .home-gender-section .home-gender-slider .gender-card-image {
-  position: absolute !important;
-  inset: 0 !important;
-  display: block !important;
-  width: 100% !important;
-  height: 100% !important;
-  min-height: 0 !important;
-  max-width: none !important;
-  max-height: none !important;
-  object-fit: cover;
-  object-position: center;
-}
-body #storefront-main .home-gender-section .home-gender-slider .home-gender-card>picture{position:absolute;inset:0;display:block;width:100%;height:100%}
-
-/* The images are the cards: do not add animation or overlays on hover. */
-body #storefront-main .home-gender-section .home-gender-slider .home-gender-card:hover,
-body #storefront-main .home-gender-section .home-gender-slider .home-gender-card:focus-visible {
-  transform: none !important;
-  box-shadow: 0 8px 22px rgba(70, 0, 20, .08);
-}
-
-body #storefront-main .home-gender-section .home-gender-slider .home-gender-card:focus-visible {
-  outline: 3px solid color-mix(in srgb, var(--gold) 70%, transparent);
-  outline-offset: 3px;
-}
-
-@media (max-width: 900px) {
-  body #storefront-main .home-gender-section .home-gender-slider {
-    gap: 8px;
-    padding: 1px;
-    overflow-x: visible;
-    scroll-snap-type: none;
-  }
-
-  body #storefront-main .home-gender-section .home-gender-slider .home-gender-card {
-    /* Half the former mobile visual scale: all three choices stay visible. */
-    flex: 0 0 calc((100% - 16px) / 3);
-    border-radius: 12px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  body #storefront-main .home-gender-section .home-gender-slider {
-    scroll-behavior: auto;
-  }
-}
+/* Lightweight shop-by-gender buttons: no imagery or background downloads. */
+body #storefront-main .home-gender-section .home-gender-slider{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:clamp(6px,1vw,12px)!important;margin-top:10px;overflow:visible!important}
+body #storefront-main .home-gender-section .gender-section-title{margin-bottom:4px!important}
+body #storefront-main .home-gender-section .home-gender-slider .home-gender-card{--gender-accent:#8a5a16;position:relative;display:flex!important;align-items:center;justify-content:center;gap:6px;width:100%!important;min-width:0!important;min-height:42px!important;aspect-ratio:auto!important;padding:3px 7px!important;overflow:hidden!important;border:1px solid color-mix(in srgb,var(--gender-accent) 28%,var(--line))!important;border-radius:11px!important;color:var(--text)!important;background:color-mix(in srgb,var(--gender-accent) 5%,var(--surface))!important;box-shadow:0 3px 10px rgba(70,0,20,.04)!important;transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease!important}
+body #storefront-main .home-gender-section .home-gender-slider .gender-men{--gender-accent:#3072a9}body #storefront-main .home-gender-section .home-gender-slider .gender-women{--gender-accent:#b84d68}body #storefront-main .home-gender-section .home-gender-slider .gender-unisex{--gender-accent:#7652a4}
+body #storefront-main .home-gender-section .home-gender-slider .home-gender-card::before{content:"";position:absolute;inset-inline-start:0;top:18%;bottom:18%;width:3px;border-radius:4px;background:var(--gender-accent)}
+body #storefront-main .home-gender-section .home-gender-slider .home-gender-card::after{display:none!important}
+body #storefront-main .home-gender-section .gender-button-icon{width:22px;aspect-ratio:1;display:grid;place-items:center;border-radius:50%;color:#fff;background:var(--gender-accent);box-shadow:none;font-size:14px}
+body #storefront-main .home-gender-section .gender-card-copy{display:grid!important;gap:4px;min-width:0;padding:0!important;color:inherit!important;background:transparent!important;text-align:start}
+body #storefront-main .home-gender-section .gender-card-copy b{font-size:clamp(12px,1.1vw,15px)!important;line-height:1}
+body #storefront-main .home-gender-section .home-gender-card:is(:hover,:focus-visible){transform:translateY(-3px)!important;border-color:var(--gender-accent)!important;box-shadow:0 13px 28px color-mix(in srgb,var(--gender-accent) 18%,transparent)!important;outline:none!important}
+@media(max-width:700px){body #storefront-main .home-gender-section .gender-section-title{margin-bottom:14px!important}body #storefront-main .home-gender-section .home-gender-slider{gap:4px!important;margin-top:0!important}body #storefront-main .home-gender-section .home-gender-slider .home-gender-card{display:flex!important;gap:4px;height:36px!important;min-height:36px!important;max-height:36px!important;padding:2px 4px!important;border-radius:9px!important}body #storefront-main .home-gender-section .home-gender-slider .home-gender-card::before{display:none}body #storefront-main .home-gender-section .gender-button-icon{width:18px;font-size:12px}body #storefront-main .home-gender-section .gender-card-copy{display:block!important;text-align:center}body #storefront-main .home-gender-section .gender-card-copy b{font-size:clamp(14px,4vw,16px)!important;font-weight:800!important}}
+@media(prefers-reduced-motion:reduce){body #storefront-main .home-gender-section .home-gender-slider .home-gender-card{transition:none!important}}
