@@ -20,12 +20,17 @@ import {
   archiveReferencePerfume,
   adminConfiguredFromEnvironment,
   createOrder,
+  countProducts,
   createSession,
   createPasswordResetChallenge,
+  createEmailVerificationChallenge,
   createRestockRequest,
   createUser,
   cancelPasswordResetChallenge,
   consumePasswordResetChallenge,
+  consumeEmailVerificationChallenge,
+  verifyPasswordResetChallenge,
+  resetPasswordWithToken,
   deleteFilterDefinition,
   deleteProduct,
   databaseDriver,
@@ -80,7 +85,8 @@ import {
   integrationStatus,
   publicTrackingConfig,
   sendWhatsAppTemplate,
-  sendPasswordResetCode
+  sendPasswordResetCode,
+  sendEmailVerificationCode
 } from "./external-integrations.mjs";
 import {
   accountDashboard,
@@ -131,6 +137,20 @@ const MAX_BODY_BYTES = 25_000_000;
 const SESSION_COOKIE = "origo_session";
 const GUEST_CART_COOKIE = "origo_guest_cart";
 const performanceRateLimits = new Map();
+const authRateLimits = new Map();
+
+function allowAuthRequest(request, action, limit, windowMs) {
+  const ip = String(request.headers["x-forwarded-for"] || request.socket?.remoteAddress || "unknown").split(",")[0].trim();
+  const key = `${action}:${ip}`;
+  const now = Date.now();
+  const current = authRateLimits.get(key);
+  if (!current || current.resetAt <= now) {
+    authRateLimits.set(key, { count: 1, resetAt: now + windowMs });
+    return true;
+  }
+  current.count += 1;
+  return current.count <= limit;
+}
 
 const PERFUME_FAMILY_LABELS = Object.freeze({
   oriental: ["شرقي", "Oriental"], woody: ["خشبي", "Woody"], floral: ["زهري", "Floral"],
@@ -466,6 +486,11 @@ function requireUser(request, response, origin, permission = "customer") {
 function validEmail(value) {
   const email = String(value || "").trim();
   return email.length <= 254 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function validCustomerPassword(value) {
+  const password = String(value || "");
+  return password.length >= 10 && password.length <= 200 && /[a-z]/.test(password) && /[A-Z]/.test(password) && /\d/.test(password) && /[^A-Za-z0-9]/.test(password);
 }
 
 function validateCustomer(body) {
@@ -878,7 +903,11 @@ async function handleAPI(request, response, url, origin) {
   }
 
   if (url.pathname === "/api/products" && request.method === "GET") {
-    return jsonResponse(response, 200, { products: listProducts() }, origin, {
+    const limit = Math.max(0, Math.min(200, Number(url.searchParams.get("limit")) || 0));
+    const offset = Math.max(0, Number(url.searchParams.get("offset")) || 0);
+    const total = countProducts();
+    const products = listProducts({ limit, offset });
+    return jsonResponse(response, 200, { products, total, offset, limit: limit || total, hasMore: limit > 0 && offset + products.length < total }, origin, {
       "Cache-Control": "no-store, max-age=0, must-revalidate"
     });
   }
@@ -1226,33 +1255,80 @@ async function handleAPI(request, response, url, origin) {
     return jsonResponse(response, 200, { channels: passwordRecoveryChannels() }, origin);
   }
 
-  if (url.pathname === "/api/auth/password-reset/request" && request.method === "POST") {
+  if (["/api/auth/forgot-password", "/api/auth/password-reset/request"].includes(url.pathname) && request.method === "POST") {
     try {
-      const body = await readJSONBody(request);
-      const channel = ["email", "whatsapp", "sms"].includes(body.channel) ? body.channel : "";
-      const availableChannels = passwordRecoveryChannels();
-      if (!channel || !availableChannels[channel]) {
-        return jsonResponse(response, 503, { error: "قناة الاستعادة المحددة غير مهيأة حاليًا." }, origin);
+      if (!allowAuthRequest(request, "forgot-password", 5, 15 * 60_000)) {
+        return jsonResponse(response, 429, { error: "طلبات كثيرة. حاول مرة أخرى لاحقًا." }, origin, { "Retry-After": "900" });
       }
+      const body = await readJSONBody(request);
+      const channel = "email";
+      const neutralMessage = "إذا كان هناك حساب مرتبط بهذا البريد فسيتم إرسال رمز الاستعادة إليه.";
+      if (!validEmail(body.email || body.identifier)) return jsonResponse(response, 200, { ok: true, message: neutralMessage, requestId: randomBytes(24).toString("base64url"), expiresIn: 600, resendAfter: 60 }, origin);
       const fakeRequestId = randomBytes(24).toString("base64url");
-      const user = findUserForPasswordReset(body.identifier);
-      const target = channel === "email" ? user?.email : user?.phone;
+      const user = findUserForPasswordReset(body.email || body.identifier);
+      const target = user?.email;
       if (!user || !target) {
         await hashPassword(String(randomBytes(4).readUInt32BE(0)).padStart(10, "0"));
-        return jsonResponse(response, 200, { ok: true, requestId: fakeRequestId, expiresIn: 600 }, origin);
+        return jsonResponse(response, 200, { ok: true, message: neutralMessage, requestId: fakeRequestId, expiresIn: 600, resendAfter: 60 }, origin);
       }
       const challenge = await createPasswordResetChallenge(user.id, channel);
-      if (!challenge) return jsonResponse(response, 200, { ok: true, requestId: fakeRequestId, expiresIn: 600 }, origin);
+      if (!challenge) return jsonResponse(response, 200, { ok: true, message: neutralMessage, requestId: fakeRequestId, expiresIn: 600, resendAfter: 60 }, origin);
       try {
         await sendPasswordResetCode({ channel, to: target, code: challenge.code });
       } catch {
         cancelPasswordResetChallenge(challenge.publicId);
-        return jsonResponse(response, 503, { error: "تعذر إرسال رمز الاستعادة عبر القناة المحددة." }, origin);
+        return jsonResponse(response, 200, { ok: true, message: neutralMessage, requestId: fakeRequestId, expiresIn: 600, resendAfter: 60 }, origin);
       }
-      return jsonResponse(response, 200, { ok: true, requestId: challenge.publicId, expiresIn: 600 }, origin);
+      return jsonResponse(response, 200, { ok: true, message: neutralMessage, requestId: challenge.publicId, expiresIn: 600, resendAfter: 60 }, origin);
     } catch {
       return jsonResponse(response, 400, { error: "تعذر بدء استعادة كلمة المرور." }, origin);
     }
+  }
+
+  if (url.pathname === "/api/auth/verify-reset-code" && request.method === "POST") {
+    if (!allowAuthRequest(request, "verify-reset-code", 10, 15 * 60_000)) return jsonResponse(response, 429, { error: "محاولات كثيرة. حاول لاحقًا." }, origin);
+    try {
+      const body = await readJSONBody(request);
+      const code = String(body.code || "").replace(/\D/g, "");
+      const verified = code.length === 6 ? await verifyPasswordResetChallenge(body.requestId, code) : null;
+      return verified ? jsonResponse(response, 200, { ok: true, resetToken: verified.resetToken }, origin) : jsonResponse(response, 400, { error: "الرمز غير صحيح أو انتهت صلاحيته." }, origin);
+    } catch { return jsonResponse(response, 400, { error: "تعذر التحقق من الرمز." }, origin); }
+  }
+
+  if (url.pathname === "/api/auth/reset-password" && request.method === "POST") {
+    try {
+      const body = await readJSONBody(request);
+      const password = String(body.password || "");
+      if (!validCustomerPassword(password)) return jsonResponse(response, 400, { error: "استخدم 10 أحرف على الأقل تشمل حرفًا كبيرًا وصغيرًا ورقمًا ورمزًا خاصًا." }, origin);
+      const changed = await resetPasswordWithToken(body.resetToken, await hashPassword(password));
+      return changed ? jsonResponse(response, 200, { ok: true }, origin) : jsonResponse(response, 400, { error: "انتهت جلسة الاستعادة. اطلب رمزًا جديدًا." }, origin);
+    } catch { return jsonResponse(response, 400, { error: "تعذر تحديث كلمة المرور." }, origin); }
+  }
+
+  if (url.pathname === "/api/auth/verify-email" && request.method === "POST") {
+    if (!allowAuthRequest(request, "verify-email", 10, 15 * 60_000)) return jsonResponse(response, 429, { error: "محاولات كثيرة. حاول لاحقًا." }, origin);
+    try {
+      const body = await readJSONBody(request);
+      const code = String(body.code || "").replace(/\D/g, "");
+      const user = code.length === 6 ? await consumeEmailVerificationChallenge(body.requestId, code) : null;
+      if (!user) return jsonResponse(response, 400, { error: "رمز التحقق غير صحيح أو انتهت صلاحيته." }, origin);
+      const session = createSession(user.id);
+      return jsonResponse(response, 200, { ok: true, user, cart: mergeCart(user.id, body.cart) }, origin, { "Set-Cookie": sessionCookie(session, request) });
+    } catch { return jsonResponse(response, 400, { error: "تعذر التحقق من البريد." }, origin); }
+  }
+
+  if (url.pathname === "/api/auth/resend-verification" && request.method === "POST") {
+    if (!allowAuthRequest(request, "resend-verification", 5, 15 * 60_000)) return jsonResponse(response, 429, { error: "طلبات كثيرة. حاول مرة أخرى لاحقًا." }, origin, { "Retry-After": "900" });
+    try {
+      const body = await readJSONBody(request);
+      const fakeRequestId = randomBytes(24).toString("base64url");
+      const user = validEmail(body.email) ? findUserByEmail(body.email) : null;
+      if (!user || user.email_verified) return jsonResponse(response, 200, { ok: true, requestId: fakeRequestId, expiresIn: 600, resendAfter: 60 }, origin);
+      const challenge = await createEmailVerificationChallenge(user.id);
+      if (!challenge) return jsonResponse(response, 200, { ok: true, requestId: fakeRequestId, expiresIn: 600, resendAfter: 60 }, origin);
+      await sendEmailVerificationCode({ to: user.email, code: challenge.code });
+      return jsonResponse(response, 200, { ok: true, requestId: challenge.publicId, expiresIn: 600, resendAfter: 60 }, origin);
+    } catch { return jsonResponse(response, 200, { ok: true, requestId: randomBytes(24).toString("base64url"), expiresIn: 600, resendAfter: 60 }, origin); }
   }
 
   if (url.pathname === "/api/auth/password-reset/confirm" && request.method === "POST") {
@@ -1284,8 +1360,8 @@ async function handleAPI(request, response, url, origin) {
       if (!validEmail(email)) {
         return jsonResponse(response, 400, { error: "أدخل بريدًا إلكترونيًا صحيحًا." }, origin);
       }
-      if (password.length < 10 || password.length > 200) {
-        return jsonResponse(response, 400, { error: "كلمة المرور يجب أن تتكون من 10 أحرف على الأقل." }, origin);
+      if (!validCustomerPassword(password)) {
+        return jsonResponse(response, 400, { error: "استخدم 10 أحرف على الأقل تشمل حرفًا كبيرًا وصغيرًا ورقمًا ورمزًا خاصًا." }, origin);
       }
       if (phone && !/^[+\d][\d\s()-]{7,24}$/.test(phone)) {
         return jsonResponse(response, 400, { error: "أدخل رقم هاتف صحيحًا أو اتركه فارغًا." }, origin);
@@ -1297,7 +1373,8 @@ async function handleAPI(request, response, url, origin) {
         name,
         email,
         phone,
-        passwordHash: await hashPassword(password)
+        passwordHash: await hashPassword(password),
+        emailVerified: true
       });
       const cart = mergeCart(user.id, body.cart);
       const session = createSession(user.id);
@@ -1959,9 +2036,10 @@ async function serveStatic(request, response, url) {
       data = Buffer.from(html);
     }
     const isVersionedRuntimeAsset = [".js", ".mjs", ".css"].includes(extension) && url.searchParams.has("v");
+    const isServiceWorker = cleanPath === "sw.js";
     const etag = `W/"${info.size.toString(16)}-${Math.floor(info.mtimeMs).toString(16)}"`;
     const headers = {
-      "Cache-Control": isHtml
+      "Cache-Control": isHtml || isServiceWorker
         ? "no-cache"
         : isVersionedRuntimeAsset
           ? "public, max-age=604800, immutable"

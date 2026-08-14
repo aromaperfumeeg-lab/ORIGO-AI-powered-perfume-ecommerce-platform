@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import nodemailer from "nodemailer";
 
 const value = (name) => String(process.env[name] || "").trim();
 const configured = (...names) => names.every((name) => Boolean(value(name)));
@@ -38,7 +39,7 @@ export function integrationStatus() {
       graphVersion: graphVersion()
     },
     email: {
-      configured: configured("RESEND_API_KEY", "ORIGO_EMAIL_FROM")
+      configured: configured("SMTP_HOST", "SMTP_PORT", "SMTP_USER", "SMTP_PASS", "SMTP_FROM")
     },
     sms: {
       configured: configured("TWILIO_ACCOUNT_SID", "TWILIO_AUTH_TOKEN", "TWILIO_FROM_NUMBER")
@@ -160,25 +161,28 @@ export async function sendWhatsAppTemplate({ to, template, language = "ar", para
   });
 }
 
-async function sendResetEmail(to, code) {
-  if (!integrationStatus().email.configured) throw new Error("Email is not configured.");
-  return requestJSON("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${value("RESEND_API_KEY")}`,
-      "Idempotency-Key": `origo-password-reset-${randomResetKey(code)}`
-    },
-    body: JSON.stringify({
-      from: value("ORIGO_EMAIL_FROM"),
-      to: [String(to)],
-      subject: "رمز استعادة كلمة مرور ORIGO",
-      html: `<div dir="rtl" style="font-family:Arial,sans-serif"><h2>استعادة كلمة المرور</h2><p>رمز التحقق الخاص بك:</p><p style="font-size:30px;font-weight:bold;letter-spacing:6px">${String(code)}</p><p>ينتهي الرمز خلال 10 دقائق. إذا لم تطلبه فتجاهل الرسالة.</p></div>`
-    })
-  });
+function otpEmailHtml(code, purpose = "verification") {
+  const title = purpose === "reset" ? "رمز استعادة كلمة المرور" : "رمز التحقق الخاص بك";
+  return `<!doctype html><html lang="ar" dir="rtl"><body style="margin:0;background:#f6f1ed;font-family:Arial,sans-serif;color:#2b2023"><table role="presentation" width="100%"><tr><td align="center" style="padding:24px 12px"><table role="presentation" width="100%" style="max-width:560px;background:#fff;border-radius:14px;overflow:hidden"><tr><td style="padding:28px;text-align:center;border-top:6px solid #710b24"><div style="font-size:22px;letter-spacing:3px;color:#710b24;font-weight:700">ORIGO SCENTS</div><h1 style="font-size:20px;margin:28px 0 12px">${title}</h1><div style="font-size:36px;letter-spacing:8px;font-weight:700;color:#710b24;direction:ltr">${String(code)}</div><p style="line-height:1.8;margin:24px 0 8px">هذا الرمز صالح لمدة 10 دقائق.</p><p style="color:#74696c;font-size:13px">إذا لم تطلب هذا الرمز يمكنك تجاهل الرسالة.</p></td></tr></table></td></tr></table></body></html>`;
 }
 
-function randomResetKey(code) {
-  return createHash("sha256").update(`${code}:${Date.now()}:${Math.random()}`).digest("hex").slice(0, 32);
+async function sendResetEmail(to, code, purpose = "reset") {
+  if (!integrationStatus().email.configured) throw new Error("Email is not configured.");
+  const port = Number(value("SMTP_PORT"));
+  const transporter = nodemailer.createTransport({
+    host: value("SMTP_HOST"), port,
+    secure: value("SMTP_SECURE") ? value("SMTP_SECURE") === "true" : port === 465,
+    auth: { user: value("SMTP_USER"), pass: value("SMTP_PASS") },
+    requireTLS: port !== 465,
+    connectionTimeout: Number(value("SMTP_CONNECTION_TIMEOUT_MS") || 10_000),
+    socketTimeout: Number(value("SMTP_SOCKET_TIMEOUT_MS") || 15_000)
+  });
+  return transporter.sendMail({
+    from: value("SMTP_FROM"), to: String(to),
+    subject: purpose === "reset" ? "رمز استعادة كلمة مرور ORIGO" : "رمز التحقق من بريد ORIGO",
+    text: `ORIGO SCENTS\n\nرمز التحقق الخاص بك: ${String(code)}\nهذا الرمز صالح لمدة 10 دقائق.\nإذا لم تطلب هذا الرمز يمكنك تجاهل الرسالة.`,
+    html: otpEmailHtml(code, purpose)
+  });
 }
 
 async function sendResetSms(to, code) {
@@ -200,7 +204,7 @@ async function sendResetSms(to, code) {
 }
 
 export async function sendPasswordResetCode({ channel, to, code }) {
-  if (channel === "email") return sendResetEmail(to, code);
+  if (channel === "email") return sendResetEmail(to, code, "reset");
   if (channel === "sms") return sendResetSms(to, code);
   if (channel === "whatsapp") return sendWhatsAppTemplate({
     to,
@@ -209,6 +213,10 @@ export async function sendPasswordResetCode({ channel, to, code }) {
     parameters: [code]
   });
   throw new Error("Unsupported reset channel.");
+}
+
+export async function sendEmailVerificationCode({ to, code }) {
+  return sendResetEmail(to, code, "verification");
 }
 
 export async function sendMetaPurchase(order, context = {}) {

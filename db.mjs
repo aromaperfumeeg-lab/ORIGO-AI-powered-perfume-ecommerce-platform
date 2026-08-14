@@ -160,6 +160,19 @@ db.exec(`
     attempts INTEGER NOT NULL DEFAULT 0,
     expires_at TEXT NOT NULL,
     consumed_at TEXT,
+    verified_at TEXT,
+    reset_token_hash TEXT,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE TABLE IF NOT EXISTS email_verification_challenges (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    public_id TEXT NOT NULL UNIQUE,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    code_hash TEXT NOT NULL,
+    attempts INTEGER NOT NULL DEFAULT 0,
+    expires_at TEXT NOT NULL,
+    consumed_at TEXT,
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
   );
 
@@ -404,6 +417,15 @@ const userColumns = new Set(db.prepare("PRAGMA table_info(users)").all().map((co
 if (!userColumns.has("staff_role")) {
   db.exec("ALTER TABLE users ADD COLUMN staff_role TEXT NOT NULL DEFAULT ''");
 }
+
+ensureColumns("users", {
+  email_verified: "INTEGER NOT NULL DEFAULT 1",
+  email_verified_at: "TEXT"
+});
+ensureColumns("password_reset_challenges", {
+  verified_at: "TEXT",
+  reset_token_hash: "TEXT"
+});
 
 function ensureColumns(table, definitions) {
   const existing = new Set(db.prepare(`PRAGMA table_info(${table})`).all().map((column) => column.name));
@@ -949,6 +971,8 @@ function publicUser(row) {
     phone: row.phone || "",
     role: effectiveRole,
     permissions: ROLE_PERMISSIONS[effectiveRole] || [],
+    emailVerified: Boolean(row.email_verified),
+    emailVerifiedAt: row.email_verified_at || null,
     createdAt: row.created_at
   };
 }
@@ -1090,6 +1114,54 @@ export async function createPasswordResetChallenge(userId, channel) {
   return { publicId, code, expiresAt };
 }
 
+export async function verifyPasswordResetChallenge(publicId, code) {
+  const challenge = db.prepare(`SELECT * FROM password_reset_challenges WHERE public_id = ? AND consumed_at IS NULL AND julianday(expires_at) > julianday('now')`).get(clean(publicId, 100));
+  if (!challenge || challenge.attempts >= 5) return null;
+  if (!await verifyPassword(String(code || ""), challenge.code_hash)) {
+    db.prepare("UPDATE password_reset_challenges SET attempts = attempts + 1 WHERE id = ?").run(challenge.id);
+    return null;
+  }
+  const resetToken = randomBytes(32).toString("base64url");
+  db.prepare("UPDATE password_reset_challenges SET verified_at = CURRENT_TIMESTAMP, reset_token_hash = ? WHERE id = ?")
+    .run(tokenHash(resetToken), challenge.id);
+  return { resetToken, expiresAt: challenge.expires_at };
+}
+
+export async function resetPasswordWithToken(resetToken, newPasswordHash) {
+  const challenge = db.prepare(`SELECT * FROM password_reset_challenges WHERE reset_token_hash = ? AND verified_at IS NOT NULL AND consumed_at IS NULL AND julianday(expires_at) > julianday('now')`).get(tokenHash(String(resetToken || "")));
+  if (!challenge) return false;
+  db.prepare("UPDATE users SET password_hash = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?").run(newPasswordHash, challenge.user_id);
+  db.prepare("DELETE FROM sessions WHERE user_id = ?").run(challenge.user_id);
+  db.prepare("UPDATE password_reset_challenges SET consumed_at = CURRENT_TIMESTAMP, reset_token_hash = NULL WHERE user_id = ? AND consumed_at IS NULL").run(challenge.user_id);
+  return true;
+}
+
+export async function createEmailVerificationChallenge(userId) {
+  const id = Number(userId);
+  db.prepare("DELETE FROM email_verification_challenges WHERE consumed_at IS NOT NULL OR julianday(expires_at) <= julianday('now')").run();
+  const recent = db.prepare(`SELECT id FROM email_verification_challenges WHERE user_id = ? AND created_at >= datetime('now', '-60 seconds')`).get(id);
+  if (recent) return null;
+  db.prepare("UPDATE email_verification_challenges SET consumed_at = CURRENT_TIMESTAMP WHERE user_id = ? AND consumed_at IS NULL").run(id);
+  const code = String(randomInt(0, 1_000_000)).padStart(6, "0");
+  const publicId = randomBytes(24).toString("base64url");
+  const expiresAt = new Date(Date.now() + 10 * 60_000).toISOString();
+  db.prepare("INSERT INTO email_verification_challenges (public_id, user_id, code_hash, expires_at) VALUES (?, ?, ?, ?)")
+    .run(publicId, id, await hashPassword(code), expiresAt);
+  return { publicId, code, expiresAt };
+}
+
+export async function consumeEmailVerificationChallenge(publicId, code) {
+  const challenge = db.prepare(`SELECT * FROM email_verification_challenges WHERE public_id = ? AND consumed_at IS NULL AND julianday(expires_at) > julianday('now')`).get(clean(publicId, 100));
+  if (!challenge || challenge.attempts >= 5) return null;
+  if (!await verifyPassword(String(code || ""), challenge.code_hash)) {
+    db.prepare("UPDATE email_verification_challenges SET attempts = attempts + 1 WHERE id = ?").run(challenge.id);
+    return null;
+  }
+  db.prepare("UPDATE users SET email_verified = 1, email_verified_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP WHERE id = ?").run(challenge.user_id);
+  db.prepare("UPDATE email_verification_challenges SET consumed_at = CURRENT_TIMESTAMP WHERE user_id = ? AND consumed_at IS NULL").run(challenge.user_id);
+  return findUserById(challenge.user_id);
+}
+
 export function cancelPasswordResetChallenge(publicId) {
   db.prepare("DELETE FROM password_reset_challenges WHERE public_id = ?").run(clean(publicId, 100));
 }
@@ -1113,7 +1185,7 @@ export function purgeAllUsers() {
   const tables = new Set(db.prepare("SELECT name FROM sqlite_master WHERE type = 'table'").all().map((row) => row.name));
   const orderColumns = tables.has("orders") ? new Set(db.prepare("PRAGMA table_info(orders)").all().map((column) => column.name)) : new Set();
   [
-    "password_reset_challenges", "sessions", "carts", "saved_addresses", "customer_loyalty",
+    "email_verification_challenges", "password_reset_challenges", "sessions", "carts", "saved_addresses", "customer_loyalty",
     "customer_notifications", "customer_wishlist", "customer_payment_methods", "fragrance_finder_sessions",
     "product_performance_vote_reports", "product_performance_votes"
   ].filter((table) => tables.has(table)).forEach((table) => db.prepare(`DELETE FROM ${table}`).run());
@@ -1147,14 +1219,14 @@ export function setUserRole(id, role) {
   return findUserById(id);
 }
 
-export function createUser({ name, email, passwordHash, phone = "", role = "customer" }) {
+export function createUser({ name, email, passwordHash, phone = "", role = "customer", emailVerified = true }) {
   const safeRole = allowedRoles.has(role) ? role : "customer";
   const databaseRole = safeRole === "customer" ? "customer" : "admin";
   const staffRole = safeRole === "customer" ? "" : safeRole;
   const result = db.prepare(`
-    INSERT INTO users (name, email, password_hash, phone, role, staff_role)
-    VALUES (?, ?, ?, ?, ?, ?)
-  `).run(clean(name, 100), normalizedEmail(email), passwordHash, clean(phone, 30), databaseRole, staffRole);
+    INSERT INTO users (name, email, password_hash, phone, role, staff_role, email_verified, email_verified_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+  `).run(clean(name, 100), normalizedEmail(email), passwordHash, clean(phone, 30), databaseRole, staffRole, emailVerified ? 1 : 0, emailVerified ? new Date().toISOString() : null);
   return findUserById(result.lastInsertRowid);
 }
 
@@ -1187,11 +1259,21 @@ export function userFromSession(token) {
   return publicUser(row);
 }
 
-export function listProducts({ includeHidden = false } = {}) {
+export function listProducts({ includeHidden = false, limit = 0, offset = 0 } = {}) {
+  const safeLimit = Math.max(0, Math.min(200, Number(limit) || 0));
+  const safeOffset = Math.max(0, Number(offset) || 0);
+  const pagination = safeLimit ? ` LIMIT ${safeLimit} OFFSET ${safeOffset}` : "";
   const rows = includeHidden
-    ? db.prepare("SELECT * FROM products ORDER BY created_at DESC").all()
-    : db.prepare("SELECT * FROM products WHERE status = 'published' ORDER BY created_at, id").all();
+    ? db.prepare(`SELECT * FROM products ORDER BY created_at DESC${pagination}`).all()
+    : db.prepare(`SELECT * FROM products WHERE status = 'published' ORDER BY created_at, id${pagination}`).all();
   return rows.map((row) => productFromRow(row, includeHidden));
+}
+
+export function countProducts({ includeHidden = false } = {}) {
+  const row = includeHidden
+    ? db.prepare("SELECT COUNT(*) AS count FROM products").get()
+    : db.prepare("SELECT COUNT(*) AS count FROM products WHERE status = 'published'").get();
+  return Number(row?.count || 0);
 }
 
 function productNoteReferences(input) {

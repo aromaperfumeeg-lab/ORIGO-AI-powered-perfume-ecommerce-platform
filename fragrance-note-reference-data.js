@@ -4,47 +4,47 @@
   {
     "slug": "absinthe",
     "nameEn": "Absinthe",
-    "image": "assets/notes/extracted/absinthe.png"
+    "image": ""
   },
   {
     "slug": "absolute-vanilla",
     "nameEn": "Absolute Vanilla",
-    "image": "assets/notes/extracted/absolute-vanilla.png"
+    "image": ""
   },
   {
     "slug": "african-freesia",
     "nameEn": "African Freesia",
-    "image": "assets/notes/extracted/african-freesia.png"
+    "image": ""
   },
   {
     "slug": "african-geranium",
     "nameEn": "African Geranium",
-    "image": "assets/notes/extracted/african-geranium.png"
+    "image": ""
   },
   {
     "slug": "african-marigold",
     "nameEn": "African Marigold",
-    "image": "assets/notes/extracted/african-marigold.png"
+    "image": ""
   },
   {
     "slug": "african-orange-flower",
     "nameEn": "African Orange Flower",
-    "image": "assets/notes/extracted/african-orange-flower.png"
+    "image": ""
   },
   {
     "slug": "agarwood",
     "nameEn": "Agarwood",
-    "image": "assets/notes/extracted/agarwood.png"
+    "image": ""
   },
   {
     "slug": "agarwood-oud",
     "nameEn": "Agarwood (Oud)",
-    "image": "assets/notes/extracted/agarwood-oud.png"
+    "image": ""
   },
   {
     "slug": "agave",
     "nameEn": "Agave",
-    "image": "assets/notes/extracted/agave.png"
+    "image": ""
   },
   {
     "slug": "air",
@@ -54,2757 +54,2757 @@
   {
     "slug": "akigalawood",
     "nameEn": "Akigalawood",
-    "image": "assets/notes/extracted/akigalawood.png"
+    "image": ""
   },
   {
     "slug": "almond",
     "nameEn": "Almond",
-    "image": "assets/notes/extracted/almond.png"
+    "image": ""
   },
   {
     "slug": "almond-blossom",
     "nameEn": "Almond Blossom",
-    "image": "assets/notes/extracted/almond-blossom.png"
+    "image": ""
   },
   {
     "slug": "almond-milk",
     "nameEn": "Almond Milk",
-    "image": "assets/notes/extracted/almond-milk.png"
+    "image": ""
   },
   {
     "slug": "amarilis",
     "nameEn": "Amarilis",
-    "image": "assets/notes/extracted/amarilis.png"
+    "image": ""
   },
   {
     "slug": "amber",
     "nameEn": "Amber",
-    "image": "assets/notes/extracted/amber.png"
+    "image": ""
   },
   {
     "slug": "ambrmaks-ambermax",
     "nameEn": "Ambermax",
-    "image": "assets/notes/extracted/ambrmaks-ambermax.png"
+    "image": ""
   },
   {
     "slug": "amberwood",
     "nameEn": "Amberwood",
-    "image": "assets/notes/extracted/amberwood.png"
+    "image": ""
   },
   {
     "slug": "ambre",
     "nameEn": "Ambre",
-    "image": "assets/notes/extracted/ambre.png"
+    "image": ""
   },
   {
     "slug": "ambregris",
     "nameEn": "Ambregris",
-    "image": "assets/notes/extracted/ambregris.png"
+    "image": ""
   },
   {
     "slug": "amyl-salicylate",
     "nameEn": "Amyl Salicylate",
-    "image": "assets/notes/extracted/amyl-salicylate.png"
+    "image": ""
   },
   {
     "slug": "angelica",
     "nameEn": "Angelica",
-    "image": "assets/notes/extracted/angelica.png"
+    "image": ""
   },
   {
     "slug": "animal-notes",
     "nameEn": "Animal Notes",
-    "image": "assets/notes/extracted/animal-notes.png"
+    "image": ""
   },
   {
     "slug": "anise",
     "nameEn": "Anise",
-    "image": "assets/notes/extracted/anise.png"
+    "image": ""
   },
   {
     "slug": "apple-blossom",
     "nameEn": "Apple Blossom",
-    "image": "assets/notes/extracted/apple-blossom.png"
+    "image": ""
   },
   {
     "slug": "apple-brandy",
     "nameEn": "Apple Brandy",
-    "image": "assets/notes/extracted/apple-brandy.png"
+    "image": ""
   },
   {
     "slug": "apple-tree",
     "nameEn": "Apple Tree",
-    "image": "assets/notes/extracted/apple-tree.png"
+    "image": ""
   },
   {
     "slug": "apricot",
     "nameEn": "Apricot",
-    "image": "assets/notes/extracted/apricot.png"
+    "image": ""
   },
   {
     "slug": "apricot-blossom",
     "nameEn": "Apricot Blossom",
-    "image": "assets/notes/extracted/apricot-blossom.png"
+    "image": ""
   },
   {
     "slug": "aquozone",
     "nameEn": "Aquozone",
-    "image": "assets/notes/extracted/aquozone.png"
+    "image": ""
   },
   {
     "slug": "aromatic-spices",
     "nameEn": "Aromatic Spices",
-    "image": "assets/notes/extracted/aromatic-spices.png"
+    "image": ""
   },
   {
     "slug": "artemisia",
     "nameEn": "Artemisia",
-    "image": "assets/notes/extracted/artemisia.png"
+    "image": ""
   },
   {
     "slug": "atlas-cedar",
     "nameEn": "Atlas Cedar",
-    "image": "assets/notes/extracted/atlas-cedar.png"
+    "image": ""
   },
   {
     "slug": "australian-sandalwood",
     "nameEn": "Australian Sandalwood",
-    "image": "assets/notes/extracted/australian-sandalwood.png"
+    "image": ""
   },
   {
     "slug": "balsam-fir",
     "nameEn": "Balsam Fir",
-    "image": "assets/notes/extracted/balsam-fir.png"
+    "image": ""
   },
   {
     "slug": "balsamic-notes",
     "nameEn": "Balsamic Notes",
-    "image": "assets/notes/extracted/balsamic-notes.png"
+    "image": ""
   },
   {
     "slug": "bamboo",
     "nameEn": "Bamboo",
-    "image": "assets/notes/extracted/bamboo.png"
+    "image": ""
   },
   {
     "slug": "banana",
     "nameEn": "Banana",
-    "image": "assets/notes/extracted/banana.png"
+    "image": ""
   },
   {
     "slug": "banana-blossom",
     "nameEn": "Banana Blossom",
-    "image": "assets/notes/extracted/banana-blossom.png"
+    "image": ""
   },
   {
     "slug": "bay-leaf",
     "nameEn": "Bay Leaf",
-    "image": "assets/notes/extracted/bay-leaf.png"
+    "image": ""
   },
   {
     "slug": "beeswax",
     "nameEn": "Beeswax",
-    "image": "assets/notes/extracted/beeswax.png"
+    "image": ""
   },
   {
     "slug": "belambre",
     "nameEn": "Belambre",
-    "image": "assets/notes/extracted/belambre.png"
+    "image": ""
   },
   {
     "slug": "bellini",
     "nameEn": "Bellini",
-    "image": "assets/notes/extracted/bellini.png"
+    "image": ""
   },
   {
     "slug": "benzoin",
     "nameEn": "Benzoin",
-    "image": "assets/notes/extracted/benzoin.png"
+    "image": ""
   },
   {
     "slug": "bergamot",
     "nameEn": "Bergamot",
-    "image": "assets/notes/extracted/bergamot.png"
+    "image": ""
   },
   {
     "slug": "berries",
     "nameEn": "Berries",
-    "image": "assets/notes/extracted/berries.png"
+    "image": ""
   },
   {
     "slug": "birch",
     "nameEn": "Birch",
-    "image": "assets/notes/extracted/birch.png"
+    "image": ""
   },
   {
     "slug": "birch-tar",
     "nameEn": "Birch Tar",
-    "image": "assets/notes/extracted/birch-tar.png"
+    "image": ""
   },
   {
     "slug": "birchwood",
     "nameEn": "Birchwood",
-    "image": "assets/notes/extracted/birchwood.png"
+    "image": ""
   },
   {
     "slug": "bitter-almond",
     "nameEn": "Bitter Almond",
-    "image": "assets/notes/extracted/bitter-almond.png"
+    "image": ""
   },
   {
     "slug": "bitter-orange",
     "nameEn": "Bitter Orange",
-    "image": "assets/notes/extracted/bitter-orange.png"
+    "image": ""
   },
   {
     "slug": "bitter-orange-blossom",
     "nameEn": "Bitter Orange Blossom",
-    "image": "assets/notes/extracted/bitter-orange-blossom.png"
+    "image": ""
   },
   {
     "slug": "black-amber",
     "nameEn": "Black Amber",
-    "image": "assets/notes/extracted/black-amber.png"
+    "image": ""
   },
   {
     "slug": "black-cherry",
     "nameEn": "Black Cherry",
-    "image": "assets/notes/extracted/black-cherry.png"
+    "image": ""
   },
   {
     "slug": "black-currant",
     "nameEn": "Black Currant",
-    "image": "assets/notes/extracted/black-currant.png"
+    "image": ""
   },
   {
     "slug": "black-currant-liqueur",
     "nameEn": "Black Currant Liqueur",
-    "image": "assets/notes/extracted/black-currant-liqueur.png"
+    "image": ""
   },
   {
     "slug": "black-currant-syrup",
     "nameEn": "Black Currant Syrup",
-    "image": "assets/notes/extracted/black-currant-syrup.png"
+    "image": ""
   },
   {
     "slug": "black-locust",
     "nameEn": "Black Locust",
-    "image": "assets/notes/extracted/black-locust.png"
+    "image": ""
   },
   {
     "slug": "black-orchid",
     "nameEn": "Black Orchid",
-    "image": "assets/notes/extracted/black-orchid.png"
+    "image": ""
   },
   {
     "slug": "black-pepper",
     "nameEn": "Black Pepper",
-    "image": "assets/notes/extracted/black-pepper.png"
+    "image": ""
   },
   {
     "slug": "black-rose",
     "nameEn": "Black Rose",
-    "image": "assets/notes/extracted/black-rose.png"
+    "image": ""
   },
   {
     "slug": "black-tea",
     "nameEn": "Black Tea",
-    "image": "assets/notes/extracted/black-tea.png"
+    "image": ""
   },
   {
     "slug": "black-truffle",
     "nameEn": "Black Truffle",
-    "image": "assets/notes/extracted/black-truffle.png"
+    "image": ""
   },
   {
     "slug": "black-vanilla-husk",
     "nameEn": "Black Vanilla Husk",
-    "image": "assets/notes/extracted/black-vanilla-husk.png"
+    "image": ""
   },
   {
     "slug": "blackberry-leaf",
     "nameEn": "Blackberry Leaf",
-    "image": "assets/notes/extracted/blackberry-leaf.png"
+    "image": ""
   },
   {
     "slug": "blonde-wood",
     "nameEn": "Blonde Wood",
-    "image": "assets/notes/extracted/blonde-wood.png"
+    "image": ""
   },
   {
     "slug": "blood-grapefruit",
     "nameEn": "Blood Grapefruit",
-    "image": "assets/notes/extracted/blood-grapefruit.png"
+    "image": ""
   },
   {
     "slug": "blood-mandarin",
     "nameEn": "Blood Mandarin",
-    "image": "assets/notes/extracted/blood-mandarin.png"
+    "image": ""
   },
   {
     "slug": "blood-orange",
     "nameEn": "Blood Orange",
-    "image": "assets/notes/extracted/blood-orange.png"
+    "image": ""
   },
   {
     "slug": "blue-lotus",
     "nameEn": "Blue Lotus",
-    "image": "assets/notes/extracted/blue-lotus.png"
+    "image": ""
   },
   {
     "slug": "blue-rose",
     "nameEn": "Blue Rose",
-    "image": "assets/notes/extracted/blue-rose.png"
+    "image": ""
   },
   {
     "slug": "bluebell",
     "nameEn": "Bluebell",
-    "image": "assets/notes/extracted/bluebell.png"
+    "image": ""
   },
   {
     "slug": "bourbon-pepper",
     "nameEn": "Bourbon Pepper",
-    "image": "assets/notes/extracted/bourbon-pepper.png"
+    "image": ""
   },
   {
     "slug": "bourbon-vanilla",
     "nameEn": "Bourbon Vanilla",
-    "image": "assets/notes/extracted/bourbon-vanilla.png"
+    "image": ""
   },
   {
     "slug": "bourbon-vetiver",
     "nameEn": "Bourbon Vetiver",
-    "image": "assets/notes/extracted/bourbon-vetiver.png"
+    "image": ""
   },
   {
     "slug": "brandy",
     "nameEn": "Brandy",
-    "image": "assets/notes/extracted/brandy.png"
+    "image": ""
   },
   {
     "slug": "brazilian-jasmine",
     "nameEn": "Brazilian Jasmine",
-    "image": "assets/notes/extracted/brazilian-jasmine.png"
+    "image": ""
   },
   {
     "slug": "brazilian-orange",
     "nameEn": "Brazilian Orange",
-    "image": "assets/notes/extracted/brazilian-orange.png"
+    "image": ""
   },
   {
     "slug": "brazilian-orchid",
     "nameEn": "Brazilian Orchid",
-    "image": "assets/notes/extracted/brazilian-orchid.png"
+    "image": ""
   },
   {
     "slug": "brazilian-rosewood",
     "nameEn": "Brazilian Rosewood",
-    "image": "assets/notes/extracted/brazilian-rosewood.png"
+    "image": ""
   },
   {
     "slug": "broom",
     "nameEn": "Broom",
-    "image": "assets/notes/extracted/broom.png"
+    "image": ""
   },
   {
     "slug": "brown-sugar",
     "nameEn": "Brown Sugar",
-    "image": "assets/notes/extracted/brown-sugar.png"
+    "image": ""
   },
   {
     "slug": "bubble-gum",
     "nameEn": "Bubble Gum",
-    "image": "assets/notes/extracted/bubble-gum.png"
+    "image": ""
   },
   {
     "slug": "bulgarian-rose",
     "nameEn": "Bulgarian Rose",
-    "image": "assets/notes/extracted/bulgarian-rose.png"
+    "image": ""
   },
   {
     "slug": "bulrush",
     "nameEn": "Bulrush",
-    "image": "assets/notes/extracted/bulrush.png"
+    "image": ""
   },
   {
     "slug": "cacao",
     "nameEn": "Cacao",
-    "image": "assets/notes/extracted/cacao.png"
+    "image": ""
   },
   {
     "slug": "cacao-pod",
     "nameEn": "Cacao Pod",
-    "image": "assets/notes/extracted/cacao-pod.png"
+    "image": ""
   },
   {
     "slug": "cactus",
     "nameEn": "Cactus",
-    "image": "assets/notes/extracted/cactus.png"
+    "image": ""
   },
   {
     "slug": "calabrian-bergamot",
     "nameEn": "Calabrian Bergamot",
-    "image": "assets/notes/extracted/calabrian-bergamot.png"
+    "image": ""
   },
   {
     "slug": "calamansi",
     "nameEn": "Calamansi",
-    "image": "assets/notes/extracted/calamansi.png"
+    "image": ""
   },
   {
     "slug": "calamus",
     "nameEn": "Calamus",
-    "image": "assets/notes/extracted/calamus.png"
+    "image": ""
   },
   {
     "slug": "camellia",
     "nameEn": "Camellia",
-    "image": "assets/notes/extracted/camellia.png"
+    "image": ""
   },
   {
     "slug": "candied-apple",
     "nameEn": "Candied Apple",
-    "image": "assets/notes/extracted/candied-apple.png"
+    "image": ""
   },
   {
     "slug": "candied-citrus",
     "nameEn": "Candied Citrus",
-    "image": "assets/notes/extracted/candied-citrus.png"
+    "image": ""
   },
   {
     "slug": "candied-ginger",
     "nameEn": "Candied Ginger",
-    "image": "assets/notes/extracted/candied-ginger.png"
+    "image": ""
   },
   {
     "slug": "candied-lemon",
     "nameEn": "Candied Lemon",
-    "image": "assets/notes/extracted/candied-lemon.png"
+    "image": ""
   },
   {
     "slug": "candied-orange",
     "nameEn": "Candied Orange",
-    "image": "assets/notes/extracted/candied-orange.png"
+    "image": ""
   },
   {
     "slug": "candied-violet",
     "nameEn": "Candied Violet",
-    "image": "assets/notes/extracted/candied-violet.png"
+    "image": ""
   },
   {
     "slug": "cannabis",
     "nameEn": "Cannabis",
-    "image": "assets/notes/extracted/cannabis.png"
+    "image": ""
   },
   {
     "slug": "caramel",
     "nameEn": "Caramel",
-    "image": "assets/notes/extracted/caramel.png"
+    "image": ""
   },
   {
     "slug": "caramelized-vanilla",
     "nameEn": "Caramelized Vanilla",
-    "image": "assets/notes/extracted/caramelized-vanilla.png"
+    "image": ""
   },
   {
     "slug": "cardamom",
     "nameEn": "Cardamom",
-    "image": "assets/notes/extracted/cardamom.png"
+    "image": ""
   },
   {
     "slug": "carnation",
     "nameEn": "Carnation",
-    "image": "assets/notes/extracted/carnation.png"
+    "image": ""
   },
   {
     "slug": "carrot-seed",
     "nameEn": "Carrot Seed",
-    "image": "assets/notes/extracted/carrot-seed.png"
+    "image": ""
   },
   {
     "slug": "carrot-seeds",
     "nameEn": "Carrot Seeds",
-    "image": "assets/notes/extracted/carrot-seeds.png"
+    "image": ""
   },
   {
     "slug": "cassia",
     "nameEn": "Cassia",
-    "image": "assets/notes/extracted/cassia.png"
+    "image": ""
   },
   {
     "slug": "cassis",
     "nameEn": "Cassis",
-    "image": "assets/notes/extracted/cassis.png"
+    "image": ""
   },
   {
     "slug": "castoreum",
     "nameEn": "Castoreum",
-    "image": "assets/notes/extracted/castoreum.png"
+    "image": ""
   },
   {
     "slug": "cedar",
     "nameEn": "Cedar",
-    "image": "assets/notes/extracted/cedar.png"
+    "image": ""
   },
   {
     "slug": "cedar-leaf",
     "nameEn": "Cedar Leaf",
-    "image": "assets/notes/extracted/cedar-leaf.png"
+    "image": ""
   },
   {
     "slug": "celery-seed",
     "nameEn": "Celery Seed",
-    "image": "assets/notes/extracted/celery-seed.png"
+    "image": ""
   },
   {
     "slug": "celery-seeds",
     "nameEn": "Celery Seeds",
-    "image": "assets/notes/extracted/celery-seeds.png"
+    "image": ""
   },
   {
     "slug": "cetalox",
     "nameEn": "Cetalox",
-    "image": "assets/notes/extracted/cetalox.png"
+    "image": ""
   },
   {
     "slug": "ceylon-cinnamon",
     "nameEn": "Ceylon Cinnamon",
-    "image": "assets/notes/extracted/ceylon-cinnamon.png"
+    "image": ""
   },
   {
     "slug": "chamomile",
     "nameEn": "Chamomile",
-    "image": "assets/notes/extracted/chamomile.png"
+    "image": ""
   },
   {
     "slug": "champaca-jungle-essence",
     "nameEn": "Champaca Jungle Essence",
-    "image": "assets/notes/extracted/champaca-jungle-essence.png"
+    "image": ""
   },
   {
     "slug": "champagne",
     "nameEn": "Champagne",
-    "image": "assets/notes/extracted/champagne.png"
+    "image": ""
   },
   {
     "slug": "champagne-rose",
     "nameEn": "Champagne Rose",
-    "image": "assets/notes/extracted/champagne-rose.png"
+    "image": ""
   },
   {
     "slug": "cherry",
     "nameEn": "Cherry",
-    "image": "assets/notes/extracted/cherry.png"
+    "image": ""
   },
   {
     "slug": "cherry-blossom",
     "nameEn": "Cherry Blossom",
-    "image": "assets/notes/extracted/cherry-blossom.png"
+    "image": ""
   },
   {
     "slug": "chestnut",
     "nameEn": "Chestnut",
-    "image": "assets/notes/extracted/chestnut.png"
+    "image": ""
   },
   {
     "slug": "chestnut-cream",
     "nameEn": "Chestnut Cream",
-    "image": "assets/notes/extracted/chestnut-cream.png"
+    "image": ""
   },
   {
     "slug": "chilli-pepper",
     "nameEn": "Chilli Pepper",
-    "image": "assets/notes/extracted/chilli-pepper.png"
+    "image": ""
   },
   {
     "slug": "chinese-jasmine",
     "nameEn": "Chinese Jasmine",
-    "image": "assets/notes/extracted/chinese-jasmine.png"
+    "image": ""
   },
   {
     "slug": "chinese-pepper",
     "nameEn": "Chinese Pepper",
-    "image": "assets/notes/extracted/chinese-pepper.png"
+    "image": ""
   },
   {
     "slug": "chocolate",
     "nameEn": "Chocolate",
-    "image": "assets/notes/extracted/chocolate.png"
+    "image": ""
   },
   {
     "slug": "chocolate-marshmallow",
     "nameEn": "Chocolate Marshmallow",
-    "image": "assets/notes/extracted/chocolate-marshmallow.png"
+    "image": ""
   },
   {
     "slug": "cilantro",
     "nameEn": "Cilantro",
-    "image": "assets/notes/extracted/cilantro.png"
+    "image": ""
   },
   {
     "slug": "cinnabar",
     "nameEn": "Cinnabar",
-    "image": "assets/notes/extracted/cinnabar.png"
+    "image": ""
   },
   {
     "slug": "cinnamon",
     "nameEn": "Cinnamon",
-    "image": "assets/notes/extracted/cinnamon.png"
+    "image": ""
   },
   {
     "slug": "ciste-labdanum",
     "nameEn": "Ciste Labdanum",
-    "image": "assets/notes/extracted/ciste-labdanum.png"
+    "image": ""
   },
   {
     "slug": "cistus",
     "nameEn": "Cistus",
-    "image": "assets/notes/extracted/cistus.png"
+    "image": ""
   },
   {
     "slug": "cistus-incanus",
     "nameEn": "Cistus Incanus",
-    "image": "assets/notes/extracted/cistus-incanus.png"
+    "image": ""
   },
   {
     "slug": "citron",
     "nameEn": "Citron",
-    "image": "assets/notes/extracted/citron.png"
+    "image": ""
   },
   {
     "slug": "citrus",
     "nameEn": "Citrus",
-    "image": "assets/notes/extracted/citrus.png"
+    "image": ""
   },
   {
     "slug": "citrus-blossom",
     "nameEn": "Citrus Blossom",
-    "image": "assets/notes/extracted/citrus-blossom.png"
+    "image": ""
   },
   {
     "slug": "citrus-notes",
     "nameEn": "Citrus Notes",
-    "image": "assets/notes/extracted/citrus-notes.png"
+    "image": ""
   },
   {
     "slug": "clearwood",
     "nameEn": "Clearwood",
-    "image": "assets/notes/extracted/clearwood.png"
+    "image": ""
   },
   {
     "slug": "clementine",
     "nameEn": "Clementine",
-    "image": "assets/notes/extracted/clementine.png"
+    "image": ""
   },
   {
     "slug": "clove",
     "nameEn": "Clove",
-    "image": "assets/notes/extracted/clove.png"
+    "image": ""
   },
   {
     "slug": "clover",
     "nameEn": "Clover",
-    "image": "assets/notes/extracted/clover.png"
+    "image": ""
   },
   {
     "slug": "cloves",
     "nameEn": "Cloves",
-    "image": "assets/notes/extracted/cloves.png"
+    "image": ""
   },
   {
     "slug": "cocoa",
     "nameEn": "Cocoa",
-    "image": "assets/notes/extracted/cocoa.png"
+    "image": ""
   },
   {
     "slug": "coconut",
     "nameEn": "Coconut",
-    "image": "assets/notes/extracted/coconut.png"
+    "image": ""
   },
   {
     "slug": "coconut-blossom",
     "nameEn": "Coconut Blossom",
-    "image": "assets/notes/extracted/coconut-blossom.png"
+    "image": ""
   },
   {
     "slug": "coconut-cream",
     "nameEn": "Coconut Cream",
-    "image": "assets/notes/extracted/coconut-cream.png"
+    "image": ""
   },
   {
     "slug": "coconut-milk",
     "nameEn": "Coconut Milk",
-    "image": "assets/notes/extracted/coconut-milk.png"
+    "image": ""
   },
   {
     "slug": "coconut-nectar",
     "nameEn": "Coconut Nectar",
-    "image": "assets/notes/extracted/coconut-nectar.png"
+    "image": ""
   },
   {
     "slug": "coconut-rice",
     "nameEn": "Coconut Rice",
-    "image": "assets/notes/extracted/coconut-rice.png"
+    "image": ""
   },
   {
     "slug": "coconut-water",
     "nameEn": "Coconut Water",
-    "image": "assets/notes/extracted/coconut-water.png"
+    "image": ""
   },
   {
     "slug": "coffee",
     "nameEn": "Coffee",
-    "image": "assets/notes/extracted/coffee.png"
+    "image": ""
   },
   {
     "slug": "cola",
     "nameEn": "Cola",
-    "image": "assets/notes/extracted/cola.png"
+    "image": ""
   },
   {
     "slug": "compost",
     "nameEn": "Compost",
-    "image": "assets/notes/extracted/compost.png"
+    "image": ""
   },
   {
     "slug": "cotton-candy",
     "nameEn": "Cotton Candy",
-    "image": "assets/notes/extracted/cotton-candy.png"
+    "image": ""
   },
   {
     "slug": "cotton-flower",
     "nameEn": "Cotton Flower",
-    "image": "assets/notes/extracted/cotton-flower.png"
+    "image": ""
   },
   {
     "slug": "cranberry",
     "nameEn": "Cranberry",
-    "image": "assets/notes/extracted/cranberry.png"
+    "image": ""
   },
   {
     "slug": "creme-de-cassis",
     "nameEn": "Creme de Cassis",
-    "image": "assets/notes/extracted/creme-de-cassis.png"
+    "image": ""
   },
   {
     "slug": "croissant",
     "nameEn": "Croissant",
-    "image": "assets/notes/extracted/croissant.png"
+    "image": ""
   },
   {
     "slug": "crystalized-amber",
     "nameEn": "Crystalized Amber",
-    "image": "assets/notes/extracted/crystalized-amber.png"
+    "image": ""
   },
   {
     "slug": "cucumber",
     "nameEn": "Cucumber",
-    "image": "assets/notes/extracted/cucumber.png"
+    "image": ""
   },
   {
     "slug": "cupcake",
     "nameEn": "Cupcake",
-    "image": "assets/notes/extracted/cupcake.png"
+    "image": ""
   },
   {
     "slug": "curry-leaf",
     "nameEn": "Curry Leaf",
-    "image": "assets/notes/extracted/curry-leaf.png"
+    "image": ""
   },
   {
     "slug": "curry-tree",
     "nameEn": "Curry Tree",
-    "image": "assets/notes/extracted/curry-tree.png"
+    "image": ""
   },
   {
     "slug": "cypress",
     "nameEn": "Cypress",
-    "image": "assets/notes/extracted/cypress.png"
+    "image": ""
   },
   {
     "slug": "cypriol-oil",
     "nameEn": "Cypriol Oil",
-    "image": "assets/notes/extracted/cypriol-oil.png"
+    "image": ""
   },
   {
     "slug": "damascene-rose",
     "nameEn": "Damascene Rose",
-    "image": "assets/notes/extracted/damascene-rose.png"
+    "image": ""
   },
   {
     "slug": "damask-rose",
     "nameEn": "Damask Rose",
-    "image": "assets/notes/extracted/damask-rose.png"
+    "image": ""
   },
   {
     "slug": "dark-chocolate",
     "nameEn": "Dark Chocolate",
-    "image": "assets/notes/extracted/dark-chocolate.png"
+    "image": ""
   },
   {
     "slug": "date",
     "nameEn": "Date",
-    "image": "assets/notes/extracted/date.png"
+    "image": ""
   },
   {
     "slug": "dates",
     "nameEn": "Dates",
-    "image": "assets/notes/extracted/dates.png"
+    "image": ""
   },
   {
     "slug": "dewberry",
     "nameEn": "Dewberry",
-    "image": "assets/notes/extracted/dewberry.png"
+    "image": ""
   },
   {
     "slug": "dragonfruit",
     "nameEn": "Dragonfruit",
-    "image": "assets/notes/extracted/dragonfruit.png"
+    "image": ""
   },
   {
     "slug": "dried-fruits",
     "nameEn": "Dried Fruits",
-    "image": "assets/notes/extracted/dried-fruits.png"
+    "image": ""
   },
   {
     "slug": "driftwood",
     "nameEn": "Driftwood",
-    "image": "assets/notes/extracted/driftwood.png"
+    "image": ""
   },
   {
     "slug": "dry-wood",
     "nameEn": "Dry Wood",
-    "image": "assets/notes/extracted/dry-wood.png"
+    "image": ""
   },
   {
     "slug": "dulce-de-leche",
     "nameEn": "Dulce de Leche",
-    "image": "assets/notes/extracted/dulce-de-leche.png"
+    "image": ""
   },
   {
     "slug": "earth-notes",
     "nameEn": "Earth Notes",
-    "image": "assets/notes/extracted/earth-notes.png"
+    "image": ""
   },
   {
     "slug": "earthy-notes",
     "nameEn": "Earthy Notes",
-    "image": "assets/notes/extracted/earthy-notes.png"
+    "image": ""
   },
   {
     "slug": "ebony",
     "nameEn": "Ebony",
-    "image": "assets/notes/extracted/ebony.png"
+    "image": ""
   },
   {
     "slug": "ebony-tree",
     "nameEn": "Ebony Tree",
-    "image": "assets/notes/extracted/ebony-tree.png"
+    "image": ""
   },
   {
     "slug": "egyptian-geranium",
     "nameEn": "Egyptian Geranium",
-    "image": "assets/notes/extracted/egyptian-geranium.png"
+    "image": ""
   },
   {
     "slug": "elderflower",
     "nameEn": "Elderflower",
-    "image": "assets/notes/extracted/elderflower.png"
+    "image": ""
   },
   {
     "slug": "elemi",
     "nameEn": "Elemi",
-    "image": "assets/notes/extracted/elemi.png"
+    "image": ""
   },
   {
     "slug": "eucalyptus",
     "nameEn": "Eucalyptus",
-    "image": "assets/notes/extracted/eucalyptus.png"
+    "image": ""
   },
   {
     "slug": "evernia-prunastri",
     "nameEn": "Evernia Prunastri",
-    "image": "assets/notes/extracted/evernia-prunastri.png"
+    "image": ""
   },
   {
     "slug": "evernyl",
     "nameEn": "Evernyl",
-    "image": "assets/notes/extracted/evernyl.png"
+    "image": ""
   },
   {
     "slug": "exotic-floral-notes",
     "nameEn": "Exotic Floral Notes",
-    "image": "assets/notes/extracted/exotic-floral-notes.png"
+    "image": ""
   },
   {
     "slug": "exotic-woods",
     "nameEn": "Exotic Woods",
-    "image": "assets/notes/extracted/exotic-woods.png"
+    "image": ""
   },
   {
     "slug": "fennel",
     "nameEn": "Fennel",
-    "image": "assets/notes/extracted/fennel.png"
+    "image": ""
   },
   {
     "slug": "fenugreek",
     "nameEn": "Fenugreek",
-    "image": "assets/notes/extracted/fenugreek.png"
+    "image": ""
   },
   {
     "slug": "fern",
     "nameEn": "Fern",
-    "image": "assets/notes/extracted/fern.png"
+    "image": ""
   },
   {
     "slug": "fig",
     "nameEn": "Fig",
-    "image": "assets/notes/extracted/fig.png"
+    "image": ""
   },
   {
     "slug": "fig-leaf",
     "nameEn": "Fig Leaf",
-    "image": "assets/notes/extracted/fig-leaf.png"
+    "image": ""
   },
   {
     "slug": "fig-nectar",
     "nameEn": "Fig Nectar",
-    "image": "assets/notes/extracted/fig-nectar.png"
+    "image": ""
   },
   {
     "slug": "fig-seeds",
     "nameEn": "Fig Seeds",
-    "image": "assets/notes/extracted/fig-seeds.png"
+    "image": ""
   },
   {
     "slug": "fig-tree",
     "nameEn": "Fig Tree",
-    "image": "assets/notes/extracted/fig-tree.png"
+    "image": ""
   },
   {
     "slug": "fir",
     "nameEn": "Fir",
-    "image": "assets/notes/extracted/fir.png"
+    "image": ""
   },
   {
     "slug": "fir-balsam",
     "nameEn": "Fir Balsam",
-    "image": "assets/notes/extracted/fir-balsam.png"
+    "image": ""
   },
   {
     "slug": "fir-needles",
     "nameEn": "Fir Needles",
-    "image": "assets/notes/extracted/fir-needles.png"
+    "image": ""
   },
   {
     "slug": "fir-resin",
     "nameEn": "Fir Resin",
-    "image": "assets/notes/extracted/fir-resin.png"
+    "image": ""
   },
   {
     "slug": "flax",
     "nameEn": "Flax",
-    "image": "assets/notes/extracted/flax.png"
+    "image": ""
   },
   {
     "slug": "flax-flower",
     "nameEn": "Flax Flower",
-    "image": "assets/notes/extracted/flax-flower.png"
+    "image": ""
   },
   {
     "slug": "flint",
     "nameEn": "Flint",
-    "image": "assets/notes/extracted/flint.png"
+    "image": ""
   },
   {
     "slug": "floral-notes",
     "nameEn": "Floral Notes",
-    "image": "assets/notes/extracted/floral-notes.png"
+    "image": ""
   },
   {
     "slug": "forget-me-not",
     "nameEn": "Forget-me-not",
-    "image": "assets/notes/extracted/forget-me-not.png"
+    "image": ""
   },
   {
     "slug": "freesia",
     "nameEn": "Freesia",
-    "image": "assets/notes/extracted/freesia.png"
+    "image": ""
   },
   {
     "slug": "frozen-milk",
     "nameEn": "Frozen Milk",
-    "image": "assets/notes/extracted/frozen-milk.png"
+    "image": ""
   },
   {
     "slug": "fruits",
     "nameEn": "Fruits",
-    "image": "assets/notes/extracted/fruits.png"
+    "image": ""
   },
   {
     "slug": "fruity-notes",
     "nameEn": "Fruity Notes",
-    "image": "assets/notes/extracted/fruity-notes.png"
+    "image": ""
   },
   {
     "slug": "fudge",
     "nameEn": "Fudge",
-    "image": "assets/notes/extracted/fudge.png"
+    "image": ""
   },
   {
     "slug": "galbanum",
     "nameEn": "Galbanum",
-    "image": "assets/notes/extracted/galbanum.png"
+    "image": ""
   },
   {
     "slug": "genmaicha",
     "nameEn": "Genmaicha",
-    "image": "assets/notes/extracted/genmaicha.png"
+    "image": ""
   },
   {
     "slug": "georgywood",
     "nameEn": "Georgywood",
-    "image": "assets/notes/extracted/georgywood.png"
+    "image": ""
   },
   {
     "slug": "geosmin",
     "nameEn": "Geosmin",
-    "image": "assets/notes/extracted/geosmin.png"
+    "image": ""
   },
   {
     "slug": "geranium",
     "nameEn": "Geranium",
-    "image": "assets/notes/extracted/geranium.png"
+    "image": ""
   },
   {
     "slug": "gin",
     "nameEn": "Gin",
-    "image": "assets/notes/extracted/gin.png"
+    "image": ""
   },
   {
     "slug": "gingerbread",
     "nameEn": "Gingerbread",
-    "image": "assets/notes/extracted/gingerbread.png"
+    "image": ""
   },
   {
     "slug": "granny-smith-apple",
     "nameEn": "Granny Smith Apple",
-    "image": "assets/notes/extracted/granny-smith-apple.png"
+    "image": ""
   },
   {
     "slug": "grapefruit",
     "nameEn": "Grapefruit",
-    "image": "assets/notes/extracted/grapefruit.png"
+    "image": ""
   },
   {
     "slug": "grass",
     "nameEn": "Grass",
-    "image": "assets/notes/extracted/grass.png"
+    "image": ""
   },
   {
     "slug": "green-accord",
     "nameEn": "Green Accord",
-    "image": "assets/notes/extracted/green-accord.png"
+    "image": ""
   },
   {
     "slug": "green-apple",
     "nameEn": "Green Apple",
-    "image": "assets/notes/extracted/green-apple.png"
+    "image": ""
   },
   {
     "slug": "green-grass",
     "nameEn": "Green Grass",
-    "image": "assets/notes/extracted/green-grass.png"
+    "image": ""
   },
   {
     "slug": "green-leaves",
     "nameEn": "Green Leaves",
-    "image": "assets/notes/extracted/green-leaves.png"
+    "image": ""
   },
   {
     "slug": "green-lilac",
     "nameEn": "Green Lilac",
-    "image": "assets/notes/extracted/green-lilac.png"
+    "image": ""
   },
   {
     "slug": "green-mandarin",
     "nameEn": "Green Mandarin",
-    "image": "assets/notes/extracted/green-mandarin.png"
+    "image": ""
   },
   {
     "slug": "green-mango",
     "nameEn": "Green Mango",
-    "image": "assets/notes/extracted/green-mango.png"
+    "image": ""
   },
   {
     "slug": "green-notes",
     "nameEn": "Green Notes",
-    "image": "assets/notes/extracted/green-notes.png"
+    "image": ""
   },
   {
     "slug": "green-tea",
     "nameEn": "Green Tea",
-    "image": "assets/notes/extracted/green-tea.png"
+    "image": ""
   },
   {
     "slug": "guaiac-wood",
     "nameEn": "Guaiac Wood",
-    "image": "assets/notes/extracted/guaiac-wood.png"
+    "image": ""
   },
   {
     "slug": "guarana",
     "nameEn": "Guarana",
-    "image": "assets/notes/extracted/guarana.png"
+    "image": ""
   },
   {
     "slug": "guatemalan-cardamom",
     "nameEn": "Guatemalan Cardamom",
-    "image": "assets/notes/extracted/guatemalan-cardamom.png"
+    "image": ""
   },
   {
     "slug": "guava",
     "nameEn": "Guava",
-    "image": "assets/notes/extracted/guava.png"
+    "image": ""
   },
   {
     "slug": "haitian-vetiver",
     "nameEn": "Haitian Vetiver",
-    "image": "assets/notes/extracted/haitian-vetiver.png"
+    "image": ""
   },
   {
     "slug": "hay",
     "nameEn": "Hay",
-    "image": "assets/notes/extracted/hay.png"
+    "image": ""
   },
   {
     "slug": "hazelnut",
     "nameEn": "Hazelnut",
-    "image": "assets/notes/extracted/hazelnut.png"
+    "image": ""
   },
   {
     "slug": "hazelnut-cream",
     "nameEn": "Hazelnut Cream",
-    "image": "assets/notes/extracted/hazelnut-cream.png"
+    "image": ""
   },
   {
     "slug": "hedilone",
     "nameEn": "Hedilone",
-    "image": "assets/notes/extracted/hedilone.png"
+    "image": ""
   },
   {
     "slug": "heliotrope",
     "nameEn": "Heliotrope",
-    "image": "assets/notes/extracted/heliotrope.png"
+    "image": ""
   },
   {
     "slug": "herbaceous-notes",
     "nameEn": "Herbaceous Notes",
-    "image": "assets/notes/extracted/herbaceous-notes.png"
+    "image": ""
   },
   {
     "slug": "herbal-notes",
     "nameEn": "Herbal Notes",
-    "image": "assets/notes/extracted/herbal-notes.png"
+    "image": ""
   },
   {
     "slug": "hibiscus",
     "nameEn": "Hibiscus",
-    "image": "assets/notes/extracted/hibiscus.png"
+    "image": ""
   },
   {
     "slug": "himalayan-cedar",
     "nameEn": "Himalayan Cedar",
-    "image": "assets/notes/extracted/himalayan-cedar.png"
+    "image": ""
   },
   {
     "slug": "honey",
     "nameEn": "Honey",
-    "image": "assets/notes/extracted/honey.png"
+    "image": ""
   },
   {
     "slug": "honeydew",
     "nameEn": "Honeydew",
-    "image": "assets/notes/extracted/honeydew.png"
+    "image": ""
   },
   {
     "slug": "honeysuckle",
     "nameEn": "Honeysuckle",
-    "image": "assets/notes/extracted/honeysuckle.png"
+    "image": ""
   },
   {
     "slug": "ice",
     "nameEn": "Ice",
-    "image": "assets/notes/extracted/ice.png"
+    "image": ""
   },
   {
     "slug": "ice-cream",
     "nameEn": "Ice Cream",
-    "image": "assets/notes/extracted/ice-cream.png"
+    "image": ""
   },
   {
     "slug": "immortelle",
     "nameEn": "Immortelle",
-    "image": "assets/notes/extracted/immortelle.png"
+    "image": ""
   },
   {
     "slug": "incense",
     "nameEn": "Incense",
-    "image": "assets/notes/extracted/incense.png"
+    "image": ""
   },
   {
     "slug": "indian-jasmine",
     "nameEn": "Indian Jasmine",
-    "image": "assets/notes/extracted/indian-jasmine.png"
+    "image": ""
   },
   {
     "slug": "indian-mandarin",
     "nameEn": "Indian Mandarin",
-    "image": "assets/notes/extracted/indian-mandarin.png"
+    "image": ""
   },
   {
     "slug": "indian-tuberose",
     "nameEn": "Indian Tuberose",
-    "image": "assets/notes/extracted/indian-tuberose.png"
+    "image": ""
   },
   {
     "slug": "indonesia-vetiver",
     "nameEn": "Indonesia Vetiver",
-    "image": "assets/notes/extracted/indonesia-vetiver.png"
+    "image": ""
   },
   {
     "slug": "indonesian-clove",
     "nameEn": "Indonesian Clove",
-    "image": "assets/notes/extracted/indonesian-clove.png"
+    "image": ""
   },
   {
     "slug": "indonesian-nutmeg",
     "nameEn": "Indonesian Nutmeg",
-    "image": "assets/notes/extracted/indonesian-nutmeg.png"
+    "image": ""
   },
   {
     "slug": "ink",
     "nameEn": "Ink",
-    "image": "assets/notes/extracted/ink.png"
+    "image": ""
   },
   {
     "slug": "iodine",
     "nameEn": "Iodine",
-    "image": "assets/notes/extracted/iodine.png"
+    "image": ""
   },
   {
     "slug": "iris",
     "nameEn": "Iris",
-    "image": "assets/notes/extracted/iris.png"
+    "image": ""
   },
   {
     "slug": "iris-butter",
     "nameEn": "Iris Butter",
-    "image": "assets/notes/extracted/iris-butter.png"
+    "image": ""
   },
   {
     "slug": "iso-e-super",
     "nameEn": "Iso E Super",
-    "image": "assets/notes/extracted/iso-e-super.png"
+    "image": ""
   },
   {
     "slug": "italian-lemon",
     "nameEn": "Italian Lemon",
-    "image": "assets/notes/extracted/italian-lemon.png"
+    "image": ""
   },
   {
     "slug": "italian-mandarin",
     "nameEn": "Italian Mandarin",
-    "image": "assets/notes/extracted/italian-mandarin.png"
+    "image": ""
   },
   {
     "slug": "italian-orange",
     "nameEn": "Italian Orange",
-    "image": "assets/notes/extracted/italian-orange.png"
+    "image": ""
   },
   {
     "slug": "ivy",
     "nameEn": "Ivy",
-    "image": "assets/notes/extracted/ivy.png"
+    "image": ""
   },
   {
     "slug": "jasmine",
     "nameEn": "Jasmine",
-    "image": "assets/notes/extracted/jasmine.png"
+    "image": ""
   },
   {
     "slug": "jasmine-petals",
     "nameEn": "Jasmine Petals",
-    "image": "assets/notes/extracted/jasmine-petals.png"
+    "image": ""
   },
   {
     "slug": "jasmine-sambac",
     "nameEn": "Jasmine Sambac",
-    "image": "assets/notes/extracted/jasmine-sambac.png"
+    "image": ""
   },
   {
     "slug": "jasmine-tea",
     "nameEn": "Jasmine Tea",
-    "image": "assets/notes/extracted/jasmine-tea.png"
+    "image": ""
   },
   {
     "slug": "juniper",
     "nameEn": "Juniper",
-    "image": "assets/notes/extracted/juniper.png"
+    "image": ""
   },
   {
     "slug": "juniper-berries",
     "nameEn": "Juniper Berries",
-    "image": "assets/notes/extracted/juniper-berries.png"
+    "image": ""
   },
   {
     "slug": "kiwi",
     "nameEn": "Kiwi",
-    "image": "assets/notes/extracted/kiwi.png"
+    "image": ""
   },
   {
     "slug": "kumquat",
     "nameEn": "Kumquat",
-    "image": "assets/notes/extracted/kumquat.png"
+    "image": ""
   },
   {
     "slug": "lapsang-souchong-tea",
     "nameEn": "Lapsang Souchong Tea",
-    "image": "assets/notes/extracted/lapsang-souchong-tea.png"
+    "image": ""
   },
   {
     "slug": "laurel",
     "nameEn": "Laurel",
-    "image": "assets/notes/extracted/laurel.png"
+    "image": ""
   },
   {
     "slug": "laurel-leaf",
     "nameEn": "Laurel Leaf",
-    "image": "assets/notes/extracted/laurel-leaf.png"
+    "image": ""
   },
   {
     "slug": "lavender",
     "nameEn": "Lavender",
-    "image": "assets/notes/extracted/lavender.png"
+    "image": ""
   },
   {
     "slug": "leather",
     "nameEn": "Leather",
-    "image": "assets/notes/extracted/leather.png"
+    "image": ""
   },
   {
     "slug": "lemon",
     "nameEn": "Lemon",
-    "image": "assets/notes/extracted/lemon.png"
+    "image": ""
   },
   {
     "slug": "lemon-flower",
     "nameEn": "Lemon Flower",
-    "image": "assets/notes/extracted/lemon-flower.png"
+    "image": ""
   },
   {
     "slug": "lemon-peel",
     "nameEn": "Lemon Peel",
-    "image": "assets/notes/extracted/lemon-peel.png"
+    "image": ""
   },
   {
     "slug": "lemon-tree",
     "nameEn": "Lemon Tree",
-    "image": "assets/notes/extracted/lemon-tree.png"
+    "image": ""
   },
   {
     "slug": "lemon-verbena",
     "nameEn": "Lemon Verbena",
-    "image": "assets/notes/extracted/lemon-verbena.png"
+    "image": ""
   },
   {
     "slug": "lemon-zest",
     "nameEn": "Lemon Zest",
-    "image": "assets/notes/extracted/lemon-zest.png"
+    "image": ""
   },
   {
     "slug": "lily-of-the-valley",
     "nameEn": "Lily of the Valley",
-    "image": "assets/notes/extracted/lily-of-the-valley.png"
+    "image": ""
   },
   {
     "slug": "lily-of-valley",
     "nameEn": "Lily Of Valley",
-    "image": "assets/notes/extracted/lily-of-valley.png"
+    "image": ""
   },
   {
     "slug": "lime",
     "nameEn": "Lime",
-    "image": "assets/notes/extracted/lime.png"
+    "image": ""
   },
   {
     "slug": "linden-blossom",
     "nameEn": "Linden Blossom",
-    "image": "assets/notes/extracted/linden-blossom.png"
+    "image": ""
   },
   {
     "slug": "liquor",
     "nameEn": "Liquor",
-    "image": "assets/notes/extracted/liquor.png"
+    "image": ""
   },
   {
     "slug": "litchi",
     "nameEn": "Litchi",
-    "image": "assets/notes/extracted/litchi.png"
+    "image": ""
   },
   {
     "slug": "lorenox",
     "nameEn": "Lorenox",
-    "image": "assets/notes/extracted/lorenox.png"
+    "image": ""
   },
   {
     "slug": "lotus",
     "nameEn": "Lotus",
-    "image": "assets/notes/extracted/lotus.png"
+    "image": ""
   },
   {
     "slug": "lotus-flower",
     "nameEn": "Lotus Flower",
-    "image": "assets/notes/extracted/lotus-flower.png"
+    "image": ""
   },
   {
     "slug": "macadamia",
     "nameEn": "Macadamia",
-    "image": "assets/notes/extracted/macadamia.png"
+    "image": ""
   },
   {
     "slug": "macaroon",
     "nameEn": "Macaroon",
-    "image": "assets/notes/extracted/macaroon.png"
+    "image": ""
   },
   {
     "slug": "mahogany",
     "nameEn": "Mahogany",
-    "image": "assets/notes/extracted/mahogany.png"
+    "image": ""
   },
   {
     "slug": "mahogany-wood",
     "nameEn": "Mahogany Wood",
-    "image": "assets/notes/extracted/mahogany-wood.png"
+    "image": ""
   },
   {
     "slug": "mahonia",
     "nameEn": "Mahonia",
-    "image": "assets/notes/extracted/mahonia.png"
+    "image": ""
   },
   {
     "slug": "mahonial",
     "nameEn": "Mahonial",
-    "image": "assets/notes/extracted/mahonial.png"
+    "image": ""
   },
   {
     "slug": "mandarin",
     "nameEn": "Mandarin",
-    "image": "assets/notes/extracted/mandarin.png"
+    "image": ""
   },
   {
     "slug": "mandarin-leaf",
     "nameEn": "Mandarin Leaf",
-    "image": "assets/notes/extracted/mandarin-leaf.png"
+    "image": ""
   },
   {
     "slug": "mandarin-orange",
     "nameEn": "Mandarin Orange",
-    "image": "assets/notes/extracted/mandarin-orange.png"
+    "image": ""
   },
   {
     "slug": "mango",
     "nameEn": "Mango",
-    "image": "assets/notes/extracted/mango.png"
+    "image": ""
   },
   {
     "slug": "maninka",
     "nameEn": "Maninka",
-    "image": "assets/notes/extracted/maninka.png"
+    "image": ""
   },
   {
     "slug": "maple",
     "nameEn": "Maple",
-    "image": "assets/notes/extracted/maple.png"
+    "image": ""
   },
   {
     "slug": "maple-syrup",
     "nameEn": "Maple Syrup",
-    "image": "assets/notes/extracted/maple-syrup.png"
+    "image": ""
   },
   {
     "slug": "maracuja",
     "nameEn": "Maracuja",
-    "image": "assets/notes/extracted/maracuja.png"
+    "image": ""
   },
   {
     "slug": "marine-accord",
     "nameEn": "Marine Accord",
-    "image": "assets/notes/extracted/marine-accord.png"
+    "image": ""
   },
   {
     "slug": "marine",
     "nameEn": "Marine Notes",
-    "image": "assets/notes/extracted/marine.png"
+    "image": ""
   },
   {
     "slug": "marshmallow",
     "nameEn": "Marshmallow",
-    "image": "assets/notes/extracted/marshmallow.png"
+    "image": ""
   },
   {
     "slug": "mastic",
     "nameEn": "Mastic",
-    "image": "assets/notes/extracted/mastic.png"
+    "image": ""
   },
   {
     "slug": "matcha",
     "nameEn": "Matcha",
-    "image": "assets/notes/extracted/matcha.png"
+    "image": ""
   },
   {
     "slug": "mate",
     "nameEn": "Mate",
-    "image": "assets/notes/extracted/mate.png"
+    "image": ""
   },
   {
     "slug": "may-rose",
     "nameEn": "May Rose",
-    "image": "assets/notes/extracted/may-rose.png"
+    "image": ""
   },
   {
     "slug": "meringue",
     "nameEn": "Meringue",
-    "image": "assets/notes/extracted/meringue.png"
+    "image": ""
   },
   {
     "slug": "metallic-notes",
     "nameEn": "Metallic Notes",
-    "image": "assets/notes/extracted/metallic-notes.png"
+    "image": ""
   },
   {
     "slug": "mexican-chocolate",
     "nameEn": "Mexican chocolate",
-    "image": "assets/notes/extracted/mexican-chocolate.png"
+    "image": ""
   },
   {
     "slug": "mignonette",
     "nameEn": "Mignonette",
-    "image": "assets/notes/extracted/mignonette.png"
+    "image": ""
   },
   {
     "slug": "milk-chocolate",
     "nameEn": "Milk Chocolate",
-    "image": "assets/notes/extracted/milk-chocolate.png"
+    "image": ""
   },
   {
     "slug": "milk-notes",
     "nameEn": "Milk Notes",
-    "image": "assets/notes/extracted/milk-notes.png"
+    "image": ""
   },
   {
     "slug": "mimosa",
     "nameEn": "Mimosa",
-    "image": "assets/notes/extracted/mimosa.png"
+    "image": ""
   },
   {
     "slug": "mineral-notes",
     "nameEn": "Mineral Notes",
-    "image": "assets/notes/extracted/mineral-notes.png"
+    "image": ""
   },
   {
     "slug": "mint",
     "nameEn": "Mint",
-    "image": "assets/notes/extracted/mint.png"
+    "image": ""
   },
   {
     "slug": "mirabelle-plum",
     "nameEn": "Mirabelle Plum",
-    "image": "assets/notes/extracted/mirabelle-plum.png"
+    "image": ""
   },
   {
     "slug": "mock-orange",
     "nameEn": "Mock Orange",
-    "image": "assets/notes/extracted/mock-orange.png"
+    "image": ""
   },
   {
     "slug": "monoi",
     "nameEn": "Monoi",
-    "image": "assets/notes/extracted/monoi.png"
+    "image": ""
   },
   {
     "slug": "monoi-oil",
     "nameEn": "Monoi Oil",
-    "image": "assets/notes/extracted/monoi-oil.png"
+    "image": ""
   },
   {
     "slug": "moroccan-cedar",
     "nameEn": "Moroccan Cedar",
-    "image": "assets/notes/extracted/moroccan-cedar.png"
+    "image": ""
   },
   {
     "slug": "moroccan-jasmine",
     "nameEn": "Moroccan Jasmine",
-    "image": "assets/notes/extracted/moroccan-jasmine.png"
+    "image": ""
   },
   {
     "slug": "mulberry",
     "nameEn": "Mulberry",
-    "image": "assets/notes/extracted/mulberry.png"
+    "image": ""
   },
   {
     "slug": "musk",
     "nameEn": "Musk",
-    "image": "assets/notes/extracted/musk.png"
+    "image": ""
   },
   {
     "slug": "myrtle",
     "nameEn": "Myrtle",
-    "image": "assets/notes/extracted/myrtle.png"
+    "image": ""
   },
   {
     "slug": "narcissus",
     "nameEn": "Narcissus",
-    "image": "assets/notes/extracted/narcissus.png"
+    "image": ""
   },
   {
     "slug": "nashi-pear",
     "nameEn": "Nashi Pear",
-    "image": "assets/notes/extracted/nashi-pear.png"
+    "image": ""
   },
   {
     "slug": "nectarine",
     "nameEn": "Nectarine",
-    "image": "assets/notes/extracted/nectarine.png"
+    "image": ""
   },
   {
     "slug": "neroli",
     "nameEn": "Neroli",
-    "image": "assets/notes/extracted/neroli.png"
+    "image": ""
   },
   {
     "slug": "night-blooming-cereus",
     "nameEn": "Night Blooming Cereus",
-    "image": "assets/notes/extracted/night-blooming-cereus.png"
+    "image": ""
   },
   {
     "slug": "nutmeg-flower",
     "nameEn": "Nutmeg Flower",
-    "image": "assets/notes/extracted/nutmeg-flower.png"
+    "image": ""
   },
   {
     "slug": "oak",
     "nameEn": "Oak",
-    "image": "assets/notes/extracted/oak.png"
+    "image": ""
   },
   {
     "slug": "oakmoss",
     "nameEn": "Oakmoss",
-    "image": "assets/notes/extracted/oakmoss.png"
+    "image": ""
   },
   {
     "slug": "olive",
     "nameEn": "Olive",
-    "image": "assets/notes/extracted/olive.png"
+    "image": ""
   },
   {
     "slug": "olive-blossom",
     "nameEn": "Olive Blossom",
-    "image": "assets/notes/extracted/olive-blossom.png"
+    "image": ""
   },
   {
     "slug": "olive-tree",
     "nameEn": "Olive Tree",
-    "image": "assets/notes/extracted/olive-tree.png"
+    "image": ""
   },
   {
     "slug": "opoponax",
     "nameEn": "Opoponax",
-    "image": "assets/notes/extracted/opoponax.png"
+    "image": ""
   },
   {
     "slug": "oud",
     "nameEn": "Oud",
-    "image": "assets/notes/extracted/oud.png"
+    "image": ""
   },
   {
     "slug": "ozone",
     "nameEn": "Ozone",
-    "image": "assets/notes/extracted/ozone.png"
+    "image": ""
   },
   {
     "slug": "ozonic-notes",
     "nameEn": "Ozonic notes",
-    "image": "assets/notes/extracted/ozonic-notes.png"
+    "image": ""
   },
   {
     "slug": "palisander-rosewood",
     "nameEn": "Palisander Rosewood",
-    "image": "assets/notes/extracted/palisander-rosewood.png"
+    "image": ""
   },
   {
     "slug": "palo-santo",
     "nameEn": "Palo Santo",
-    "image": "assets/notes/extracted/palo-santo.png"
+    "image": ""
   },
   {
     "slug": "panacotta",
     "nameEn": "Panacotta",
-    "image": "assets/notes/extracted/panacotta.png"
+    "image": ""
   },
   {
     "slug": "panna-cotta",
     "nameEn": "Panna Cotta",
-    "image": "assets/notes/extracted/panna-cotta.png"
+    "image": ""
   },
   {
     "slug": "papaya",
     "nameEn": "Papaya",
-    "image": "assets/notes/extracted/papaya.png"
+    "image": ""
   },
   {
     "slug": "paprika",
     "nameEn": "Paprika",
-    "image": "assets/notes/extracted/paprika.png"
+    "image": ""
   },
   {
     "slug": "parma-violet",
     "nameEn": "Parma Violet",
-    "image": "assets/notes/extracted/parma-violet.png"
+    "image": ""
   },
   {
     "slug": "passion-flower",
     "nameEn": "Passion Flower",
-    "image": "assets/notes/extracted/passion-flower.png"
+    "image": ""
   },
   {
     "slug": "passionfruit",
     "nameEn": "Passionfruit",
-    "image": "assets/notes/extracted/passionfruit.png"
+    "image": ""
   },
   {
     "slug": "patchouli",
     "nameEn": "Patchouli",
-    "image": "assets/notes/extracted/patchouli.png"
+    "image": ""
   },
   {
     "slug": "patchouli-leaf",
     "nameEn": "Patchouli Leaf",
-    "image": "assets/notes/extracted/patchouli-leaf.png"
+    "image": ""
   },
   {
     "slug": "peach",
     "nameEn": "Peach",
-    "image": "assets/notes/extracted/peach.png"
+    "image": ""
   },
   {
     "slug": "peach-blossom",
     "nameEn": "Peach Blossom",
-    "image": "assets/notes/extracted/peach-blossom.png"
+    "image": ""
   },
   {
     "slug": "peach-vine",
     "nameEn": "Peach Vine",
-    "image": "assets/notes/extracted/peach-vine.png"
+    "image": ""
   },
   {
     "slug": "pear",
     "nameEn": "Pear",
-    "image": "assets/notes/extracted/pear.png"
+    "image": ""
   },
   {
     "slug": "pear-blossom",
     "nameEn": "Pear Blossom",
-    "image": "assets/notes/extracted/pear-blossom.png"
+    "image": ""
   },
   {
     "slug": "pelargonium",
     "nameEn": "Pelargonium",
-    "image": "assets/notes/extracted/pelargonium.png"
+    "image": ""
   },
   {
     "slug": "peony",
     "nameEn": "Peony",
-    "image": "assets/notes/extracted/peony.png"
+    "image": ""
   },
   {
     "slug": "pepper",
     "nameEn": "Pepper",
-    "image": "assets/notes/extracted/pepper.png"
+    "image": ""
   },
   {
     "slug": "persimmon",
     "nameEn": "Persimmon",
-    "image": "assets/notes/extracted/persimmon.png"
+    "image": ""
   },
   {
     "slug": "peru-balsam",
     "nameEn": "Peru Balsam",
-    "image": "assets/notes/extracted/peru-balsam.png"
+    "image": ""
   },
   {
     "slug": "peruvian-balsam",
     "nameEn": "Peruvian Balsam",
-    "image": "assets/notes/extracted/peruvian-balsam.png"
+    "image": ""
   },
   {
     "slug": "petalia",
     "nameEn": "Petalia",
-    "image": "assets/notes/extracted/petalia.png"
+    "image": ""
   },
   {
     "slug": "pimento",
     "nameEn": "Pimento",
-    "image": "assets/notes/extracted/pimento.png"
+    "image": ""
   },
   {
     "slug": "pimento-berries",
     "nameEn": "Pimento Berries",
-    "image": "assets/notes/extracted/pimento-berries.png"
+    "image": ""
   },
   {
     "slug": "pimento-berry",
     "nameEn": "Pimento Berry",
-    "image": "assets/notes/extracted/pimento-berry.png"
+    "image": ""
   },
   {
     "slug": "pimento-leaf",
     "nameEn": "Pimento Leaf",
-    "image": "assets/notes/extracted/pimento-leaf.png"
+    "image": ""
   },
   {
     "slug": "pine",
     "nameEn": "Pine",
-    "image": "assets/notes/extracted/pine.png"
+    "image": ""
   },
   {
     "slug": "pine-needle",
     "nameEn": "Pine Needle",
-    "image": "assets/notes/extracted/pine-needle.png"
+    "image": ""
   },
   {
     "slug": "pine-needles",
     "nameEn": "Pine Needles",
-    "image": "assets/notes/extracted/pine-needles.png"
+    "image": ""
   },
   {
     "slug": "pine-tree",
     "nameEn": "Pine Tree",
-    "image": "assets/notes/extracted/pine-tree.png"
+    "image": ""
   },
   {
     "slug": "pineapple",
     "nameEn": "Pineapple",
-    "image": "assets/notes/extracted/pineapple.png"
+    "image": ""
   },
   {
     "slug": "pink-cyclamen",
     "nameEn": "Pink Cyclamen",
-    "image": "assets/notes/extracted/pink-cyclamen.png"
+    "image": ""
   },
   {
     "slug": "pink-dragonfruit",
     "nameEn": "Pink Dragonfruit",
-    "image": "assets/notes/extracted/pink-dragonfruit.png"
+    "image": ""
   },
   {
     "slug": "pink-freesia",
     "nameEn": "Pink Freesia",
-    "image": "assets/notes/extracted/pink-freesia.png"
+    "image": ""
   },
   {
     "slug": "pink-grapefruit",
     "nameEn": "Pink Grapefruit",
-    "image": "assets/notes/extracted/pink-grapefruit.png"
+    "image": ""
   },
   {
     "slug": "pink-molecules",
     "nameEn": "Pink Molecules",
-    "image": "assets/notes/extracted/pink-molecules.png"
+    "image": ""
   },
   {
     "slug": "pink-musk",
     "nameEn": "Pink Musk",
-    "image": "assets/notes/extracted/pink-musk.png"
+    "image": ""
   },
   {
     "slug": "pink-pepper",
     "nameEn": "Pink Pepper",
-    "image": "assets/notes/extracted/pink-pepper.png"
+    "image": ""
   },
   {
     "slug": "pink-praline",
     "nameEn": "Pink Praline",
-    "image": "assets/notes/extracted/pink-praline.png"
+    "image": ""
   },
   {
     "slug": "pink-rose",
     "nameEn": "Pink Rose",
-    "image": "assets/notes/extracted/pink-rose.png"
+    "image": ""
   },
   {
     "slug": "pistachio",
     "nameEn": "Pistachio",
-    "image": "assets/notes/extracted/pistachio.png"
+    "image": ""
   },
   {
     "slug": "pittosporum",
     "nameEn": "Pittosporum",
-    "image": "assets/notes/extracted/pittosporum.png"
+    "image": ""
   },
   {
     "slug": "plum",
     "nameEn": "Plum",
-    "image": "assets/notes/extracted/plum.png"
+    "image": ""
   },
   {
     "slug": "pomarose",
     "nameEn": "Pomarose",
-    "image": "assets/notes/extracted/pomarose.png"
+    "image": ""
   },
   {
     "slug": "pomegranate",
     "nameEn": "Pomegranate",
-    "image": "assets/notes/extracted/pomegranate.png"
+    "image": ""
   },
   {
     "slug": "popcorn",
     "nameEn": "Popcorn",
-    "image": "assets/notes/extracted/popcorn.png"
+    "image": ""
   },
   {
     "slug": "poppy",
     "nameEn": "Poppy",
-    "image": "assets/notes/extracted/poppy.png"
+    "image": ""
   },
   {
     "slug": "powdered-sugar",
     "nameEn": "Powdered Sugar",
-    "image": "assets/notes/extracted/powdered-sugar.png"
+    "image": ""
   },
   {
     "slug": "powdery-notes",
     "nameEn": "Powdery Notes",
-    "image": "assets/notes/extracted/powdery-notes.png"
+    "image": ""
   },
   {
     "slug": "praline",
     "nameEn": "Praline",
-    "image": "assets/notes/extracted/praline.png"
+    "image": ""
   },
   {
     "slug": "pumpkin",
     "nameEn": "Pumpkin",
-    "image": "assets/notes/extracted/pumpkin.png"
+    "image": ""
   },
   {
     "slug": "quince",
     "nameEn": "Quince",
-    "image": "assets/notes/extracted/quince.png"
+    "image": ""
   },
   {
     "slug": "raisin",
     "nameEn": "Raisin",
-    "image": "assets/notes/extracted/raisin.png"
+    "image": ""
   },
   {
     "slug": "rangoon-creeper",
     "nameEn": "Rangoon Creeper",
-    "image": "assets/notes/extracted/rangoon-creeper.png"
+    "image": ""
   },
   {
     "slug": "raspberry",
     "nameEn": "Raspberry",
-    "image": "assets/notes/extracted/raspberry.png"
+    "image": ""
   },
   {
     "slug": "red-apple",
     "nameEn": "Red Apple",
-    "image": "assets/notes/extracted/red-apple.png"
+    "image": ""
   },
   {
     "slug": "red-berries",
     "nameEn": "Red Berries",
-    "image": "assets/notes/extracted/red-berries.png"
+    "image": ""
   },
   {
     "slug": "red-cedar",
     "nameEn": "Red Cedar",
-    "image": "assets/notes/extracted/red-cedar.png"
+    "image": ""
   },
   {
     "slug": "red-currant",
     "nameEn": "Red Currant",
-    "image": "assets/notes/extracted/red-currant.png"
+    "image": ""
   },
   {
     "slug": "red-currant-leaf",
     "nameEn": "Red Currant Leaf",
-    "image": "assets/notes/extracted/red-currant-leaf.png"
+    "image": ""
   },
   {
     "slug": "red-lily",
     "nameEn": "Red Lily",
-    "image": "assets/notes/extracted/red-lily.png"
+    "image": ""
   },
   {
     "slug": "red-wine",
     "nameEn": "Red Wine",
-    "image": "assets/notes/extracted/red-wine.png"
+    "image": ""
   },
   {
     "slug": "resin",
     "nameEn": "Resin",
-    "image": "assets/notes/extracted/resin.png"
+    "image": ""
   },
   {
     "slug": "resins",
     "nameEn": "Resins",
-    "image": "assets/notes/extracted/resins.png"
+    "image": ""
   },
   {
     "slug": "rhubarb",
     "nameEn": "Rhubarb",
-    "image": "assets/notes/extracted/rhubarb.png"
+    "image": ""
   },
   {
     "slug": "rhubarb-leaf",
     "nameEn": "Rhubarb Leaf",
-    "image": "assets/notes/extracted/rhubarb-leaf.png"
+    "image": ""
   },
   {
     "slug": "rice",
     "nameEn": "Rice",
-    "image": "assets/notes/extracted/rice.png"
+    "image": ""
   },
   {
     "slug": "rice-flower",
     "nameEn": "Rice Flower",
-    "image": "assets/notes/extracted/rice-flower.png"
+    "image": ""
   },
   {
     "slug": "rice-steam",
     "nameEn": "Rice Steam",
-    "image": "assets/notes/extracted/rice-steam.png"
+    "image": ""
   },
   {
     "slug": "roasted-hazelnut",
     "nameEn": "Roasted Hazelnut",
-    "image": "assets/notes/extracted/roasted-hazelnut.png"
+    "image": ""
   },
   {
     "slug": "rockrose",
     "nameEn": "Rockrose",
-    "image": "assets/notes/extracted/rockrose.png"
+    "image": ""
   },
   {
     "slug": "rose",
     "nameEn": "Rose",
-    "image": "assets/notes/extracted/rose.png"
+    "image": ""
   },
   {
     "slug": "rose-centifolia",
     "nameEn": "Rose Centifolia",
-    "image": "assets/notes/extracted/rose-centifolia.png"
+    "image": ""
   },
   {
     "slug": "rose-damascene",
     "nameEn": "Rose Damascene",
-    "image": "assets/notes/extracted/rose-damascene.png"
+    "image": ""
   },
   {
     "slug": "rose-de-mai",
     "nameEn": "Rose de Mai",
-    "image": "assets/notes/extracted/rose-de-mai.png"
+    "image": ""
   },
   {
     "slug": "rose-hip",
     "nameEn": "Rose Hip",
-    "image": "assets/notes/extracted/rose-hip-reference.png"
+    "image": ""
   },
   {
     "slug": "rose-oil",
     "nameEn": "Rose Oil",
-    "image": "assets/notes/extracted/rose-oil.png"
+    "image": ""
   },
   {
     "slug": "rose-water",
     "nameEn": "Rose Water",
-    "image": "assets/notes/extracted/rose-water.png"
+    "image": ""
   },
   {
     "slug": "rosewood",
     "nameEn": "Rosewood",
-    "image": "assets/notes/extracted/rosewood.png"
+    "image": ""
   },
   {
     "slug": "royal-jelly",
     "nameEn": "Royal Jelly",
-    "image": "assets/notes/extracted/royal-jelly.png"
+    "image": ""
   },
   {
     "slug": "ruby-orchid",
     "nameEn": "Ruby Orchid",
-    "image": "assets/notes/extracted/ruby-orchid.png"
+    "image": ""
   },
   {
     "slug": "rum",
     "nameEn": "Rum",
-    "image": "assets/notes/extracted/rum.png"
+    "image": ""
   },
   {
     "slug": "salt",
     "nameEn": "Salt",
-    "image": "assets/notes/extracted/salt.png"
+    "image": ""
   },
   {
     "slug": "salty-notes",
     "nameEn": "Salty Notes",
-    "image": "assets/notes/extracted/salty-notes.png"
+    "image": ""
   },
   {
     "slug": "sand",
     "nameEn": "Sand",
-    "image": "assets/notes/extracted/sand.png"
+    "image": ""
   },
   {
     "slug": "scarlet-poppy",
     "nameEn": "Scarlet Poppy",
-    "image": "assets/notes/extracted/scarlet-poppy.png"
+    "image": ""
   },
   {
     "slug": "sclarene",
     "nameEn": "Sclarene",
-    "image": "assets/notes/extracted/sclarene.png"
+    "image": ""
   },
   {
     "slug": "sea-lily",
     "nameEn": "Sea Lily",
-    "image": "assets/notes/extracted/sea-lily.png"
+    "image": ""
   },
   {
     "slug": "sea-notes",
     "nameEn": "Sea Notes",
-    "image": "assets/notes/extracted/sea-notes.png"
+    "image": ""
   },
   {
     "slug": "sea-salt",
     "nameEn": "Sea Salt",
-    "image": "assets/notes/extracted/sea-salt.png"
+    "image": ""
   },
   {
     "slug": "shaving-soap",
     "nameEn": "Shaving Soap",
-    "image": "assets/notes/extracted/shaving-soap.png"
+    "image": ""
   },
   {
     "slug": "sichuan-pepper",
     "nameEn": "Sichuan Pepper",
-    "image": "assets/notes/extracted/sichuan-pepper.png"
+    "image": ""
   },
   {
     "slug": "sicilian-bergamot",
     "nameEn": "Sicilian Bergamot",
-    "image": "assets/notes/extracted/sicilian-bergamot.png"
+    "image": ""
   },
   {
     "slug": "sicilian-lemon",
     "nameEn": "Sicilian Lemon",
-    "image": "assets/notes/extracted/sicilian-lemon.png"
+    "image": ""
   },
   {
     "slug": "sicilian-mandarin",
     "nameEn": "Sicilian Mandarin",
-    "image": "assets/notes/extracted/sicilian-mandarin.png"
+    "image": ""
   },
   {
     "slug": "sicilian-orange",
     "nameEn": "Sicilian Orange",
-    "image": "assets/notes/extracted/sicilian-orange.png"
+    "image": ""
   },
   {
     "slug": "silk",
     "nameEn": "Silk",
-    "image": "assets/notes/extracted/silk.png"
+    "image": ""
   },
   {
     "slug": "silk-tree-blossom",
     "nameEn": "Silk Tree Blossom",
-    "image": "assets/notes/extracted/silk-tree-blossom.png"
+    "image": ""
   },
   {
     "slug": "skin",
     "nameEn": "Skin",
-    "image": "assets/notes/extracted/skin.png"
+    "image": ""
   },
   {
     "slug": "skin-musk",
     "nameEn": "Skin Musk",
-    "image": "assets/notes/extracted/skin-musk.png"
+    "image": ""
   },
   {
     "slug": "smoke",
     "nameEn": "Smoke",
-    "image": "assets/notes/extracted/smoke.png"
+    "image": ""
   },
   {
     "slug": "smoked-meat",
     "nameEn": "Smoked Meat",
-    "image": "assets/notes/extracted/smoked-meat.png"
+    "image": ""
   },
   {
     "slug": "smoked-notes",
     "nameEn": "Smoked Notes",
-    "image": "assets/notes/extracted/smoked-notes.png"
+    "image": ""
   },
   {
     "slug": "soap",
     "nameEn": "Soap",
-    "image": "assets/notes/extracted/soap.png"
+    "image": ""
   },
   {
     "slug": "soil",
     "nameEn": "Soil",
-    "image": "assets/notes/extracted/soil.png"
+    "image": ""
   },
   {
     "slug": "soil-notes",
     "nameEn": "Soil Notes",
-    "image": "assets/notes/extracted/soil-notes.png"
+    "image": ""
   },
   {
     "slug": "solar-notes",
     "nameEn": "Solar Notes",
-    "image": "assets/notes/extracted/solar-notes.png"
+    "image": ""
   },
   {
     "slug": "sorbet",
     "nameEn": "Sorbet",
-    "image": "assets/notes/extracted/sorbet.png"
+    "image": ""
   },
   {
     "slug": "sour-cherry",
     "nameEn": "Sour Cherry",
-    "image": "assets/notes/extracted/sour-cherry.png"
+    "image": ""
   },
   {
     "slug": "spanish-labdanum",
     "nameEn": "Spanish Labdanum",
-    "image": "assets/notes/extracted/spanish-labdanum.png"
+    "image": ""
   },
   {
     "slug": "sparkling-lychee",
     "nameEn": "Sparkling Lychee",
-    "image": "assets/notes/extracted/sparkling-lychee.png"
+    "image": ""
   },
   {
     "slug": "spice",
     "nameEn": "Spice",
-    "image": "assets/notes/extracted/spice.png"
+    "image": ""
   },
   {
     "slug": "spice-notes",
     "nameEn": "Spice Notes",
-    "image": "assets/notes/extracted/spice-notes.png"
+    "image": ""
   },
   {
     "slug": "spices",
     "nameEn": "Spices",
-    "image": "assets/notes/extracted/spices.png"
+    "image": ""
   },
   {
     "slug": "spicy-notes",
     "nameEn": "Spicy Notes",
-    "image": "assets/notes/extracted/spicy-notes.png"
+    "image": ""
   },
   {
     "slug": "star-anise",
     "nameEn": "Star Anise",
-    "image": "assets/notes/extracted/star-anise.png"
+    "image": ""
   },
   {
     "slug": "star-jasmine",
     "nameEn": "Star Jasmine",
-    "image": "assets/notes/extracted/star-jasmine.png"
+    "image": ""
   },
   {
     "slug": "starfruit",
     "nameEn": "Starfruit",
-    "image": "assets/notes/extracted/starfruit.png"
+    "image": ""
   },
   {
     "slug": "strawberry",
     "nameEn": "Strawberry",
-    "image": "assets/notes/extracted/strawberry.png"
+    "image": ""
   },
   {
     "slug": "stylax",
     "nameEn": "Stylax",
-    "image": "assets/notes/extracted/stylax.png"
+    "image": ""
   },
   {
     "slug": "styrax",
     "nameEn": "Styrax",
-    "image": "assets/notes/extracted/styrax.png"
+    "image": ""
   },
   {
     "slug": "suede",
     "nameEn": "Suede",
-    "image": "assets/notes/extracted/suede.png"
+    "image": ""
   },
   {
     "slug": "sugar",
     "nameEn": "Sugar",
-    "image": "assets/notes/extracted/sugar.png"
+    "image": ""
   },
   {
     "slug": "sugared-violet",
     "nameEn": "Sugared Violet",
-    "image": "assets/notes/extracted/sugared-violet.png"
+    "image": ""
   },
   {
     "slug": "sun-musk",
     "nameEn": "Sun Musk",
-    "image": "assets/notes/extracted/sun-musk.png"
+    "image": ""
   },
   {
     "slug": "sweet-fennel",
     "nameEn": "Sweet Fennel",
-    "image": "assets/notes/extracted/sweet-fennel.png"
+    "image": ""
   },
   {
     "slug": "sweet-notes",
     "nameEn": "Sweet Notes",
-    "image": "assets/notes/extracted/sweet-notes.png"
+    "image": ""
   },
   {
     "slug": "sweet-orange",
     "nameEn": "Sweet Orange",
-    "image": "assets/notes/extracted/sweet-orange.png"
+    "image": ""
   },
   {
     "slug": "sweet-pea",
     "nameEn": "Sweet Pea",
-    "image": "assets/notes/extracted/sweet-pea.png"
+    "image": ""
   },
   {
     "slug": "tahitian-vanilla",
     "nameEn": "Tahitian Vanilla",
-    "image": "assets/notes/extracted/tahitian-vanilla.png"
+    "image": ""
   },
   {
     "slug": "tahitian-vetiver",
     "nameEn": "Tahitian Vetiver",
-    "image": "assets/notes/extracted/tahitian-vetiver.png"
+    "image": ""
   },
   {
     "slug": "taif-rose",
     "nameEn": "Taif Rose",
-    "image": "assets/notes/extracted/taif-rose.png"
+    "image": ""
   },
   {
     "slug": "tangerine",
     "nameEn": "Tangerine",
-    "image": "assets/notes/extracted/tangerine.png"
+    "image": ""
   },
   {
     "slug": "tarragon",
     "nameEn": "Tarragon",
-    "image": "assets/notes/extracted/tarragon.png"
+    "image": ""
   },
   {
     "slug": "tea",
     "nameEn": "Tea",
-    "image": "assets/notes/extracted/tea.png"
+    "image": ""
   },
   {
     "slug": "tea-rose",
     "nameEn": "Tea Rose",
-    "image": "assets/notes/extracted/tea-rose.png"
+    "image": ""
   },
   {
     "slug": "teak-wood",
     "nameEn": "Teak Wood",
-    "image": "assets/notes/extracted/teak-wood.png"
+    "image": ""
   },
   {
     "slug": "texas-cedar",
     "nameEn": "Texas Cedar",
-    "image": "assets/notes/extracted/texas-cedar.png"
+    "image": ""
   },
   {
     "slug": "thai-basil",
     "nameEn": "Thai Basil",
-    "image": "assets/notes/extracted/thai-basil.png"
+    "image": ""
   },
   {
     "slug": "thanaka-wood",
     "nameEn": "Thanaka Wood",
-    "image": "assets/notes/extracted/thanaka-wood.png"
+    "image": ""
   },
   {
     "slug": "thyme",
     "nameEn": "Thyme",
-    "image": "assets/notes/extracted/thyme.png"
+    "image": ""
   },
   {
     "slug": "tiare-flower",
     "nameEn": "Tiare Flower",
-    "image": "assets/notes/extracted/tiare-flower.png"
+    "image": ""
   },
   {
     "slug": "tiger-lily",
     "nameEn": "Tiger Lily",
-    "image": "assets/notes/extracted/tiger-lily.png"
+    "image": ""
   },
   {
     "slug": "timut-pepper",
     "nameEn": "Timut Pepper",
-    "image": "assets/notes/extracted/timut-pepper.png"
+    "image": ""
   },
   {
     "slug": "tiramisu",
     "nameEn": "Tiramisu",
-    "image": "assets/notes/extracted/tiramisu.png"
+    "image": ""
   },
   {
     "slug": "toasted-macadamia-nut",
     "nameEn": "Toasted Macadamia Nut",
-    "image": "assets/notes/extracted/toasted-macadamia-nut.png"
+    "image": ""
   },
   {
     "slug": "tobacco",
     "nameEn": "Tobacco",
-    "image": "assets/notes/extracted/tobacco.png"
+    "image": ""
   },
   {
     "slug": "tobacco-blossom",
     "nameEn": "Tobacco Blossom",
-    "image": "assets/notes/extracted/tobacco-blossom.png"
+    "image": ""
   },
   {
     "slug": "tobacco-leaf",
     "nameEn": "Tobacco Leaf",
-    "image": "assets/notes/extracted/tobacco-leaf.png"
+    "image": ""
   },
   {
     "slug": "toffee",
     "nameEn": "Toffee",
-    "image": "assets/notes/extracted/toffee.png"
+    "image": ""
   },
   {
     "slug": "tolu-balsam",
     "nameEn": "Tolu Balsam",
-    "image": "assets/notes/extracted/tolu-balsam.png"
+    "image": ""
   },
   {
     "slug": "tomato",
     "nameEn": "Tomato",
-    "image": "assets/notes/extracted/tomato.png"
+    "image": ""
   },
   {
     "slug": "tomato-leaf",
     "nameEn": "Tomato Leaf",
-    "image": "assets/notes/extracted/tomato-leaf.png"
+    "image": ""
   },
   {
     "slug": "tonka-bean",
     "nameEn": "Tonka Bean",
-    "image": "assets/notes/extracted/tonka-bean.png"
+    "image": ""
   },
   {
     "slug": "tropical-fruits",
     "nameEn": "Tropical Fruits",
-    "image": "assets/notes/extracted/tropical-fruits.png"
+    "image": ""
   },
   {
     "slug": "truffle",
     "nameEn": "Truffle",
-    "image": "assets/notes/extracted/truffle.png"
+    "image": ""
   },
   {
     "slug": "tuberose",
     "nameEn": "Tuberose",
-    "image": "assets/notes/extracted/tuberose.png"
+    "image": ""
   },
   {
     "slug": "tunisian-neroli",
     "nameEn": "Tunisian Neroli",
-    "image": "assets/notes/extracted/tunisian-neroli.png"
+    "image": ""
   },
   {
     "slug": "turkish-rose",
     "nameEn": "Turkish Rose",
-    "image": "assets/notes/extracted/turkish-rose.png"
+    "image": ""
   },
   {
     "slug": "turmeric",
     "nameEn": "Turmeric",
-    "image": "assets/notes/extracted/turmeric.png"
+    "image": ""
   },
   {
     "slug": "tuscan-iris",
     "nameEn": "Tuscan Iris",
-    "image": "assets/notes/extracted/tuscan-iris.png"
+    "image": ""
   },
   {
     "slug": "ultravanil",
     "nameEn": "Ultravanil",
-    "image": "assets/notes/extracted/ultravanil.png"
+    "image": ""
   },
   {
     "slug": "vanilla",
     "nameEn": "Vanilla",
-    "image": "assets/notes/extracted/vanilla.png"
+    "image": ""
   },
   {
     "slug": "vanilla-absolute",
     "nameEn": "Vanilla Absolute",
-    "image": "assets/notes/extracted/vanilla-absolute.png"
+    "image": ""
   },
   {
     "slug": "vanilla-bean",
     "nameEn": "Vanilla Bean",
-    "image": "assets/notes/extracted/vanilla-bean.png"
+    "image": ""
   },
   {
     "slug": "vanilla-blossom",
     "nameEn": "Vanilla Blossom",
-    "image": "assets/notes/extracted/vanilla-blossom.png"
+    "image": ""
   },
   {
     "slug": "vanilla-bourbon",
     "nameEn": "Vanilla Bourbon",
-    "image": "assets/notes/extracted/vanilla-bourbon.png"
+    "image": ""
   },
   {
     "slug": "vanilla-caviar",
     "nameEn": "Vanilla Caviar",
-    "image": "assets/notes/extracted/vanilla-caviar.png"
+    "image": ""
   },
   {
     "slug": "vanilla-flower",
     "nameEn": "Vanilla Flower",
-    "image": "assets/notes/extracted/vanilla-flower.png"
+    "image": ""
   },
   {
     "slug": "vanilla-flowers",
     "nameEn": "Vanilla Flowers",
-    "image": "assets/notes/extracted/vanilla-flowers.png"
+    "image": ""
   },
   {
     "slug": "vanilla-orchid",
     "nameEn": "Vanilla Orchid",
-    "image": "assets/notes/extracted/vanilla-orchid.png"
+    "image": ""
   },
   {
     "slug": "verbena",
     "nameEn": "Verbena",
-    "image": "assets/notes/extracted/verbena.png"
+    "image": ""
   },
   {
     "slug": "vetiver",
     "nameEn": "Vetiver",
-    "image": "assets/notes/extracted/vetiver.png"
+    "image": ""
   },
   {
     "slug": "vinyl",
     "nameEn": "Vinyl",
-    "image": "assets/notes/extracted/vinyl.png"
+    "image": ""
   },
   {
     "slug": "violet",
     "nameEn": "Violet",
-    "image": "assets/notes/extracted/violet.png"
+    "image": ""
   },
   {
     "slug": "violet-leaf",
     "nameEn": "Violet Leaf",
-    "image": "assets/notes/extracted/violet-leaf.png"
+    "image": ""
   },
   {
     "slug": "violet-leaves",
     "nameEn": "Violet Leaves",
-    "image": "assets/notes/extracted/violet-leaves.png"
+    "image": ""
   },
   {
     "slug": "violet-sugar",
     "nameEn": "Violet Sugar",
-    "image": "assets/notes/extracted/violet-sugar.png"
+    "image": ""
   },
   {
     "slug": "virginia-cedar",
     "nameEn": "Virginia Cedar",
-    "image": "assets/notes/extracted/virginia-cedar.png"
+    "image": ""
   },
   {
     "slug": "virginian-cedar",
     "nameEn": "Virginian Cedar",
-    "image": "assets/notes/extracted/virginian-cedar.png"
+    "image": ""
   },
   {
     "slug": "vodka",
     "nameEn": "Vodka",
-    "image": "assets/notes/extracted/vodka.png"
+    "image": ""
   },
   {
     "slug": "waffle-cone",
     "nameEn": "Waffle Cone",
-    "image": "assets/notes/extracted/waffle-cone.png"
+    "image": ""
   },
   {
     "slug": "water-hyacinth",
     "nameEn": "Water Hyacinth",
-    "image": "assets/notes/extracted/water-hyacinth.png"
+    "image": ""
   },
   {
     "slug": "water-lily",
     "nameEn": "Water Lily",
-    "image": "assets/notes/extracted/water-lily.png"
+    "image": ""
   },
   {
     "slug": "water-lotus",
     "nameEn": "Water Lotus",
-    "image": "assets/notes/extracted/water-lotus.png"
+    "image": ""
   },
   {
     "slug": "water-notes",
     "nameEn": "Water Notes",
-    "image": "assets/notes/extracted/water-notes.png"
+    "image": ""
   },
   {
     "slug": "water-peony",
     "nameEn": "Water Peony",
-    "image": "assets/notes/extracted/water-peony.png"
+    "image": ""
   },
   {
     "slug": "watermelon",
     "nameEn": "Watermelon",
-    "image": "assets/notes/extracted/watermelon.png"
+    "image": ""
   },
   {
     "slug": "watery-notes",
     "nameEn": "Watery Notes",
-    "image": "assets/notes/extracted/watery-notes.png"
+    "image": ""
   },
   {
     "slug": "wheat",
     "nameEn": "Wheat",
-    "image": "assets/notes/extracted/wheat.png"
+    "image": ""
   },
   {
     "slug": "whipped-cream",
     "nameEn": "Whipped Cream",
-    "image": "assets/notes/extracted/whipped-cream.png"
+    "image": ""
   },
   {
     "slug": "white-amber",
     "nameEn": "White Amber",
-    "image": "assets/notes/extracted/white-amber.png"
+    "image": ""
   },
   {
     "slug": "white-bergamot",
     "nameEn": "White Bergamot",
-    "image": "assets/notes/extracted/white-bergamot.png"
+    "image": ""
   },
   {
     "slug": "white-cactus",
     "nameEn": "White Cactus",
-    "image": "assets/notes/extracted/white-cactus.png"
+    "image": ""
   },
   {
     "slug": "white-chocolate",
     "nameEn": "White Chocolate",
-    "image": "assets/notes/extracted/white-chocolate.png"
+    "image": ""
   },
   {
     "slug": "white-currant",
     "nameEn": "White Currant",
-    "image": "assets/notes/extracted/white-currant.png"
+    "image": ""
   },
   {
     "slug": "white-grape",
     "nameEn": "White Grape",
-    "image": "assets/notes/extracted/white-grape.png"
+    "image": ""
   },
   {
     "slug": "white-honey",
     "nameEn": "White Honey",
-    "image": "assets/notes/extracted/white-honey.png"
+    "image": ""
   },
   {
     "slug": "white-musk",
     "nameEn": "White Musk",
-    "image": "assets/notes/extracted/white-musk.png"
+    "image": ""
   },
   {
     "slug": "white-nerium-oleander",
     "nameEn": "White Nerium Oleander",
-    "image": "assets/notes/extracted/white-nerium-oleander.png"
+    "image": ""
   },
   {
     "slug": "white-orris",
     "nameEn": "White Orris",
-    "image": "assets/notes/extracted/white-orris.png"
+    "image": ""
   },
   {
     "slug": "white-peach",
     "nameEn": "White Peach",
-    "image": "assets/notes/extracted/white-peach.png"
+    "image": ""
   },
   {
     "slug": "white-peony",
     "nameEn": "White Peony",
-    "image": "assets/notes/extracted/white-peony.png"
+    "image": ""
   },
   {
     "slug": "white-pepper",
     "nameEn": "White Pepper",
-    "image": "assets/notes/extracted/white-pepper.png"
+    "image": ""
   },
   {
     "slug": "white-rose",
     "nameEn": "White Rose",
-    "image": "assets/notes/extracted/white-rose.png"
+    "image": ""
   },
   {
     "slug": "white-tea",
     "nameEn": "White Tea",
-    "image": "assets/notes/extracted/white-tea.png"
+    "image": ""
   },
   {
     "slug": "wild-lavender",
     "nameEn": "Wild Lavender",
-    "image": "assets/notes/extracted/wild-lavender.png"
+    "image": ""
   },
   {
     "slug": "wild-strawberry",
     "nameEn": "Wild Strawberry",
-    "image": "assets/notes/extracted/wild-strawberry.png"
+    "image": ""
   },
   {
     "slug": "wisteria",
     "nameEn": "Wisteria",
-    "image": "assets/notes/extracted/wisteria.png"
+    "image": ""
   },
   {
     "slug": "woody-notes",
     "nameEn": "Woody Notes",
-    "image": "assets/notes/extracted/woody-notes.png"
+    "image": ""
   },
   {
     "slug": "wormwood",
     "nameEn": "Wormwood",
-    "image": "assets/notes/extracted/wormwood.png"
+    "image": ""
   },
   {
     "slug": "ylang-ylang",
     "nameEn": "Ylang-Ylang",
-    "image": "assets/notes/extracted/ylang-ylang.png"
+    "image": ""
   },
   {
     "slug": "yuzu",
     "nameEn": "Yuzu",
-    "image": "assets/notes/extracted/yuzu.png"
+    "image": ""
   }
 ]);
 })(window);

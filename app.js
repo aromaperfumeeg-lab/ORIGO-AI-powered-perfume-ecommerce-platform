@@ -1181,7 +1181,8 @@ const state = {
   publicIntegrations: {},
   integrationStatus: {},
   resetChannels: { email: false, whatsapp: false, sms: false },
-  passwordResetFlow: { requestId: "", identifier: "", channel: "email", code: "", attempts: 0, expiresAt: 0 },
+  passwordResetFlow: { requestId: "", identifier: "", resetToken: "", attempts: 0, expiresAt: 0, resendAt: 0 },
+  emailVerificationFlow: { requestId: "", email: "", expiresAt: 0, resendAt: 0 },
   filterDefinitions: [],
   productOptions: [],
   activeDynamicFilters: {},
@@ -1429,27 +1430,56 @@ function updateAccountIndicator() {
   });
 }
 
+function scheduleStorefrontIdle(task, timeout = 2500) {
+  if ("requestIdleCallback" in window) return requestIdleCallback(() => task(), { timeout });
+  return setTimeout(task, Math.min(timeout, 1200));
+}
+
+async function hydrateDeferredStorefront(total = 0) {
+  const supplemental = await Promise.allSettled([
+    api("/api/notes/state"),
+    api("/api/integrations/public"),
+    api("/api/filters")
+  ]);
+  const notesState = supplemental[0]?.status === "fulfilled" ? supplemental[0].value : { state:null };
+  state.publicIntegrations = supplemental[1]?.status === "fulfilled" ? supplemental[1].value || {} : {};
+  state.filterDefinitions = supplemental[2]?.status === "fulfilled" ? supplemental[2].value.filters || [] : state.filterDefinitions;
+  if (notesState.state && window.ORIGOFragranceNotes) {
+    window.ORIGOFragranceNotes.setState(notesState.state);
+    safelyPersistFragranceNotes();
+  }
+  renderDynamicFilters();
+  let offset = state.products.length;
+  while (offset < total) {
+    const page = await api(`/api/products?offset=${offset}&limit=48`).catch(() => null);
+    if (!page?.products?.length) break;
+    const merged = new Map(state.products.map((product) => [product.id, product]));
+    page.products.map(serverProduct).forEach((product) => merged.set(product.id, product));
+    state.products = [...merged.values()];
+    offset += page.products.length;
+    await new Promise((resolve) => scheduleStorefrontIdle(resolve, 1200));
+  }
+  if (/^\/(?:perfumes|search)/.test(location.pathname)) {
+    handleCatalogRoute({ replace:true });
+  } else if (location.pathname === "/") {
+    renderBrandCarousel($("#brand-carousel-search")?.value || "");
+    renderHomepageCommerce();
+  }
+}
+
 async function hydrateServer() {
   const localCart = [...state.cart];
   const cartOwner = localStorage.getItem("origoCartUserId");
   try {
     const results = await Promise.allSettled([
-      api("/api/products"),
+      api("/api/products?offset=0&limit=24"),
       api("/api/session"),
-      api("/api/notes/state"),
-      api("/api/integrations/public"),
-      api("/api/filters"),
       api("/api/storefront-settings")
     ]);
     const valueAt = (index, fallback) => results[index]?.status === "fulfilled" ? results[index].value : fallback;
     const catalog = valueAt(0, { products:state.products });
     const session = valueAt(1, { user:null, cart:[] });
-    const notesState = valueAt(2, { state:null });
-    const publicIntegrations = valueAt(3, {});
-    const filtersResult = valueAt(4, { filters:state.filterDefinitions });
-    const storefrontSettings = valueAt(5, { settings:{} });
-    state.publicIntegrations = publicIntegrations || {};
-    state.filterDefinitions = filtersResult.filters || [];
+    const storefrontSettings = valueAt(2, { settings:{} });
     const localSettings = state.adminWorkspace.settings || {};
     const serverSettings = storefrontSettings.settings || {};
     state.adminWorkspace.settings = mergeStoreSettings({
@@ -1459,10 +1489,6 @@ async function hydrateServer() {
       homeProductRows:Array.isArray(serverSettings.homeProductRows) && serverSettings.homeProductRows.length ? serverSettings.homeProductRows : (localSettings.homeProductRows || [])
     });
     state.serverAvailable = results[0]?.status === "fulfilled";
-    if (notesState.state && Object.keys(notesState.state).length) {
-      window.ORIGOFragranceNotes?.setState(notesState.state);
-      safelyPersistFragranceNotes();
-    }
     if (Array.isArray(catalog.products)) state.products = catalog.products.map(serverProduct);
     state.user = session.user || null;
     if (state.user) {
@@ -1495,6 +1521,7 @@ async function hydrateServer() {
     handleNotesRoute({ replace: true });
     handleCatalogRoute({ replace: true });
     handleProductRoute();
+    scheduleStorefrontIdle(() => hydrateDeferredStorefront(Number(catalog.total || state.products.length)), 1800);
   } catch {
     state.serverAvailable = false;
     updateAccountIndicator();
@@ -2921,63 +2948,55 @@ async function loadPasswordResetChannels() {
 function renderPasswordRecovery(mode = "reset-request", context = {}) {
   state.passwordResetFlow = { ...state.passwordResetFlow, ...context };
   const flow = state.passwordResetFlow;
-  const channels = Object.entries(state.resetChannels || {}).filter(([, enabled]) => enabled).map(([id]) => id);
   const logo = escapeHTML(state.adminWorkspace.settings.logos?.dark || defaultStoreSettings.logos.dark);
   const status = {
     "reset-sent": ["✉", "تم إرسال رمز التحقق", `تم إرسال رمز التحقق إلى ${escapeHTML(flow.identifier || "بريدك الإلكتروني")}`],
-    "reset-success": ["✓", "تم تحديث كلمة المرور", "يمكنك الآن تسجيل الدخول باستخدام كلمة المرور الجديدة"],
+    "reset-success": ["✓", "تم تحديث كلمة المرور بنجاح", "يمكنك الآن تسجيل الدخول باستخدام كلمة المرور الجديدة"],
     "reset-expired": ["◷", "انتهت صلاحية الرابط أو الرمز", "للأمان، رابط التحقق أو الرمز منتهي الصلاحية."],
     "reset-error": ["▣", "رمز تحقق غير صحيح", "الرمز الذي أدخلته غير صحيح. يرجى المحاولة مرة أخرى"],
     "reset-locked": ["♜", "تم تجاوز الحد المسموح للمحاولات", "تم تعطيل التحقق مؤقتاً لأسباب أمنية."]
   }[mode];
   let body = "";
-  if (mode === "reset-request") body = `<form id="password-reset-request-form" class="recovery-step-form"><img src="${logo}" alt="ORIGO"/><p>أدخل بريدك الإلكتروني أو رقم هاتفك وسنرسل لك رمز التحقق</p><label>البريد الإلكتروني<div class="recovery-field"><input name="identifier" required placeholder="example@mail.com" dir="ltr"/>✉</div></label>${channels.length ? `<fieldset class="recovery-channel-options">${channels.map((id,i)=>`<label><input type="radio" name="channel" value="${id}"${i===0?" checked":""}/>${{email:"البريد الإلكتروني",whatsapp:"WhatsApp",sms:"SMS"}[id]}</label>`).join("")}</fieldset>` : `<p class="recovery-inline-error">لا توجد قناة استعادة مهيأة حاليًا</p>`}<p id="auth-error" class="form-error"></p><button class="recovery-primary" type="submit"${channels.length?"":" disabled"}>إرسال رمز التحقق</button><button type="button" class="recovery-link" data-action="auth-mode" data-mode="login">تذكرت كلمة المرور؟ تسجيل الدخول</button></form>`;
+  if (mode === "reset-request") body = `<form id="password-reset-request-form" class="recovery-step-form"><img src="${logo}" alt="ORIGO"/><p>أدخل بريدك الإلكتروني وسنرسل رمز التحقق إذا كان مرتبطًا بحساب</p><label>البريد الإلكتروني<div class="recovery-field"><input name="email" type="email" autocomplete="email" required placeholder="example@mail.com" dir="ltr"/>✉</div></label><p id="auth-error" class="form-error"></p><button class="recovery-primary" type="submit">إرسال رمز التحقق</button><button type="button" class="recovery-link" data-action="auth-mode" data-mode="login">تذكرت كلمة المرور؟ تسجيل الدخول</button></form>`;
   else if (mode === "reset-sent") body = `<div class="recovery-status sent"><i>${status[0]}</i><h3>${status[1]}</h3><p>${status[2]}</p><div class="recovery-notice">قد يستغرق وصول الرمز بضع دقائق.<br/>يرجى التحقق من صندوق الوارد أو البريد غير المرغوب.</div><button class="recovery-primary" data-action="show-reset-code">إدخال الرمز</button></div>`;
-  else if (mode === "reset-code") body = `<form id="password-reset-code-form" class="recovery-step-form"><img src="${logo}" alt="ORIGO"/><p>أدخل رمز التحقق المرسل إلى<br/><b>${escapeHTML(flow.identifier)}</b></p><div class="otp-inputs" dir="ltr">${Array.from({length:6},(_,i)=>`<input name="digit${i}" inputmode="numeric" maxlength="1" required/>`).join("")}</div><small>لم يصلك الرمز؟</small><button type="button" class="recovery-link" data-action="restart-password-reset">إعادة إرسال الرمز</button><p id="auth-error" class="form-error"></p><button class="recovery-primary" type="submit">تحقق من الرمز</button></form>`;
+  else if (mode === "reset-code") body = `<form id="password-reset-code-form" class="recovery-step-form"><img src="${logo}" alt="ORIGO"/><p>أدخل رمز التحقق المرسل إلى<br/><b>${escapeHTML(flow.identifier)}</b></p><div class="otp-inputs" dir="ltr">${Array.from({length:6},(_,i)=>`<input name="digit${i}" inputmode="numeric" autocomplete="${i===0?"one-time-code":"off"}" pattern="[0-9]" maxlength="1" required aria-label="الرقم ${i+1}"/>`).join("")}</div><small>لم يصلك الرمز؟</small><button type="button" class="recovery-link" data-action="resend-reset-code" data-resend-at="${flow.resendAt||0}">إعادة إرسال الرمز</button><p id="auth-error" class="form-error"></p><button class="recovery-primary" type="submit">تحقق من الرمز</button></form>`;
   else if (mode === "reset-password") body = `<form id="password-reset-password-form" class="recovery-step-form"><img src="${logo}" alt="ORIGO"/><h3>إنشاء كلمة مرور جديدة</h3>${passwordFieldMarkup({name:"password",autocomplete:"new-password",label:"كلمة المرور الجديدة"})}<ul class="password-rules"><li>على الأقل 10 أحرف</li><li>حرف كبير وحرف صغير</li><li>رقم واحد على الأقل</li><li>رمز خاص واحد</li></ul>${passwordFieldMarkup({name:"confirmPassword",autocomplete:"new-password",label:"تأكيد كلمة المرور"})}<p id="auth-error" class="form-error"></p><button class="recovery-primary" type="submit">حفظ كلمة المرور</button></form>`;
   else body = `<div class="recovery-status ${mode}"><i>${status[0]}</i><h3>${status[1]}</h3><p>${status[2]}</p>${mode === "reset-locked" ? `<div class="recovery-notice">◷ الوقت المتبقي للمحاولة: 14:55</div>` : `<button class="recovery-primary" data-action="${mode === "reset-success" ? "auth-mode" : "restart-password-reset"}" data-mode="login">${mode === "reset-success" ? "تسجيل الدخول الآن" : "طلب رمز جديد"}</button>`}</div>`;
-  const step = {"reset-request":0,"reset-sent":2,"reset-code":3,"reset-password":4,"reset-success":4}[mode] ?? 3;
-  $("#account-content").innerHTML = `<div class="password-recovery-shell" dir="rtl"><header><h2>نسيت كلمة المرور</h2><p>استعادة حسابك بخطوات بسيطة وآمنة</p></header><div class="recovery-progress">${["طلب الاستعادة","طريقة التحقق","إرسال الرمز","رمز التحقق","كلمة مرور جديدة"].map((label,i)=>`<span class="${i<=step?"active":""}"><b>${i+1}</b>${label}</span>`).join("")}</div><main>${body}</main><footer>🔒 جميع الرموز وروابط التحقق مشفرة وتنتهي صلاحيتها بعد مدة محدودة</footer></div>`;
+  const step = {"reset-request":0,"reset-sent":1,"reset-code":1,"reset-password":2,"reset-success":2}[mode] ?? 1;
+  $("#account-content").innerHTML = `<div class="password-recovery-shell" dir="rtl"><header><h2>نسيت كلمة المرور</h2><p>استعادة حسابك بخطوات بسيطة وآمنة</p></header><div class="recovery-progress recovery-progress-three">${["طلب الاستعادة","التحقق","كلمة مرور جديدة"].map((label,i)=>`<span class="${i<=step?"active":""}"><b>${i+1}</b>${label}</span>`).join("")}</div><main>${body}</main><footer>🔒 الرموز مشفرة وتنتهي صلاحيتها بعد 10 دقائق</footer></div>`;
   applyStoreIdentity();
+  initializeOtpInputs();
+  updateResendCountdowns();
+}
+
+function renderEmailVerification(context = {}) {
+  state.emailVerificationFlow = { ...state.emailVerificationFlow, ...context };
+  const flow = state.emailVerificationFlow;
+  const logo = escapeHTML(state.adminWorkspace.settings.logos?.dark || defaultStoreSettings.logos.dark);
+  $("#account-content").innerHTML = `<div class="password-recovery-shell" dir="rtl"><header><h2>تحقق من بريدك الإلكتروني</h2><p>أرسلنا رمزًا من 6 أرقام صالحًا لمدة 10 دقائق</p></header><main><form id="email-verification-form" class="recovery-step-form"><img src="${logo}" alt="ORIGO"/><p><b>${escapeHTML(flow.email)}</b></p><div class="otp-inputs" dir="ltr">${Array.from({length:6},(_,i)=>`<input name="digit${i}" inputmode="numeric" autocomplete="${i===0?"one-time-code":"off"}" maxlength="1" required aria-label="الرقم ${i+1}"/>`).join("")}</div><button type="button" class="recovery-link" data-action="resend-verification" data-resend-at="${flow.resendAt||0}">إعادة إرسال الرمز</button><p id="auth-error" class="form-error"></p><button class="recovery-primary" type="submit">تأكيد البريد الإلكتروني</button></form></main></div>`;
+  applyStoreIdentity(); initializeOtpInputs(); updateResendCountdowns();
+}
+
+function initializeOtpInputs() {
+  const inputs = [...document.querySelectorAll(".otp-inputs input")];
+  inputs.forEach((input,index)=>input.addEventListener("input",()=>{input.value=input.value.replace(/\D/g,"").slice(-1);if(input.value)inputs[index+1]?.focus();}));
+  inputs[0]?.addEventListener("paste",event=>{const code=event.clipboardData?.getData("text").replace(/\D/g,"").slice(0,6)||"";if(code.length!==6)return;event.preventDefault();inputs.forEach((input,index)=>input.value=code[index]||"");inputs[5]?.focus();});
+}
+
+function updateResendCountdowns() {
+  document.querySelectorAll("[data-resend-at]").forEach(button=>{const tick=()=>{if(!button.isConnected)return;const seconds=Math.max(0,Math.ceil((Number(button.dataset.resendAt)-Date.now())/1000));button.disabled=seconds>0;button.textContent=seconds>0?`إعادة الإرسال خلال ${seconds} ثانية`:"إعادة إرسال الرمز";if(seconds)setTimeout(tick,1000);};tick();});
 }
 
 function renderAuth(mode = "login", requestId = "") {
   if (String(mode).startsWith("reset-")) return renderPasswordRecovery(mode, requestId ? { requestId } : {});
   const isRegister = mode === "register";
-  const isResetRequest = mode === "reset-request";
-  const isResetConfirm = mode === "reset-confirm";
   const ar = state.lang === "ar";
-  const resetTitle = isResetRequest ? (ar ? "استعادة كلمة المرور" : "Reset your password") : (ar ? "أدخل رمز التحقق" : "Enter verification code");
-  const resetBody = isResetRequest ? (ar ? "اختر قناة الاستعادة، ثم أدخل بريدك أو رقم هاتفك المسجل." : "Choose a recovery channel, then enter your registered email or phone.") : (ar ? "أدخل الرمز المكوّن من 6 أرقام وكلمة المرور الجديدة." : "Enter the 6-digit code and your new password.");
-  const recoveryLabels = { email: ar ? "البريد الإلكتروني" : "Email", whatsapp: "WhatsApp", sms: "SMS" };
-  const recoveryIcons = { email: "✉", whatsapp: "◉", sms: "▤" };
-  const activeRecoveryChannels = Object.entries(state.resetChannels || {}).filter(([, enabled]) => enabled).map(([id]) => id);
-  const recoveryChannelsMarkup = activeRecoveryChannels.length
-    ? `<fieldset class="reset-channels"><legend>${ar ? "طريقة إرسال الرمز" : "Send code through"}</legend>${activeRecoveryChannels.map((id, index) => `<label><input type="radio" name="channel" value="${id}"${index === 0 ? " checked" : ""}/><span>${recoveryIcons[id]} ${recoveryLabels[id]}</span></label>`).join("")}</fieldset>`
-    : `<p class="recovery-unavailable" role="status">${ar ? "لا توجد قناة استعادة مهيأة حاليًا. تواصل مع دعم ORIGO." : "No recovery channel is configured. Please contact ORIGO support."}</p>`;
-  $("#account-content").innerHTML = `
-    <div class="auth-shell">
-      <div class="auth-body">
-        <div class="auth-tabs"${isResetRequest || isResetConfirm ? " hidden" : ""}>
-          <button type="button" data-action="auth-mode" data-mode="login" class="${isRegister ? "" : "active"}">${ar ? "تسجيل الدخول" : "Sign in"}</button>
-          <button type="button" data-action="auth-mode" data-mode="register" class="${isRegister ? "active" : ""}">${ar ? "حساب جديد" : "Create account"}</button>
-        </div>
-        <form class="commerce-form" id="${isResetRequest ? "password-reset-request-form" : isResetConfirm ? "password-reset-confirm-form" : "auth-form"}" data-mode="${isRegister ? "register" : "login"}">
-          <span class="eyebrow">${isResetRequest || isResetConfirm ? "ORIGO SECURE RECOVERY" : isRegister ? (ar ? "انضم إلى ORIGO" : "JOIN ORIGO") : (ar ? "مرحبًا بعودتك" : "WELCOME BACK")}</span>
-          <h2 id="account-title">${isResetRequest || isResetConfirm ? resetTitle : isRegister ? (ar ? "أنشئ حسابك" : "Create your account") : (ar ? "سجّل الدخول" : "Sign in")}</h2>
-          <p>${isResetRequest || isResetConfirm ? resetBody : isRegister
-            ? (ar ? "بيانات قليلة، وتجربة تسوق أسهل." : "A few details for a smoother shopping experience.")
-            : (ar ? "أدخل بياناتك لمتابعة حقيبتك وطلباتك." : "Sign in to continue with your bag and orders.")}</p>
-          <div class="commerce-fields">
-            ${isResetRequest ? `<label class="wide"><span>${ar ? "البريد أو رقم الهاتف المسجل" : "Registered email or phone"}</span><input name="identifier" autocomplete="username" required maxlength="254" dir="ltr" /></label>${recoveryChannelsMarkup}` : isResetConfirm ? `<input type="hidden" name="requestId" value="${escapeHTML(requestId)}"/><label class="wide"><span>${ar ? "رمز التحقق" : "Verification code"}</span><input name="code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required dir="ltr"/></label>${passwordFieldMarkup({ autocomplete: "new-password", label: ar ? "كلمة المرور الجديدة" : "New password" })}` : `${isRegister ? `<label class="wide"><span>${ar ? "الاسم" : "Name"}</span><input name="name" autocomplete="name" required minlength="2" maxlength="100" /></label>` : ""}<label class="wide"><span>${ar ? "البريد الإلكتروني" : "Email address"}</span><input name="email" type="email" autocomplete="email" required maxlength="254" dir="ltr" /></label>${isRegister ? `<label class="wide"><span>${ar ? "رقم الهاتف (اختياري)" : "Phone (optional)"}</span><input name="phone" autocomplete="tel" inputmode="tel" dir="ltr" /></label>` : ""}${passwordFieldMarkup({ autocomplete: isRegister ? "new-password" : "current-password", label: ar ? "كلمة المرور" : "Password" })}`}
-          </div>
-          <p class="form-error" id="auth-error" role="alert"></p>
-          <button class="button burgundy-button full" type="submit"${isResetRequest && !activeRecoveryChannels.length ? " disabled" : ""}>${isResetRequest ? (ar ? "إرسال رمز الاستعادة" : "Send recovery code") : isResetConfirm ? (ar ? "تعيين كلمة المرور" : "Set new password") : isRegister ? (ar ? "إنشاء الحساب" : "Create account") : (ar ? "دخول" : "Sign in")}</button>
-          ${!isRegister && !isResetRequest && !isResetConfirm ? `<button class="auth-text-action" type="button" data-action="auth-mode" data-mode="reset-request">${ar ? "نسيت كلمة المرور؟" : "Forgot password?"}</button>` : ""}
-          ${isResetRequest || isResetConfirm ? `<button class="auth-text-action" type="button" data-action="auth-mode" data-mode="login">${ar ? "العودة لتسجيل الدخول" : "Back to sign in"}</button>` : ""}
-        </form>
-      </div>
-    </div>`;
+  const fields = `<div class="commerce-fields">${isRegister ? `<label class="wide"><span>${ar ? "الاسم" : "Name"}</span><input name="name" autocomplete="name" required minlength="2" maxlength="100" /></label>` : ""}<label class="wide"><span>${ar ? "البريد الإلكتروني" : "Email address"}</span><input name="email" type="email" autocomplete="email" required maxlength="254" dir="ltr" /></label>${isRegister ? `<label class="wide"><span>${ar ? "رقم الهاتف (اختياري)" : "Phone (optional)"}</span><input name="phone" autocomplete="tel" inputmode="tel" dir="ltr" /></label>` : ""}${passwordFieldMarkup({ autocomplete:isRegister?"new-password":"current-password", label:ar?"كلمة المرور":"Password" })}</div>`;
+  if (isRegister) {
+    $("#account-content").innerHTML = `<div class="auth-page auth-register-page" dir="${ar?"rtl":"ltr"}"><header><span>${ar?"المنزل · إنشاء حساب":"Home · Create account"}</span><h2>${ar?"إنشاء حساب":"Create account"}</h2><p>${ar?"انضم الآن للحصول على تجربة تسوق أسهل وعروض مختارة.":"Join now for an easier shopping experience and selected offers."}</p></header><form class="commerce-form auth-card auth-register-card" id="auth-form" data-mode="register">${fields}<p class="auth-privacy-note">${ar?"سيتم استخدام بياناتك لإدارة حسابك وطلباتك وفق سياسة الخصوصية.":"Your data is used to manage your account and orders under our privacy policy."}</p><p class="form-error" id="auth-error" role="alert"></p><button class="button burgundy-button full" type="submit">${ar?"إنشاء حساب":"Create account"}</button><button class="button auth-outline-button full" type="button" data-action="auth-mode" data-mode="login">${ar?"تسجيل الدخول":"Sign in"}</button></form></div>`;
+  } else {
+    $("#account-content").innerHTML = `<div class="auth-page" dir="${ar?"rtl":"ltr"}"><header><span>${ar?"المنزل · الحساب":"Home · Account"}</span><h2>${ar?"سعيد بعودتك!":"Welcome back!"}</h2><p>${ar?"سجل الدخول لإدارة حسابك وتتبع طلباتك.":"Sign in to manage your account and track your orders."}</p></header><div class="auth-choice-grid"><form class="commerce-form auth-card" id="auth-form" data-mode="login"><h3>${ar?"تسجيل الدخول":"Sign in"}</h3>${fields}<button class="auth-forgot-link" type="button" data-action="auth-mode" data-mode="reset-request">${ar?"نسيت كلمة المرور؟":"Forgot password?"}</button><p class="form-error" id="auth-error" role="alert"></p><button class="button burgundy-button full" type="submit">${ar?"تسجيل الدخول":"Sign in"}</button></form><section class="auth-card auth-new-customer"><h3>${ar?"العميل الجديد":"New customer"}</h3><p>${ar?"أنشئ حسابًا للوصول إلى تجربة أسرع، وتتبع الطلبات، والعروض المختارة.":"Create an account for faster checkout, order tracking, and selected offers."}</p><button class="button burgundy-button full" type="button" data-action="auth-mode" data-mode="register">${ar?"إنشاء حساب":"Create account"}</button></section></div></div>`;
+  }
   applyStoreIdentity();
 }
 
@@ -3328,7 +3347,9 @@ function renderHomeBenefitsMarquee() {
     return `<a class="marquee-item benefit-marquee-item" href="/benefits/${escapeHTML(benefit.slug)}" data-action="benefit-link" data-slug="${escapeHTML(benefit.slug)}"><span class="benefit-icon">${benefit.image ? `<img src="${escapeHTML(benefit.image)}" alt="" loading="lazy"/>` : footerBenefitIcon(benefit.icon, benefit.colors)}</span><b>${escapeHTML(title)}</b><small>${escapeHTML(short || "")}</small></a>`;
   }).join("");
   const duplicates = items.replaceAll("<a ", '<a tabindex="-1" aria-hidden="true" ');
-  const benefitSetCount = Math.max(4, Math.ceil(12 / Math.max(benefits.length, 1)) + 1);
+  // Two complete sets are sufficient for a seamless loop and avoid building
+  // several copies of the same cards during the initial homepage render.
+  const benefitSetCount = 2;
   const benefitShift = 100 / benefitSetCount;
   track.innerHTML = items ? `<div class="brand-marquee-content benefit-marquee-content" style="--benefit-marquee-shift:-${benefitShift}%;--benefit-marquee-shift-rtl:${benefitShift}%"><div class="brand-marquee-set benefit-marquee-set">${items}</div>${Array.from({ length: benefitSetCount - 1 }, () => `<div class="brand-marquee-set benefit-marquee-set" aria-hidden="true">${duplicates}</div>`).join("")}</div>` : "";
   bindBrandMarquee(track);
@@ -4188,9 +4209,36 @@ function catalogURL() {
   return `${path}${params.toString() ? `?${params}` : ""}`;
 }
 
-function updateCatalogURL({ replace = false } = {}) {
+function navigationSnapshot() {
+  return {
+    scrollX: window.scrollX,
+    scrollY: window.scrollY,
+    catalogBrandExpanded: Boolean(state.catalogBrandExpanded),
+    catalogFiltersOpen: Boolean($("#catalog-filter-drawer")?.classList.contains("open")),
+    dynamicFilters: { ...state.activeDynamicFilters }
+  };
+}
+
+function saveNavigationSnapshot() {
+  const current = history.state || {};
+  history.replaceState({ ...current, origoNavigation: navigationSnapshot() }, "", location.href);
+}
+
+function restoreNavigationSnapshot(entryState) {
+  const snapshot = entryState?.origoNavigation;
+  if (!snapshot) return;
+  state.catalogBrandExpanded = Boolean(snapshot.catalogBrandExpanded);
+  state.activeDynamicFilters = { ...(snapshot.dynamicFilters || {}) };
+  requestAnimationFrame(() => setTimeout(() => {
+    if (document.body.classList.contains("catalog-route")) toggleCatalogFilters(Boolean(snapshot.catalogFiltersOpen));
+    window.scrollTo({ left: Number(snapshot.scrollX || 0), top: Number(snapshot.scrollY || 0), behavior: "auto" });
+  }, 180));
+}
+
+function updateCatalogURL({ replace = true } = {}) {
   const method = replace ? "replaceState" : "pushState";
-  history[method]({ catalog: true }, "", catalogURL());
+  if (!replace) saveNavigationSnapshot();
+  history[method]({ catalog: true, origoNavigation: navigationSnapshot() }, "", catalogURL());
 }
 
 function readCatalogURL() {
@@ -4273,7 +4321,7 @@ function navigateCatalog(options = {}) {
   if (options.query !== undefined) state.catalogQuery = options.query;
   if (options.brand) state.catalogFilters.brand = [options.brand];
   if (options.gender) state.catalogQuickFilter = options.gender;
-  updateCatalogURL();
+  updateCatalogURL({ replace: false });
   handleCatalogRoute();
 }
 
@@ -4827,13 +4875,13 @@ function productNoteGroups(product) {
       const preferred = structured[`${position}${state.lang === "ar" ? "Ar" : "En"}`] || [];
       const fallback = structured[`${position}${state.lang === "ar" ? "En" : "Ar"}`] || [];
       const values = preferred.length ? preferred : fallback;
-      groups[position] = values.map((value, index) => ({ value, note: library.find(value), ref: savedRefs[position][index] || null, position }));
+      groups[position] = values.map((value, index) => ({ value, note: library?.find?.(value) || null, ref: savedRefs[position][index] || null, position }));
     });
   } else {
     const preferred = state.lang === "ar" ? product.notesAr : product.notesEn;
     const fallback = state.lang === "ar" ? product.notesEn : product.notesAr;
     (preferred?.length ? preferred : fallback || []).forEach((value) => {
-      const note = library.find(value);
+      const note = library?.find?.(value) || null;
       const position = note?.position === "top" || note?.position === "base" ? note.position : "heart";
       groups[position].push({ value, note, position });
     });
@@ -4858,13 +4906,13 @@ function productNotePyramid(product) {
       <span><small>${position.toUpperCase()}</small><b>${label}</b></span>
       <div>${items.map(({ value, note, ref }) => {
         if (!note) {
-          stateChanged = library.registerUnclassified(value, position) || stateChanged;
+          stateChanged = (library?.registerUnclassified?.(value, position) || false) || stateChanged;
           const unknown = {
             nameAr: ref?.nameAr || value, nameEn: ref?.nameEn || value,
             familyId: ref?.familyId || "uncategorized", symbol: "?", image: ref?.image || ""
           };
           const label = state.lang === "ar" ? unknown.nameAr || unknown.nameEn : unknown.nameEn || unknown.nameAr;
-          return `<span class="dialog-note-chip${ref ? " custom" : " unknown"}"><img src="${escapeHTML(ref?.image || library.artwork(unknown))}" alt="${escapeHTML(label)}" /><b>${escapeHTML(label)}</b><small>${escapeHTML(ref ? (state.lang === "ar" ? unknown.nameEn : unknown.nameAr) : (state.lang === "ar" ? "غير مصنف" : "Unclassified"))}</small></span>`;
+          return `<span class="dialog-note-chip${ref ? " custom" : " unknown"}"><img src="${escapeHTML(ref?.image || library?.artwork?.(unknown) || PRODUCT_IMAGE_PLACEHOLDER)}" alt="${escapeHTML(label)}" /><b>${escapeHTML(label)}</b><small>${escapeHTML(ref ? (state.lang === "ar" ? unknown.nameEn : unknown.nameAr) : (state.lang === "ar" ? "غير مصنف" : "Unclassified"))}</small></span>`;
         }
         return `<button class="dialog-note-chip" data-action="open-note" data-slug="${escapeHTML(note.slug)}">
           <img src="${escapeHTML(library.artwork(note))}" alt="" /><b>${escapeHTML(noteLabel(note))}</b><small>${escapeHTML(state.lang === "ar" ? note.nameEn : note.nameAr)}</small></button>`;
@@ -5890,8 +5938,7 @@ function showProductDetails(product, shouldOpen = true) {
 
   $("#product-dialog-content").innerHTML = `
     <main class="pdp-page" aria-labelledby="product-dialog-title">
-      <div class="pdp-topbar"><button class="pdp-back" data-action="close-product-page" aria-label="${isArabic ? "رجوع" : "Back"}"><span aria-hidden="true">${isArabic ? "→" : "←"}</span><b>${isArabic ? "رجوع" : "Back"}</b></button></div>
-      <nav class="pdp-breadcrumb" aria-label="${isArabic ? "مسار الصفحة" : "Breadcrumb"}"><a href="#home-hero" data-action="close-product-page">${isArabic ? "الرئيسية" : "Home"}</a><i>‹</i><a href="#featured" data-action="close-product-page">${isArabic ? "العطور" : "Perfumes"}</a><i>‹</i><span>${escapeHTML(product.brand)}</span><i>‹</i><b>${escapeHTML(name)}</b></nav>
+      <nav class="pdp-breadcrumb" aria-label="${isArabic ? "مسار الصفحة" : "Breadcrumb"}"><a href="/" data-action="catalog-home">${isArabic ? "الرئيسية" : "Home"}</a><i>‹</i><a href="/perfumes" data-action="product-breadcrumb-catalog">${isArabic ? "العطور" : "Perfumes"}</a><i>‹</i><a href="/perfumes?brand=${encodeURIComponent(product.brand)}" data-action="product-breadcrumb-catalog" data-brand="${escapeHTML(product.brand)}">${escapeHTML(product.brand)}</a><i>‹</i><b>${escapeHTML(name)}</b></nav>
       <section class="pdp-hero">
         <div class="pdp-gallery">
           <div class="pdp-thumbnails" aria-label="${isArabic ? "صور المنتج" : "Product media"}">${media.map((item, index) => `<button class="${index === state.activeProductImageIndex ? "active" : ""}" data-action="product-image" data-index="${index}" aria-label="${isArabic ? `الصورة ${index + 1}` : `Image ${index + 1}`}" aria-pressed="${index === state.activeProductImageIndex}"><img src="${escapeHTML(item.url)}" alt="" loading="${index ? "lazy" : "eager"}" /></button>`).join("")}</div>
@@ -5900,11 +5947,10 @@ function showProductDetails(product, shouldOpen = true) {
         <aside class="pdp-purchase">
           <span class="pdp-brand">${escapeHTML(product.brand)}</span><h1 id="product-dialog-title">${escapeHTML(name)}</h1>${secondName && secondName !== name ? `<p class="pdp-english-name">${escapeHTML(secondName)}</p>` : ""}
           <div class="pdp-tags"><span>${catalogGender(product) === "women" ? "♀" : catalogGender(product) === "men" ? "♂" : "⚥"} ${escapeHTML(isArabic ? product.type || (catalogGender(product) === "women" ? "للنساء" : catalogGender(product) === "men" ? "للرجال" : "للجنسين") : product.typeEn || product.type || catalogGender(product))}</span>${product.concentration ? `<span>${escapeHTML(product.concentration)}</span>` : ""}${product.sku ? `<span>SKU ${escapeHTML(product.sku)}</span>` : ""}</div>
-          <div class="pdp-price"><b>${formatPrice(product.price)}</b>${product.oldPrice ? `<del>${formatPrice(product.oldPrice)}</del>` : ""}${discount ? `<em>-${discount}%</em>` : ""}<small>${taxRate ? (isArabic ? `شامل ضريبة القيمة المضافة ${taxRate}%` : `VAT ${taxRate}% included`) : ""}</small></div>
+          <div class="pdp-price-row"><div class="pdp-price"><b>${formatPrice(product.price)}</b>${product.oldPrice ? `<del>${formatPrice(product.oldPrice)}</del>` : ""}${discount ? `<em>-${discount}%</em>` : ""}<small>${taxRate ? (isArabic ? `شامل ضريبة القيمة المضافة ${taxRate}%` : `VAT ${taxRate}% included`) : ""}</small></div><button class="pdp-price-add" data-action="product-detail-add" data-id="${escapeHTML(product.id)}"><span aria-hidden="true">🛒</span><b>${translations[state.lang].addToBag}</b></button></div>
           ${sizes[0] ? `<p class="pdp-fixed-size">${isArabic ? "الحجم" : "Size"}: <b><bdi dir="ltr">${escapeHTML(formatProductSize(sizes[0]))}</bdi></b></p>` : ""}
           ${available ? `<div class="pdp-stock available"><i></i><span>${isArabic ? "متوفر للطلب" : "Available to order"}</span></div>
           <div class="pdp-purchase-controls"><div class="pdp-quantity"><span>${isArabic ? "الكمية" : "Quantity"}</span><div><button data-action="detail-quantity" data-change="-1" aria-label="${isArabic ? "تقليل الكمية" : "Decrease quantity"}">−</button><b>${state.activeProductQuantity}</b><button data-action="detail-quantity" data-change="1" aria-label="${isArabic ? "زيادة الكمية" : "Increase quantity"}">＋</button></div></div>
-          <button class="pdp-price-add" data-action="product-detail-add" data-id="${escapeHTML(product.id)}"><span aria-hidden="true">🛒</span><b>${translations[state.lang].addToBag}</b></button>
           <div class="pdp-actions pdp-secondary-actions"><button class="pdp-favorite ${isSaved ? "active" : ""}" data-action="quick-view-wishlist" data-id="${escapeHTML(product.id)}"><span>${isSaved ? "♥" : "♡"}</span>${isSaved ? (isArabic ? "محفوظ في المفضلة" : "Saved") : (isArabic ? "أضف إلى المفضلة" : "Add to wishlist")}</button><button class="pdp-compare ${state.comparison.includes(product.id) ? "active" : ""}" data-action="toggle-product-compare" data-id="${escapeHTML(product.id)}" aria-pressed="${state.comparison.includes(product.id)}"><span>⚖</span>${isArabic ? "مقارنة" : "Compare"}</button></div></div>` : `${restockMarkup}
           <div class="pdp-actions pdp-unavailable-actions"><button class="pdp-favorite ${isSaved ? "active" : ""}" data-action="quick-view-wishlist" data-id="${escapeHTML(product.id)}"><span>${isSaved ? "♥" : "♡"}</span>${isArabic ? "المفضلة" : "Wishlist"}</button><button class="pdp-compare ${state.comparison.includes(product.id) ? "active" : ""}" data-action="toggle-product-compare" data-id="${escapeHTML(product.id)}" aria-pressed="${state.comparison.includes(product.id)}"><span>⚖</span>${isArabic ? "مقارنة" : "Compare"}</button></div>`}
           <div class="pdp-benefits"><span><i>✓</i>${isArabic ? "منتج أصلي 100%" : "100% authentic"}</span><span><i>◉</i>${isArabic ? "الدفع عند الاستلام" : "Cash on delivery"}</span></div>
@@ -5920,9 +5966,10 @@ function showProductDetails(product, shouldOpen = true) {
   rememberProduct(product.id);
   productStructuredData(product, media);
   if (shouldOpen) {
+    saveNavigationSnapshot();
     const url = new URL(location.href);
     url.searchParams.set("product", product.slug || product.id);
-    history.pushState({ product: product.id }, "", url);
+    history.pushState({ product: product.id, origoNavigation: { scrollX: 0, scrollY: 0 } }, "", url);
     $(".site-header").classList.remove("compact");
     openOverlay("#product-overlay");
     $("#product-overlay").scrollTop = 0;
@@ -5937,8 +5984,12 @@ function closeProductPage({ updateHistory = true } = {}) {
   restoreStoreMeta();
   if (updateHistory) {
     const url = new URL(location.href);
+    if (url.searchParams.has("product") && history.state?.product) {
+      history.back();
+      return;
+    }
     url.searchParams.delete("product");
-    history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
+    history.replaceState({ ...(history.state || {}), product: undefined }, "", `${url.pathname}${url.search}${url.hash}`);
   }
 }
 
@@ -8327,12 +8378,19 @@ document.addEventListener("click", async (event) => {
 
   if (action === "catalog-home") {
     event.preventDefault();
+    if ($("#product-overlay")?.classList.contains("open")) closeProductPage({ updateHistory: false });
+    saveNavigationSnapshot();
     history.pushState({}, "", "/");
     handleBenefitRoute();
     handleBenefitsRoute();
     handleNotesRoute();
     handleCatalogRoute();
     window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+  if (action === "product-breadcrumb-catalog") {
+    event.preventDefault();
+    closeProductPage({ updateHistory: false });
+    navigateCatalog({ category: "perfume", brand: actionElement.dataset.brand || "" });
   }
   if (action === "home-gender-filter") {
     event.preventDefault();
@@ -8535,6 +8593,14 @@ document.addEventListener("click", async (event) => {
   if (action === "restart-password-reset") {
     await loadPasswordResetChannels();
     renderPasswordRecovery("reset-request", { requestId: "", code: "", attempts: 0 });
+  }
+  if (action === "resend-reset-code") {
+    const result = await api("/api/auth/forgot-password", { method:"POST", body:JSON.stringify({ email:state.passwordResetFlow.identifier }) });
+    state.passwordResetFlow = { ...state.passwordResetFlow, requestId:result.requestId, expiresAt:Date.now()+600000, resendAt:Date.now()+Number(result.resendAfter||60)*1000 };
+    renderPasswordRecovery("reset-code"); showToast("تم طلب رمز جديد إذا كان البريد مرتبطًا بحساب");
+  }
+  if (action === "resend-verification") {
+    try { const result=await api("/api/auth/resend-verification",{method:"POST",body:JSON.stringify({email:state.emailVerificationFlow.email})}); state.emailVerificationFlow={...state.emailVerificationFlow,requestId:result.requestId,expiresAt:Date.now()+600000,resendAt:Date.now()+Number(result.resendAfter||60)*1000}; renderEmailVerification(); showToast("تم إرسال رمز تحقق جديد"); } catch(error){ $("#auth-error").textContent=error.message; }
   }
   if (action === "toggle-password") {
     const input = actionElement.closest(".password-field")?.querySelector("input");
@@ -9885,8 +9951,8 @@ document.addEventListener("submit", async (event) => {
     error.textContent = "";
     button.disabled = true;
     try {
-      const result = await api("/api/auth/password-reset/request", { method: "POST", body: JSON.stringify(values) });
-      state.passwordResetFlow = { requestId: result.requestId, identifier: String(values.identifier || ""), channel: String(values.channel || "email"), code: "", attempts: 0, expiresAt: Date.now() + Number(result.expiresIn || 600) * 1000 };
+      const result = await api("/api/auth/forgot-password", { method: "POST", body: JSON.stringify(values) });
+      state.passwordResetFlow = { requestId: result.requestId, identifier: String(values.email || ""), resetToken: "", attempts: 0, expiresAt: Date.now() + Number(result.expiresIn || 600) * 1000, resendAt:Date.now()+Number(result.resendAfter||60)*1000 };
       renderPasswordRecovery("reset-sent");
       showToast(adminCopy("إذا كانت البيانات مطابقة فسيصلك رمز صالح لمدة 10 دقائق", "If the details match, a 10-minute code will be delivered"));
     } catch (requestError) {
@@ -9918,8 +9984,8 @@ document.addEventListener("submit", async (event) => {
     const code = Array.from({ length: 6 }, (_, index) => String(data.get(`digit${index}`) || "")).join("");
     if (state.passwordResetFlow.expiresAt && Date.now() > state.passwordResetFlow.expiresAt) { renderPasswordRecovery("reset-expired"); return; }
     if (!/^\d{6}$/.test(code)) { $("#auth-error").textContent = "أدخل رمز التحقق المكوّن من 6 أرقام"; return; }
-    state.passwordResetFlow.code = code;
-    renderPasswordRecovery("reset-password");
+    try { const result=await api("/api/auth/verify-reset-code",{method:"POST",body:JSON.stringify({requestId:state.passwordResetFlow.requestId,code})}); state.passwordResetFlow.resetToken=result.resetToken; renderPasswordRecovery("reset-password"); }
+    catch(requestError){ state.passwordResetFlow.attempts+=1; $("#auth-error").textContent=requestError.message; }
     return;
   }
   if (event.target.id === "password-reset-password-form") {
@@ -9928,12 +9994,20 @@ document.addEventListener("submit", async (event) => {
     const error = $("#auth-error");
     if (values.password !== values.confirmPassword) { error.textContent = "كلمتا المرور غير متطابقتين"; return; }
     try {
-      await api("/api/auth/password-reset/confirm", { method: "POST", body: JSON.stringify({ requestId: state.passwordResetFlow.requestId, code: state.passwordResetFlow.code, password: values.password }) });
+      await api("/api/auth/reset-password", { method: "POST", body: JSON.stringify({ resetToken: state.passwordResetFlow.resetToken, password: values.password }) });
       renderPasswordRecovery("reset-success");
+      setTimeout(()=>renderAuth("login"),1800);
     } catch (requestError) {
       state.passwordResetFlow.attempts += 1;
       renderPasswordRecovery(state.passwordResetFlow.attempts >= 5 ? "reset-locked" : "reset-error");
     }
+    return;
+  }
+  if (event.target.id === "email-verification-form") {
+    const data=new FormData(event.target); const code=Array.from({length:6},(_,index)=>String(data.get(`digit${index}`)||"")).join(""); const error=$("#auth-error");
+    if(!/^\d{6}$/.test(code)){error.textContent="أدخل رمز التحقق المكوّن من 6 أرقام";return;}
+    try { const result=await api("/api/auth/verify-email",{method:"POST",body:JSON.stringify({requestId:state.emailVerificationFlow.requestId,code,cart:state.cart})}); state.user=result.user;state.cart=result.cart||[];localStorage.setItem("origoCartUserId",String(state.user.id));persist();renderCart();updateAccountIndicator();await renderAccount();showToast("تم توثيق بريدك الإلكتروني بنجاح"); }
+    catch(requestError){error.textContent=requestError.message;}
     return;
   }
   if (event.target.id === "auth-form") {
@@ -9949,6 +10023,12 @@ document.addEventListener("submit", async (event) => {
         method: "POST",
         body: JSON.stringify({ ...values, cart: state.cart })
       });
+      if (result.verificationRequired) {
+        state.emailVerificationFlow={requestId:result.requestId,email:result.email,expiresAt:Date.now()+Number(result.expiresIn||600)*1000,resendAt:Date.now()+Number(result.resendAfter||60)*1000};
+        renderEmailVerification();
+        if(result.deliveryFailed) showToast("تم إنشاء الحساب. تعذر الإرسال الآن؛ استخدم إعادة الإرسال.");
+        return;
+      }
       state.serverAvailable = true;
       state.user = result.user;
       state.cart = result.cart || [];
@@ -10735,13 +10815,21 @@ window.addEventListener("scroll", requestMobileScrollChromeUpdate, { passive: tr
 window.addEventListener("resize", requestMobileScrollChromeUpdate, { passive: true });
 updateMobileScrollChrome();
 
-window.addEventListener("popstate", () => {
+if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+let navigationScrollSaveTimer = 0;
+window.addEventListener("scroll", () => {
+  clearTimeout(navigationScrollSaveTimer);
+  navigationScrollSaveTimer = setTimeout(saveNavigationSnapshot, 120);
+}, { passive: true });
+
+window.addEventListener("popstate", (event) => {
   handleBenefitRoute();
   handleBenefitsRoute();
   handleNotesRoute();
   handleBrandsRoute();
   handleCatalogRoute();
   handleProductRoute();
+  restoreNavigationSnapshot(event.state);
 });
 
 function bindBrandMarquee(brandTrack) {
@@ -10985,6 +11073,7 @@ window.ORIGOStore = {
 };
 checkoutFormMarkup = $("#checkout-overlay .checkout-grid").innerHTML;
 setupTheme();
+saveNavigationSnapshot();
 updateLanguage();
 renderSiteFooter();
 const footerYear = $("#footer-year");

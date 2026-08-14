@@ -7,12 +7,17 @@
   },
   "scripts": {
     "start": "node server.mjs",
-    "build": "echo ORIGO does not require a build step.",
+    "build": "terser app.js --compress passes=2,toplevel=true --mangle toplevel --output app.min.js",
+    "build:deploy": "pnpm run build && node scripts/build-deploy.mjs",
     "build:knowledge": "node scripts/build-fragrance-knowledge.mjs",
     "check:i18n": "node scripts/check-i18n.mjs",
     "test": "node --test --test-isolation=none"
   },
   "dependencies": {
+    "nodemailer": "7.0.0",
     "sql.js": "^1.13.0"
+  },
+  "devDependencies": {
+    "terser": "5.39.0"
   }
 }
