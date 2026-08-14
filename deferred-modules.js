@@ -44,6 +44,14 @@
       .reduce((chain, placeholder) => chain.then(() => loadScript(placeholder.dataset.idleSrc)), Promise.resolve());
   }
 
+  let knowledgePromise;
+  function loadKnowledgeResources() {
+    if (knowledgePromise) return knowledgePromise;
+    knowledgePromise = [...document.querySelectorAll("script[data-knowledge-src]")]
+      .reduce((chain, placeholder) => chain.then(() => loadScript(placeholder.dataset.knowledgeSrc)), Promise.resolve());
+    return knowledgePromise;
+  }
+
   function loadAdminResources() {
     loadStyles("link[data-admin-href],link[data-deferred-href]");
     document.querySelectorAll("script[data-admin-src]").forEach((placeholder) => loadScript(placeholder.dataset.adminSrc));
@@ -70,12 +78,30 @@
     const action = target?.dataset.action || "";
     const href = target?.getAttribute("href") || "";
     if (/admin|product-studio/.test(action)) loadAdminResources();
-    if (/product|quick-view/.test(action) || /[?&]product=/.test(href)) loadStyles("link[data-deferred-href]");
+    if (/product|quick-view|note/.test(action) || /[?&]product=|\/notes(?:\/|$)/.test(href)) {
+      loadStyles("link[data-deferred-href]");
+      loadKnowledgeResources();
+    }
     const match = routeScripts.find((entry) => entry[1].test(href));
     if (match) loadScript(match[0], match[2]);
     const styleMatch = routeStyles.find((entry) => entry[1].test(href));
     if (styleMatch) loadStyles(`link[data-route="${styleMatch[0]}"]`);
   }, { passive:true, capture:true });
+
+  document.addEventListener("click", (event) => {
+    const target = event.target.closest("[data-action],a[href]");
+    if (!target || target.dataset.knowledgeReady === "true") return;
+    const action = target.dataset.action || "";
+    const href = target.getAttribute("href") || "";
+    if (!/open-product|quick-view|open-note|admin-notes/.test(action) && !/\/notes(?:\/|$)/.test(href)) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    loadKnowledgeResources().then(() => {
+      target.dataset.knowledgeReady = "true";
+      target.click();
+      delete target.dataset.knowledgeReady;
+    });
+  }, true);
 
   document.addEventListener("click", (event) => {
     const action = event.target.closest("[data-action]")?.dataset.action || "";
@@ -89,9 +115,9 @@
       : setTimeout(callback, Math.min(timeout, 1500));
     idle(() => loadStyles("link[data-idle-href]"), 1200);
     idle(loadIdleScripts, 2600);
-    idle(prefetchLikelyRoutes, 5000);
     idle(() => navigator.serviceWorker?.register("/sw.js").catch(() => {}), 6500);
   };
+  if (new URL(location.href).searchParams.has("product") || /^\/notes(?:\/|$)/.test(route)) loadKnowledgeResources();
   if (document.readyState === "complete") afterLoad();
   else addEventListener("load", afterLoad, { once:true });
 })();

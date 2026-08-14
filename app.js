@@ -3297,7 +3297,7 @@ function renderBrandCarousel(query = "") {
   const mobile = matchMedia("(max-width: 700px)").matches;
   const brands = catalogNames.map((brand) => [brand, counts.get(brand) || 0])
     .filter(([brand]) => !normalized || ORIGOCatalog.normalize(brand).includes(normalized));
-  const visibleBrands = mobile && !normalized ? brands.slice(0, 12) : brands;
+  const visibleBrands = !normalized ? brands.slice(0, 12) : brands;
   const brandOptions = productOptionItems("brand");
   const items = visibleBrands.map(([brand, count]) => {
     const option = brandOptions.find((item) => [item.value,item.nameAr,item.nameEn].some((value) => normalizeOptionSearch(value) === normalizeOptionSearch(brand)));
@@ -3305,9 +3305,8 @@ function renderBrandCarousel(query = "") {
     const artwork = logo ? `<img src="${escapeHTML(logo)}" alt="" loading="lazy"/>` : `<span aria-hidden="true">${escapeHTML(brand.slice(0, 2).toUpperCase())}</span>`;
     return `<button class="marquee-item" data-action="brand-search" data-query="${escapeHTML(brand)}" aria-label="${escapeHTML(`${state.lang === "ar" ? "عرض منتجات" : "View products by"} ${brand}`)}">${artwork}<b>${escapeHTML(brand)}</b></button>`;
   }).join("");
-  const duplicateItems = items.replaceAll("<button ", '<button tabindex="-1" ');
   $$("#brand-carousel-track, #home-brand-carousel-track").forEach((track) => {
-    track.innerHTML = items ? `<div class="brand-marquee-content"><div class="brand-marquee-set">${items}</div><div class="brand-marquee-set" aria-hidden="true">${duplicateItems}</div></div>` : "";
+    track.innerHTML = items ? `<div class="brand-marquee-content"><div class="brand-marquee-set">${items}</div></div>` : "";
     bindBrandMarquee(track);
   });
 }
