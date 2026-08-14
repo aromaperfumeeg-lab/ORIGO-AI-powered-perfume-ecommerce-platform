@@ -1504,12 +1504,12 @@ body:not(.dark) .home-gender-section .gender-card:is(:hover,:focus-visible,:acti
 #home .home-hero-arrow[hidden]{display:none!important}
 @media(min-width:901px){#home .home-hero-arrow{display:grid}}
 @media(max-width:640px){
-  #home .origo-home-hero{padding:0!important;background:transparent!important}
+  #home .origo-home-hero{margin-bottom:5px!important;padding:0!important;overflow:visible!important;background:transparent!important}
   #home .home-hero-products{inset:0!important;height:100%!important}
   #home .home-hero-arrow{display:none!important}
-  #home .home-hero-dots{top:auto!important;bottom:7px!important;left:50%!important;width:auto!important;height:4px!important;padding:0!important;display:flex!important;align-items:center!important;gap:5px!important;transform:translateX(-50%)!important;border:0!important;background:transparent!important;box-shadow:none!important}
-  #home .home-hero-dots button,#home .home-hero-dots button.active{width:18px!important;height:2px!important;min-width:18px!important;margin:0!important;padding:0!important;border:0!important;border-radius:2px!important;background:rgba(255,255,255,.58)!important;box-shadow:0 1px 3px rgba(30,0,8,.28)!important}
-  #home .home-hero-dots button.active{width:28px!important;min-width:28px!important;background:#fff!important}
+  #home .home-hero-dots{top:auto!important;bottom:-4px!important;left:50%!important;width:auto!important;height:2px!important;padding:0!important;display:flex!important;align-items:center!important;gap:5px!important;transform:translateX(-50%)!important;border:0!important;background:transparent!important;box-shadow:none!important}
+  #home .home-hero-dots button,#home .home-hero-dots button.active{width:18px!important;height:2px!important;min-width:18px!important;margin:0!important;padding:0!important;border:0!important;border-radius:2px!important;background:rgba(101,0,24,.28)!important;box-shadow:none!important}
+  #home .home-hero-dots button.active{width:28px!important;min-width:28px!important;background:#650018!important}
 }
 
 /* Product-carousel hard fix: keep the reference cards intact even when an older
