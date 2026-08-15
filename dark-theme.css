@@ -522,6 +522,42 @@ body.dark :is(.site-header,.category-nav,.store-bottom-nav) :is(a,button) {
   background-color: #000 !important;
 }
 
+/* High-contrast mobile curtain controls in dark mode. */
+@media(max-width:640px){
+  body.dark .mobile-menu-panel{
+    color:#fff!important;
+    background:#171216!important;
+  }
+  body.dark .mobile-menu-panel :is(.mobile-menu-search,.mobile-menu-actions-top,.mobile-taxonomy-group),
+  body.dark .mobile-menu-panel nav a{
+    color:#fff!important;
+    border-color:rgba(255,255,255,.24)!important;
+    background:#241b1f!important;
+    background-image:none!important;
+  }
+  body.dark .mobile-menu-panel .mobile-menu-actions-top button{
+    color:#fff!important;
+    background:#241b1f!important;
+  }
+  body.dark .mobile-menu-panel :is(.mobile-taxonomy-group summary,.mobile-menu-search b,.mobile-menu-actions b,.mobile-menu-panel nav a span){
+    color:#fff!important;
+  }
+  body.dark .mobile-menu-panel :is(.mobile-taxonomy-list button,.close-button){
+    color:#fff!important;
+    border-color:rgba(255,255,255,.3)!important;
+    background:#30252a!important;
+  }
+  body.dark .mobile-menu-panel :is([data-mobile-menu-icon],nav a>i,.mobile-taxonomy-group summary>i){
+    color:#f0c86f!important;
+  }
+  body.dark .mobile-menu-panel .mobile-finder-quick{
+    color:#fff!important;
+    border-color:#c15b74!important;
+    background:#76001f!important;
+    background-image:none!important;
+  }
+}
+
 body.dark :is(.eyebrow,.footer-all-link,.home-section-head>a,.smart-scent-nav) {
   color: var(--night-blue) !important;
   text-shadow: 0 0 7px rgba(77,184,255,.45) !important;

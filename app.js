@@ -2468,7 +2468,7 @@ function entityCreateForm(view, item = null) {
       <div><span class="eyebrow">♟ TEAM & ROLES</span><h3>${state.lang === "ar" ? "إضافة حساب موظف" : "Add staff account"}</h3></div>
       <label>${state.lang === "ar" ? "الاسم" : "Name"}<input name="name" required minlength="2" /></label>
       <label>${state.lang === "ar" ? "البريد" : "Email"}<input name="email" type="email" required /></label>
-      ${passwordFieldMarkup({ autocomplete: "new-password", label: state.lang === "ar" ? "كلمة المرور" : "Password" })}
+      ${passwordFieldMarkup({ autocomplete: "new-password", label: state.lang === "ar" ? "كلمة المرور" : "Password", minlength: 10, maxlength: 200 })}
       <label>${state.lang === "ar" ? "الدور" : "Role"}<select name="role">${staffRoleDefinitions.map(([id, name]) => `<option value="${id}">${escapeHTML(name)}</option>`).join("")}</select></label>
       <div><button type="button" class="secondary-button compact-button" data-action="cancel-admin-create">${state.lang === "ar" ? "إلغاء" : "Cancel"}</button>
       <button class="button burgundy-button" type="submit">${state.lang === "ar" ? "إنشاء الحساب" : "Create account"}</button></div></form>`;
@@ -2909,8 +2909,9 @@ function exportAdminReport(report, format = "csv") {
   showToast(adminCopy("تم تجهيز ملف التقرير", "Report file prepared"));
 }
 
-function passwordFieldMarkup({ name = "password", autocomplete = "current-password", label, required = true } = {}) {
-  return `<label class="wide"><span>${label}</span><div class="password-field"><input name="${name}" type="password" autocomplete="${autocomplete}"${required ? " required" : ""} minlength="10" maxlength="200" dir="ltr"/><button type="button" data-action="toggle-password" aria-label="${state.lang === "ar" ? "إظهار كلمة المرور" : "Show password"}" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.7"/></svg></button></div></label>`;
+function passwordFieldMarkup({ name = "password", autocomplete = "current-password", label, required = true, minlength, maxlength } = {}) {
+  const lengthAttributes = `${minlength ? ` minlength="${minlength}"` : ""}${maxlength ? ` maxlength="${maxlength}"` : ""}`;
+  return `<label class="wide"><span>${label}</span><div class="password-field"><input name="${name}" type="password" autocomplete="${autocomplete}"${required ? " required" : ""}${lengthAttributes} dir="ltr"/><button type="button" data-action="toggle-password" aria-label="${state.lang === "ar" ? "إظهار كلمة المرور" : "Show password"}" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.7"/></svg></button></div></label>`;
 }
 
 async function loadPasswordResetChannels() {
@@ -2938,7 +2939,7 @@ function renderPasswordRecovery(mode = "reset-request", context = {}) {
   if (mode === "reset-request") body = `<form id="password-reset-request-form" class="recovery-step-form"><img src="${logo}" alt="ORIGO"/><p>أدخل بريدك الإلكتروني وسنرسل رمز التحقق إذا كان مرتبطًا بحساب</p><label>البريد الإلكتروني<div class="recovery-field"><input name="email" type="email" autocomplete="email" required placeholder="example@mail.com" dir="ltr"/>✉</div></label><p id="auth-error" class="form-error"></p><button class="recovery-primary" type="submit">إرسال رمز التحقق</button><button type="button" class="recovery-link" data-action="auth-mode" data-mode="login">تذكرت كلمة المرور؟ تسجيل الدخول</button></form>`;
   else if (mode === "reset-sent") body = `<div class="recovery-status sent"><i>${status[0]}</i><h3>${status[1]}</h3><p>${status[2]}</p><div class="recovery-notice">قد يستغرق وصول الرمز بضع دقائق.<br/>يرجى التحقق من صندوق الوارد أو البريد غير المرغوب.</div><button class="recovery-primary" data-action="show-reset-code">إدخال الرمز</button></div>`;
   else if (mode === "reset-code") body = `<form id="password-reset-code-form" class="recovery-step-form"><img src="${logo}" alt="ORIGO"/><p>أدخل رمز التحقق المرسل إلى<br/><b>${escapeHTML(flow.identifier)}</b></p><div class="otp-inputs" dir="ltr">${Array.from({length:6},(_,i)=>`<input name="digit${i}" inputmode="numeric" autocomplete="${i===0?"one-time-code":"off"}" pattern="[0-9]" maxlength="1" required aria-label="الرقم ${i+1}"/>`).join("")}</div><small>لم يصلك الرمز؟</small><button type="button" class="recovery-link" data-action="resend-reset-code" data-resend-at="${flow.resendAt||0}">إعادة إرسال الرمز</button><p id="auth-error" class="form-error"></p><button class="recovery-primary" type="submit">تحقق من الرمز</button></form>`;
-  else if (mode === "reset-password") body = `<form id="password-reset-password-form" class="recovery-step-form"><img src="${logo}" alt="ORIGO"/><h3>إنشاء كلمة مرور جديدة</h3>${passwordFieldMarkup({name:"password",autocomplete:"new-password",label:"كلمة المرور الجديدة"})}<ul class="password-rules"><li>على الأقل 10 أحرف</li><li>حرف كبير وحرف صغير</li><li>رقم واحد على الأقل</li><li>رمز خاص واحد</li></ul>${passwordFieldMarkup({name:"confirmPassword",autocomplete:"new-password",label:"تأكيد كلمة المرور"})}<p id="auth-error" class="form-error"></p><button class="recovery-primary" type="submit">حفظ كلمة المرور</button></form>`;
+  else if (mode === "reset-password") body = `<form id="password-reset-password-form" class="recovery-step-form"><img src="${logo}" alt="ORIGO"/><h3>إنشاء كلمة مرور جديدة</h3>${passwordFieldMarkup({name:"password",autocomplete:"new-password",label:"كلمة المرور الجديدة"})}${passwordFieldMarkup({name:"confirmPassword",autocomplete:"new-password",label:"تأكيد كلمة المرور"})}<p id="auth-error" class="form-error"></p><button class="recovery-primary" type="submit">حفظ كلمة المرور</button></form>`;
   else body = `<div class="recovery-status ${mode}"><i>${status[0]}</i><h3>${status[1]}</h3><p>${status[2]}</p>${mode === "reset-locked" ? `<div class="recovery-notice">◷ الوقت المتبقي للمحاولة: 14:55</div>` : `<button class="recovery-primary" data-action="${mode === "reset-success" ? "auth-mode" : "restart-password-reset"}" data-mode="login">${mode === "reset-success" ? "تسجيل الدخول الآن" : "طلب رمز جديد"}</button>`}</div>`;
   const step = {"reset-request":0,"reset-sent":1,"reset-code":1,"reset-password":2,"reset-success":2}[mode] ?? 1;
   $("#account-content").innerHTML = `<div class="password-recovery-shell" dir="rtl"><header><h2>نسيت كلمة المرور</h2><p>استعادة حسابك بخطوات بسيطة وآمنة</p></header><div class="recovery-progress recovery-progress-three">${["طلب الاستعادة","التحقق","كلمة مرور جديدة"].map((label,i)=>`<span class="${i<=step?"active":""}"><b>${i+1}</b>${label}</span>`).join("")}</div><main>${body}</main><footer>🔒 الرموز مشفرة وتنتهي صلاحيتها بعد 10 دقائق</footer></div>`;
@@ -4229,6 +4230,7 @@ function handleCatalogRoute({ replace = false } = {}) {
   const isCatalog = /^\/(perfumes|search)\/?$/i.test(location.pathname);
   const page = $("#catalog-page");
   if (!isCatalog) {
+    toggleCatalogFilters(false);
     document.body.classList.remove("catalog-route");
     page.hidden = true;
     return false;
@@ -4315,7 +4317,10 @@ function renderCatalogAutocomplete(query) {
 function toggleCatalogFilters(force) {
   const drawer = $("#catalog-filter-drawer");
   const backdrop = $(".catalog-filter-backdrop");
-  const open = force ?? !drawer.classList.contains("open");
+  if (!drawer || !backdrop) return;
+  const catalogIsActive = document.body.classList.contains("catalog-route") && !$("#catalog-page")?.hidden;
+  const requestedOpen = force ?? !drawer.classList.contains("open");
+  const open = catalogIsActive && requestedOpen;
   drawer.classList.toggle("open", open);
   backdrop.classList.toggle("open", open);
   drawer.setAttribute("aria-hidden", String(!open));
@@ -4997,9 +5002,9 @@ function productIngredientsMarkup(product) {
 function productProfileAccordions(product) {
   const ar = state.lang === "ar";
   return `<section class="pdp-profile-accordions" aria-label="${ar ? "ملف العطر" : "Fragrance profile"}">
-    <article class="pdp-profile-section" data-pdp-section="notes"><button type="button" data-action="pdp-profile-section" aria-expanded="false"><span>△</span><div><b>${ar ? "هرم النوتات" : "Note pyramid"}</b><small>${ar ? "افتتاحية · قلب · قاعدة" : "Top · heart · base"}</small></div><i>⌄</i></button><div class="pdp-profile-panel" hidden>${productNotePyramid(product) || `<div class="pdp-empty-compact">${ar ? "لم تُضف النوتات العطرية لهذا المنتج بعد." : "Fragrance notes are not available yet."}</div>`}</div></article>
-    <article class="pdp-profile-section" data-pdp-section="analysis"><button type="button" data-action="pdp-profile-section" aria-expanded="false"><span>✦</span><div><b>${ar ? "التحليل الذكي" : "Intelligence analysis"}</b><small>${ar ? "الأكوردات · الشخصية · الوقت · المناسبات" : "Accords · character · time · occasions"}</small></div><i>⌄</i></button><div class="pdp-profile-panel" hidden>${productIntelligenceMarkup(product)}</div></article>
-    <article class="pdp-profile-section" data-pdp-section="performance"><button type="button" data-action="pdp-profile-section" aria-expanded="false"><span>▥</span><div><b>${ar ? "أداء العطر" : "Fragrance performance"}</b><small>${ar ? "الرائحة · الثبات · الفوحان · القيمة" : "Scent · longevity · sillage · value"}</small></div><i>⌄</i></button><div class="pdp-profile-panel" hidden>${productPerformanceImagesMarkup(product)}</div></article>
+    <article class="pdp-profile-section" data-pdp-section="notes"><button type="button" data-action="pdp-profile-section" aria-expanded="false"><div><b>${ar ? "هرم النوتات" : "Note pyramid"}</b><small>${ar ? "افتتاحية · قلب · قاعدة" : "Top · heart · base"}</small></div><i>⌄</i></button><div class="pdp-profile-panel" hidden>${productNotePyramid(product) || `<div class="pdp-empty-compact">${ar ? "لم تُضف النوتات العطرية لهذا المنتج بعد." : "Fragrance notes are not available yet."}</div>`}</div></article>
+    <article class="pdp-profile-section" data-pdp-section="analysis"><button type="button" data-action="pdp-profile-section" aria-expanded="false"><div><b>${ar ? "التحليل الذكي" : "Intelligence analysis"}</b><small>${ar ? "الأكوردات · الشخصية · الوقت · المناسبات" : "Accords · character · time · occasions"}</small></div><i>⌄</i></button><div class="pdp-profile-panel" hidden>${productIntelligenceMarkup(product)}</div></article>
+    <article class="pdp-profile-section" data-pdp-section="performance"><button type="button" data-action="pdp-profile-section" aria-expanded="false"><div><b>${ar ? "أداء العطر" : "Fragrance performance"}</b><small>${ar ? "الرائحة · الثبات · الفوحان · القيمة" : "Scent · longevity · sillage · value"}</small></div><i>⌄</i></button><div class="pdp-profile-panel" hidden>${productPerformanceImagesMarkup(product)}</div></article>
   </section>`;
 }
 
@@ -5822,16 +5827,15 @@ function bindProductGallerySwipe() {
   gallery.dataset.swipeBound = "true";
   let start = null;
   let pointerId = null;
-  gallery.addEventListener("pointerdown", (event) => {
-    if (!matchMedia("(max-width: 900px)").matches || event.pointerType === "mouse" || event.target.closest("button")) return;
-    start = { x: event.clientX, y: event.clientY };
-    pointerId = event.pointerId;
-    gallery.setPointerCapture?.(event.pointerId);
-  });
-  gallery.addEventListener("pointerup", (event) => {
-    if (!start || event.pointerId !== pointerId) return;
-    const deltaX = event.clientX - start.x;
-    const deltaY = event.clientY - start.y;
+  const beginSwipe = (x, y, id, target) => {
+    if (!matchMedia("(max-width: 900px)").matches || target.closest?.("button")) return;
+    start = { x, y };
+    pointerId = id;
+  };
+  const finishSwipe = (x, y, id) => {
+    if (!start || id !== pointerId) return;
+    const deltaX = x - start.x;
+    const deltaY = y - start.y;
     start = null;
     pointerId = null;
     const product = getProduct(state.activeProductId);
@@ -5841,8 +5845,28 @@ function bindProductGallerySwipe() {
       state.activeProductImageIndex = (state.activeProductImageIndex + (deltaX < 0 ? 1 : -1) + count) % count;
       showProductDetails(product, false);
     }
+  };
+  gallery.addEventListener("pointerdown", (event) => {
+    if (event.pointerType === "mouse") return;
+    beginSwipe(event.clientX, event.clientY, event.pointerId, event.target);
+    if (!start) return;
+    gallery.setPointerCapture?.(event.pointerId);
+  });
+  gallery.addEventListener("pointerup", (event) => {
+    finishSwipe(event.clientX, event.clientY, event.pointerId);
   });
   gallery.addEventListener("pointercancel", () => { start = null; pointerId = null; });
+  if (!("PointerEvent" in window)) {
+    gallery.addEventListener("touchstart", (event) => {
+      const touch = event.changedTouches[0];
+      if (touch) beginSwipe(touch.clientX, touch.clientY, touch.identifier, event.target);
+    }, { passive: true });
+    gallery.addEventListener("touchend", (event) => {
+      const touch = [...event.changedTouches].find((item) => item.identifier === pointerId);
+      if (touch) finishSwipe(touch.clientX, touch.clientY, touch.identifier);
+    }, { passive: true });
+    gallery.addEventListener("touchcancel", () => { start = null; pointerId = null; }, { passive: true });
+  }
 }
 
 function showProductDetails(product, shouldOpen = true) {
@@ -5898,15 +5922,15 @@ function showProductDetails(product, shouldOpen = true) {
       <section class="pdp-hero">
         <div class="pdp-gallery">
           <div class="pdp-thumbnails" aria-label="${isArabic ? "صور المنتج" : "Product media"}">${media.map((item, index) => `<button class="${index === state.activeProductImageIndex ? "active" : ""}" data-action="product-image" data-index="${index}" aria-label="${isArabic ? `الصورة ${index + 1}` : `Image ${index + 1}`}" aria-pressed="${index === state.activeProductImageIndex}"><img src="${escapeHTML(item.url)}" alt="" loading="${index ? "lazy" : "eager"}" /></button>`).join("")}</div>
-          <div class="pdp-main-image" data-action="product-zoom" role="button" tabindex="0" aria-label="${isArabic ? "فتح صورة المنتج بملء الشاشة" : "Open product image fullscreen"}"><span>${escapeHTML(isArabic ? product.badgeAr || "" : product.badgeEn || "")}</span>${media.length > 1 ? `<button type="button" class="pdp-media-arrow previous" data-action="product-image-step" data-change="-1" aria-label="${isArabic ? "الصورة السابقة" : "Previous image"}">‹</button><button type="button" class="pdp-media-arrow next" data-action="product-image-step" data-change="1" aria-label="${isArabic ? "الصورة التالية" : "Next image"}">›</button><small class="pdp-media-count">${state.activeProductImageIndex + 1} / ${media.length}</small>` : ""}<img src="${escapeHTML(activeMedia.url)}" alt="${escapeHTML(`${product.brand} ${name}`)}" /></div>
+          <div class="pdp-main-image" data-action="product-zoom" role="button" tabindex="0" aria-label="${isArabic ? "فتح صورة المنتج بملء الشاشة" : "Open product image fullscreen"}"><span>${escapeHTML(isArabic ? product.badgeAr || "" : product.badgeEn || "")}</span>${media.length > 1 ? `<button type="button" class="pdp-media-arrow previous" data-action="product-image-step" data-change="-1" aria-label="${isArabic ? "الصورة السابقة" : "Previous image"}">‹</button><button type="button" class="pdp-media-arrow next" data-action="product-image-step" data-change="1" aria-label="${isArabic ? "الصورة التالية" : "Next image"}">›</button><small class="pdp-media-count" aria-live="polite">${state.activeProductImageIndex + 1} / ${media.length}</small>` : ""}<img src="${escapeHTML(activeMedia.url)}" alt="${escapeHTML(`${product.brand} ${name}`)}" draggable="false" /></div>
         </div>
         <aside class="pdp-purchase">
           <span class="pdp-brand">${escapeHTML(product.brand)}</span><h1 id="product-dialog-title">${escapeHTML(name)}</h1>${secondName && secondName !== name ? `<p class="pdp-english-name">${escapeHTML(secondName)}</p>` : ""}
           <div class="pdp-tags"><span>${catalogGender(product) === "women" ? "♀" : catalogGender(product) === "men" ? "♂" : "⚥"} ${escapeHTML(isArabic ? product.type || (catalogGender(product) === "women" ? "للنساء" : catalogGender(product) === "men" ? "للرجال" : "للجنسين") : product.typeEn || product.type || catalogGender(product))}</span>${product.concentration ? `<span>${escapeHTML(product.concentration)}</span>` : ""}${product.sku ? `<span>SKU ${escapeHTML(product.sku)}</span>` : ""}</div>
-          <div class="pdp-price-row"><div class="pdp-price"><b>${formatPrice(product.price)}</b>${product.oldPrice ? `<del>${formatPrice(product.oldPrice)}</del>` : ""}${discount ? `<em>-${discount}%</em>` : ""}<small>${taxRate ? (isArabic ? `شامل ضريبة القيمة المضافة ${taxRate}%` : `VAT ${taxRate}% included`) : ""}</small></div><button class="pdp-price-add" data-action="product-detail-add" data-id="${escapeHTML(product.id)}"><span aria-hidden="true">🛒</span><b>${translations[state.lang].addToBag}</b></button></div>
+          <div class="pdp-price-row"><div class="pdp-price"><b>${formatPrice(product.price)}</b>${product.oldPrice ? `<del>${formatPrice(product.oldPrice)}</del>` : ""}${discount ? `<em>-${discount}%</em>` : ""}<small>${taxRate ? (isArabic ? `شامل ضريبة القيمة المضافة ${taxRate}%` : `VAT ${taxRate}% included`) : ""}</small></div></div>
           ${sizes[0] ? `<p class="pdp-fixed-size">${isArabic ? "الحجم" : "Size"}: <b><bdi dir="ltr">${escapeHTML(formatProductSize(sizes[0]))}</bdi></b></p>` : ""}
           ${available ? `<div class="pdp-stock available"><i></i><span>${isArabic ? "متوفر للطلب" : "Available to order"}</span></div>
-          <div class="pdp-purchase-controls"><div class="pdp-quantity"><span>${isArabic ? "الكمية" : "Quantity"}</span><div><button data-action="detail-quantity" data-change="-1" aria-label="${isArabic ? "تقليل الكمية" : "Decrease quantity"}">−</button><b>${state.activeProductQuantity}</b><button data-action="detail-quantity" data-change="1" aria-label="${isArabic ? "زيادة الكمية" : "Increase quantity"}">＋</button></div></div>
+          <div class="pdp-purchase-controls"><div class="pdp-buy-row"><div class="pdp-quantity"><span>${isArabic ? "الكمية" : "Quantity"}</span><div><button data-action="detail-quantity" data-change="-1" aria-label="${isArabic ? "تقليل الكمية" : "Decrease quantity"}">−</button><b>${state.activeProductQuantity}</b><button data-action="detail-quantity" data-change="1" aria-label="${isArabic ? "زيادة الكمية" : "Increase quantity"}">＋</button></div></div><button class="pdp-price-add" data-action="product-detail-add" data-id="${escapeHTML(product.id)}"><span aria-hidden="true">🛒</span><b>${translations[state.lang].addToBag}</b></button></div>
           <div class="pdp-actions pdp-secondary-actions"><button class="pdp-favorite ${isSaved ? "active" : ""}" data-action="quick-view-wishlist" data-id="${escapeHTML(product.id)}"><span>${isSaved ? "♥" : "♡"}</span>${isSaved ? (isArabic ? "محفوظ في المفضلة" : "Saved") : (isArabic ? "أضف إلى المفضلة" : "Add to wishlist")}</button><button class="pdp-compare ${state.comparison.includes(product.id) ? "active" : ""}" data-action="toggle-product-compare" data-id="${escapeHTML(product.id)}" aria-pressed="${state.comparison.includes(product.id)}"><span>⚖</span>${isArabic ? "مقارنة" : "Compare"}</button></div></div>` : `${restockMarkup}
           <div class="pdp-actions pdp-unavailable-actions"><button class="pdp-favorite ${isSaved ? "active" : ""}" data-action="quick-view-wishlist" data-id="${escapeHTML(product.id)}"><span>${isSaved ? "♥" : "♡"}</span>${isArabic ? "المفضلة" : "Wishlist"}</button><button class="pdp-compare ${state.comparison.includes(product.id) ? "active" : ""}" data-action="toggle-product-compare" data-id="${escapeHTML(product.id)}" aria-pressed="${state.comparison.includes(product.id)}"><span>⚖</span>${isArabic ? "مقارنة" : "Compare"}</button></div>`}
           <div class="pdp-benefits"><span><i>✓</i>${isArabic ? "منتج أصلي 100%" : "100% authentic"}</span><span><i>◉</i>${isArabic ? "الدفع عند الاستلام" : "Cash on delivery"}</span></div>
@@ -5994,6 +6018,12 @@ function closeDrawers() {
     drawer.classList.remove("open");
     drawer.setAttribute("aria-hidden", "true");
   });
+  const catalogDrawer = $("#catalog-filter-drawer");
+  const catalogBackdrop = $(".catalog-filter-backdrop");
+  catalogDrawer?.classList.remove("open");
+  catalogDrawer?.setAttribute("aria-hidden", "true");
+  catalogBackdrop?.classList.remove("open");
+  syncBodyLock();
 }
 
 function toggleMobileMenu(force) {
@@ -10710,7 +10740,6 @@ sections.forEach((section) => sectionObserver.observe(section));
 
 let mobileChromeLastScrollY = Math.max(0, window.scrollY);
 let mobileChromeFrame = 0;
-let mobileChromeStopTimer = 0;
 
 function updateMobileScrollChrome() {
   mobileChromeFrame = 0;
@@ -10725,7 +10754,7 @@ function updateMobileScrollChrome() {
     document.body.classList.remove("mobile-header-condensed", "mobile-nav-hidden");
   } else if (delta > 3) {
     document.body.classList.toggle("mobile-header-condensed", currentScrollY > 90);
-    document.body.classList.toggle("mobile-nav-hidden", currentScrollY > 80);
+    document.body.classList.remove("mobile-nav-hidden");
   } else if (delta < -2) {
     document.body.classList.remove("mobile-header-condensed", "mobile-nav-hidden");
   }
@@ -10734,10 +10763,7 @@ function updateMobileScrollChrome() {
 }
 
 function requestMobileScrollChromeUpdate() {
-  window.clearTimeout(mobileChromeStopTimer);
-  mobileChromeStopTimer = window.setTimeout(() => {
-    document.body.classList.remove("mobile-nav-hidden");
-  }, 160);
+  document.body.classList.remove("mobile-nav-hidden");
   if (mobileChromeFrame) return;
   mobileChromeFrame = window.requestAnimationFrame(updateMobileScrollChrome);
 }

@@ -224,6 +224,62 @@ body:not(.dark) .origo-footer :is(.footer-column>a,.footer-column>button,.footer
   background:linear-gradient(rgba(255,255,255,.6),rgba(255,252,250,.42)) padding-box,linear-gradient(115deg,rgba(142,92,255,.18),rgba(56,157,255,.16) 54%,rgba(225,61,93,.09)) border-box!important;
   -webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);box-shadow:inset 0 1px 0 rgba(255,255,255,.75)!important
 }
+
+/* Compact newsletter and copyright without an empty white tail on mobile. */
+.origo-footer #newsletter-status:empty{display:none!important;min-height:0!important;margin:0!important}
+@media(max-width:640px){
+  .origo-footer .footer-social-column .footer-newsletter{
+    margin-top:8px!important;
+    padding:9px 0 0!important;
+  }
+  .origo-footer .footer-social-column .footer-newsletter h2{
+    margin:0 0 3px!important;
+    font-size:14px!important;
+    line-height:1.3!important;
+  }
+  .origo-footer .footer-social-column .footer-newsletter>p{
+    margin:0 0 7px!important;
+    font-size:10px!important;
+    line-height:1.45!important;
+  }
+  .origo-footer .footer-social-column #newsletter-form{gap:6px!important}
+  .origo-footer .footer-social-column .footer-email-field{
+    height:40px!important;
+    padding:0 10px!important;
+    border-radius:9px!important;
+  }
+  .origo-footer .footer-social-column .footer-email-field input{font-size:10px!important}
+  .origo-footer .footer-social-column #newsletter-form>button{
+    min-height:40px!important;
+    padding:6px 10px!important;
+    border-radius:9px!important;
+    font-size:12px!important;
+  }
+  .origo-footer .footer-social-column #newsletter-status:not(:empty){
+    min-height:0!important;
+    margin:1px 0 0!important;
+    font-size:9px!important;
+    line-height:1.35!important;
+  }
+  .origo-footer .footer-directory{
+    padding-bottom:8px!important;
+  }
+  .origo-footer .footer-column:last-child{
+    padding-bottom:0!important;
+  }
+  .origo-footer .footer-bottom-bar{
+    min-height:34px!important;
+    padding:6px 12px!important;
+  }
+  .origo-footer .footer-bottom-bar p{
+    margin:0!important;
+    font-size:10px!important;
+    line-height:1.4!important;
+  }
+  footer.origo-footer{
+    margin-bottom:0!important;
+  }
+}
 body:not(.dark) .origo-footer :is(.footer-column>a,.footer-column>button,.footer-brand-list>button,.footer-brand-list>a,.footer-app-links>small):hover{
   border-color:transparent!important;
   background:linear-gradient(rgba(255,255,255,.72),rgba(255,250,248,.52)) padding-box,linear-gradient(115deg,rgba(142,92,255,.3),rgba(56,157,255,.28) 54%,rgba(225,61,93,.15)) border-box!important;

@@ -5,7 +5,7 @@
   const routeScripts = [
     ["alternatives.js?v=3", /\/alternatives(?:\/|$)/],
     ["performance-insights.js?v=2", /\/performance(?:\/|$)/],
-    ["commerce.js?v=2", /\/(?:cart|checkout|payment|track(?:ing)?|orders?)(?:\/|$)/],
+    ["commerce.js?v=3", /\/(?:cart|checkout|payment|track(?:ing)?|orders?)(?:\/|$)/],
     ["account.js?v=3", /\/(?:account|login|register|profile)(?:\/|$)/],
     ["fragrance-finder.js?v=1", /\/fragrance-finder(?:\/|$)/, true]
   ];

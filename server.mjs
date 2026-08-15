@@ -490,7 +490,7 @@ function validEmail(value) {
 
 function validCustomerPassword(value) {
   const password = String(value || "");
-  return password.length >= 10 && password.length <= 200 && /[a-z]/.test(password) && /[A-Z]/.test(password) && /\d/.test(password) && /[^A-Za-z0-9]/.test(password);
+  return password.length > 0;
 }
 
 function validateCustomer(body) {
@@ -1193,13 +1193,16 @@ async function handleAPI(request, response, url, origin) {
     try {
       const body = await readJSONBody(request);
       const result = createCommerceOrder(context.owner, body);
-      const integrationResults = await dispatchPurchaseEvents(result.order, {
+      const integrationContext = {
         ...(body.attribution || {}),
         email: result.order.email,
         ip: String(request.headers["x-forwarded-for"] || request.socket.remoteAddress || "").split(",")[0].trim(),
         userAgent: String(request.headers["user-agent"] || "")
-      });
-      return jsonResponse(response, 201, { ...result, cart: [], integrations: integrationResults }, origin, {
+      };
+      // The order is already committed. Marketing providers must never delay or
+      // block the customer from reaching the confirmation/tracking page.
+      void dispatchPurchaseEvents(result.order, integrationContext).catch(() => {});
+      return jsonResponse(response, 201, { ...result, cart: [], integrations: { queued: true } }, origin, {
         "Set-Cookie": guestCartCookie(context, request)
       });
     } catch (error) {
@@ -1299,7 +1302,7 @@ async function handleAPI(request, response, url, origin) {
     try {
       const body = await readJSONBody(request);
       const password = String(body.password || "");
-      if (!validCustomerPassword(password)) return jsonResponse(response, 400, { error: "استخدم 10 أحرف على الأقل تشمل حرفًا كبيرًا وصغيرًا ورقمًا ورمزًا خاصًا." }, origin);
+      if (!validCustomerPassword(password)) return jsonResponse(response, 400, { error: "أدخل كلمة المرور الجديدة." }, origin);
       const changed = await resetPasswordWithToken(body.resetToken, await hashPassword(password));
       return changed ? jsonResponse(response, 200, { ok: true }, origin) : jsonResponse(response, 400, { error: "انتهت جلسة الاستعادة. اطلب رمزًا جديدًا." }, origin);
     } catch { return jsonResponse(response, 400, { error: "تعذر تحديث كلمة المرور." }, origin); }
@@ -1336,7 +1339,7 @@ async function handleAPI(request, response, url, origin) {
       const body = await readJSONBody(request);
       const password = String(body.password || "");
       const code = String(body.code || "").replace(/\D/g, "");
-      if (password.length < 10 || password.length > 200 || code.length !== 6) {
+      if (!validCustomerPassword(password) || code.length !== 6) {
         return jsonResponse(response, 400, { error: "تحقق من الرمز وكلمة المرور الجديدة." }, origin);
       }
       const changed = await consumePasswordResetChallenge(body.requestId, code, await hashPassword(password));
@@ -1361,7 +1364,7 @@ async function handleAPI(request, response, url, origin) {
         return jsonResponse(response, 400, { error: "أدخل بريدًا إلكترونيًا صحيحًا." }, origin);
       }
       if (!validCustomerPassword(password)) {
-        return jsonResponse(response, 400, { error: "استخدم 10 أحرف على الأقل تشمل حرفًا كبيرًا وصغيرًا ورقمًا ورمزًا خاصًا." }, origin);
+        return jsonResponse(response, 400, { error: "أدخل كلمة المرور." }, origin);
       }
       if (phone && !/^[+\d][\d\s()-]{7,24}$/.test(phone)) {
         return jsonResponse(response, 400, { error: "أدخل رقم هاتف صحيحًا أو اتركه فارغًا." }, origin);

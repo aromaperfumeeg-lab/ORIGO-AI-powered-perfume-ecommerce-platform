@@ -155,13 +155,16 @@
     model.address={...model.address,...data,governorateId:Number(data.governorateId),areaId:Number(data.areaId),floor,apartment,saveAddress:Boolean(data.saveAddress)};
   }
   async function placeOrder(data) {
-    if(model.loading)return;model.loading=true;const button=document.querySelector("#payment-form button[type=submit]");if(button)button.disabled=true;
+    if(model.loading)return;model.loading=true;const button=document.querySelector("#payment-form button[type=submit]");const originalButtonMarkup=button?.innerHTML||"";if(button){button.disabled=true;button.setAttribute("aria-busy","true");button.textContent=t("جارٍ تأكيد الطلب...","Placing order...");}
     try{
       const result=await api("/api/checkout/order",{method:"POST",body:JSON.stringify({...model.address,...data,paymentMethod:model.paymentMethod,couponCode:model.couponCode,attribution:window.ORIGOTracking?.attribution?.()||{}})});
-      model.order=result.order;model.accessToken=result.accessToken;localStorage.setItem(accessKey(result.order.orderNumber),result.accessToken);store.state.cart=[];localStorage.setItem("origoCart","[]");store.renderCart();window.ORIGOTracking?.purchase?.(result.order);
+      model.order=result.order;model.accessToken=result.accessToken;
+      try{localStorage.setItem(accessKey(result.order.orderNumber),result.accessToken);}catch{}
+      store.state.cart=[];try{localStorage.setItem("origoCart","[]");}catch{}store.renderCart();
+      try{window.ORIGOTracking?.purchase?.(result.order);}catch{}
       if(result.order.paymentMethod==="paymob"){const payment=await api("/api/payments/paymob/intention",{method:"POST",body:JSON.stringify({orderId:result.order.id})});location.assign(payment.payment.checkoutUrl);return;}
       go(`/order/${encodeURIComponent(result.order.orderNumber)}`);
-    }catch(error){document.querySelector("#payment-error").textContent=error.message;if(button)button.disabled=false;}finally{model.loading=false;}
+    }catch(error){const errorNode=document.querySelector("#payment-error");if(errorNode){errorNode.textContent=error.message||t("تعذر تأكيد الطلب. حاول مرة أخرى.","The order could not be placed. Please try again.");errorNode.scrollIntoView({behavior:"smooth",block:"center"});}if(button){button.disabled=false;button.removeAttribute("aria-busy");button.innerHTML=originalButtonMarkup;}}finally{model.loading=false;}
   }
 
   const statuses=["received","processing","ready_to_ship","shipped","out_for_delivery","delivered"];
@@ -254,6 +257,11 @@
     if(event.target.id==="saved-address"){const saved=model.bootstrap.savedAddresses.find(a=>String(a.id)===event.target.value);if(saved){model.address={...saved};await renderDeliveryStage();}}
   });
   document.addEventListener("input",event=>{if(event.target.matches("[data-counter]")){event.target.nextElementSibling.textContent=`${event.target.value.length}/${event.target.maxLength}`;}});
+  document.addEventListener("invalid",event=>{
+    if(event.target.form?.id!=="payment-form")return;
+    const error=document.querySelector("#payment-error");
+    if(error)error.textContent=event.target.matches(".terms input")?t("وافق على الشروط وسياسة الشحن والاسترجاع لتأكيد الطلب.","Accept the terms, shipping and returns policies to place the order."):t("راجع الحقل المطلوب قبل تأكيد الطلب.","Review the required field before placing the order.");
+  },true);
   document.addEventListener("submit",async(event)=>{
     if(event.target.id==="delivery-form"){event.preventDefault();if(!event.target.reportValidity())return;storeAddress(formObject(event.target));try{await quote();model.stage=3;renderPaymentStage();}catch(error){document.querySelector("#delivery-error").textContent=error.message;}}
     if(event.target.id==="payment-form"){event.preventDefault();if(!event.target.reportValidity())return;model.paymentMethod=new FormData(event.target).get("paymentMethod");await placeOrder(formObject(event.target));}

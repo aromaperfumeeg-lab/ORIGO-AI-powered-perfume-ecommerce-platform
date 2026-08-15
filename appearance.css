@@ -2927,8 +2927,8 @@ body:not(.dark) :where(#storefront-main,.advanced-admin-panel,.catalog-admin-pan
   }
   footer.origo-footer{margin-bottom:0!important}
   footer.origo-footer .footer-bottom-bar{
-    min-height:44px!important;
-    padding:10px 18px!important;
+    min-height:34px!important;
+    padding:6px 12px!important;
   }
   .back-to-top{
     left:10px!important;
@@ -3298,28 +3298,30 @@ body .product-overlay .origo-exact-product-card .exact-card-favorite:hover{
     pointer-events:auto!important;
   }
   body.mobile-menu-active .mobile-menu-panel{
-    padding:16px 20px calc(88px + env(safe-area-inset-bottom))!important;
+    padding:11px 17px calc(76px + env(safe-area-inset-bottom))!important;
   }
-  .mobile-menu-panel{gap:7px!important}
-  .mobile-menu-actions-top{margin-top:2px!important}
-  .mobile-menu-actions-top button{min-height:54px!important;padding:7px 4px!important}
-  .mobile-menu-actions-top b{font-size:9.5px!important;line-height:1.35!important}
-  .mobile-menu-search{min-height:48px!important;margin:2px 0!important;font-size:11.5px!important}
-  .mobile-finder-quick{min-height:46px!important;font-size:11.5px!important}
-  .mobile-taxonomy-top{margin:0!important;gap:7px!important}
-  .mobile-taxonomy-group summary{min-height:45px!important;font-size:12px!important}
+  .mobile-menu-panel{gap:4px!important}
+  .mobile-menu-head .brand-logo-link img{height:37px!important}
+  .mobile-menu-head .close-button{width:36px!important;height:36px!important}
+  .mobile-menu-actions-top{margin-top:0!important}
+  .mobile-menu-actions-top button{min-height:46px!important;padding:5px 4px!important}
+  .mobile-menu-actions-top b{font-size:9px!important;line-height:1.25!important}
+  .mobile-menu-search{min-height:42px!important;margin:1px 0!important;padding-block:6px!important;font-size:11px!important}
+  .mobile-finder-quick{min-height:41px!important;padding-block:5px!important;font-size:11px!important}
+  .mobile-taxonomy-top{margin:0!important;gap:4px!important}
+  .mobile-taxonomy-group summary{min-height:39px!important;font-size:11px!important}
   .mobile-menu-panel nav{
     min-height:0!important;
     flex:1 1 auto!important;
-    grid-template-rows:repeat(7,minmax(40px,1fr))!important;
-    gap:6px!important;
+    grid-template-rows:repeat(7,minmax(35px,1fr))!important;
+    gap:4px!important;
   }
   .mobile-menu-panel nav a{
-    min-height:40px!important;
+    min-height:35px!important;
     height:100%!important;
-    padding:7px 11px!important;
-    font-size:12px!important;
-    line-height:1.35!important;
+    padding:4px 9px!important;
+    font-size:11px!important;
+    line-height:1.25!important;
   }
 }
 
@@ -3403,4 +3405,149 @@ body .product-overlay .origo-exact-product-card .exact-card-favorite:hover{
     margin-top:6px!important;
     margin-bottom:14px!important;
   }
+}
+/* Toasts must stay opaque and readable above every storefront surface. */
+body .toast-region{
+  z-index:10000!important;
+  max-width:min(430px,calc(100vw - 30px));
+}
+body .toast{
+  width:100%;
+  min-width:min(320px,calc(100vw - 30px));
+  padding:14px 15px!important;
+  display:grid;
+  grid-template-columns:30px minmax(0,1fr) 30px;
+  align-items:center;
+  gap:11px;
+  border:1px solid rgba(255,255,255,.22)!important;
+  border-radius:13px;
+  color:#fff!important;
+  background:#23181c!important;
+  background-image:none!important;
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+  box-shadow:0 18px 48px rgba(20,7,12,.38),0 2px 8px rgba(20,7,12,.24)!important;
+  font-size:13px;
+  font-weight:750;
+  line-height:1.6;
+}
+body .toast.toast--success{background:#17452d!important;border-color:#3c8b61!important}
+body .toast.toast--error{background:#641a29!important;border-color:#bf5367!important}
+body .toast.toast--warning{background:#57390f!important;border-color:#c58a30!important}
+body .toast.toast--info{background:#193d60!important;border-color:#4d83b6!important}
+body .toast>span{min-width:0;color:#fff!important;text-shadow:0 1px 1px rgba(0,0,0,.2)}
+body .toast>i{
+  width:28px;
+  height:28px;
+  color:#15100e!important;
+  background:#fff!important;
+  box-shadow:none!important;
+  font-weight:900;
+}
+body .toast>button{
+  width:30px;
+  height:30px;
+  padding:0;
+  border:1px solid rgba(255,255,255,.28);
+  border-radius:7px;
+  color:#fff!important;
+  background:rgba(255,255,255,.12)!important;
+  font-size:19px;
+  line-height:1;
+  cursor:pointer;
+}
+body .toast>button:hover{background:rgba(255,255,255,.22)!important}
+@media(max-width:600px){
+  body .toast-region{inset-inline:15px!important;bottom:max(92px,calc(78px + env(safe-area-inset-bottom)))!important;max-width:none}
+  body .toast{min-width:0;font-size:12px}
+}
+
+/* Keep every visible homepage section on one compact, consistent rhythm. */
+#home{
+  --home-unified-heading-size:clamp(20.125px,1.8375vw,23.625px);
+  --home-unified-section-gap:16px;
+  --home-unified-heading-gap:8px;
+}
+#home :is(#home-brands-title,#home-benefits-title,#home-gender-title,.home-configured-product-row .home-section-head h2){
+  font-size:var(--home-unified-heading-size)!important;
+  line-height:1.25!important;
+}
+#home :is(.home-brand-directory,.home-benefits-directory,.home-gender-section,.home-configured-product-rows){
+  margin-block-start:var(--home-unified-section-gap)!important;
+  margin-block-end:0!important;
+}
+#home .home-configured-product-rows{gap:var(--home-unified-section-gap)!important}
+#home :is(.home-brand-directory,.home-benefits-directory,.home-configured-product-row) .home-section-head{
+  min-height:34px!important;
+  margin-block-end:var(--home-unified-heading-gap)!important;
+}
+#home .home-gender-section .gender-section-title{
+  margin-block-end:var(--home-unified-heading-gap)!important;
+}
+#home .home-benefits-directory .benefit-carousel-track,
+#home .home-brand-directory .brand-carousel-track{
+  margin-block-start:0!important;
+}
+@media(max-width:640px){
+  #home{
+    --home-unified-heading-size:18.375px;
+    --home-unified-section-gap:12px;
+    --home-unified-heading-gap:6px;
+  }
+  #home :is(.home-brand-directory,.home-benefits-directory,.home-gender-section,.home-configured-product-rows){
+    margin-block-start:var(--home-unified-section-gap)!important;
+    margin-block-end:0!important;
+  }
+  #home .home-benefits-directory .benefit-carousel-track{margin-block-start:0!important}
+}
+
+/* Catalog controls must never leak into non-catalog pages before route CSS loads. */
+body:not(.catalog-route) :is(.catalog-filter-drawer,.catalog-filter-backdrop){
+  display:none!important;
+}
+
+/* Stable, fully opaque mobile curtain with no content bleeding or layer overlap. */
+@media(max-width:640px){
+  .store-bottom-nav,
+  body.mobile-nav-hidden .store-bottom-nav{
+    right:0!important;
+    bottom:0!important;
+    left:0!important;
+    width:100%!important;
+    border-right:0!important;
+    border-bottom:0!important;
+    border-left:0!important;
+    border-radius:18px 18px 0 0!important;
+    opacity:1!important;
+    visibility:visible!important;
+    transform:translate3d(0,0,0)!important;
+    will-change:auto!important;
+  }
+  .mobile-menu-backdrop{
+    z-index:298!important;
+    background:#16080d!important;
+    -webkit-backdrop-filter:none!important;
+    backdrop-filter:none!important;
+    transition:opacity .14s linear,visibility .14s linear!important;
+  }
+  .mobile-menu-panel,
+  body.mobile-menu-active .mobile-menu-panel{
+    z-index:299!important;
+    inset:0 0 calc(62px + env(safe-area-inset-bottom)) 0!important;
+    width:auto!important;
+    max-width:none!important;
+    height:auto!important;
+    padding:10px 17px 10px!important;
+    overflow-x:hidden!important;
+    overflow-y:auto!important;
+    isolation:isolate!important;
+    background:#fff!important;
+    background-image:none!important;
+    -webkit-backdrop-filter:none!important;
+    backdrop-filter:none!important;
+    box-shadow:none!important;
+    transition:transform .22s ease!important;
+  }
+  body.dark .mobile-menu-panel{color:#fff!important;background:#171216!important}
+  body.mobile-menu-active .store-bottom-nav{z-index:300!important}
 }
