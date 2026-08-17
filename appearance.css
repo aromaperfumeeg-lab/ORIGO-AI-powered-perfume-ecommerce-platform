@@ -3649,7 +3649,7 @@ body #storefront-main .origo-reference-product-card .product-card-media-link img
 body .product-overlay .origo-exact-product-card .product-card-media-link img,
 body .product-overlay .origo-reference-product-card .product-card-media-link img{
   width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;
-  margin:0!important;object-fit:cover!important;object-position:center!important;scale:1.7!important;
+  margin:0!important;object-fit:cover!important;object-position:center!important;scale:1!important;
 }
 
 /* Product-card controls: quality at the top, compare/favorite at opposite bottom corners. */

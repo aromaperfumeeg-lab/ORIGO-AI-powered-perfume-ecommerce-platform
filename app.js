@@ -953,6 +953,7 @@ const defaultStoreSettings = {
     layoutTuningVersion: 2
   },
   footerImage: "assets/origo-hero.png",
+  authenticityBadge: "/assets/authenticity-badge.png?v=6",
   footerDescriptionAr: "في أوريجو، نؤمن أن العطر ليس مجرد رائحة، بل هو توقيعك الخاص الذي يترك أثرًا لا يُنسى. اكتشف عالم العطور الفاخرة بين الأصالة والتميز.",
   footerDescriptionEn: "At ORIGO, fragrance is more than a scent. It is your signature, leaving a memorable trace of character and elegance.",
   newsletterTitleAr: "اشترك في نشرتنا البريدية", newsletterTitleEn: "Join our newsletter",
@@ -1208,6 +1209,7 @@ const state = {
   activeAdminNoteSlug: "",
   pendingNoteImage: "",
   pendingStoreLogos: {},
+  pendingAuthenticityBadge: "",
   pendingBenefitIcons: {},
   pendingCategoryIcons: {},
   pendingHomeBenefitIcons: {},
@@ -2337,7 +2339,7 @@ function settingsMarkup() {
     <div class="review-grid"><label>${ar ? "اسم المتجر" : "Store name"}<input name="storeName" value="${escapeHTML(settings.storeName)}" /></label>
     <label>${ar ? "العملة" : "Currency"}<select name="currency">${selectOptions([["EGP","EGP"],["USD","USD"],["SAR","SAR"]], settings.currency)}</select></label>
     <label>${ar ? "الضريبة %" : "Tax rate %"}<input name="taxRate" type="number" min="0" max="100" value="${settings.taxRate}" /></label></div>
-    <div class="store-logo-settings">${logoFields.map(([key, arLabel, enLabel]) => `<label class="store-logo-field"><span>${ar ? arLabel : enLabel}</span><img id="store-logo-preview-${key}" src="${escapeHTML(settings.logos[key])}" alt=""/><input name="logo${key[0].toUpperCase()}${key.slice(1)}" value="${escapeHTML(settings.logos[key])}" dir="ltr"/><input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" data-logo-upload="${key}"/></label>`).join("")}</div></section>
+    <div class="store-logo-settings">${logoFields.map(([key, arLabel, enLabel]) => `<label class="store-logo-field"><span>${ar ? arLabel : enLabel}</span><img id="store-logo-preview-${key}" src="${escapeHTML(settings.logos[key])}" alt=""/><input name="logo${key[0].toUpperCase()}${key.slice(1)}" value="${escapeHTML(settings.logos[key])}" dir="ltr"/><input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" data-logo-upload="${key}"/></label>`).join("")}<label class="store-logo-field authenticity-badge-upload"><span>${ar ? "شعار أصالة المنتجات" : "Product authenticity badge"}</span><img id="authenticity-badge-preview" src="${escapeHTML(settings.authenticityBadge || defaultStoreSettings.authenticityBadge)}" alt="${ar ? "معاينة شعار الأصالة" : "Authenticity badge preview"}"/><input type="file" accept="image/png,image/webp" data-authenticity-badge-upload/><small>${ar ? "PNG أو WEBP شفاف — يفضل أقل من 8 KB" : "Transparent PNG or WEBP — preferably under 8 KB"}</small></label></div></section>
     <section class="appearance-settings"><input type="hidden" name="appearance.layoutTuningVersion" value="2"/><div class="review-section-head"><span>02</span><div><b>${ar ? "مظهر المتجر العام" : "Global store appearance"}</b><small>${ar ? "تحكم مركزي في الخطوط والصور والأيقونات والبطاقات مع معاينة فورية." : "Central control for typography, images, icons, and cards with live preview."}</small></div></div>
       <div class="appearance-balance-studio">
         <label class="appearance-master-switch"><input type="checkbox" name="appearance.balancedLayoutEnabled" ${appearance.balancedLayoutEnabled !== false ? "checked" : ""}/><span class="appearance-switch-track" aria-hidden="true"><i></i></span><span><b>${ar ? "التوازن الذكي للمساحات والنصوص" : "Smart spacing and text balance"}</b><small>${ar ? "يضبط المسافات والمربعات والصور تلقائيًا، ويضمن نصوصًا واضحة في المتجر ولوحة التحكم." : "Automatically balances spacing, cards, and images while keeping storefront and admin text readable."}</small></span></label>
@@ -5653,7 +5655,7 @@ function productCardMarkup(product, options = {}) {
   return `<article class="product-card origo-reference-product-card origo-exact-product-card${options.reveal ? " reveal" : ""}${outOfStock ? " is-out" : ""}" data-id="${escapeHTML(product.id)}" dir="${isArabic ? "rtl" : "ltr"}" lang="${state.lang}"${delayStyle}>
     <div class="product-image">
       ${discount ? `<span class="product-badge" data-badge-kind="sale">-${discount}%</span>` : ""}
-      <img class="product-authenticity-badge" src="/assets/authenticity-badge.png?v=4" alt="${escapeHTML(isArabic ? "منتج أصلي 100%" : "100% authentic product")}" width="62" height="62" loading="lazy" decoding="async" />
+      <img class="product-authenticity-badge" src="${escapeHTML(mergeStoreSettings(state.adminWorkspace.settings || {}).authenticityBadge || defaultStoreSettings.authenticityBadge)}" alt="${escapeHTML(isArabic ? "منتج أصلي 100%" : "100% authentic product")}" width="90" height="90" loading="lazy" decoding="async" />
       <div class="product-card-top-actions">
         <button class="card-action-button card-favorite-button${saved ? " active" : ""}"${interactive ? ` data-action="toggle-wishlist"` : disabled} aria-label="${escapeHTML(favoriteLabel)}" aria-pressed="${saved}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/></svg></button>
         <button class="card-action-button card-compare-button${compared ? " active" : ""}"${interactive ? ` data-action="toggle-product-compare"` : disabled} aria-label="${escapeHTML(compareLabel)}" aria-pressed="${compared}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h12m0 0-3-3m3 3-3 3M17 17H5m0 0 3 3m-3-3 3-3"/></svg></button>
@@ -9843,6 +9845,7 @@ document.addEventListener("submit", async (event) => {
         dark: state.pendingStoreLogos.dark || String(data.get("logoDark") || current.logos.dark).trim(),
         icon: state.pendingStoreLogos.icon || String(data.get("logoIcon") || current.logos.icon).trim()
       },
+      authenticityBadge: state.pendingAuthenticityBadge || current.authenticityBadge || defaultStoreSettings.authenticityBadge,
       footerImage: String(data.get("footerImage") || current.footerImage).trim(),
       footerDescriptionAr: String(data.get("footerDescriptionAr") || current.footerDescriptionAr).trim(),
       footerDescriptionEn: String(data.get("footerDescriptionEn") || current.footerDescriptionEn).trim(),
@@ -9862,6 +9865,7 @@ document.addEventListener("submit", async (event) => {
       footerBenefits
     });
     state.pendingStoreLogos = {};
+    state.pendingAuthenticityBadge = "";
     state.pendingBenefitIcons = {};
     state.pendingCategoryIcons = {};
     state.pendingHomeBenefitIcons = {};
@@ -10566,6 +10570,24 @@ document.addEventListener("change", async (event) => {
       const preview = $(`#store-logo-preview-${key}`);
       if (preview) preview.src = state.pendingStoreLogos[key];
     }, { once: true });
+    reader.readAsDataURL(file);
+    return;
+  }
+  if (event.target.matches("[data-authenticity-badge-upload]")) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    if (!/^image\/(png|webp)$/.test(file.type) || file.size > 350_000) {
+      event.target.value = "";
+      showToast(adminCopy("اختر شعار PNG أو WEBP صالحًا لا يتجاوز 350 KB", "Choose a valid PNG or WEBP badge up to 350 KB"), "error");
+      return;
+    }
+    const reader = new FileReader();
+    reader.addEventListener("load", () => {
+      state.pendingAuthenticityBadge = String(reader.result || "");
+      const preview = $("#authenticity-badge-preview");
+      if (preview) preview.src = state.pendingAuthenticityBadge;
+      showToast(adminCopy("تم تجهيز شعار الأصالة — اضغط حفظ الإعدادات", "Authenticity badge ready — save settings"));
+    }, { once:true });
     reader.readAsDataURL(file);
     return;
   }

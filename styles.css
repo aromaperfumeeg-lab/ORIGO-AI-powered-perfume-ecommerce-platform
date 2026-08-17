@@ -9680,3 +9680,6 @@ html[data-theme=dark] .pricing-live-metrics span{background:#211719;color:#d8c9c
 .accord-admin-toolbar input[type=search]{min-width:220px}
 .performance-generate-button{margin-top:14px}
 .studio-image-move{min-width:28px;height:28px;border-radius:8px}
+.authenticity-badge-upload{position:relative!important;border:1px solid #d9b66a!important;border-radius:12px!important;padding:12px!important;background:#fffdf8!important}
+.authenticity-badge-upload>img{width:76px!important;height:76px!important;margin:auto!important;padding:4px!important;object-fit:contain!important;background:transparent!important;border:0!important}
+.authenticity-badge-upload>small{color:#76686c!important;font-size:9px!important;line-height:1.5!important}
