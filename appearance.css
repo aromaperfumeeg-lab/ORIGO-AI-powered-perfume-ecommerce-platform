@@ -3659,7 +3659,7 @@ body .product-overlay .origo-reference-product-card:hover .product-card-media-li
   object-fit:contain!important;scale:1!important;transform:none!important;translate:none!important;
 }
 
-/* Product-card controls: quality at the top, compare/favorite at opposite bottom corners. */
+/* Product-card controls: compare and favorite actions. */
 html body #storefront-main #home .origo-exact-product-card .product-card-image-meta,
 html body .product-overlay .origo-exact-product-card .product-card-image-meta{display:none!important}
 html body #storefront-main #home .origo-exact-product-card .product-card-top-actions,
@@ -3673,14 +3673,6 @@ html body .product-overlay .origo-exact-product-card .product-card-top-actions .
   position:static!important;width:32px!important;height:32px!important;min-width:32px!important;min-height:32px!important;
   padding:7px!important;pointer-events:auto!important;background:#fff!important;border:1px solid rgba(114,0,25,.18)!important;
 }
-html body #storefront-main #home .origo-exact-product-card .product-authenticity-badge,
-html body .product-overlay .origo-exact-product-card .product-authenticity-badge{
-  position:absolute!important;z-index:12!important;top:7px!important;left:7px!important;right:auto!important;
-  width:42px!important;height:42px!important;margin:0!important;padding:0!important;display:block!important;
-  object-fit:contain!important;background:transparent!important;border:0!important;border-radius:0!important;
-  box-shadow:none!important;filter:none!important;scale:1!important;pointer-events:none!important;
-}
-
 /* Center the quick actions and strengthen the purchasing information. */
 html body #storefront-main #home .origo-exact-product-card .product-card-top-actions,
 html body .product-overlay .origo-exact-product-card .product-card-top-actions{

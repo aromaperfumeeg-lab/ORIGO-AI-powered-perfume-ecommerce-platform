@@ -493,6 +493,27 @@ function validCustomerPassword(value) {
   return password.length > 0;
 }
 
+function normalizedMobilePassword(value) {
+  return String(value || "")
+    .normalize("NFKC")
+    .replace(/[\u200B-\u200F\u202A-\u202E\u2066-\u2069\uFEFF]/g, "")
+    .replace(/[٠-٩]/g, (digit) => String("٠١٢٣٤٥٦٧٨٩".indexOf(digit)))
+    .replace(/[۰-۹]/g, (digit) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(digit)))
+    .trim();
+}
+
+function passwordInputCandidates(value) {
+  const raw = String(value || "");
+  return [...new Set([raw, raw.trim(), normalizedMobilePassword(raw)].filter(Boolean))];
+}
+
+async function verifyCustomerPassword(value, encoded) {
+  for (const candidate of passwordInputCandidates(value)) {
+    if (await verifyPassword(candidate, encoded)) return true;
+  }
+  return false;
+}
+
 function validateCustomer(body) {
   const customer = {
     name: String(body.name || "").trim(),
@@ -1313,7 +1334,7 @@ async function handleAPI(request, response, url, origin) {
   if (url.pathname === "/api/auth/reset-password" && request.method === "POST") {
     try {
       const body = await readJSONBody(request);
-      const password = String(body.password || "");
+      const password = normalizedMobilePassword(body.password);
       if (!validCustomerPassword(password)) return jsonResponse(response, 400, { error: "أدخل كلمة المرور الجديدة." }, origin);
       const changed = await resetPasswordWithToken(body.resetToken, await hashPassword(password));
       return changed ? jsonResponse(response, 200, { ok: true }, origin) : jsonResponse(response, 400, { error: "انتهت جلسة الاستعادة. اطلب رمزًا جديدًا." }, origin);
@@ -1349,7 +1370,7 @@ async function handleAPI(request, response, url, origin) {
   if (url.pathname === "/api/auth/password-reset/confirm" && request.method === "POST") {
     try {
       const body = await readJSONBody(request);
-      const password = String(body.password || "");
+      const password = normalizedMobilePassword(body.password);
       const code = String(body.code || "").replace(/\D/g, "");
       if (!validCustomerPassword(password) || code.length !== 6) {
         return jsonResponse(response, 400, { error: "تحقق من الرمز وكلمة المرور الجديدة." }, origin);
@@ -1367,7 +1388,7 @@ async function handleAPI(request, response, url, origin) {
       const body = await readJSONBody(request);
       const name = String(body.name || "").trim();
       const email = String(body.email || "").trim();
-      const password = String(body.password || "");
+      const password = normalizedMobilePassword(body.password);
       const phone = String(body.phone || "").trim();
       if (name.length < 2 || name.length > 100) {
         return jsonResponse(response, 400, { error: "أدخل اسمًا صحيحًا." }, origin);
@@ -1408,7 +1429,7 @@ async function handleAPI(request, response, url, origin) {
     try {
       const body = await readJSONBody(request);
       const userRow = validEmail(body.email) ? findUserByEmail(body.email) : null;
-      const authenticated = userRow && await verifyPassword(body.password, userRow.password_hash);
+      const authenticated = userRow && await verifyCustomerPassword(body.password, userRow.password_hash);
       if (!authenticated) {
         return jsonResponse(response, 401, { error: "البريد الإلكتروني أو كلمة المرور غير صحيحة." }, origin);
       }

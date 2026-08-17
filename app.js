@@ -953,7 +953,6 @@ const defaultStoreSettings = {
     layoutTuningVersion: 2
   },
   footerImage: "assets/origo-hero.png",
-  authenticityBadge: "/assets/authenticity-badge.png?v=6",
   footerDescriptionAr: "في أوريجو، نؤمن أن العطر ليس مجرد رائحة، بل هو توقيعك الخاص الذي يترك أثرًا لا يُنسى. اكتشف عالم العطور الفاخرة بين الأصالة والتميز.",
   footerDescriptionEn: "At ORIGO, fragrance is more than a scent. It is your signature, leaving a memorable trace of character and elegance.",
   newsletterTitleAr: "اشترك في نشرتنا البريدية", newsletterTitleEn: "Join our newsletter",
@@ -1213,7 +1212,6 @@ const state = {
   activeAdminNoteSlug: "",
   pendingNoteImage: "",
   pendingStoreLogos: {},
-  pendingAuthenticityBadge: "",
   pendingBenefitIcons: {},
   pendingCategoryIcons: {},
   pendingHomeBenefitIcons: {},
@@ -2426,7 +2424,7 @@ function settingsMarkup() {
     <div class="review-grid"><label>${ar ? "اسم المتجر" : "Store name"}<input name="storeName" value="${escapeHTML(settings.storeName)}" /></label>
     <label>${ar ? "العملة" : "Currency"}<select name="currency">${selectOptions([["EGP","EGP"],["USD","USD"],["SAR","SAR"]], settings.currency)}</select></label>
     <label>${ar ? "الضريبة %" : "Tax rate %"}<input name="taxRate" type="number" min="0" max="100" value="${settings.taxRate}" /></label></div>
-    <div class="store-logo-settings">${logoFields.map(([key, arLabel, enLabel]) => `<label class="store-logo-field"><span>${ar ? arLabel : enLabel}</span><img id="store-logo-preview-${key}" src="${escapeHTML(settings.logos[key])}" alt=""/><input name="logo${key[0].toUpperCase()}${key.slice(1)}" value="${escapeHTML(settings.logos[key])}" dir="ltr"/><input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" data-logo-upload="${key}"/></label>`).join("")}<label class="store-logo-field authenticity-badge-upload"><span>${ar ? "شعار أصالة المنتجات" : "Product authenticity badge"}</span><img id="authenticity-badge-preview" src="${escapeHTML(settings.authenticityBadge || defaultStoreSettings.authenticityBadge)}" alt="${ar ? "معاينة شعار الأصالة" : "Authenticity badge preview"}"/><input type="file" accept="image/png,image/webp" data-authenticity-badge-upload/><small>${ar ? "PNG أو WEBP شفاف — يفضل أقل من 8 KB" : "Transparent PNG or WEBP — preferably under 8 KB"}</small></label></div></section>
+    <div class="store-logo-settings">${logoFields.map(([key, arLabel, enLabel]) => `<label class="store-logo-field"><span>${ar ? arLabel : enLabel}</span><img id="store-logo-preview-${key}" src="${escapeHTML(settings.logos[key])}" alt=""/><input name="logo${key[0].toUpperCase()}${key.slice(1)}" value="${escapeHTML(settings.logos[key])}" dir="ltr"/><input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" data-logo-upload="${key}"/></label>`).join("")}</div></section>
     <section class="appearance-settings"><input type="hidden" name="appearance.layoutTuningVersion" value="2"/><div class="review-section-head"><span>02</span><div><b>${ar ? "مظهر المتجر العام" : "Global store appearance"}</b><small>${ar ? "تحكم مركزي في الخطوط والصور والأيقونات والبطاقات مع معاينة فورية." : "Central control for typography, images, icons, and cards with live preview."}</small></div></div>
       <div class="appearance-balance-studio">
         <label class="appearance-master-switch"><input type="checkbox" name="appearance.balancedLayoutEnabled" ${appearance.balancedLayoutEnabled !== false ? "checked" : ""}/><span class="appearance-switch-track" aria-hidden="true"><i></i></span><span><b>${ar ? "التوازن الذكي للمساحات والنصوص" : "Smart spacing and text balance"}</b><small>${ar ? "يضبط المسافات والمربعات والصور تلقائيًا، ويضمن نصوصًا واضحة في المتجر ولوحة التحكم." : "Automatically balances spacing, cards, and images while keeping storefront and admin text readable."}</small></span></label>
@@ -2514,7 +2512,7 @@ function storeSettingsDashboardMarkup() {
   return `<form id="store-basic-settings" class="store-settings-dashboard" dir="rtl">
     <div class="store-settings-tabs"><button class="active" type="button">⚙ إعدادات المتجر</button><button type="button" data-action="advanced-settings">الإضافات والتكاملات</button></div>
     <div class="store-settings-grid">
-      <section class="store-settings-card store-info-card"><h3>ⓘ هوية المتجر والشعار المركزي</h3><div class="store-info-layout"><div class="store-identity-assets"><div class="store-logo-box"><span>الشعار المركزي</span><img src="${escapeHTML(settings.logos.dark)}" alt="ORIGO"/><button type="button" data-action="advanced-settings">تغيير الشعار</button></div><label class="store-logo-field authenticity-badge-upload dashboard-authenticity-upload"><span>شعار أصالة المنتجات</span><img id="authenticity-badge-preview" src="${escapeHTML(settings.authenticityBadge || defaultStoreSettings.authenticityBadge)}" alt="معاينة شعار أصالة المنتجات"/><input type="file" accept="image/png,image/webp" data-authenticity-badge-upload/><small>PNG أو WEBP شفاف — بحد أقصى 350 KB</small></label></div><div class="store-info-fields"><label>اسم المتجر<input name="storeName" value="${escapeHTML(settings.storeName || "ORIGO")}"/></label><label>الوصف القصير<textarea name="shortDescription">متجر فاخر للعطور الأصلية ومنتجات العناية الشخصية</textarea></label><div><label>رقم الجوال<input name="phone" value="010 1234 5678" dir="ltr"/></label><label>البريد الإلكتروني<input name="supportEmail" value="${escapeHTML(settings.supportEmail || "info@origoscents.com")}" dir="ltr"/></label></div><div><label>العملة الأساسية<select name="currency"><option value="EGP"${settings.currency === "EGP" ? " selected" : ""}>الجنيه المصري</option><option value="USD">الدولار الأمريكي</option></select></label><label>اللغة الافتراضية<select name="defaultLanguage"><option>العربية</option><option>English</option></select></label></div><div><label>المنطقة الزمنية<select name="timezone"><option>القاهرة (GMT+2)</option></select></label></div></div></div><button class="store-save-button" type="submit">حفظ التغييرات</button></section>
+      <section class="store-settings-card store-info-card"><h3>ⓘ هوية المتجر والشعار المركزي</h3><div class="store-info-layout"><div class="store-logo-box"><span>الشعار المركزي</span><img src="${escapeHTML(settings.logos.dark)}" alt="ORIGO"/><button type="button" data-action="advanced-settings">تغيير الشعار</button></div><div class="store-info-fields"><label>اسم المتجر<input name="storeName" value="${escapeHTML(settings.storeName || "ORIGO")}"/></label><label>الوصف القصير<textarea name="shortDescription">متجر فاخر للعطور الأصلية ومنتجات العناية الشخصية</textarea></label><div><label>رقم الجوال<input name="phone" value="010 1234 5678" dir="ltr"/></label><label>البريد الإلكتروني<input name="supportEmail" value="${escapeHTML(settings.supportEmail || "info@origoscents.com")}" dir="ltr"/></label></div><div><label>العملة الأساسية<select name="currency"><option value="EGP"${settings.currency === "EGP" ? " selected" : ""}>الجنيه المصري</option><option value="USD">الدولار الأمريكي</option></select></label><label>اللغة الافتراضية<select name="defaultLanguage"><option>العربية</option><option>English</option></select></label></div><div><label>المنطقة الزمنية<select name="timezone"><option>القاهرة (GMT+2)</option></select></label></div></div></div><button class="store-save-button" type="submit">حفظ التغييرات</button></section>
       <div class="store-settings-stack"><section class="store-settings-card"><h3>▣ إعدادات الدفع</h3>${[["الدفع عند الاستلام","الدفع نقداً عند استلام الطلب","cod",true],["بطاقات الائتمان / الخصم","Visa, Mastercard, Meeza","cards",true],["فودافون كاش","الدفع عبر فودافون كاش","vodafone",true],["إنستاباي","الدفع عبر تطبيق إنستاباي","instapay",false]].map(([title,desc,name,on]) => `<div class="payment-setting"><span><b>${title}</b><small>${desc}</small></span><button type="button">إعداد</button>${toggle(`payment.${name}`,on)}</div>`).join("")}</section><section class="store-settings-card"><h3>▱ إعدادات الشحن والتوصيل</h3><div class="two-setting-fields"><label>شركة التوصيل<select><option>شركة واحدة - الشحن السريع</option></select></label><label>مدة التوصيل المتوقعة<select><option>2 - 5 أيام عمل</option></select></label><label>رسوم الشحن<input name="shippingFee" value="ثابتة"/></label><label>قيمة رسوم (EGP)<input name="shippingFeeValue" value="60"/></label></div><p class="store-success-note">ⓘ يتم حساب الرسوم بناءً على إجمالي الطلب والموقع</p></section></div>
       <div class="store-settings-stack"><section class="store-settings-card"><h3>◎ إعدادات اللغة والترجمة</h3><label>اللغات المتاحة</label><div class="language-checks"><label><input type="checkbox" checked/> العربية</label><label><input type="checkbox" checked/> English</label></div><label>اللغة الافتراضية<select><option>العربية</option><option>English</option></select></label><label>اتجاه النص</label><div class="direction-choice"><button class="active" type="button">من اليمين لليسار (RTL)</button><button type="button">من اليسار لليمين (LTR)</button></div><div class="translation-toggle"><span><b>تفعيل الترجمة اليدوية</b><small>سيمكنك ترجمة المحتوى يدوياً بدلاً من الترجمة التلقائية</small></span>${toggle("manualTranslation",true)}</div></section><section class="store-settings-card"><h3>% إعدادات الضرائب</h3><label>تفعيل الضرائب</label><div class="two-setting-fields"><label>نوع الضريبة<select><option>ضريبة القيمة المضافة (VAT)</option></select></label><label>نسبة الضريبة (%)<input name="taxRate" type="number" value="${Number(settings.taxRate || 14)}"/></label><label>تطبيق الضريبة على<select><option>جميع المنتجات</option></select></label></div></section></div>
       <section class="store-settings-card"><h3>▥ إعدادات SEO</h3><label>عنوان الموقع<input name="seoTitle" value="ORIGO - متجر العطور الأصلية ومنتجات العناية"/></label><label>الوصف التعريفي<textarea name="seoDescription">تسوق أفضل العطور الأصلية ومنتجات العناية الشخصية. أشهر الماركات العالمية، توصيل سريع وأسعار تنافسية.</textarea></label><label>الكلمات المفتاحية<input name="seoKeywords" value="عطور، perfumes، عطر رجالي، عطر نسائي، عطور أصلية"/></label><label>رابط الموقع (URL)<input name="siteUrl" value="https://origoscents.com" dir="ltr"/></label></section>
@@ -5742,7 +5740,6 @@ function productCardMarkup(product, options = {}) {
   return `<article class="product-card origo-reference-product-card origo-exact-product-card${options.reveal ? " reveal" : ""}${outOfStock ? " is-out" : ""}" data-id="${escapeHTML(product.id)}" dir="${isArabic ? "rtl" : "ltr"}" lang="${state.lang}"${delayStyle}>
     <div class="product-image">
       ${discount ? `<span class="product-badge" data-badge-kind="sale">-${discount}%</span>` : ""}
-      <img class="product-authenticity-badge" src="${escapeHTML(mergeStoreSettings(state.adminWorkspace.settings || {}).authenticityBadge || defaultStoreSettings.authenticityBadge)}" alt="${escapeHTML(isArabic ? "منتج أصلي 100%" : "100% authentic product")}" width="90" height="90" loading="lazy" decoding="async" />
       <div class="product-card-top-actions">
         <button class="card-action-button card-favorite-button${saved ? " active" : ""}"${interactive ? ` data-action="toggle-wishlist"` : disabled} aria-label="${escapeHTML(favoriteLabel)}" aria-pressed="${saved}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/></svg></button>
         <button class="card-action-button card-compare-button${compared ? " active" : ""}"${interactive ? ` data-action="toggle-product-compare"` : disabled} aria-label="${escapeHTML(compareLabel)}" aria-pressed="${compared}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h12m0 0-3-3m3 3-3 3M17 17H5m0 0 3 3m-3-3 3-3"/></svg></button>
@@ -9868,10 +9865,8 @@ document.addEventListener("submit", async (event) => {
       currency: String(data.get("currency") || current.currency),
       taxRate: Number(data.get("taxRate") || current.taxRate || 0),
       orderNotifications: data.has("orderNotifications"),
-      newOrderNotifications: data.has("notify.newOrders"),
-      authenticityBadge: state.pendingAuthenticityBadge || current.authenticityBadge || defaultStoreSettings.authenticityBadge
+      newOrderNotifications: data.has("notify.newOrders")
     });
-    state.pendingAuthenticityBadge = "";
     saveAdminWorkspace("settings");
     applyStoreIdentity();
     showToast("تم حفظ إعدادات المتجر");
@@ -9953,7 +9948,6 @@ document.addEventListener("submit", async (event) => {
         dark: state.pendingStoreLogos.dark || String(data.get("logoDark") || current.logos.dark).trim(),
         icon: state.pendingStoreLogos.icon || String(data.get("logoIcon") || current.logos.icon).trim()
       },
-      authenticityBadge: state.pendingAuthenticityBadge || current.authenticityBadge || defaultStoreSettings.authenticityBadge,
       footerImage: String(data.get("footerImage") || current.footerImage).trim(),
       footerDescriptionAr: String(data.get("footerDescriptionAr") || current.footerDescriptionAr).trim(),
       footerDescriptionEn: String(data.get("footerDescriptionEn") || current.footerDescriptionEn).trim(),
@@ -9973,7 +9967,6 @@ document.addEventListener("submit", async (event) => {
       footerBenefits
     });
     state.pendingStoreLogos = {};
-    state.pendingAuthenticityBadge = "";
     state.pendingBenefitIcons = {};
     state.pendingCategoryIcons = {};
     state.pendingHomeBenefitIcons = {};
@@ -10680,24 +10673,6 @@ document.addEventListener("change", async (event) => {
       const preview = $(`#store-logo-preview-${key}`);
       if (preview) preview.src = state.pendingStoreLogos[key];
     }, { once: true });
-    reader.readAsDataURL(file);
-    return;
-  }
-  if (event.target.matches("[data-authenticity-badge-upload]")) {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    if (!/^image\/(png|webp)$/.test(file.type) || file.size > 350_000) {
-      event.target.value = "";
-      showToast(adminCopy("اختر شعار PNG أو WEBP صالحًا لا يتجاوز 350 KB", "Choose a valid PNG or WEBP badge up to 350 KB"), "error");
-      return;
-    }
-    const reader = new FileReader();
-    reader.addEventListener("load", () => {
-      state.pendingAuthenticityBadge = String(reader.result || "");
-      const preview = $("#authenticity-badge-preview");
-      if (preview) preview.src = state.pendingAuthenticityBadge;
-      showToast(adminCopy("تم تجهيز شعار الأصالة — اضغط حفظ الإعدادات", "Authenticity badge ready — save settings"));
-    }, { once:true });
     reader.readAsDataURL(file);
     return;
   }
