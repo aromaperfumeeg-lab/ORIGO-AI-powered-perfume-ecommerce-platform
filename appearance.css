@@ -3649,7 +3649,14 @@ body #storefront-main .origo-reference-product-card .product-card-media-link img
 body .product-overlay .origo-exact-product-card .product-card-media-link img,
 body .product-overlay .origo-reference-product-card .product-card-media-link img{
   width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;
-  margin:0!important;object-fit:cover!important;object-position:center!important;scale:1!important;
+  margin:0!important;padding:0!important;object-fit:contain!important;object-position:center!important;
+  scale:1!important;transform:none!important;translate:none!important;filter:none!important;
+}
+body #storefront-main .origo-exact-product-card:hover .product-card-media-link img,
+body #storefront-main .origo-reference-product-card:hover .product-card-media-link img,
+body .product-overlay .origo-exact-product-card:hover .product-card-media-link img,
+body .product-overlay .origo-reference-product-card:hover .product-card-media-link img{
+  object-fit:contain!important;scale:1!important;transform:none!important;translate:none!important;
 }
 
 /* Product-card controls: quality at the top, compare/favorite at opposite bottom corners. */

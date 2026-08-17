@@ -1181,6 +1181,7 @@ const state = {
   adminActivity: [],
   adminStaff: [],
   activeAdminOrderId: null,
+  adminOrderStatusFilter: "all",
   serverAvailable: false,
   pendingAction: "",
   publicIntegrations: {},
@@ -1840,12 +1841,12 @@ function adminMetric(icon, label, value, trend = "", tone = "") {
 
 function orderStatusSummary() {
   const statuses = [
-    ["new", "جديد", "New"], ["processing", "قيد التجهيز", "Processing"], ["shipped", "تم الشحن", "Shipped"],
+    ["all", "الكل", "All"], ["new", "جديد", "New"], ["processing", "قيد التجهيز", "Processing"], ["shipped", "تم الشحن", "Shipped"],
     ["completed", "مكتمل", "Completed"], ["cancelled", "ملغي", "Cancelled"]
   ];
   return statuses.map(([value, ar, en]) => {
-    const count = state.adminOrders.filter((order) => order.status === value).length;
-    return `<button data-action="admin-view" data-view="orders"><i class="${value}"></i><span><b>${count}</b><small>${state.lang === "ar" ? ar : en}</small></span><strong>→</strong></button>`;
+    const count = value === "all" ? state.adminOrders.length : state.adminOrders.filter((order) => order.status === value).length;
+    return `<button type="button" data-action="admin-order-filter" data-status="${value}" class="${state.adminOrderStatusFilter === value ? "active" : ""}" aria-pressed="${state.adminOrderStatusFilter === value}"><i class="${value}"></i><span><b>${count}</b><small>${state.lang === "ar" ? ar : en}</small></span><strong>→</strong></button>`;
   }).join("");
 }
 
@@ -1945,13 +1946,15 @@ function adminTable(headers, rows, emptyText) {
 
 function ordersViewMarkup() {
   const headers = state.lang === "ar"
-    ? ["الطلب", "العميل", "المنتجات", "الإجمالي", "الحالة", "التاريخ"]
-    : ["Order", "Customer", "Products", "Total", "Status", "Date"];
-  const rows = state.adminOrders.map((order) => `<tr><td><button class="table-action" data-action="open-order-details" data-id="${order.id}" dir="ltr">${escapeHTML(order.orderNumber)} ↗</button></td>
+    ? ["الطلب", "العميل", "المنتجات", "الإجمالي", "الحالة", "التاريخ", "الإجراءات"]
+    : ["Order", "Customer", "Products", "Total", "Status", "Date", "Actions"];
+  const filteredOrders = state.adminOrderStatusFilter === "all" ? state.adminOrders : state.adminOrders.filter((order) => order.status === state.adminOrderStatusFilter);
+  const rows = filteredOrders.map((order) => `<tr><td><button class="table-action" data-action="open-order-details" data-id="${order.id}" dir="ltr">${escapeHTML(order.orderNumber)} ↗</button></td>
     <td><b>${escapeHTML(order.customerName)}</b><small>${escapeHTML(order.phone)}</small></td>
     <td>${(order.items || []).reduce((sum, item) => sum + Number(item.quantity), 0)}</td><td><b>${formatPrice(order.total)}</b></td>
     <td><select data-action="order-status" data-id="${order.id}">${orderStatusOptions(order.status)}</select></td>
-    <td><small>${new Date(order.createdAt).toLocaleDateString(state.lang === "ar" ? "ar-EG" : "en-US")}</small></td></tr>`);
+    <td><small>${new Date(order.createdAt).toLocaleDateString(state.lang === "ar" ? "ar-EG" : "en-US")}</small></td>
+    <td><button type="button" class="secondary-button compact-button" data-action="open-order-details" data-id="${order.id}">${state.lang === "ar" ? "عرض التفاصيل" : "View details"}</button></td></tr>`);
   const activeOrder = state.adminOrders.find((order) => Number(order.id) === Number(state.activeAdminOrderId));
   return `${activeOrder ? orderDetailsMarkup(activeOrder) : ""}<div class="admin-workflow-strip">${orderStatusSummary()}</div>${adminTable(headers, rows, state.lang === "ar" ? "لا توجد طلبات بعد" : "No orders yet")}`;
 }
@@ -8780,8 +8783,16 @@ document.addEventListener("click", async (event) => {
     await openAdminDashboard(state.adminView);
   }
   if (action === "admin-view") {
-    renderAdminDashboard(actionElement.dataset.view);
+    const targetView = actionElement.dataset.view;
+    if (targetView === "orders" && location.pathname !== "/admin/orders") history.pushState({ adminView: "orders" }, "", "/admin/orders");
+    else if (targetView !== "orders" && location.pathname.startsWith("/admin/orders")) history.replaceState({ adminView: targetView }, "", "/");
+    renderAdminDashboard(targetView);
     $(".advanced-admin-panel")?.classList.remove("sidebar-open");
+  }
+  if (action === "admin-order-filter") {
+    state.adminOrderStatusFilter = actionElement.dataset.status || "all";
+    state.activeAdminOrderId = null;
+    renderAdminDashboard("orders");
   }
   if (action === "toggle-banner") {
     const banner = (state.adminWorkspace.banners || []).find((item) => item.id === actionElement.dataset.id);
