@@ -273,8 +273,9 @@ body:not(.dark) .origo-footer :is(.footer-column>a,.footer-column>button,.footer
   }
   .origo-footer .footer-bottom-bar p{
     margin:0!important;
-    font-size:10px!important;
-    line-height:1.4!important;
+    font-size:8px!important;
+    line-height:1.25!important;
+    white-space:nowrap!important;
   }
   footer.origo-footer{
     margin-bottom:0!important;
@@ -302,3 +303,18 @@ body:not(.dark) .origo-footer :is(.footer-column>a,.footer-column>button,.footer
 .back-to-top[data-complete="true"] .back-to-top-value{stroke:#c8943d}
 .back-to-top[data-complete="true"]{box-shadow:0 13px 34px rgba(114,0,25,.2),0 0 0 4px rgba(200,148,61,.1)}
 @media(max-width:640px){.back-to-top{left:12px;bottom:78px;width:56px;height:56px;-webkit-backdrop-filter:blur(7px) saturate(125%);backdrop-filter:blur(7px) saturate(125%)}.back-to-top-value{stroke-width:3.5}}
+
+/* Keep the newsletter action inside its field and above the mobile tab bar. */
+.origo-footer .footer-email-field{height:auto!important;min-height:58px;padding:5px!important;gap:6px!important;overflow:hidden!important}
+.origo-footer .footer-email-field>input{min-width:0!important;padding-inline:12px!important}
+.origo-footer #newsletter-form .footer-email-field>button{width:auto!important;min-width:128px!important;min-height:46px!important;height:46px!important;margin:0!important;padding:7px 14px!important;flex:0 0 auto!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:8px!important;border:0!important;border-radius:10px!important;color:#fff!important;background:linear-gradient(105deg,var(--footer-burgundy-deep),#9f0a28)!important;font:inherit!important;font-size:13px!important;font-weight:800!important;cursor:pointer!important}
+.origo-footer #newsletter-form .footer-email-field>button{width:42px!important;min-width:42px!important;height:42px!important;min-height:42px!important;padding:0!important;border:1.5px solid var(--footer-burgundy-deep)!important;border-radius:7px!important;color:var(--footer-burgundy-deep)!important;background:#fff!important;box-shadow:0 3px 10px rgba(45,0,12,.08)!important}
+.origo-footer #newsletter-form .footer-email-field>button>span{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
+.origo-footer #newsletter-form .footer-email-field>button>i{display:block!important;color:var(--footer-burgundy-deep)!important;font-size:22px!important;font-weight:900!important;line-height:1!important}
+@media(max-width:640px){
+  footer.origo-footer{padding-bottom:calc(70px + env(safe-area-inset-bottom))!important}
+  .origo-footer .footer-email-field{min-height:54px!important}
+  .origo-footer #newsletter-form .footer-email-field>button{width:40px!important;min-width:40px!important;height:40px!important;min-height:40px!important;padding:0!important}
+  body:not(.dark) footer.origo-footer,
+  body:not(.dark) footer.origo-footer .footer-bottom-bar{background:#fff!important}
+}

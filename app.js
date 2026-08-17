@@ -4414,7 +4414,20 @@ function renderWishlist() {
       </div>`;
     return;
   }
-  container.innerHTML = products.map((product) => productCardMarkup(product, { context: "wishlist", compact: true })).join("");
+  container.innerHTML = products.map((product) => `
+    <article class="wishlist-item">
+      <button class="wishlist-preview" type="button" data-action="wishlist-view" data-id="${escapeHTML(product.id)}" aria-label="${escapeHTML(localizedProductName(product))}">
+        <img src="${escapeHTML(product.image || PRODUCT_IMAGE_PLACEHOLDER)}" alt="" />
+      </button>
+      <div>
+        <small>${escapeHTML(product.brand || "ORIGO")}</small>
+        <h3>${escapeHTML(localizedProductName(product))}</h3>
+        <p>${escapeHTML(formatProductSize(product.size || product.sizes?.[0] || ""))}</p>
+        <b>${formatPrice(product.price)}</b>
+        <button class="wishlist-add" type="button" data-action="wishlist-add" data-id="${escapeHTML(product.id)}">${state.lang === "ar" ? "أضف إلى السلة" : "Add to cart"}</button>
+      </div>
+      <button class="remove-item" type="button" data-action="wishlist-remove" data-id="${escapeHTML(product.id)}" aria-label="${state.lang === "ar" ? "إزالة من المفضلة" : "Remove from wishlist"}">×</button>
+    </article>`).join("");
   $$("img", container).forEach((image) => {
     image.addEventListener("error", () => (image.src = PRODUCT_IMAGE_PLACEHOLDER), { once: true });
   });
@@ -4808,6 +4821,10 @@ function handleNotesRoute({ replace = false } = {}) {
   $("#catalog-page").hidden = true;
   closeDrawers();
   $$(".overlay.open").forEach(closeOverlay);
+  if (!window.ORIGOFragranceNotes) {
+    $("#notes-page-content").innerHTML = `<div class="notes-loading-state" role="status"><span></span><b>${state.lang === "ar" ? "جارٍ تحميل المكونات…" : "Loading ingredients…"}</b></div>`;
+    return true;
+  }
   const slug = match[1] || "";
   state.activeNoteSlug = slug;
   if (slug) {
@@ -4824,6 +4841,10 @@ function handleNotesRoute({ replace = false } = {}) {
   if (!replace) window.scrollTo({ top: 0, behavior: "smooth" });
   return true;
 }
+
+window.addEventListener("origo:knowledge-ready", () => {
+  if (document.body.classList.contains("notes-route")) handleNotesRoute({ replace: true });
+});
 
 function navigateNotes(slug = "") {
   const path = slug ? `/notes/${slug}` : "/notes";
@@ -5632,14 +5653,10 @@ function productCardMarkup(product, options = {}) {
   return `<article class="product-card origo-reference-product-card origo-exact-product-card${options.reveal ? " reveal" : ""}${outOfStock ? " is-out" : ""}" data-id="${escapeHTML(product.id)}" dir="${isArabic ? "rtl" : "ltr"}" lang="${state.lang}"${delayStyle}>
     <div class="product-image">
       ${discount ? `<span class="product-badge" data-badge-kind="sale">-${discount}%</span>` : ""}
+      <img class="product-authenticity-badge" src="/assets/authenticity-badge.png?v=4" alt="${escapeHTML(isArabic ? "منتج أصلي 100%" : "100% authentic product")}" width="62" height="62" loading="lazy" decoding="async" />
       <div class="product-card-top-actions">
         <button class="card-action-button card-favorite-button${saved ? " active" : ""}"${interactive ? ` data-action="toggle-wishlist"` : disabled} aria-label="${escapeHTML(favoriteLabel)}" aria-pressed="${saved}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/></svg></button>
         <button class="card-action-button card-compare-button${compared ? " active" : ""}"${interactive ? ` data-action="toggle-product-compare"` : disabled} aria-label="${escapeHTML(compareLabel)}" aria-pressed="${compared}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h12m0 0-3-3m3 3-3 3M17 17H5m0 0 3 3m-3-3 3-3"/></svg></button>
-      </div>
-      <div class="product-card-image-meta" aria-label="${escapeHTML(isArabic ? "بيانات المنتج" : "Product details")}">
-        <span class="product-card-image-gender">${escapeHTML(genderLabel || (isArabic ? "للجنسين" : "Unisex"))}</span>
-        ${product.concentration ? `<span class="product-card-image-concentration">${escapeHTML(product.concentration)}</span>` : ""}
-        <span class="product-card-image-size"><bdi dir="auto">${escapeHTML(sizeLabel || (isArabic ? "100 مل" : "100 ml"))}</bdi></span>
       </div>
       <button type="button" class="product-card-media-link"${interactive ? ` data-action="open-product" data-id="${escapeHTML(product.id)}"` : disabled} aria-label="${escapeHTML(isArabic ? `عرض ${name}` : `View ${name}`)}">${hasProductImage
         ? `<img src="${escapeHTML(mainImage)}" alt="${escapeHTML(`${product.brand || "ORIGO"} ${name}`)}" width="640" height="700" loading="lazy" decoding="async" draggable="false" />`
@@ -8585,9 +8602,18 @@ document.addEventListener("click", async (event) => {
     renderPasswordRecovery("reset-request", { requestId: "", code: "", attempts: 0 });
   }
   if (action === "resend-reset-code") {
-    const result = await api("/api/auth/forgot-password", { method:"POST", body:JSON.stringify({ email:state.passwordResetFlow.identifier }) });
-    state.passwordResetFlow = { ...state.passwordResetFlow, requestId:result.requestId, expiresAt:Date.now()+600000, resendAt:Date.now()+Number(result.resendAfter||60)*1000 };
-    renderPasswordRecovery("reset-code"); showToast("تم طلب رمز جديد إذا كان البريد مرتبطًا بحساب");
+    actionElement.disabled = true;
+    try {
+      const result = await api("/api/auth/forgot-password", { method:"POST", body:JSON.stringify({ email:state.passwordResetFlow.identifier }) });
+      state.passwordResetFlow = { ...state.passwordResetFlow, requestId:result.requestId, expiresAt:Date.now()+Number(result.expiresIn||600)*1000, resendAt:Date.now()+Number(result.resendAfter||60)*1000 };
+      renderPasswordRecovery("reset-code");
+      showToast("تم طلب رمز جديد إذا كان البريد مرتبطًا بحساب");
+    } catch (error) {
+      actionElement.disabled = false;
+      const errorElement = $("#auth-error");
+      if (errorElement) errorElement.textContent = error.message;
+      showToast(error.message, "error");
+    }
   }
   if (action === "resend-verification") {
     try { const result=await api("/api/auth/resend-verification",{method:"POST",body:JSON.stringify({email:state.emailVerificationFlow.email})}); state.emailVerificationFlow={...state.emailVerificationFlow,requestId:result.requestId,expiresAt:Date.now()+600000,resendAt:Date.now()+Number(result.resendAfter||60)*1000}; renderEmailVerification(); showToast("تم إرسال رمز تحقق جديد"); } catch(error){ $("#auth-error").textContent=error.message; }
@@ -9999,6 +10025,7 @@ document.addEventListener("submit", async (event) => {
       state.serverAvailable = true;
       state.user = result.user;
       state.cart = result.cart || [];
+      if (!state.user?.id) throw new Error(adminCopy("تعذر تثبيت جلسة الحساب. حاول تسجيل الدخول مجددًا.", "The account session could not be established. Please sign in again."));
       localStorage.setItem("origoCartUserId", String(state.user.id));
       persist();
       renderCart();

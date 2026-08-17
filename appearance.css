@@ -9,6 +9,43 @@
   zoom:var(--origo-heading-scale);
 }
 
+/* Absolute storefront surfaces: pure white by day and pure black by night.
+   Accent buttons, badges, artwork and promotional media keep their identity. */
+body:not(.dark) :where(
+  #storefront-main,.origo-home,.site-header,.category-nav,.origo-footer,
+  .home-brand-directory,.home-benefits-directory,.home-gender-section,.home-configured-product-row,
+  .product-card,.product-card-info,.drawer,.mobile-menu-panel,.store-bottom-nav,
+  .catalog-page,.catalog-sidebar,.catalog-toolbar,.catalog-filter-panel,
+  .notes-route-page,.notes-library-toolbar,.library-note-card,.note-detail-hero,.note-detail-copy,.note-detail-section,
+  .commerce-page,.checkout-main-card,.checkout-summary-card,.checkout-why,.tracking-card,.status-hero,
+  .account-route-page,.account-card,.account-subview,.auth-card,
+  .benefit-detail-page,.benefit-content-card,.brands-route-page,.mega-dropdown,.brands-dropdown,
+  input,textarea,select
+){background-color:#fff!important}
+
+body.dark :where(
+  #storefront-main,.origo-home,.site-header,.category-nav,.origo-footer,
+  .home-brand-directory,.home-benefits-directory,.home-gender-section,.home-configured-product-row,
+  .product-card,.product-card-info,.drawer,.mobile-menu-panel,.store-bottom-nav,
+  .catalog-page,.catalog-sidebar,.catalog-toolbar,.catalog-filter-panel,
+  .notes-route-page,.notes-library-toolbar,.library-note-card,.note-detail-hero,.note-detail-copy,.note-detail-section,
+  .commerce-page,.checkout-main-card,.checkout-summary-card,.checkout-why,.tracking-card,.status-hero,
+  .account-route-page,.account-card,.account-subview,.auth-card,
+  .benefit-detail-page,.benefit-content-card,.brands-route-page,.mega-dropdown,.brands-dropdown,
+  input,textarea,select
+),
+html[data-theme="dark"] :where(
+  #storefront-main,.origo-home,.site-header,.category-nav,.origo-footer,
+  .home-brand-directory,.home-benefits-directory,.home-gender-section,.home-configured-product-row,
+  .product-card,.product-card-info,.drawer,.mobile-menu-panel,.store-bottom-nav,
+  .catalog-page,.catalog-sidebar,.catalog-toolbar,.catalog-filter-panel,
+  .notes-route-page,.notes-library-toolbar,.library-note-card,.note-detail-hero,.note-detail-copy,.note-detail-section,
+  .commerce-page,.checkout-main-card,.checkout-summary-card,.checkout-why,.tracking-card,.status-hero,
+  .account-route-page,.account-card,.account-subview,.auth-card,
+  .benefit-detail-page,.benefit-content-card,.brands-route-page,.mega-dropdown,.brands-dropdown,
+  input,textarea,select
+){background-color:#000!important}
+
 /* Reference product card: large real product image, compact luxury details. */
 body #storefront-main .origo-exact-product-card,
 body .product-overlay .origo-exact-product-card{
@@ -697,11 +734,11 @@ body.dark .image-upload-requirements,html[data-theme="dark"] .image-upload-requi
 
 /* Editable semantic palettes. These final rules intentionally override page-specific tints. */
 body:not(.dark){
-  --white:var(--origo-light-surface,#fff);
-  --paper:var(--origo-light-page,#fff);
-  --paper-2:color-mix(in srgb,var(--origo-light-burgundy,#720019) 4%,var(--origo-light-surface,#fff));
-  --card:var(--origo-light-surface,#fff);
-  --surface:var(--origo-light-surface,#fff);
+  --white:#fff;
+  --paper:#fff;
+  --paper-2:#fff;
+  --card:#fff;
+  --surface:#fff;
   --ink:var(--origo-light-text,#251519);
   --ink-soft:var(--origo-light-muted,#6e5b60);
   --muted:var(--origo-light-muted,#6e5b60);
@@ -710,28 +747,28 @@ body:not(.dark){
   --burgundy-deep:color-mix(in srgb,var(--origo-light-burgundy,#720019) 78%,#000);
   --line:color-mix(in srgb,var(--origo-light-burgundy,#720019) 16%,transparent);
   color:var(--origo-light-text,#251519);
-  background:var(--origo-light-page,#fff)!important;
+  background:#fff!important;
 }
 body:not(.dark) :where(#storefront-main,.origo-home,.pdp-page,.commerce-page,.account-route-page,.catalog-page,.fragrance-finder-page,.alternatives-page,.benefit-detail-page,.brands-route-page){
-  background-color:var(--origo-light-page,#fff)!important;
+  background-color:#fff!important;
   background-image:none!important;
 }
 body:not(.dark) #storefront-main :where(.product-card,.checkout-main-card,.checkout-summary-card,.checkout-side-card,.account-subview,.recent-orders,.profile-card,.account-mobile-identity,.account-mobile-menu,.account-support-list,.catalog-filter-panel,.catalog-toolbar,.finder-card,.finder-option,.alternative-card,.benefit-content-card,.performance-card,.performance-insight-card),
 body:not(.dark) :where(.mega-dropdown,.brands-dropdown){
   color:var(--origo-light-text,#251519)!important;
-  background:var(--origo-light-surface,#fff)!important;
+  background:#fff!important;
 }
 body:not(.dark) .site-header,body:not(.dark) .category-nav{
   color:var(--origo-light-burgundy,#720019)!important;
-  background:var(--origo-header-light,var(--origo-light-surface,#fff))!important;
+  background:#fff!important;
 }
 
 body.dark,html[data-theme="dark"] body{
-  --white:var(--origo-dark-surface,#4b4d52);
-  --paper:var(--origo-dark-page,#3b3c40);
-  --paper-2:var(--origo-dark-elevated,#5a5c62);
-  --card:var(--origo-dark-surface,#4b4d52);
-  --surface:var(--origo-dark-surface,#4b4d52);
+  --white:#000;
+  --paper:#000;
+  --paper-2:#000;
+  --card:#000;
+  --surface:#000;
   --ink:var(--origo-dark-text,#fff);
   --ink-soft:var(--origo-dark-muted,#f0f0f2);
   --muted:var(--origo-dark-muted,#f0f0f2);
@@ -740,27 +777,27 @@ body.dark,html[data-theme="dark"] body{
   --burgundy-deep:color-mix(in srgb,var(--origo-dark-burgundy,#720019) 78%,#000);
   --line:color-mix(in srgb,var(--origo-dark-text,#fff) 22%,transparent);
   color:var(--origo-dark-text,#fff)!important;
-  background:var(--origo-dark-page,#3b3c40)!important;
+  background:#000!important;
 }
 body.dark :where(#storefront-main,.origo-home,.pdp-page,.commerce-page,.account-route-page,.catalog-page,.fragrance-finder-page,.alternatives-page,.benefit-detail-page,.brands-route-page,.origo-footer),
 html[data-theme="dark"] :where(#storefront-main,.origo-home,.pdp-page,.commerce-page,.account-route-page,.catalog-page,.fragrance-finder-page,.alternatives-page,.benefit-detail-page,.brands-route-page,.origo-footer){
   color:var(--origo-dark-text,#fff)!important;
-  background:var(--origo-dark-page,#3b3c40)!important;
+  background:#000!important;
 }
 body.dark :where(.product-card,.checkout-main-card,.checkout-summary-card,.checkout-side-card,.account-subview,.recent-orders,.profile-card,.vip-promo,.account-mobile-identity,.account-mobile-menu,.account-support-list,.performance-card,.performance-insight-card,.pdp-card,.pdp-purchase,.catalog-filter-panel,.catalog-toolbar,.finder-card,.finder-option,.alternative-card,.benefit-content-card,.mega-dropdown,.brands-dropdown,[class*="-panel"],[class*="-dialog"]),
 html[data-theme="dark"] :where(.product-card,.checkout-main-card,.checkout-summary-card,.checkout-side-card,.account-subview,.recent-orders,.profile-card,.vip-promo,.account-mobile-identity,.account-mobile-menu,.account-support-list,.performance-card,.performance-insight-card,.pdp-card,.pdp-purchase,.catalog-filter-panel,.catalog-toolbar,.finder-card,.finder-option,.alternative-card,.benefit-content-card,.mega-dropdown,.brands-dropdown,[class*="-panel"],[class*="-dialog"]){
   color:var(--origo-dark-text,#fff)!important;
   border-color:color-mix(in srgb,var(--origo-dark-text,#fff) 22%,transparent)!important;
-  background:var(--origo-dark-surface,#4b4d52)!important;
+  background:#000!important;
 }
 body.dark :where(input,textarea,select),html[data-theme="dark"] :where(input,textarea,select){
   color:var(--origo-dark-text,#fff)!important;
   border-color:color-mix(in srgb,var(--origo-dark-text,#fff) 28%,transparent)!important;
-  background:var(--origo-dark-elevated,#5a5c62)!important;
+  background:#000!important;
 }
 body.dark .site-header,body.dark .category-nav,html[data-theme="dark"] .site-header,html[data-theme="dark"] .category-nav{
   color:var(--origo-dark-text,#fff)!important;
-  background:var(--origo-header-dark,var(--origo-dark-surface,#4b4d52))!important;
+  background:#000!important;
   border-color:color-mix(in srgb,var(--origo-dark-text,#fff) 22%,transparent)!important;
 }
 body.dark :where(.burgundy-button,.pdp-add,.action-count),html[data-theme="dark"] :where(.burgundy-button,.pdp-add,.action-count){
@@ -3325,6 +3362,34 @@ body .product-overlay .origo-exact-product-card .exact-card-favorite:hover{
   }
 }
 
+/* Mobile commerce drawers are full-screen application surfaces. Keeping the
+   storefront and tab bar visible beneath them creates accidental overlap. */
+@media(max-width:640px){
+  body:has(.drawer.open) .store-bottom-nav{display:none!important}
+  body .drawer{
+    z-index:320!important;
+    inset:0!important;
+    width:100%!important;
+    max-width:none!important;
+    height:100dvh!important;
+    padding:18px 16px max(18px,env(safe-area-inset-bottom))!important;
+    overflow:hidden!important;
+    color:var(--ink,#24191c)!important;
+    background:#fff!important;
+    background-image:none!important;
+    box-shadow:none!important;
+  }
+  body.dark .drawer{color:#fff!important;background:#171216!important}
+  .drawer-head{flex:0 0 auto;align-items:center!important;padding-bottom:10px;border-bottom:1px solid var(--line,#e9dfe1)}
+  .drawer-head h2{font-size:27px!important}
+  .drawer :is(.cart-items,.wishlist-items){min-height:0;margin:12px 0!important;overscroll-behavior:contain}
+  .drawer-footer{flex:0 0 auto;padding:12px 0 0!important;background:inherit!important}
+  .wishlist-item{grid-template-columns:76px minmax(0,1fr) 32px!important;gap:11px!important;padding:11px 0!important}
+  .wishlist-preview{width:76px!important;height:94px!important;border-radius:10px!important}
+  .wishlist-item h3{font-size:16px!important;line-height:1.35!important}
+  .cart-item img{object-fit:contain!important;border-radius:10px!important}
+}
+
 /* Comfortable separation between the gender heading and its buttons. */
 #home .home-gender-section .gender-section-title{margin-bottom:26px!important}
 #home .home-gender-section .home-gender-slider{margin-top:0!important}
@@ -3550,4 +3615,84 @@ body:not(.catalog-route) :is(.catalog-filter-drawer,.catalog-filter-backdrop){
   }
   body.dark .mobile-menu-panel{color:#fff!important;background:#171216!important}
   body.mobile-menu-active .store-bottom-nav{z-index:300!important}
+}
+
+/* Final authority for every customer-facing surface. */
+html body:not(.dark){background:#fff!important}
+html body.dark,html[data-theme="dark"] body{background:#000!important}
+body:not(.dark) :is(#storefront-main,.origo-home,.site-header,.category-nav,.origo-footer,.home-brand-directory,.home-benefits-directory,.home-gender-section,.home-configured-product-row,.product-card,.product-card-info,.drawer,.mobile-menu-panel,.store-bottom-nav,.catalog-page,.catalog-sidebar,.catalog-toolbar,.catalog-filter-panel,.notes-route-page,.notes-library-toolbar,.library-note-card,.note-detail-hero,.note-detail-copy,.note-detail-section,.commerce-page,.checkout-main-card,.checkout-summary-card,.checkout-why,.tracking-card,.status-hero,.account-route-page,.account-card,.account-subview,.auth-card,.benefit-detail-page,.benefit-content-card,.brands-route-page,.mega-dropdown,.brands-dropdown,input,textarea,select){background:#fff!important}
+body.dark :is(#storefront-main,.origo-home,.site-header,.category-nav,.origo-footer,.home-brand-directory,.home-benefits-directory,.home-gender-section,.home-configured-product-row,.product-card,.product-card-info,.drawer,.mobile-menu-panel,.store-bottom-nav,.catalog-page,.catalog-sidebar,.catalog-toolbar,.catalog-filter-panel,.notes-route-page,.notes-library-toolbar,.library-note-card,.note-detail-hero,.note-detail-copy,.note-detail-section,.commerce-page,.checkout-main-card,.checkout-summary-card,.checkout-why,.tracking-card,.status-hero,.account-route-page,.account-card,.account-subview,.auth-card,.benefit-detail-page,.benefit-content-card,.brands-route-page,.mega-dropdown,.brands-dropdown,input,textarea,select),html[data-theme="dark"] :is(#storefront-main,.origo-home,.site-header,.category-nav,.origo-footer,.home-brand-directory,.home-benefits-directory,.home-gender-section,.home-configured-product-row,.product-card,.product-card-info,.drawer,.mobile-menu-panel,.store-bottom-nav,.catalog-page,.catalog-sidebar,.catalog-toolbar,.catalog-filter-panel,.notes-route-page,.notes-library-toolbar,.library-note-card,.note-detail-hero,.note-detail-copy,.note-detail-section,.commerce-page,.checkout-main-card,.checkout-summary-card,.checkout-why,.tracking-card,.status-hero,.account-route-page,.account-card,.account-subview,.auth-card,.benefit-detail-page,.benefit-content-card,.brands-route-page,.mega-dropdown,.brands-dropdown,input,textarea,select){background:#000!important}
+
+/* Night headings stay clean: no decorative rules or underlines below titles. */
+body.dark #storefront-main :is(h1,h2,h3,h4,h5,h6)::after,
+html[data-theme="dark"] #storefront-main :is(h1,h2,h3,h4,h5,h6)::after{display:none!important;content:none!important}
+body.dark #storefront-main :is(.ornament-heading,.gender-section-title)>span,
+html[data-theme="dark"] #storefront-main :is(.ornament-heading,.gender-section-title)>span{display:none!important}
+body.dark #storefront-main :is(.home-section-head,.section-head,.section-title,[class*="-heading"],[class*="-title"]),
+html[data-theme="dark"] #storefront-main :is(.home-section-head,.section-head,.section-title,[class*="-heading"],[class*="-title"]){border-bottom:0!important;text-decoration:none!important}
+
+/* Product photography fills its assigned frame without inner gutters. */
+body #storefront-main .origo-exact-product-card .product-image,
+body #storefront-main .origo-reference-product-card .product-image,
+body .product-overlay .origo-exact-product-card .product-image,
+body .product-overlay .origo-reference-product-card .product-image{
+  width:100%!important;margin:0!important;padding:0!important;
+}
+body #storefront-main .origo-exact-product-card .product-card-media-link,
+body #storefront-main .origo-reference-product-card .product-card-media-link,
+body .product-overlay .origo-exact-product-card .product-card-media-link,
+body .product-overlay .origo-reference-product-card .product-card-media-link{
+  inset:0!important;width:100%!important;height:100%!important;padding:0!important;overflow:hidden!important;
+}
+body #storefront-main .origo-exact-product-card .product-card-media-link img,
+body #storefront-main .origo-reference-product-card .product-card-media-link img,
+body .product-overlay .origo-exact-product-card .product-card-media-link img,
+body .product-overlay .origo-reference-product-card .product-card-media-link img{
+  width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;
+  margin:0!important;object-fit:cover!important;object-position:center!important;scale:1.7!important;
+}
+
+/* Product-card controls: quality at the top, compare/favorite at opposite bottom corners. */
+html body #storefront-main #home .origo-exact-product-card .product-card-image-meta,
+html body .product-overlay .origo-exact-product-card .product-card-image-meta{display:none!important}
+html body #storefront-main #home .origo-exact-product-card .product-card-top-actions,
+html body .product-overlay .origo-exact-product-card .product-card-top-actions{
+  position:absolute!important;z-index:12!important;inset:auto 8px 8px 8px!important;width:auto!important;
+  display:flex!important;align-items:center!important;justify-content:space-between!important;gap:0!important;
+  direction:ltr!important;pointer-events:none!important;
+}
+html body #storefront-main #home .origo-exact-product-card .product-card-top-actions .card-action-button,
+html body .product-overlay .origo-exact-product-card .product-card-top-actions .card-action-button{
+  position:static!important;width:32px!important;height:32px!important;min-width:32px!important;min-height:32px!important;
+  padding:7px!important;pointer-events:auto!important;background:#fff!important;border:1px solid rgba(114,0,25,.18)!important;
+}
+html body #storefront-main #home .origo-exact-product-card .product-authenticity-badge,
+html body .product-overlay .origo-exact-product-card .product-authenticity-badge{
+  position:absolute!important;z-index:12!important;top:7px!important;left:7px!important;right:auto!important;
+  width:42px!important;height:42px!important;margin:0!important;padding:0!important;display:block!important;
+  object-fit:contain!important;background:transparent!important;border:0!important;border-radius:0!important;
+  box-shadow:none!important;filter:none!important;scale:1!important;pointer-events:none!important;
+}
+
+/* Center the quick actions and strengthen the purchasing information. */
+html body #storefront-main #home .origo-exact-product-card .product-card-top-actions,
+html body .product-overlay .origo-exact-product-card .product-card-top-actions{
+  inset:auto 0 8px 0!important;width:100%!important;justify-content:center!important;gap:10px!important;
+}
+html body #storefront-main #home .origo-exact-product-card .exact-card-prices del,
+html body .product-overlay .origo-exact-product-card .exact-card-prices del{
+  font-size:clamp(11px,1.15vw,16px)!important;font-weight:800!important;color:#676164!important;
+}
+html body #storefront-main #home .origo-exact-product-card .exact-card-actions,
+html body .product-overlay .origo-exact-product-card .exact-card-actions{display:flex!important;justify-content:center!important}
+html body #storefront-main #home .origo-exact-product-card .exact-card-actions .card-add-button,
+html body .product-overlay .origo-exact-product-card .exact-card-actions .card-add-button{
+  width:88%!important;min-height:38px!important;margin-inline:auto!important;padding:8px 12px!important;
+  justify-content:center!important;font-size:11px!important;border-radius:9px!important;
+}
+@media(max-width:700px){
+  html body #storefront-main #home .origo-exact-product-card .exact-card-prices del,
+  html body .product-overlay .origo-exact-product-card .exact-card-prices del{font-size:12px!important}
+  html body #storefront-main #home .origo-exact-product-card .exact-card-actions .card-add-button,
+  html body .product-overlay .origo-exact-product-card .exact-card-actions .card-add-button{width:92%!important;min-height:35px!important;font-size:9.5px!important}
 }

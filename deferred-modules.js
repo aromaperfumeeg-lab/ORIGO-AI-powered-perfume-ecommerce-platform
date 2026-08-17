@@ -48,7 +48,8 @@
   function loadKnowledgeResources() {
     if (knowledgePromise) return knowledgePromise;
     knowledgePromise = [...document.querySelectorAll("script[data-knowledge-src]")]
-      .reduce((chain, placeholder) => chain.then(() => loadScript(placeholder.dataset.knowledgeSrc)), Promise.resolve());
+      .reduce((chain, placeholder) => chain.then(() => loadScript(placeholder.dataset.knowledgeSrc)), Promise.resolve())
+      .then(() => window.dispatchEvent(new Event("origo:knowledge-ready")));
     return knowledgePromise;
   }
 

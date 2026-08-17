@@ -1263,6 +1263,15 @@ async function handleAPI(request, response, url, origin) {
       if (!allowAuthRequest(request, "forgot-password", 5, 15 * 60_000)) {
         return jsonResponse(response, 429, { error: "طلبات كثيرة. حاول مرة أخرى لاحقًا." }, origin, { "Retry-After": "900" });
       }
+      // Do not tell the customer that a code was sent when transactional email
+      // is not configured. This check is independent of the submitted address,
+      // so it keeps account existence private while surfacing a real outage.
+      if (!passwordRecoveryChannels().email) {
+        return jsonResponse(response, 503, {
+          error: "استعادة كلمة المرور عبر البريد غير متاحة مؤقتًا. تواصل مع خدمة العملاء.",
+          code: "PASSWORD_RECOVERY_UNAVAILABLE"
+        }, origin, { "Retry-After": "300" });
+      }
       const body = await readJSONBody(request);
       const channel = "email";
       const neutralMessage = "إذا كان هناك حساب مرتبط بهذا البريد فسيتم إرسال رمز الاستعادة إليه.";
@@ -1280,7 +1289,10 @@ async function handleAPI(request, response, url, origin) {
         await sendPasswordResetCode({ channel, to: target, code: challenge.code });
       } catch {
         cancelPasswordResetChallenge(challenge.publicId);
-        return jsonResponse(response, 200, { ok: true, message: neutralMessage, requestId: fakeRequestId, expiresIn: 600, resendAfter: 60 }, origin);
+        return jsonResponse(response, 503, {
+          error: "تعذر إرسال رمز الاستعادة الآن. حاول مرة أخرى بعد قليل.",
+          code: "PASSWORD_RECOVERY_DELIVERY_FAILED"
+        }, origin, { "Retry-After": "60" });
       }
       return jsonResponse(response, 200, { ok: true, message: neutralMessage, requestId: challenge.publicId, expiresIn: 600, resendAfter: 60 }, origin);
     } catch {
