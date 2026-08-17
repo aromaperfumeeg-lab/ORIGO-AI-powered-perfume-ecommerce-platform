@@ -909,7 +909,7 @@ const defaultFooterBenefits = [
 ];
 
 const defaultStoreSettings = {
-  storeName: "ORIGO", currency: "EGP", taxRate: 14, lowStockAlerts: true, orderNotifications: true,
+  storeName: "ORIGO", currency: "EGP", taxRate: 14, lowStockAlerts: true, orderNotifications: true, newOrderNotifications: true,
   passwordRecoveryChannels: { email: true, whatsapp: true, sms: true },
   logos: { light: "assets/origo-logo.svg", dark: "assets/origo-logo-dark.svg", icon: "assets/origo-logo-icon.svg" },
   appearance: {
@@ -1173,8 +1173,11 @@ const state = {
   adminSuggestions: [],
   adminSearchController: null,
   user: null,
+  authRevision: 0,
   orders: [],
   adminOrders: [],
+  knownAdminOrderIds: null,
+  adminOrderPollStarted: false,
   adminActivity: [],
   adminStaff: [],
   activeAdminOrderId: null,
@@ -1346,6 +1349,7 @@ function syncCart(delay = 350) {
       await pushCart();
     } catch (error) {
       if (error.status === 401) {
+        state.authRevision += 1;
         state.user = null;
         updateAccountIndicator();
       }
@@ -1481,6 +1485,7 @@ async function hydrateDeferredStorefront(total = 0) {
 async function hydrateServer() {
   const localCart = [...state.cart];
   const cartOwner = localStorage.getItem("origoCartUserId");
+  const authRevisionAtStart = state.authRevision;
   try {
     const results = await Promise.allSettled([
       api("/api/products?offset=0&limit=24"),
@@ -1501,7 +1506,7 @@ async function hydrateServer() {
     });
     state.serverAvailable = results[0]?.status === "fulfilled";
     if (Array.isArray(catalog.products)) state.products = catalog.products.map(serverProduct);
-    state.user = session.user || null;
+    if (state.authRevision === authRevisionAtStart) state.user = session.user || null;
     if (state.user) {
       if (cartOwner === String(state.user.id)) {
         state.cart = session.cart || [];
@@ -1532,6 +1537,7 @@ async function hydrateServer() {
     handleNotesRoute({ replace: true });
     handleCatalogRoute({ replace: true });
     handleProductRoute();
+    await handleAdminOrderRoute();
     scheduleStorefrontIdle(() => hydrateDeferredStorefront(Number(catalog.total || state.products.length)), 1800);
   } catch {
     state.serverAvailable = false;
@@ -1631,7 +1637,11 @@ function adminStatusLabel(status) {
     active: ["نشط", "Active"], scheduled: ["مجدول", "Scheduled"], published: ["منشور", "Published"],
     pending: ["بانتظار المراجعة", "Pending"], open: ["مفتوح", "Open"], waiting: ["بانتظار العميل", "Waiting"],
     received: ["تم الاستلام", "Received"], in_transit: ["في الطريق", "In transit"],
-    low: ["منخفض", "Low"], healthy: ["جيد", "Healthy"], draft: ["مسودة", "Draft"]
+    low: ["منخفض", "Low"], healthy: ["جيد", "Healthy"], draft: ["مسودة", "Draft"],
+    new: ["طلب جديد", "New order"], processing: ["قيد التجهيز", "Processing"],
+    ready_to_ship: ["جاهز للشحن", "Ready to ship"], shipped: ["تم الشحن", "Shipped"],
+    out_for_delivery: ["خرج للتسليم", "Out for delivery"], delivered: ["تم التسليم", "Delivered"],
+    completed: ["مكتمل", "Completed"], cancelled: ["ملغي", "Cancelled"], returned: ["مرتجع", "Returned"]
   };
   return (labels[status] || [status, status])[state.lang === "ar" ? 0 : 1];
 }
@@ -1713,7 +1723,13 @@ async function loadAdminDashboardData() {
       hasStaffPermission("settings") ? api("/api/admin/integrations") : Promise.resolve({ integrations: {} }),
       hasStaffPermission("catalog:view") ? api("/api/admin/alternatives") : Promise.resolve({ items: [], settings: {}, analytics: {} })
     ]);
-    state.adminOrders = ordersResult.orders || [];
+    const nextOrders = ordersResult.orders || [];
+    const nextIds = new Set(nextOrders.map((order) => Number(order.id)));
+    const newlyCreated = state.knownAdminOrderIds
+      ? nextOrders.filter((order) => !state.knownAdminOrderIds.has(Number(order.id)))
+      : [];
+    state.adminOrders = nextOrders;
+    state.knownAdminOrderIds = nextIds;
     if (workspaceResult.state && Object.keys(workspaceResult.state).length) {
       state.adminWorkspace = {
         ...state.adminWorkspace,
@@ -1729,9 +1745,76 @@ async function loadAdminDashboardData() {
     state.adminStaff = staffResult.staff || [];
     state.integrationStatus = integrationsResult.integrations || {};
     state.alternativesAdmin = alternativesResult || state.alternativesAdmin;
+    updateAdminNotificationBadge();
+    if (newlyCreated.length && mergeStoreSettings(state.adminWorkspace.settings || {}).newOrderNotifications !== false) {
+      showToast(adminCopy(`وصل ${newlyCreated.length} طلب جديد`, `${newlyCreated.length} new order${newlyCreated.length === 1 ? "" : "s"} received`));
+      if ("Notification" in window && Notification.permission === "granted") {
+        new Notification(adminCopy("طلب جديد في ORIGO", "New ORIGO order"), { body: newlyCreated.map((order) => order.orderNumber).join("، ") });
+      }
+    }
   } catch {
     state.adminOrders = [];
   }
+}
+
+function unreadAdminOrders() {
+  const seen = new Set(readStoredArray("origoSeenAdminOrders").map(Number));
+  return state.adminOrders.filter((order) => ["new", "received"].includes(order.status) && !seen.has(Number(order.id)));
+}
+
+function updateAdminNotificationBadge() {
+  const badge = $(".admin-notifications i");
+  if (!badge) return;
+  const count = unreadAdminOrders().length;
+  badge.textContent = String(count);
+  badge.hidden = count === 0;
+  $(".admin-notifications")?.setAttribute("aria-label", adminCopy(`الإشعارات: ${count} طلب جديد`, `Notifications: ${count} new orders`));
+}
+
+function markAdminOrdersSeen() {
+  const ids = state.adminOrders.filter((order) => ["new", "received"].includes(order.status)).map((order) => Number(order.id));
+  localStorage.setItem("origoSeenAdminOrders", JSON.stringify(ids));
+  updateAdminNotificationBadge();
+}
+
+function startAdminOrderPolling() {
+  if (state.adminOrderPollStarted || !hasStaffPermission("orders:view")) return;
+  state.adminOrderPollStarted = true;
+  window.setInterval(async () => {
+    if (!$("#admin-overlay")?.classList.contains("open") || !state.user) return;
+    try {
+      const result = await api("/api/admin/orders");
+      const previousIds = state.knownAdminOrderIds || new Set();
+      const nextOrders = result.orders || [];
+      const added = nextOrders.filter((order) => !previousIds.has(Number(order.id)));
+      state.adminOrders = nextOrders;
+      state.knownAdminOrderIds = new Set(nextOrders.map((order) => Number(order.id)));
+      updateAdminNotificationBadge();
+      if (added.length && mergeStoreSettings(state.adminWorkspace.settings || {}).newOrderNotifications !== false) {
+        showToast(adminCopy(`وصل ${added.length} طلب جديد`, `${added.length} new order${added.length === 1 ? "" : "s"} received`));
+        if ("Notification" in window && Notification.permission === "granted") new Notification(adminCopy("طلب جديد في ORIGO", "New ORIGO order"), { body: added.map((order) => order.orderNumber).join("، ") });
+        if (state.adminView === "orders") renderAdminDashboard("orders");
+      }
+    } catch {}
+  }, 20_000);
+}
+
+async function handleAdminOrderRoute() {
+  const match = location.pathname.match(/^\/admin\/orders(?:\/([^/]+))?\/?$/i);
+  if (!match) return false;
+  if (!isStaffUser()) {
+    openAccount("login", "admin-order");
+    return true;
+  }
+  await openAdminDashboard("orders");
+  if (match[1]) {
+    const reference = decodeURIComponent(match[1]);
+    const order = state.adminOrders.find((item) => String(item.id) === reference || item.orderNumber === reference);
+    state.activeAdminOrderId = order?.id || null;
+    renderAdminDashboard("orders");
+    if (!order) showToast(adminCopy("لم يتم العثور على الطلب المطلوب", "The requested order was not found"), "error");
+  }
+  return true;
 }
 
 async function openAdminDashboard(view = state.adminView || "overview") {
@@ -1744,6 +1827,7 @@ async function openAdminDashboard(view = state.adminView || "overview") {
   try {
     await loadAdminDashboardData();
     renderAdminDashboard(view);
+    startAdminOrderPolling();
   } catch (error) {
     if (content) content.innerHTML = `<section class="admin-loading-state is-error" role="alert"><b>${adminCopy("تعذر تحميل بعض بيانات اللوحة", "Some dashboard data could not be loaded")}</b><small>${escapeHTML(error.message || adminCopy("تحقق من اتصال الخادم ثم حاول مرة أخرى.", "Check the server connection and try again."))}</small><button type="button" class="burgundy-button" data-action="open-admin">${adminCopy("إعادة المحاولة", "Try again")}</button></section>`;
   }
@@ -2427,7 +2511,7 @@ function storeSettingsDashboardMarkup() {
   return `<form id="store-basic-settings" class="store-settings-dashboard" dir="rtl">
     <div class="store-settings-tabs"><button class="active" type="button">⚙ إعدادات المتجر</button><button type="button" data-action="advanced-settings">الإضافات والتكاملات</button></div>
     <div class="store-settings-grid">
-      <section class="store-settings-card store-info-card"><h3>ⓘ معلومات المتجر الأساسية</h3><div class="store-info-layout"><div class="store-logo-box"><span>الشعار</span><img src="${escapeHTML(settings.logos.dark)}" alt="ORIGO"/><button type="button" data-action="advanced-settings">تغيير الشعار</button></div><div class="store-info-fields"><label>اسم المتجر<input name="storeName" value="${escapeHTML(settings.storeName || "ORIGO")}"/></label><label>الوصف القصير<textarea name="shortDescription">متجر فاخر للعطور الأصلية ومنتجات العناية الشخصية</textarea></label><div><label>رقم الجوال<input name="phone" value="010 1234 5678" dir="ltr"/></label><label>البريد الإلكتروني<input name="supportEmail" value="${escapeHTML(settings.supportEmail || "info@origoscents.com")}" dir="ltr"/></label></div><div><label>العملة الأساسية<select name="currency"><option value="EGP"${settings.currency === "EGP" ? " selected" : ""}>الجنيه المصري</option><option value="USD">الدولار الأمريكي</option></select></label><label>اللغة الافتراضية<select name="defaultLanguage"><option>العربية</option><option>English</option></select></label></div><div><label>المنطقة الزمنية<select name="timezone"><option>القاهرة (GMT+2)</option></select></label></div></div></div><button class="store-save-button" type="submit">حفظ التغييرات</button></section>
+      <section class="store-settings-card store-info-card"><h3>ⓘ هوية المتجر والشعار المركزي</h3><div class="store-info-layout"><div class="store-identity-assets"><div class="store-logo-box"><span>الشعار المركزي</span><img src="${escapeHTML(settings.logos.dark)}" alt="ORIGO"/><button type="button" data-action="advanced-settings">تغيير الشعار</button></div><label class="store-logo-field authenticity-badge-upload dashboard-authenticity-upload"><span>شعار أصالة المنتجات</span><img id="authenticity-badge-preview" src="${escapeHTML(settings.authenticityBadge || defaultStoreSettings.authenticityBadge)}" alt="معاينة شعار أصالة المنتجات"/><input type="file" accept="image/png,image/webp" data-authenticity-badge-upload/><small>PNG أو WEBP شفاف — بحد أقصى 350 KB</small></label></div><div class="store-info-fields"><label>اسم المتجر<input name="storeName" value="${escapeHTML(settings.storeName || "ORIGO")}"/></label><label>الوصف القصير<textarea name="shortDescription">متجر فاخر للعطور الأصلية ومنتجات العناية الشخصية</textarea></label><div><label>رقم الجوال<input name="phone" value="010 1234 5678" dir="ltr"/></label><label>البريد الإلكتروني<input name="supportEmail" value="${escapeHTML(settings.supportEmail || "info@origoscents.com")}" dir="ltr"/></label></div><div><label>العملة الأساسية<select name="currency"><option value="EGP"${settings.currency === "EGP" ? " selected" : ""}>الجنيه المصري</option><option value="USD">الدولار الأمريكي</option></select></label><label>اللغة الافتراضية<select name="defaultLanguage"><option>العربية</option><option>English</option></select></label></div><div><label>المنطقة الزمنية<select name="timezone"><option>القاهرة (GMT+2)</option></select></label></div></div></div><button class="store-save-button" type="submit">حفظ التغييرات</button></section>
       <div class="store-settings-stack"><section class="store-settings-card"><h3>▣ إعدادات الدفع</h3>${[["الدفع عند الاستلام","الدفع نقداً عند استلام الطلب","cod",true],["بطاقات الائتمان / الخصم","Visa, Mastercard, Meeza","cards",true],["فودافون كاش","الدفع عبر فودافون كاش","vodafone",true],["إنستاباي","الدفع عبر تطبيق إنستاباي","instapay",false]].map(([title,desc,name,on]) => `<div class="payment-setting"><span><b>${title}</b><small>${desc}</small></span><button type="button">إعداد</button>${toggle(`payment.${name}`,on)}</div>`).join("")}</section><section class="store-settings-card"><h3>▱ إعدادات الشحن والتوصيل</h3><div class="two-setting-fields"><label>شركة التوصيل<select><option>شركة واحدة - الشحن السريع</option></select></label><label>مدة التوصيل المتوقعة<select><option>2 - 5 أيام عمل</option></select></label><label>رسوم الشحن<input name="shippingFee" value="ثابتة"/></label><label>قيمة رسوم (EGP)<input name="shippingFeeValue" value="60"/></label></div><p class="store-success-note">ⓘ يتم حساب الرسوم بناءً على إجمالي الطلب والموقع</p></section></div>
       <div class="store-settings-stack"><section class="store-settings-card"><h3>◎ إعدادات اللغة والترجمة</h3><label>اللغات المتاحة</label><div class="language-checks"><label><input type="checkbox" checked/> العربية</label><label><input type="checkbox" checked/> English</label></div><label>اللغة الافتراضية<select><option>العربية</option><option>English</option></select></label><label>اتجاه النص</label><div class="direction-choice"><button class="active" type="button">من اليمين لليسار (RTL)</button><button type="button">من اليسار لليمين (LTR)</button></div><div class="translation-toggle"><span><b>تفعيل الترجمة اليدوية</b><small>سيمكنك ترجمة المحتوى يدوياً بدلاً من الترجمة التلقائية</small></span>${toggle("manualTranslation",true)}</div></section><section class="store-settings-card"><h3>% إعدادات الضرائب</h3><label>تفعيل الضرائب</label><div class="two-setting-fields"><label>نوع الضريبة<select><option>ضريبة القيمة المضافة (VAT)</option></select></label><label>نسبة الضريبة (%)<input name="taxRate" type="number" value="${Number(settings.taxRate || 14)}"/></label><label>تطبيق الضريبة على<select><option>جميع المنتجات</option></select></label></div></section></div>
       <section class="store-settings-card"><h3>▥ إعدادات SEO</h3><label>عنوان الموقع<input name="seoTitle" value="ORIGO - متجر العطور الأصلية ومنتجات العناية"/></label><label>الوصف التعريفي<textarea name="seoDescription">تسوق أفضل العطور الأصلية ومنتجات العناية الشخصية. أشهر الماركات العالمية، توصيل سريع وأسعار تنافسية.</textarea></label><label>الكلمات المفتاحية<input name="seoKeywords" value="عطور، perfumes، عطر رجالي، عطر نسائي، عطور أصلية"/></label><label>رابط الموقع (URL)<input name="siteUrl" value="https://origoscents.com" dir="ltr"/></label></section>
@@ -2765,7 +2849,7 @@ function renderAdminDashboard(view = state.adminView) {
     `<button class="button burgundy-button" data-action="admin-create-entity" data-view="${view}">${state.lang === "ar" ? "إضافة جديد" : "Add new"} ＋</button>`);
   const content = {
     overview: () => operationalAdminMarkup("overview"),
-    orders: () => operationalAdminMarkup("orders"),
+    orders: ordersViewMarkup,
     products: productViewMarkup,
     performance: performanceProductsViewMarkup,
     inventory: inventoryViewMarkup,
@@ -8637,6 +8721,7 @@ document.addEventListener("click", async (event) => {
     try {
       await api("/api/auth/logout", { method: "POST", body: "{}" });
     } catch {}
+    state.authRevision += 1;
     state.user = null;
     state.orders = [];
     state.cart = [];
@@ -8821,7 +8906,13 @@ document.addEventListener("click", async (event) => {
     updateLanguage();
     renderAdminDashboard(state.adminView);
   }
-  if (action === "admin-notifications") renderAdminDashboard("overview");
+  if (action === "admin-notifications") {
+    markAdminOrdersSeen();
+    if ("Notification" in window && Notification.permission === "default") Notification.requestPermission().catch(() => {});
+    state.activeAdminOrderId = null;
+    if (location.pathname !== "/admin/orders") history.pushState({ adminView: "orders" }, "", "/admin/orders");
+    renderAdminDashboard("orders");
+  }
   if (action === "admin-profile") {
     showToast(adminCopy(`الدور: ${state.user?.role || "admin"}`, `Role: ${state.user?.role || "admin"}`));
   }
@@ -8891,10 +8982,13 @@ document.addEventListener("click", async (event) => {
   }
   if (action === "open-order-details") {
     state.activeAdminOrderId = Number(actionElement.dataset.id);
+    const order = state.adminOrders.find((item) => Number(item.id) === state.activeAdminOrderId);
+    if (order) history.pushState({ adminView: "orders", orderId: order.id }, "", `/admin/orders/${encodeURIComponent(order.orderNumber || order.id)}`);
     renderAdminDashboard("orders");
   }
   if (action === "close-order-details") {
     state.activeAdminOrderId = null;
+    if (location.pathname !== "/admin/orders") history.pushState({ adminView: "orders" }, "", "/admin/orders");
     renderAdminDashboard("orders");
   }
   if (action === "print-order") {
@@ -9762,8 +9856,11 @@ document.addEventListener("submit", async (event) => {
       supportEmail: String(data.get("supportEmail") || current.supportEmail).trim(),
       currency: String(data.get("currency") || current.currency),
       taxRate: Number(data.get("taxRate") || current.taxRate || 0),
-      orderNotifications: data.has("orderNotifications")
+      orderNotifications: data.has("orderNotifications"),
+      newOrderNotifications: data.has("notify.newOrders"),
+      authenticityBadge: state.pendingAuthenticityBadge || current.authenticityBadge || defaultStoreSettings.authenticityBadge
     });
+    state.pendingAuthenticityBadge = "";
     saveAdminWorkspace("settings");
     applyStoreIdentity();
     showToast("تم حفظ إعدادات المتجر");
@@ -10003,7 +10100,7 @@ document.addEventListener("submit", async (event) => {
   if (event.target.id === "email-verification-form") {
     const data=new FormData(event.target); const code=Array.from({length:6},(_,index)=>String(data.get(`digit${index}`)||"")).join(""); const error=$("#auth-error");
     if(!/^\d{6}$/.test(code)){error.textContent="أدخل رمز التحقق المكوّن من 6 أرقام";return;}
-    try { const result=await api("/api/auth/verify-email",{method:"POST",body:JSON.stringify({requestId:state.emailVerificationFlow.requestId,code,cart:state.cart})}); state.user=result.user;state.cart=result.cart||[];localStorage.setItem("origoCartUserId",String(state.user.id));persist();renderCart();updateAccountIndicator();await renderAccount();showToast("تم توثيق بريدك الإلكتروني بنجاح"); }
+    try { const result=await api("/api/auth/verify-email",{method:"POST",body:JSON.stringify({requestId:state.emailVerificationFlow.requestId,code,cart:state.cart})}); state.authRevision+=1;state.user=result.user;state.cart=result.cart||[];localStorage.setItem("origoCartUserId",String(state.user.id));persist();renderCart();updateAccountIndicator();await renderAccount();showToast("تم توثيق بريدك الإلكتروني بنجاح"); }
     catch(requestError){error.textContent=requestError.message;}
     return;
   }
@@ -10027,6 +10124,7 @@ document.addEventListener("submit", async (event) => {
         return;
       }
       state.serverAvailable = true;
+      state.authRevision += 1;
       state.user = result.user;
       state.cart = result.cart || [];
       if (!state.user?.id) throw new Error(adminCopy("تعذر تثبيت جلسة الحساب. حاول تسجيل الدخول مجددًا.", "The account session could not be established. Please sign in again."));
@@ -10042,10 +10140,11 @@ document.addEventListener("submit", async (event) => {
       } else if (pending === "account-page") {
         closeOverlay($("#account-overlay"));
         window.ORIGOAccount?.route?.();
-      } else if (pending === "admin") {
+      } else if (pending === "admin" || pending === "admin-order") {
         if (isStaffUser()) {
           closeOverlay($("#account-overlay"));
-          await openAdminDashboard();
+          if (pending === "admin-order") await handleAdminOrderRoute();
+          else await openAdminDashboard();
         } else {
           await renderAccount();
           showToast(adminCopy("الحساب ليس لديه صلاحية إدارة المتجر", "This account does not have store-admin access"));
@@ -10835,6 +10934,7 @@ window.addEventListener("popstate", (event) => {
   handleBrandsRoute();
   handleCatalogRoute();
   handleProductRoute();
+  handleAdminOrderRoute();
   restoreNavigationSnapshot(event.state);
 });
 

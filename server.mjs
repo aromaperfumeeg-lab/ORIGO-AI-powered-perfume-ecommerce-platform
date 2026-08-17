@@ -2022,7 +2022,8 @@ async function serveStatic(request, response, url) {
   const isBenefitRoute = /^\/benefits(?:\/[a-z0-9-]+)?\/?$/i.test(url.pathname);
   const isStorefrontRoute = /^\/(perfumes|search)\/?$/i.test(url.pathname);
   const isCommerceRoute = /^\/(checkout|order\/[^/]+|feedback\/[^/]+|feedback-insights|account(?:\/.*)?|fragrance-finder\/[a-z-]+|alternatives(?:\/compare\/[^/]+)?)\/?$/i.test(url.pathname);
-  const pathname = decodeURIComponent(url.pathname === "/" || isNotesRoute || isBenefitRoute || isStorefrontRoute || isCommerceRoute ? "/index.html" : url.pathname);
+  const isAdminRoute = /^\/admin\/orders(?:\/[^/]+)?\/?$/i.test(url.pathname);
+  const pathname = decodeURIComponent(url.pathname === "/" || isNotesRoute || isBenefitRoute || isStorefrontRoute || isCommerceRoute || isAdminRoute ? "/index.html" : url.pathname);
   const cleanPath = normalize(pathname).replace(/^([/\\])+/, "");
   const filePath = resolve(join(ROOT, cleanPath));
   if (filePath !== ROOT && !filePath.startsWith(`${ROOT}${sep}`)) {

@@ -9683,3 +9683,8 @@ html[data-theme=dark] .pricing-live-metrics span{background:#211719;color:#d8c9c
 .authenticity-badge-upload{position:relative!important;border:1px solid #d9b66a!important;border-radius:12px!important;padding:12px!important;background:#fffdf8!important}
 .authenticity-badge-upload>img{width:76px!important;height:76px!important;margin:auto!important;padding:4px!important;object-fit:contain!important;background:transparent!important;border:0!important}
 .authenticity-badge-upload>small{color:#76686c!important;font-size:9px!important;line-height:1.5!important}
+.store-identity-assets{display:grid;grid-template-columns:minmax(150px,1fr) minmax(150px,1fr);gap:16px;align-items:stretch}
+.dashboard-authenticity-upload{margin:0!important;min-height:100%;justify-content:center;text-align:center;background:#fff!important}
+.dashboard-authenticity-upload>img{width:90px!important;height:90px!important}
+.dashboard-authenticity-upload input[type="file"]{width:100%;font-size:.75rem}
+@media(max-width:720px){.store-identity-assets{grid-template-columns:1fr}.dashboard-authenticity-upload{min-height:auto}}
