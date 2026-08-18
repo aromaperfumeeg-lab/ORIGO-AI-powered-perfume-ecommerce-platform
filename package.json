@@ -10,6 +10,8 @@
     "build": "terser app.js --compress passes=2,toplevel=true --mangle toplevel --output app.min.js",
     "build:deploy": "pnpm run build && node scripts/build-deploy.mjs",
     "build:knowledge": "node scripts/build-fragrance-knowledge.mjs",
+    "admin:reset-password": "node scripts/reset-admin-password.mjs --confirm-reset",
+    "typecheck": "node --check db.mjs && node --check server.mjs && node --check scripts/reset-admin-password.mjs && node --check scripts/build-deploy.mjs",
     "check:i18n": "node scripts/check-i18n.mjs",
     "test": "node --test --test-isolation=none"
   },

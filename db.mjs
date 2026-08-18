@@ -1,4 +1,4 @@
-import { copyFileSync, existsSync, mkdirSync } from "node:fs";
+import { accessSync, constants, copyFileSync, existsSync, mkdirSync } from "node:fs";
 import { basename, dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { openPortableDatabase } from "./portable-database.mjs";
@@ -19,7 +19,11 @@ const PERSISTENT_DATA_ROOT = process.env.ORIGO_DATA_DIR
   : IS_DEPLOYMENT_RUNTIME && process.env.HOME
     ? resolve(process.env.HOME, ".origo-data")
     : resolve(ROOT, "data");
+const IS_PRODUCTION = process.env.NODE_ENV === "production";
+const DB_PATH_CONFIGURED = Boolean(String(process.env.ORIGO_DB_PATH || "").trim());
 const DB_PATH = resolve(process.env.ORIGO_DB_PATH || resolve(PERSISTENT_DATA_ROOT, "origo.db"));
+const DB_DIRECTORY = dirname(DB_PATH);
+const ALLOW_DATABASE_CREATE = process.env.ORIGO_ALLOW_DATABASE_CREATE === "1";
 const SESSION_DAYS = Math.max(1, Number(process.env.ORIGO_SESSION_DAYS || 30));
 const scrypt = promisify(scryptCallback);
 
@@ -38,12 +42,29 @@ export const ROLE_PERMISSIONS = {
 };
 const allowedRoles = new Set(["customer", ...Object.keys(ROLE_PERMISSIONS)]);
 
-mkdirSync(dirname(DB_PATH), { recursive: true });
-if (DB_PATH !== LEGACY_DB_PATH && !existsSync(DB_PATH) && existsSync(LEGACY_DB_PATH)) {
+if (IS_PRODUCTION && !DB_PATH_CONFIGURED) {
+  console.warn("[ORIGO] Production is using a fallback database path. Set ORIGO_DB_PATH explicitly.");
+}
+
+if (!existsSync(DB_DIRECTORY)) {
+  if (IS_PRODUCTION) throw new Error("ORIGO_DATABASE_DIRECTORY_NOT_FOUND");
+  mkdirSync(DB_DIRECTORY, { recursive: true });
+}
+accessSync(DB_DIRECTORY, constants.W_OK);
+
+if (!IS_PRODUCTION && DB_PATH !== LEGACY_DB_PATH && !existsSync(DB_PATH) && existsSync(LEGACY_DB_PATH)) {
   for (const suffix of ["", "-wal", "-shm"]) {
     const source = `${LEGACY_DB_PATH}${suffix}`;
     if (existsSync(source)) copyFileSync(source, `${DB_PATH}${suffix}`);
   }
+}
+
+if (existsSync(DB_PATH)) {
+  accessSync(DB_PATH, constants.R_OK | constants.W_OK);
+} else if (IS_PRODUCTION && !ALLOW_DATABASE_CREATE) {
+  throw new Error("ORIGO_DATABASE_NOT_FOUND: refusing to create a production database without ORIGO_ALLOW_DATABASE_CREATE=1");
+} else {
+  console.warn(`[ORIGO] Creating a new database at configured path: ${DB_PATH}`);
 }
 
 export const db = await openPortableDatabase(DB_PATH);
@@ -712,6 +733,7 @@ const generatedProductImagePaths = new Set([
   "assets/products/experimental/initio-oud-for-greatness.webp"
 ]);
 
+if (!IS_PRODUCTION) {
 db.exec("BEGIN IMMEDIATE");
 try {
   for (const product of seedProducts) {
@@ -760,6 +782,7 @@ try {
 } catch (error) {
   db.exec("ROLLBACK");
   throw error;
+}
 }
 
 // These records were development fixtures. The live storefront is controlled
@@ -2599,6 +2622,34 @@ export async function ensureAdminFromEnvironment() {
   return { status: "created", configured: true };
 }
 
+export async function resetExistingAdminPassword(email, password) {
+  const normalized = normalizedEmail(email);
+  const nextPassword = String(password || "");
+  if (!normalized || nextPassword.length < 10 || nextPassword.length > 200) {
+    const error = new Error("INVALID_ADMIN_RESET_CONFIGURATION");
+    error.code = "INVALID_ADMIN_RESET_CONFIGURATION";
+    throw error;
+  }
+
+  const user = findUserByEmail(normalized);
+  if (!user || !["admin", "owner"].includes(user.staff_role || user.role)) {
+    const error = new Error("ADMIN_RESET_TARGET_NOT_FOUND");
+    error.code = "ADMIN_RESET_TARGET_NOT_FOUND";
+    throw error;
+  }
+
+  const nextHash = await hashPassword(nextPassword);
+  db.exec("BEGIN IMMEDIATE");
+  try {
+    db.prepare("UPDATE users SET password_hash = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?").run(nextHash, user.id);
+    const revoked = db.prepare("DELETE FROM sessions WHERE user_id = ?").run(user.id).changes;
+    db.exec("COMMIT");
+    return { changed: true, sessionsRevoked: revoked };
+  } catch (error) {
+    db.exec("ROLLBACK");
+    throw error;
+  }
+}
 export function adminConfiguredFromEnvironment() {
   const email = normalizedEmail(process.env.ORIGO_ADMIN_EMAIL || "");
   const passwordLoaded = Boolean(String(process.env.ORIGO_ADMIN_PASSWORD || ""));
@@ -2609,3 +2660,13 @@ export function adminConfiguredFromEnvironment() {
 
 export const databasePath = DB_PATH;
 export const databaseDriver = "sql.js-wasm";
+export const databasePathConfigured = DB_PATH_CONFIGURED;
+export const databaseWritable = (() => {
+  try {
+    accessSync(DB_DIRECTORY, constants.W_OK);
+    if (existsSync(DB_PATH)) accessSync(DB_PATH, constants.R_OK | constants.W_OK);
+    return true;
+  } catch {
+    return false;
+  }
+})();

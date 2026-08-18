@@ -1,10 +1,17 @@
 node_modules/
 dist/
 data/
+.origo-data/
+tmp/
+uploads/
 .env
 .env.*
 !.env.example
 *.log
+*.db
+*.db-wal
+*.db-shm
+*.db-journal
 *.sqlite
 *.sqlite-*
 *.tmp

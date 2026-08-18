@@ -35,6 +35,8 @@ import {
   deleteProduct,
   databaseDriver,
   databasePath,
+  databasePathConfigured,
+  databaseWritable,
   deleteSession,
   ensureAdminFromEnvironment,
   findUserByEmail,
@@ -797,12 +799,12 @@ async function enrichWithOpenAI(query, knownProduct = {}) {
 async function handleAPI(request, response, url, origin) {
   if (url.pathname === "/api/health" && request.method === "GET") {
     return jsonResponse(response, 200, {
-      ok: true,
-      database: true,
+      databaseConnected: true,
+      databaseWritable,
+      databasePathConfigured,
       adminConfigured: adminConfiguredFromEnvironment(),
-      databaseDriver,
-      aiConfigured: Boolean(process.env.OPENAI_API_KEY),
-      model: OPENAI_MODEL
+      authConfigured: databaseWritable && adminConfiguredFromEnvironment(),
+      nodeEnv: process.env.NODE_ENV || "development"
     }, origin);
   }
 
