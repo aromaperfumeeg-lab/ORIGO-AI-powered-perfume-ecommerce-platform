@@ -1,192 +1,43 @@
-export const FINDER_WEIGHTS = Object.freeze({
-  feelings: 15,
-  families: 20,
-  notes: 20,
-  personality: 10,
-  usage: 10,
-  seasonTime: 10,
-  features: 10,
-  budget: 5
-});
-
-export const FINDER_STEP_IDS = Object.freeze(["for-whom", "feeling", "families", "notes", "personality", "usage", "features", "budget", "results"]);
-
-const aliases = {
-  citrus: ["citrus", "حمضيات", "حمضي", "orange", "برتقال"], bergamot: ["bergamot", "برغموت"], lemon: ["lemon", "ليمون"],
-  apple: ["apple", "تفاح"], mint: ["mint", "نعناع"], pinkPepper: ["pink pepper", "فلفل وردي", "pepper", "فلفل"],
-  rose: ["rose", "ورد"], jasmine: ["jasmine", "ياسمين"], lavender: ["lavender", "لافندر"], whiteFlowers: ["white flower", "زهور بيضاء"],
-  cinnamon: ["cinnamon", "قرفة"], saffron: ["saffron", "زعفران"], oud: ["oud", "agarwood", "عود"], amber: ["amber", "عنبر"],
-  musk: ["musk", "مسك"], vanilla: ["vanilla", "فانيليا"], leather: ["leather", "جلد"], patchouli: ["patchouli", "باتشولي"],
-  sandalwood: ["sandalwood", "خشب الصندل", "صندل"]
-};
-
-const familySignals = {
-  oriental: ["oud", "amber", "saffron", "cinnamon", "vanilla", "incense", "عود", "عنبر", "زعفران", "قرفة", "فانيليا", "بخور", "oriental", "شرقي"],
-  woody: ["oud", "sandalwood", "cedar", "patchouli", "wood", "عود", "صندل", "أرز", "باتشولي", "خشب", "woody", "خشبي"],
-  floral: ["rose", "jasmine", "iris", "flower", "geranium", "ورد", "ياسمين", "سوسن", "زهور", "جيرانيوم", "floral", "زهري"],
-  citrus: ["citrus", "bergamot", "lemon", "orange", "grapefruit", "lime", "حمض", "برغموت", "ليمون", "برتقال", "جريب فروت"],
-  aromatic: ["lavender", "mint", "sage", "rosemary", "لافندر", "نعناع", "مريمية", "إكليل", "aromatic", "أروماتيك"],
-  leather: ["leather", "suede", "جلد", "شمواه"], fruity: ["apple", "berry", "peach", "pear", "تفاح", "توت", "خوخ", "كمثرى", "fruity", "فواكه"],
-  gourmand: ["vanilla", "caramel", "chocolate", "coffee", "cinnamon", "فانيليا", "كراميل", "شوكولاتة", "قهوة", "قرفة", "gourmand", "غورماند"],
-  chypre: ["patchouli", "oakmoss", "bergamot", "باتشولي", "طحلب", "برغموت", "chypre", "شيبر"],
-  aquatic: ["sea", "marine", "water", "ocean", "بحر", "مائي", "محيط", "aquatic", "أكواتيك"],
-  fougere: ["lavender", "oakmoss", "coumarin", "لافندر", "طحلب", "كومارين", "fougere", "فوجير"],
-  musky: ["musk", "مسك", "musky", "مسكي"]
-};
-
-const feelingFamilies = {
-  warmSweet: ["oriental", "gourmand", "musky"], freshClean: ["aquatic", "aromatic", "citrus"], woodyDeep: ["woody", "oriental", "chypre"],
-  orientalLuxurious: ["oriental", "woody", "leather"], citrusyFresh: ["citrus", "aromatic", "aquatic"], floralSoft: ["floral", "musky"],
-  leatheryBold: ["leather", "woody", "oriental"], greenNatural: ["aromatic", "fougere", "chypre"]
-};
-
-const personalityFamilies = {
-  leader: ["oriental", "woody", "leather"], calm: ["musky", "floral", "aquatic"], social: ["citrus", "aromatic", "fruity"],
-  bold: ["leather", "oriental", "woody"], romantic: ["floral", "gourmand", "musky"], practical: ["aromatic", "woody", "citrus"],
-  artistic: ["chypre", "floral", "gourmand"], adventurous: ["woody", "aquatic", "fougere"]
-};
-
-const usageFamilies = {
-  daily: ["aromatic", "citrus", "musky"], special: ["oriental", "gourmand", "floral"], romantic: ["floral", "gourmand", "musky"],
-  travel: ["aquatic", "citrus", "aromatic"], formal: ["woody", "oriental", "chypre"], sport: ["citrus", "aquatic", "aromatic"],
-  relax: ["musky", "floral", "aromatic"], religious: ["oriental", "woody", "musky"], other: []
-};
-
-const normalize = (value) => String(value || "").normalize("NFKD").toLowerCase().replace(/[ًٌٍَُِّْـ]/g, "").trim();
-const unique = (values) => [...new Set((values || []).filter(Boolean))];
-const overlap = (wanted, actual) => !wanted.length ? null : wanted.filter((item) => actual.includes(item)).length / wanted.length;
-
-function noteIds(product) {
-  const text = [...(product.notesAr || []), ...(product.notesEn || []), product.descriptionAr, product.descriptionEn].map(normalize).join(" ");
-  return Object.entries(aliases).filter(([, values]) => values.some((value) => text.includes(normalize(value)))).map(([id]) => id);
-}
-
-function familyIds(product, notes) {
-  const text = [product.familyAr, product.familyEn, ...(product.notesAr || []), ...(product.notesEn || [])].map(normalize).join(" ");
-  return Object.entries(familySignals).filter(([, values]) => values.some((value) => text.includes(normalize(value)))).map(([id]) => id);
-}
-
-function productSeasons(product) {
-  const explicit = (product.seasons || []).map((value) => normalize(value));
-  const insight = product.insights?.seasons || {};
-  const mapped = ["summer", "spring", "autumn", "winter"].filter((id) => Number(insight[id] || 0) >= 55);
-  return unique([...explicit, ...mapped]);
-}
-
-function productTimes(product) {
-  const insight = product.insights?.seasons || {};
-  const values = [];
-  if (Number(insight.day || 0) >= 45) values.push("morning", "day");
-  if (Number(insight.night || 0) >= 45) values.push("evening", "night");
-  return unique(values);
-}
-
-function available(product) {
-  const quantity = Number(product.inventory?.quantity);
-  return product.status === "published" && (!Number.isFinite(quantity) || quantity > 0);
-}
-
-function budgetScore(price, budget) {
-  if (!budget || budget === "any") return null;
-  const ranges = { under500: [0, 500], "500to1500": [500, 1500], "1500to3000": [1500, 3000], over3000: [3000, Infinity] };
-  const range = ranges[budget];
-  if (!range) return null;
-  if (price >= range[0] && price <= range[1]) return 1;
-  const distance = price < range[0] ? range[0] - price : price - range[1];
-  return Math.max(0, 1 - distance / Math.max(500, Number.isFinite(range[1]) ? range[1] - range[0] : 3000));
-}
-
-function seasonTimeScore(product, answers) {
-  const seasons = (answers.seasons || []).filter((id) => id !== "any");
-  const times = (answers.times || []).filter((id) => id !== "any");
-  if (!seasons.length && !times.length) return null;
-  const scores = [];
-  if (seasons.length) scores.push(overlap(seasons, productSeasons(product)) ?? 0);
-  if (times.length) scores.push(overlap(times, productTimes(product)) ?? 0);
-  return scores.reduce((sum, value) => sum + value, 0) / scores.length;
-}
-
-function performanceScore(product, selected) {
-  if (!selected?.length) return null;
-  const longevity = Number(product.insights?.longevity || 3);
-  const sillage = Number(product.insights?.sillage || 3);
-  const value = Number(product.insights?.value || 3);
-  return selected.reduce((sum, id) => {
-    if (id === "longLasting") return sum + Math.min(1, longevity / 5);
-    if (id === "strongProjection") return sum + Math.max(0, 1 - Math.abs(sillage - 5) / 4);
-    if (id === "mediumProjection") return sum + Math.max(0, 1 - Math.abs(sillage - 3) / 3);
-    if (id === "lightProjection") return sum + Math.max(0, 1 - Math.abs(sillage - 1) / 4);
-    return sum + Math.min(1, value / 5);
-  }, 0) / selected.length;
-}
-
-function referenceSimilarity(product, reference) {
-  if (!reference || product.id === reference.id) return 0;
-  const productNotes = noteIds(product), referenceNotes = noteIds(reference);
-  const productFamilies = familyIds(product, productNotes), referenceFamilies = familyIds(reference, referenceNotes);
-  const union = (a, b) => unique([...a, ...b]);
-  const jaccard = (a, b) => union(a, b).length ? a.filter((id) => b.includes(id)).length / union(a, b).length : 0;
-  const performance = 1 - Math.min(1, (Math.abs(Number(product.insights?.longevity || 3) - Number(reference.insights?.longevity || 3)) + Math.abs(Number(product.insights?.sillage || 3) - Number(reference.insights?.sillage || 3))) / 8);
-  return jaccard(productNotes, referenceNotes) * .5 + jaccard(productFamilies, referenceFamilies) * .3 + performance * .2;
-}
-
-function scoreProduct(product, answers, reference) {
-  const notes = noteIds(product);
-  const families = familyIds(product, notes);
-  const selectedFeelingFamilies = unique((answers.feelings || []).flatMap((id) => feelingFamilies[id] || []));
-  const selectedPersonalityFamilies = unique((answers.personality || []).flatMap((id) => personalityFamilies[id] || []));
-  const selectedUsageFamilies = unique((answers.usage || []).flatMap((id) => usageFamilies[id] || []));
-  const categoryScores = {
-    feelings: overlap(selectedFeelingFamilies, families),
-    families: overlap(answers.families || [], families),
-    notes: overlap(answers.notes?.liked || [], notes),
-    personality: overlap(selectedPersonalityFamilies, families),
-    usage: overlap(selectedUsageFamilies, families),
-    seasonTime: seasonTimeScore(product, answers),
-    features: performanceScore(product, answers.features || []),
-    budget: budgetScore(Number(product.price || 0), answers.budget)
-  };
-  let weighted = 0, activeWeight = 0;
-  for (const [key, weight] of Object.entries(FINDER_WEIGHTS)) {
-    if (categoryScores[key] == null) continue;
-    weighted += categoryScores[key] * weight;
-    activeWeight += weight;
+(function(global){
+  "use strict";
+  const normalize=value=>String(value??"").normalize("NFKD").replace(/[\u0300-\u036f]/g,"").replace(/[أإآ]/g,"ا").replace(/ة/g,"ه").replace(/ى/g,"ي").replace(/[^\p{L}\p{N}]+/gu," ").trim().toLowerCase();
+  const array=value=>Array.isArray(value)?value:value==null||value===""?[]:[value];
+  const pair=value=>typeof value==="string"?{ar:value,en:value}:{ar:String(value?.ar??value?.nameAr??value?.name_ar??""),en:String(value?.en??value?.nameEn??value?.name_en??"")};
+  const aliases={men:["men","male","رجالي","للرجال"],women:["women","female","نسائي","للنساء"],unisex:["unisex","للجنسين","مشترك"]};
+  const canonical=(value,map=aliases)=>Object.entries(map).find(([,values])=>values.some(item=>normalize(item)===normalize(value)))?.[0]||normalize(value);
+  const projection=value=>({"ضعيف":"weak","متوسط":"moderate","قوي":"strong","قوي جدا":"very_strong",weak:"weak",moderate:"moderate",strong:"strong",very_strong:"very_strong"})[normalize(value).replaceAll(" ","_")]||normalize(value).replaceAll(" ","_");
+  const scoreMap=(value,ids)=>Object.fromEntries(ids.map(id=>{const raw=value?.[id];return[id,raw==null?null:Math.max(0,Math.min(5,Number(raw)))]}));
+  const identity=item=>[normalize(item.ar),normalize(item.en)].filter(Boolean);
+  const matches=(a,b)=>{const left=normalize(a),right=normalize(b);return Boolean(left&&right&&(left===right||(left.length>3&&right.length>3&&(left.includes(right)||right.includes(left)))))};
+  const firstImage=product=>{const images=array(product.images).map(image=>typeof image==="string"?{url:image}:image).filter(image=>image?.url);return images[0]?.url||product.image||""};
+  function bundleData(product){return product.perfumeBundle?.perfume||{};}
+  function buildFinderProfileFromProduct(product={}){
+    const bundle=bundleData(product),bundleNotes=product.noteSelectionsBundle||product.perfumeBundle?.notes||{},legacyNotes=product.notes||{};
+    const noteLevel=(level)=>array(bundleNotes[level]?.length?bundleNotes[level]:[...(legacyNotes[`${level}Ar`]||[]),...(legacyNotes[`${level}En`]||[])]).map(pair).filter(item=>item.ar||item.en);
+    const accords=array(product.accordProfile?.length?product.accordProfile:product.mainAccords).map((item)=>{const names=pair(item);if(typeof item==="string")names.ar=names.en=item;return{...names,strength:Math.max(0,Math.min(100,Number(item?.strength??item?.score??65)))}}).filter(item=>item.ar||item.en);
+    const seasons=scoreMap(product.seasonScores||Object.fromEntries(array(product.seasons).map(id=>[canonical(id,{winter:["winter","الشتاء"],autumn:["autumn","fall","الخريف"],spring:["spring","الربيع"],summer:["summer","الصيف"]}),5])),["winter","autumn","spring","summer"]);
+    const usageTime=scoreMap(product.usageTimeScores||Object.fromEntries(array(product.usageTimes).map(id=>[canonical(id,{day:["day","morning","النهار"],night:["night","evening","الليل"]}),5])),["day","night"]);
+    const longevity=product.performance?.longevity??product.performanceInsights?.editorialDetails?.longevityHours??bundle.longevityHours??null;
+    return{id:String(product.id||""),product,nameAr:product.nameAr||"",nameEn:product.nameEn||"",brand:product.brand||product.brandEn||product.brandAr||"",gender:canonical(product.gender||bundle.gender),accords,notes:{top:noteLevel("top"),heart:noteLevel("heart"),base:noteLevel("base")},families:array(product.families?.length?product.families:[product.familyAr,product.familyEn]).filter(Boolean),rating:product.rating??product.reviewSummary?.average??bundle.rating??null,longevity:longevity==null?null:Number(longevity),sillage:projection(product.performance?.projection??product.performance?.sillage??bundle.sillage),seasons,usageTime,occasions:array(product.occasions),concentration:product.concentration||bundle.concentration||"",image:firstImage(product),price:product.price??null,available:product.inventory?.available>0||product.inventory?.quantity>0,status:product.status||"published",category:product.category||"perfume"};
   }
-  let percentage = activeWeight ? weighted / activeWeight * 100 : 55;
-  const dislikedHits = (answers.notes?.disliked || []).filter((id) => notes.includes(id));
-  percentage -= Math.min(36, dislikedHits.length * 18);
-  const gender = normalize(product.typeEn || product.type);
-  if (answers.forWhom === "women" && /men|رجالي/.test(gender) && !/women|نسائي|unisex|للجنسين/.test(gender)) percentage -= 6;
-  if (answers.forWhom === "men" && /women|نسائي/.test(gender) && !/men|رجالي|unisex|للجنسين/.test(gender)) percentage -= 6;
-  const referenceScore = referenceSimilarity(product, reference);
-  percentage += referenceScore * 8;
-  const reasons = Object.entries(categoryScores).filter(([, value]) => value != null && value >= .45).sort((a, b) => b[1] - a[1]).map(([key]) => ({ feelings: "feeling", families: "family", notes: "notes", personality: "feeling", usage: "usage", seasonTime: "usage", features: "performance", budget: "budget" }[key]));
-  if (referenceScore >= .35) reasons.push("reference");
-  return {
-    product,
-    percentage: Math.round(Math.max(1, Math.min(99, percentage))),
-    reasons: unique(reasons).slice(0, 3).length ? unique(reasons).slice(0, 3) : ["general"],
-    matchedFamilies: families.filter((id) => (answers.families || []).includes(id)).slice(0, 3),
-    matchedNotes: notes.filter((id) => (answers.notes?.liked || []).includes(id)).slice(0, 4),
-    dislikedHits,
-    categoryScores,
-    available: available(product)
-  };
-}
-
-export function rankFragrances(products = [], answers = {}, options = {}) {
-  const published = products.filter((product) => product?.category === "perfume" && product.status !== "draft");
-  const reference = published.find((product) => product.id === answers.referenceProductId) || null;
-  const ranked = published.map((product) => scoreProduct(product, answers, reference)).sort((a, b) => b.percentage - a.percentage || Number(a.product.price || 0) - Number(b.product.price || 0));
-  const limit = Math.max(1, Number(options.limit || 10));
-  return {
-    available: ranked.filter((result) => result.available).slice(0, limit),
-    unavailable: ranked.filter((result) => !result.available).slice(0, limit),
-    evaluated: ranked.length,
-    weights: FINDER_WEIGHTS
-  };
-}
-
-export function createEmptyFinderAnswers() {
-  return { forWhom: null, feelings: [], families: [], notes: { liked: [], disliked: [] }, personality: [], usage: [], seasons: [], times: [], features: [], budget: "any", referenceProductId: null };
-}
+  function eligible(product){const category=normalize(product.category||"perfume"),status=normalize(product.status||"published");return(category==="perfume"||category==="عطر")&&["published","active","منشور","فعال"].includes(status)&&product.deleted!==true}
+  const weights={accords:28,notes:21,families:13,seasons:10,occasions:8,times:7,sillage:5,longevity:5,gender:3};
+  function listMatch(selected,items){if(!selected.length||!items.length)return null;const hit=selected.filter(value=>items.some(item=>identity(pair(item)).some(name=>matches(value,name))));return{ratio:hit.length/selected.length,hit}}
+  function scoreFinderProfile(profile,preferences={}){let earned=0,availableWeight=0;const reasons=[];const add=(name,value,reason)=>{if(value==null||!Number.isFinite(value))return;availableWeight+=weights[name];earned+=Math.max(0,Math.min(1,value))*weights[name];if(reason&&value>0)reasons.push(reason)};
+    const wantedAccords=array(preferences.accords);if(wantedAccords.length&&profile.accords.length){const hits=wantedAccords.map(choice=>profile.accords.filter(a=>identity(a).some(n=>matches(choice,n))).sort((a,b)=>b.strength-a.strength)[0]).filter(Boolean);add("accords",hits.reduce((sum,a)=>sum+a.strength/100,0)/wantedAccords.length,hits.length?{type:"accords",values:hits.map(a=>a.ar||a.en)}:null)}
+    const allNotes=Object.values(profile.notes).flat(),liked=array(preferences.likedNotes),disliked=array(preferences.dislikedNotes),rejected=array(preferences.rejectedNotes),likedResult=listMatch(liked,allNotes)||{ratio:1,hit:[]};if((liked.length||disliked.length||rejected.length)&&allNotes.length){let value=liked.length?likedResult.ratio:1;const dislikedHits=disliked.filter(v=>allNotes.some(n=>identity(n).some(name=>matches(v,name)))).length;value-=dislikedHits/Math.max(1,disliked.length)*.45;const rejectedHits=rejected.filter(v=>allNotes.some(n=>identity(n).some(name=>matches(v,name)))).length;value-=rejectedHits/Math.max(1,rejected.length);add("notes",value,likedResult.hit.length?{type:"notes",values:likedResult.hit}:null)}
+    const family=listMatch(array(preferences.families),profile.families);if(family)add("families",family.ratio,family.hit.length?{type:"families",values:family.hit}:null);
+    const season=array(preferences.seasons)[0];if(season&&profile.seasons[season]!=null)add("seasons",profile.seasons[season]/5,{type:"season",value:season,score:profile.seasons[season]});
+    const occasion=listMatch(array(preferences.occasions),profile.occasions);if(occasion)add("occasions",occasion.ratio,occasion.hit.length?{type:"occasions",values:occasion.hit}:null);
+    const time=array(preferences.times)[0];if(time&&profile.usageTime[time]!=null)add("times",profile.usageTime[time]/5,{type:"time",value:time,score:profile.usageTime[time]});
+    if(preferences.sillage&&profile.sillage){const order={weak:1,moderate:2,strong:3,very_strong:4},target=order[projection(preferences.sillage)],actual=order[profile.sillage];add("sillage",target&&actual?1-Math.abs(target-actual)/3:null,{type:"sillage",value:profile.sillage})}
+    if(preferences.longevity&&profile.longevity!=null){const target=preferences.longevity==="long"?10:preferences.longevity==="medium"?6:3;add("longevity",1-Math.min(1,Math.abs(profile.longevity-target)/10),{type:"longevity",hours:profile.longevity})}
+    const gender=canonical(preferences.gender);if(gender&&gender!=="any"&&profile.gender){const value=profile.gender===gender?1:profile.gender==="unisex"?.8:0;add("gender",value,value?{type:"gender",value:profile.gender}:null)}
+    const score=availableWeight?Math.round(earned/availableWeight*100):0;return{profile,score,reasons:reasons.sort((a,b)=>(weights[b.type]||0)-(weights[a.type]||0)).slice(0,3),availableWeight};
+  }
+  const cache=new Map();
+  function signature(product){return JSON.stringify([product.updatedAt,product.status,product.category,product.gender,product.accordProfile,product.noteSelectionsBundle,product.notes,product.seasonScores,product.usageTimeScores,product.occasions,product.performance,product.images?.[0],product.inventory?.quantity])}
+  function profilesFromProducts(products=[]){const ids=new Set;const result=[];for(const product of products){if(!eligible(product))continue;const id=String(product.id);ids.add(id);const sig=signature(product),cached=cache.get(id);if(cached?.signature===sig)result.push(cached.profile);else{const profile=buildFinderProfileFromProduct(product);cache.set(id,{signature:sig,profile});result.push(profile)}}for(const id of cache.keys())if(!ids.has(id))cache.delete(id);return result}
+  function rankProducts(products,preferences,limit=6){return profilesFromProducts(products).map(profile=>scoreFinderProfile(profile,preferences)).sort((a,b)=>b.score-a.score||Number(b.profile.available)-Number(a.profile.available)||Number(b.profile.rating||0)-Number(a.profile.rating||0)).slice(0,limit)}
+  global.ORIGOFragranceFinderEngine={normalize,buildFinderProfileFromProduct,scoreFinderProfile,profilesFromProducts,rankProducts,clearCache:()=>cache.clear()};
+})(typeof window!=="undefined"?window:globalThis);

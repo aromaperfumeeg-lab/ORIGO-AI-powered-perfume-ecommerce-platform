@@ -989,6 +989,7 @@ const defaultStoreSettings = {
       notes: ["citrus", "bergamot", "lemon", "apple", "mint", "pinkPepper", "rose", "jasmine", "lavender", "whiteFlowers", "cinnamon", "saffron", "oud", "amber", "musk", "vanilla", "leather", "patchouli", "sandalwood"]
     }
   },
+  perfumeOnlyMode: true,
   footerBenefits: defaultFooterBenefits
 };
 
@@ -1083,60 +1084,9 @@ function mergeStoreSettings(saved = {}) {
 }
 
 const defaultAdminWorkspace = {
-  analytics: { conversionRate: 3.8, adSpend: 18400, adRevenue: 62800, approximateMargin: 38 },
-  inventory: {
-    nocturne: { quantity: 8, reserved: 2, minimum: 10, cost: 1850 },
-    "velvet-iris": { quantity: 17, reserved: 1, minimum: 8, cost: 1540 },
-    smoked: { quantity: 5, reserved: 2, minimum: 9, cost: 1320 },
-    "citrus-veil": { quantity: 24, reserved: 3, minimum: 10, cost: 980 }
-  },
-  campaigns: [
-    { id: "cmp-1", name: "Nocturne Retargeting", channel: "Meta Ads", budget: 12000, revenue: 43700, status: "active" },
-    { id: "cmp-2", name: "Summer Citrus", channel: "TikTok Ads", budget: 6400, revenue: 19100, status: "active" }
-  ],
-  coupons: [
-    { id: "ORIGO15", name: "خصم 15% على جميع الطلبات", kind: "percent", value: "15%", saved: "500 EGP", uses: 128, limit: 500, category: "عطور", created: "2024/05/20", status: "active" },
-    { id: "ORIGO30", name: "خصم 30 جنيه", kind: "fixed", value: "30 EGP", saved: "300 EGP", uses: 75, limit: 200, category: "العناية الشخصية", created: "2024/05/18", status: "active" },
-    { id: "SHIP10", name: "خصم 10% على الشحن", kind: "percent", value: "10%", saved: "0 EGP", uses: 210, limit: 1000, category: "الشحن", created: "2024/05/17", status: "active" },
-    { id: "WEEKEND20", name: "عرض نهاية الأسبوع", kind: "percent", value: "20%", saved: "400 EGP", uses: 45, limit: 200, category: "عطور", created: "2024/05/15", status: "ending" },
-    { id: "RAMADAN25", name: "خصم رمضان", kind: "fixed", value: "25 EGP", saved: "250 EGP", uses: 200, limit: 200, category: "البخور والعطور المنزلية", created: "2024/05/10", status: "expired" },
-    { id: "FREESHIP", name: "شحن مجاني", kind: "shipping", value: "شحن مجاني", saved: "0 EGP", uses: 0, limit: 150, category: "الشحن", created: "2024/05/08", status: "inactive" },
-    { id: "BIG100", name: "خصم 100 جنيه للطلبات الكبيرة", kind: "fixed", value: "100 EGP", saved: "1000 EGP", uses: 36, limit: 300, category: "أخرى", created: "2024/05/05", status: "active" },
-    { id: "PERFUME12", name: "خصم 12% على العطور", kind: "percent", value: "12%", saved: "600 EGP", uses: 89, limit: 500, category: "عطور", created: "2024/05/01", status: "ending" }
-  ],
-  suppliers: [
-    { id: "sup-1", name: "Maison Distribution", contact: "+20 100 000 1122", products: 3, status: "active" },
-    { id: "sup-2", name: "Cairo Select Imports", contact: "+20 111 220 8877", products: 1, status: "active" }
-  ],
-  purchases: [
-    { id: "PO-1048", name: "Maison Distribution", amount: 28600, due: "2026-07-12", status: "in_transit" },
-    { id: "PO-1047", name: "Cairo Select Imports", amount: 14900, due: "2026-07-03", status: "received" }
-  ],
-  shipping: [
-    { id: "ship-1", name: "Cairo & Giza", carrier: "Bosta", fee: 75, eta: "1–2 days", status: "active" },
-    { id: "ship-2", name: "Delta & Alexandria", carrier: "Mylerz", fee: 95, eta: "2–4 days", status: "active" },
-    { id: "ship-3", name: "Upper Egypt", carrier: "Bosta", fee: 125, eta: "3–5 days", status: "active" }
-  ],
-  reviews: [
-    { id: "rev-1", name: "Nour A.", subject: "NOCTURNE 01", rating: 5, status: "published" },
-    { id: "rev-2", name: "Mariam H.", subject: "Delivery experience", rating: 4, status: "pending" }
-  ],
-  tickets: [
-    { id: "TKT-208", name: "تغيير عنوان الشحن", customer: "سارة أحمد", priority: "high", status: "open" },
-    { id: "TKT-207", name: "استفسار عن الثبات", customer: "عمر خالد", priority: "normal", status: "waiting" }
-  ],
-  banners: [
-    { id: "bnr-1", title: "عرض الصيف", subtitle: "خصم حتى 30% على العطور", placement: "الصفحة الرئيسية", position: "سلايدر رئيسي", type: "image", start: "2024/05/10", end: "2024/06/10", clicks: 12450, status: "active", tone: "wine" },
-    { id: "bnr-2", title: "وصل حديثاً", subtitle: "اكتشف أحدث العطور", placement: "الصفحة الرئيسية", position: "بنر تحت السلايدر", type: "image", start: "2024/05/05", end: "2024/05/25", clicks: 8230, status: "active", tone: "sand" },
-    { id: "bnr-3", title: "عطور رجالية مميزة", subtitle: "تشكيلة فاخرة للرجال", placement: "صفحة العطور", position: "أعلى الصفحة", type: "image", start: "2024/05/01", end: "2024/05/31", clicks: 6780, status: "active", tone: "charcoal" },
-    { id: "bnr-4", title: "عناية ببشرتك", subtitle: "منتجات أصلية 100%", placement: "صفحة العناية بالبشرة", position: "بنر علوي", type: "image", start: "2024/05/08", end: "2024/06/08", clicks: 5190, status: "active", tone: "rose" },
-    { id: "bnr-5", title: "عطور شرقية فاخرة", subtitle: "اكتشف روائح الشرق", placement: "الصفحة الرئيسية", position: "سلايدر رئيسي", type: "video", start: "2024/04/15", end: "2024/04/30", clicks: 0, status: "expired", tone: "gold" },
-    { id: "bnr-6", title: "شحن مجاني", subtitle: "للطلبات فوق 1000 جنيه", placement: "سلة التسوق", position: "بنر جانبي", type: "image", start: "2024/04/01", end: "2024/04/14", clicks: 0, status: "expired", tone: "silver" }
-  ],
-  team: [
-    { id: "staff-1", name: "ORIGO Owner", role: "Owner", lastLogin: "الآن", status: "active" },
-    { id: "staff-2", name: "Catalog Manager", role: "Product Manager", lastLogin: "منذ ساعتين", status: "active" }
-  ],
+  analytics: { conversionRate: 0, adSpend: 0, adRevenue: 0, approximateMargin: 0 },
+  inventory: {}, campaigns: [], coupons: [], suppliers: [], purchases: [], shipping: [],
+  reviews: [], tickets: [], banners: [], team: [],
   entities: {},
   settings: defaultStoreSettings
 };
@@ -1734,7 +1684,7 @@ async function loadAdminDashboardData() {
         ...state.adminWorkspace,
         ...workspaceResult.state,
         analytics: { ...state.adminWorkspace.analytics, ...(workspaceResult.state.analytics || {}) },
-        inventory: { ...state.adminWorkspace.inventory, ...(workspaceResult.state.inventory || {}) },
+        inventory: { ...(workspaceResult.state.inventory || {}) },
         entities: { ...state.adminWorkspace.entities, ...(workspaceResult.state.entities || {}) },
         settings: mergeStoreSettings({ ...state.adminWorkspace.settings, ...(workspaceResult.state.settings || {}) })
       };
@@ -2145,19 +2095,7 @@ document.addEventListener("click", (event) => {
 });
 
 function activitySecurityMarkup() {
-  const sample = [
-    ["2024-05-19","10:30:25 ص","أحمد محمد","المدير العام","تعديل منتج","تعديل سعر منتج 100ml - 160R - EDP","Windows / Chrome","41.36.25.10","success"],
-    ["2024-05-19","09:15:10 ص","سارة علي","مدير المتجر","تحديث طلب","تغيير حالة الطلب #10524 من قيد الشحن إلى تم التسليم","Windows / Firefox","197.45.12.33","success"],
-    ["2024-05-19","08:40:05 ص","محمد خالد","مسؤول المنتجات","إضافة منتج","إضافة منتج جديد Lattafa Khamrah 100ml","Windows / Chrome","41.36.25.10","success"],
-    ["2024-05-19","03:22:18 ص","نادية حسن","خدمة العملاء","تعديل عميل","تعديل بيانات العميل محمد أحمد","Android / Mobile Chrome","197.45.12.33","success"],
-    ["2024-05-18","11:05:33 م","علي يوسف","مسؤول الطلبات","حذف","حذف الطلب #10218","Windows / Edge","185.77.61.22","success"],
-    ["2024-05-18","04:12:09 م","مستخدم غير معروف","—","تسجيل دخول","محاولة دخول من جهاز غير معروف","iPhone / Safari","185.77.61.22","warning"],
-    ["2024-05-18","02:33:47 م","مستخدم غير معروف","—","تسجيل دخول","محاولة دخول بكلمة مرور خاطئة","Windows / Chrome","185.77.61.22","failed"],
-    ["2024-05-17","10:20:18 م","أحمد محمد","المدير العام","تصدير تقرير","تصدير تقرير المبيعات (PDF)","Windows / Chrome","41.36.25.10","success"],
-    ["2024-05-17","09:10:05 م","هبة سعيد","مدير المحتوى","تعديل محتوى","تعديل محتوى صفحة من نحن","Windows / Chrome","197.45.12.33","success"]
-  ];
-  const live = (state.adminActivity || []).slice(0,5).map((entry) => [String(entry.createdAt || "").slice(0,10),String(entry.createdAt || "").slice(11,19),entry.userName || entry.userEmail || "System","إدارة",entry.action || "عملية",entry.details || "عملية إدارية مسجلة","Web",entry.ip || "—","success"]);
-  const rows = [...live,...sample];
+  const rows = (state.adminActivity || []).map((entry) => [String(entry.createdAt || "").slice(0,10),String(entry.createdAt || "").slice(11,19),entry.userName || entry.userEmail || "System","إدارة",entry.action || "عملية",entry.details || "عملية إدارية مسجلة","Web",entry.ip || "—","success"]);
   const resultLabel = {success:"نجاح",warning:"تحذير",failed:"فشل"};
   return `<section class="activity-security" dir="rtl"><div class="activity-kpis"><article><span>♙</span><div><small>آخر دخول للمسؤولين</small><b>منذ 10 دقائق</b><em>أحمد محمد</em></div></article><article><span>♜</span><div><small>محاولات فاشلة</small><b>12</b><em>محاولة</em></div></article><article><span>▥</span><div><small>هذا الشهر</small><b>1,782</b><em>عملية</em></div></article><article><span>↗</span><div><small>هذا الأسبوع</small><b>548</b><em>عملية</em></div></article><article><span>▣</span><div><small>اليوم</small><b>96</b><em>عملية</em></div></article><article><span>▧</span><div><small>إجمالي العمليات</small><b>1,248</b><em>عملية</em></div></article></div><div class="activity-toolbar"><label>▣<input value="2024-05-10 - 2024-05-19" readonly/></label><select id="activity-user-filter"><option value="">كل المستخدمين</option>${[...new Set(rows.map(r=>r[2]))].map(x=>`<option>${x}</option>`).join("")}</select><select id="activity-type-filter"><option value="">كل العمليات</option>${[...new Set(rows.map(r=>r[4]))].map(x=>`<option>${x}</option>`).join("")}</select><select id="activity-result-filter"><option value="">كل النتائج</option><option value="success">نجاح</option><option value="warning">تحذير</option><option value="failed">فشل</option></select><label class="activity-search">⌕<input id="activity-search" placeholder="بحث في السجل..."/></label><button data-action="export-activity">⇩ تصدير</button></div><div class="activity-layout"><div class="activity-table-card"><div class="activity-table-scroll"><table><thead><tr><th>الوقت والتاريخ</th><th>المستخدم</th><th>العملية</th><th>التفاصيل</th><th>الجهة / الجهاز</th><th>IP</th><th>النتيجة</th></tr></thead><tbody>${rows.map(r=>`<tr data-activity-row data-user="${escapeHTML(r[2])}" data-type="${escapeHTML(r[4])}" data-result="${r[8]}" data-search="${escapeHTML(r.join(" "))}"><td><b>${r[0]}</b><small>${r[1]}</small></td><td><b>${escapeHTML(r[2])}</b><small>${escapeHTML(r[3])}</small></td><td><b>${escapeHTML(r[4])}</b></td><td>${escapeHTML(r[5])}</td><td>${escapeHTML(r[6])}</td><td dir="ltr">${r[7]}</td><td><span class="activity-result ${r[8]}">${resultLabel[r[8]]}</span></td></tr>`).join("")}</tbody></table></div><footer><span>عرض 1 إلى ${Math.min(10,rows.length)} من 1,248 عملية</span><div><button>‹‹</button><button>‹</button><button class="active">1</button><button>2</button><button>3</button><button>4</button><button>5</button><button>…</button><button>125</button><button>›</button></div></footer></div><aside class="activity-filter-panel"><h3>تصفية السجل</h3><label>الفترة الزمنية<select><option>نطاق مخصص</option></select></label><label>من<input type="date" value="2024-05-10"/></label><label>إلى<input type="date" value="2024-05-19"/></label><label>المستخدم<select><option>كل المستخدمين</option></select></label><label>نوع العملية<select><option>كل العمليات</option></select></label><label>النتيجة<select><option>كل النتائج</option></select></label><label>الجهاز<select><option>كل الأجهزة</option></select></label><button class="primary" data-action="apply-activity-filters">تطبيق الفلاتر</button><button data-action="reset-activity-filters">إعادة تعيين</button></aside></div><footer class="activity-security-note">♜ يتم تسجيل جميع العمليات المهمة تلقائياً لضمان الأمان والشفافية. يحتفظ بالسجل لمدة 12 شهراً.</footer></section>`;
 }
@@ -2166,6 +2104,18 @@ function initializeActivitySecurity() {
   const root = $(".activity-security"); if (!root) return;
   const filter = () => { const q=String($("#activity-search")?.value||"").toLowerCase(),u=$("#activity-user-filter")?.value||"",t=$("#activity-type-filter")?.value||"",r=$("#activity-result-filter")?.value||""; $$('[data-activity-row]',root).forEach(row=>row.hidden=!((!q||row.dataset.search.toLowerCase().includes(q))&&(!u||row.dataset.user===u)&&(!t||row.dataset.type===t)&&(!r||row.dataset.result===r))); };
   $("#activity-search")?.addEventListener("input",filter); $("#activity-user-filter")?.addEventListener("change",filter); $("#activity-type-filter")?.addEventListener("change",filter); $("#activity-result-filter")?.addEventListener("change",filter);
+}
+
+function liveActivityMarkup() {
+  const headers = state.lang === "ar" ? ["التاريخ", "المستخدم", "العملية", "الكيان", "التفاصيل"] : ["Date", "User", "Action", "Entity", "Details"];
+  const rows = (state.adminActivity || []).map((entry) => `<tr><td><small>${escapeHTML(entry.createdAt || "")}</small></td><td><b>${escapeHTML(entry.userName || entry.userEmail || "System")}</b></td><td>${escapeHTML(entry.action || "")}</td><td>${escapeHTML(entry.entityType || "")}</td><td>${escapeHTML(typeof entry.details === "string" ? entry.details : JSON.stringify(entry.details || {}))}</td></tr>`);
+  return adminTable(headers, rows, state.lang === "ar" ? "لا توجد عمليات مسجلة بعد" : "No activity has been recorded yet");
+}
+
+function liveTeamMarkup() {
+  const headers = state.lang === "ar" ? ["الاسم", "البريد", "الدور", "الحالة", "آخر دخول"] : ["Name", "Email", "Role", "Status", "Last login"];
+  const rows = (state.adminStaff || []).map((member) => `<tr><td><b>${escapeHTML(member.name || "")}</b></td><td dir="ltr">${escapeHTML(member.email || "")}</td><td>${escapeHTML(member.staffRole || member.role || "")}</td><td><span class="admin-status ${member.active === false ? "cancelled" : "active"}">${member.active === false ? adminCopy("غير نشط", "Inactive") : adminCopy("نشط", "Active")}</span></td><td><small>${escapeHTML(member.lastLoginAt || member.lastLogin || "—")}</small></td></tr>`);
+  return adminTable(headers, rows, state.lang === "ar" ? "لا توجد حسابات فريق إضافية" : "No additional staff accounts");
 }
 
 function brandManagementRecords() {
@@ -2492,7 +2442,8 @@ function settingsMarkup() {
     <section><div class="review-section-head"><span>03</span><div><b>${ar ? "روابط التواصل الاجتماعي" : "Social links"}</b><small>${ar ? "الرابط الفارغ يظهر كأيقونة معطلة بدون رابط وهمي." : "Empty URLs render as disabled icons."}</small></div></div><div class="social-settings-grid">${socialNames.map(([key,label]) => `<label>${label}<input name="social.${key}" value="${escapeHTML(settings.socialLinks[key])}" dir="ltr" placeholder="https://"/></label>`).join("")}</div></section>
     <section><div class="review-section-head"><span>04</span><div><b>${ar ? "أيقونات الصفحة الرئيسية" : "Homepage icons"}</b><small>${ar ? "ارفع أو استبدل أيقونات الأقسام والمزايا من ملفاتك." : "Upload or replace category and benefit icons."}</small></div></div><h4>${ar ? "الأقسام" : "Categories"}</h4><div class="store-icons-grid">${categoryIconMarkup}</div><h4>${ar ? "مزايا المتجر" : "Store benefits"}</h4><div class="store-icons-grid">${homeBenefitIconMarkup}</div></section>
     <section><div class="review-section-head"><span>05</span><div><b>${ar ? "مزايا الفوتر وصفحاتها" : "Footer benefits & detail pages"}</b><small>${ar ? "عدّل المحتوى والترتيب والرسم والألوان من مكان واحد." : "Edit content, order, illustration, and colors in one place."}</small></div></div><div class="benefits-settings-grid">${benefitMarkup}</div></section>
-    <section><div class="review-section-head"><span>05</span><div><b>${ar ? "خيارات مكتشف العطر" : "Fragrance Finder options"}</b><small>${ar ? "فعّل الخيارات التي تظهر للعملاء. يجب إبقاء خيار واحد على الأقل في كل مجموعة." : "Control the options customers can select. Each group must retain at least one option."}</small></div></div>
+    <section><div class="review-section-head"><span>05</span><div><b>${ar ? "أقسام واجهة المتجر" : "Storefront departments"}</b><small>${ar ? "تحكم في إظهار العطور فقط أو إعادة جميع الأقسام." : "Show perfumes only or restore all storefront departments."}</small></div></div><label class="admin-toggle-row"><span><b>${ar ? "عرض العطور فقط" : "Perfumes-only mode"}</b><small>${ar ? "يخفي زر الأقسام والفئات غير العطرية من واجهة المتجر دون حذف منتجاتها." : "Hides the departments button and non-fragrance categories without deleting their products."}</small></span><input name="perfumeOnlyMode" type="checkbox"${settings.perfumeOnlyMode !== false ? " checked" : ""}/></label></section>
+    <section><div class="review-section-head"><span>06</span><div><b>${ar ? "خيارات مكتشف العطر" : "Fragrance Finder options"}</b><small>${ar ? "فعّل الخيارات التي تظهر للعملاء. يجب إبقاء خيار واحد على الأقل في كل مجموعة." : "Control the options customers can select. Each group must retain at least one option."}</small></div></div>
     <div class="finder-admin-groups">${finderSettingsMarkup}</div><div class="admin-integration-note"><span>✓</span><div><b>${ar ? "الترجمات مكتملة" : "Translations complete"}</b><p>${ar ? "يتحقق فحص البناء من تطابق مفاتيح العربية والإنجليزية ويمنع النصوص الصلبة داخل واجهة مكتشف العطر." : "The build check verifies Arabic/English key parity and blocks hard-coded Finder UI copy."}</p></div></div></section>
     <section><div class="review-section-head"><span>06</span><div><b>${ar ? "الإشعارات والأمان" : "Notifications & security"}</b></div></div>
     <label class="admin-toggle-row"><span><b>${state.lang === "ar" ? "تنبيهات المخزون" : "Low-stock alerts"}</b><small>${state.lang === "ar" ? "تنبيه عند بلوغ الحد الأدنى" : "Notify at reorder threshold"}</small></span><input name="lowStockAlerts" type="checkbox"${settings.lowStockAlerts ? " checked" : ""} /></label>
@@ -2849,12 +2800,12 @@ function renderAdminDashboard(view = state.adminView) {
   $("#admin-view-actions").innerHTML = actions[view] || (["overview","accounting","reports","settings"].includes(view) ? "" :
     `<button class="button burgundy-button" data-action="admin-create-entity" data-view="${view}">${state.lang === "ar" ? "إضافة جديد" : "Add new"} ＋</button>`);
   const content = {
-    overview: () => operationalAdminMarkup("overview"),
+    overview: overviewMarkup,
     orders: ordersViewMarkup,
     products: productViewMarkup,
     performance: performanceProductsViewMarkup,
     inventory: inventoryViewMarkup,
-    customers: () => operationalAdminMarkup("customers"),
+    customers: customersViewMarkup,
     categories: filtersViewMarkup,
     brands: brandsManagementMarkup,
     "product-options": productOptionsAdminMarkup,
@@ -2862,8 +2813,8 @@ function renderAdminDashboard(view = state.adminView) {
     content: bannersViewMarkup,
     coupons: couponsViewMarkup,
     alternatives: alternativesAdminMarkup,
-    team: rolesDashboardMarkup,
-    activity: activitySecurityMarkup,
+    team: liveTeamMarkup,
+    activity: liveActivityMarkup,
     notes: notesViewMarkup,
     accounting: accountingMarkup,
     reports: reportsMarkup,
@@ -3413,14 +3364,17 @@ function renderHomeBenefitsMarquee() {
 }
 
 function renderHomeNavigation() {
+  const perfumeOnly = mergeStoreSettings(state.adminWorkspace.settings || {}).perfumeOnlyMode !== false;
+  document.body.classList.toggle("perfume-only-store", perfumeOnly);
+  if (perfumeOnly) state.storefrontCategory = "perfume";
   const brandMenu = $("#header-brands-dropdown");
   if (brandMenu) brandMenu.innerHTML = `<div class="mega-dropdown-heading"><small>${state.lang === "ar" ? "دليل العلامات التجارية" : "Brand directory"}</small><a href="/brands" data-action="open-brands-page">${state.lang === "ar" ? "عرض جميع العلامات" : "View all brands"}</a></div>${ORIGO_PERFUME_BRANDS.map((brand) => `<button data-action="brand-search" data-query="${escapeHTML(brand)}"><span>${escapeHTML(brand)}</span><i>‹</i></button>`).join("")}`;
   const categoryMenu = $("#header-categories-dropdown");
-  if (categoryMenu) categoryMenu.innerHTML = `<div class="mega-dropdown-heading"><small>${state.lang === "ar" ? "تسوق حسب الفئة" : "Shop by category"}</small><b>${ORIGO_HOME_CATEGORIES.length} ${state.lang === "ar" ? "فئات" : "categories"}</b></div>${ORIGO_HOME_CATEGORIES.map(([key, ar, en, icon]) => `<button data-action="catalog-category" data-category="${key}"><i>${icon}</i><span>${state.lang === "ar" ? ar : en}</span><b>‹</b></button>`).join("")}`;
+  if (categoryMenu) categoryMenu.innerHTML = perfumeOnly ? "" : `<div class="mega-dropdown-heading"><small>${state.lang === "ar" ? "تسوق حسب الفئة" : "Shop by category"}</small><b>${ORIGO_HOME_CATEGORIES.length} ${state.lang === "ar" ? "فئات" : "categories"}</b></div>${ORIGO_HOME_CATEGORIES.map(([key, ar, en, icon]) => `<button data-action="catalog-category" data-category="${key}"><i>${icon}</i><span>${state.lang === "ar" ? ar : en}</span><b>‹</b></button>`).join("")}`;
   const mobileBrandList = $("#mobile-brands-list");
   if (mobileBrandList) mobileBrandList.innerHTML = ORIGO_PERFUME_BRANDS.map((brand) => `<button data-action="brand-search" data-query="${escapeHTML(brand)}"><span>${escapeHTML(brand)}</span><i>‹</i></button>`).join("");
   const mobileCategoryList = $("#mobile-categories-list");
-  if (mobileCategoryList) mobileCategoryList.innerHTML = ORIGO_HOME_CATEGORIES.map(([key, ar, en, icon]) => `<button data-action="catalog-category" data-category="${key}"><i>${icon}</i><span>${state.lang === "ar" ? ar : en}</span><b>‹</b></button>`).join("");
+  if (mobileCategoryList) mobileCategoryList.innerHTML = perfumeOnly ? "" : ORIGO_HOME_CATEGORIES.map(([key, ar, en, icon]) => `<button data-action="catalog-category" data-category="${key}"><i>${icon}</i><span>${state.lang === "ar" ? ar : en}</span><b>‹</b></button>`).join("");
   const mobile = $(".mobile-brands > div");
   if (mobile) mobile.innerHTML = ORIGO_PERFUME_BRANDS.map((brand) => `<button data-action="brand-search" data-query="${escapeHTML(brand)}">${escapeHTML(brand)}</button>`).join("");
 }
@@ -3534,11 +3488,13 @@ function productSalesScore(product) {
 
 function homeBrandProducts(brand) {
   const key = ORIGOCatalog.normalize(brand);
-  return state.products.filter((product) => ORIGOCatalog.normalize(product.brand || "") === key);
+  const perfumeOnly = mergeStoreSettings(state.adminWorkspace.settings || {}).perfumeOnlyMode !== false;
+  return state.products.filter((product) => (!perfumeOnly || product.category === "perfume") && ORIGOCatalog.normalize(product.brand || "") === key);
 }
 
 function homeProductRowProducts(row) {
-  const products = state.products.map((product, index) => ({ product, index }));
+  const perfumeOnly = mergeStoreSettings(state.adminWorkspace.settings || {}).perfumeOnlyMode !== false;
+  const products = state.products.filter((product) => !perfumeOnly || product.category === "perfume").map((product, index) => ({ product, index }));
   if (row.source === "brand") {
     const brand = ORIGOCatalog.normalize(row.brand || "");
     return products.filter(({ product }) => ORIGOCatalog.normalize(product.brand || "") === brand).map(({ product }) => product);
@@ -4023,7 +3979,9 @@ function navigateBenefit(slug) {
 function renderProducts(filter = "all") {
   const grid = $("#product-grid");
   const search = ORIGOCatalog.normalize(state.storefrontSearchQuery);
+  const perfumeOnly = mergeStoreSettings(state.adminWorkspace.settings || {}).perfumeOnlyMode !== false;
   const visibleProducts = state.products
+    .filter((product) => !perfumeOnly || product.category === "perfume")
     .filter((product) => filter === "all" || product.type === filter)
     .filter((product) => state.storefrontCategory === "all" || product.category === state.storefrontCategory)
     .filter((product) => Object.entries(state.activeDynamicFilters).every(([key, selected]) =>
@@ -4126,7 +4084,8 @@ function catalogMatchesQuick(product) {
 function catalogFilteredProducts() {
   const filters = state.catalogFilters;
   const query = ORIGOCatalog.normalize(state.catalogQuery);
-  const products = state.products.filter((product) => state.storefrontCategory === "all" || product.category === state.storefrontCategory)
+  const perfumeOnly = mergeStoreSettings(state.adminWorkspace.settings || {}).perfumeOnlyMode !== false;
+  const products = state.products.filter((product) => (!perfumeOnly || product.category === "perfume") && (state.storefrontCategory === "all" || product.category === state.storefrontCategory))
     .filter(catalogMatchesQuick)
     .filter((product) => !query || catalogProductText(product).includes(query))
     .filter((product) => ["gender", "brand", "concentration", "family", "notes", "occasion"].every((key) => {
@@ -4165,7 +4124,8 @@ function catalogFilterSection(key, title, content, open = false) {
 }
 
 function renderCatalogFilters() {
-  const products = state.products.filter((product) => state.storefrontCategory === "all" || product.category === state.storefrontCategory);
+  const perfumeOnly = mergeStoreSettings(state.adminWorkspace.settings || {}).perfumeOnlyMode !== false;
+  const products = state.products.filter((product) => (!perfumeOnly || product.category === "perfume") && (state.storefrontCategory === "all" || product.category === state.storefrontCategory));
   const genders = [["men", products.filter((p) => catalogGender(p) === "men").length, state.lang === "ar" ? "رجالي" : "Men"], ["women", products.filter((p) => catalogGender(p) === "women").length, state.lang === "ar" ? "نسائي" : "Women"], ["unisex", products.filter((p) => catalogGender(p) === "unisex").length, state.lang === "ar" ? "للجنسين" : "Unisex"]].filter(([, count]) => count);
   const brands = catalogOptionCounts("brand", products);
   const concentrations = catalogOptionCounts("concentration", products);
@@ -4387,7 +4347,8 @@ function renderCatalogAutocomplete(query) {
   const holder = $("#catalog-autocomplete");
   const normalized = ORIGOCatalog.normalize(query);
   if (!normalized) { holder.hidden = true; holder.innerHTML = ""; return; }
-  const products = state.products.filter((product) => catalogProductText(product).includes(normalized)).slice(0, 4);
+  const perfumeOnly = mergeStoreSettings(state.adminWorkspace.settings || {}).perfumeOnlyMode !== false;
+  const products = state.products.filter((product) => (!perfumeOnly || product.category === "perfume") && catalogProductText(product).includes(normalized)).slice(0, 4);
   const brands = catalogOptionCounts("brand").filter(([brand]) => ORIGOCatalog.normalize(brand).includes(normalized)).slice(0, 4);
   const notes = catalogOptionCounts("notes").filter(([note]) => ORIGOCatalog.normalize(note).includes(normalized)).slice(0, 4);
   const groups = [];
@@ -6642,7 +6603,7 @@ function searchableCreatableSelect({ name, group, labelAr, labelEn, selected = [
     <div class="smart-select" data-smart-select data-group="${escapeHTML(group)}" data-name="${escapeHTML(name)}" data-multiple="${multiple}" data-create="${allowCreate}" data-readonly="${readonly}">
       <input type="hidden" name="${escapeHTML(name)}" value="${escapeHTML(values.join(", "))}" />
       <div class="smart-select-control"${readonly ? ` aria-readonly="true"` : ` data-action="smart-select-open" role="button" tabindex="0" aria-haspopup="listbox" aria-expanded="false"`}>
-        <span class="smart-select-chips">${selectedItems.length ? selectedItems.map((item) => smartSelectChipMarkup(item, item.value, { multiple:multiple && !readonly, group })).join("") : `<small>${adminCopy("سيولده النظام تلقائيًا","Generated automatically")}</small>`}</span>${readonly ? "" : "<strong>⌄</strong>"}
+        <span class="smart-select-chips">${selectedItems.length ? selectedItems.map((item) => smartSelectChipMarkup(item, item.value, { multiple:multiple && !readonly, group })).join("") : `<small>${adminCopy("اختر أو ابحث…","Choose or search…")}</small>`}</span>${readonly ? "" : "<strong>⌄</strong>"}
       </div>
       ${readonly ? "" : `<div class="smart-select-menu" hidden>
         <div class="smart-select-search"><input type="search" data-smart-search placeholder="${adminCopy("ابحث بالعربية أو الإنجليزية…","Search in Arabic or English…")}" autocomplete="off"/><button type="button" data-action="smart-select-settings" title="${adminCopy("إدارة الخيارات","Manage options")}">⚙</button></div>
@@ -6714,15 +6675,19 @@ function perfumePerformanceEditorSection(product) {
     <div class="review-section-head"><span>04</span><div><b>${adminCopy("الأداء والاستخدام", "Performance & usage")}</b><small>${adminCopy("أدخل التقييم العام والثبات والفوحان؛ وتُحدد المواسم والأوقات والمناسبات من الأكوردات وهذه القيم فقط.", "Enter the overall rating, longevity, and projection; seasons, times, and occasions are derived only from these values and the accords.")}</small></div></div>
     <div class="review-grid performance-core-grid">
       <label>${adminCopy("التقييم العام من 5", "Overall rating out of 5")}<input type="number" name="overallRating" min="0" max="5" step="0.1" value="${escapeHTML(product.reviewSummary?.average ?? product.rating ?? "")}" placeholder="4.5"/><small>${adminCopy("هو نفس التقييم الظاهر في بطاقة المنتج.", "This is the same rating shown on the product card.")}</small></label>
-      <label>${adminCopy("الثبات بالساعات", "Longevity in hours")}<input type="number" name="performanceLongevityHours" min="0" max="72" step="0.5" value="${escapeHTML(details.longevityHours ?? details.longevityMaxHours ?? details.longevityMinHours ?? "")}" placeholder="8"/></label>
+      <label>${adminCopy("الثبات بالساعات", "Longevity in hours")}<input type="number" name="performanceLongevityHours" min="0" max="72" step="0.5" value="${escapeHTML(details.longevityHours ?? details.longevityMaxHours ?? details.longevityMinHours ?? performance.longevity ?? "")}" placeholder="8"/></label>
       <label>${adminCopy("قوة الفوحان", "Projection strength")}<select name="performanceProjection"><option value="">${adminCopy("غير محدد", "Not specified")}</option>${selectOptions([["weak",adminCopy("ضعيف", "Weak")],["moderate",adminCopy("متوسط", "Moderate")],["strong",adminCopy("قوي", "Strong")],["very_strong",adminCopy("قوي جدًا", "Very strong")]], normalizeAdminProjection(performance.projection ?? performance.sillage))}</select></label>
     </div>
+    <fieldset class="bundle-score-fields"><legend>${adminCopy("درجات الفصول وأوقات الاستخدام من 0 إلى 5", "Season and usage scores from 0 to 5")}</legend><div class="review-grid">
+      ${[["winter","الشتاء","Winter"],["autumn","الخريف","Autumn"],["spring","الربيع","Spring"],["summer","الصيف","Summer"]].map(([id,ar,en]) => `<label>${adminCopy(ar,en)}<input type="number" name="seasonScore.${id}" min="0" max="5" step="1" value="${escapeHTML(product.seasonScores?.[id] ?? "")}"/></label>`).join("")}
+      ${[["day","النهار","Day"],["night","الليل","Night"]].map(([id,ar,en]) => `<label>${adminCopy(ar,en)}<input type="number" name="usageScore.${id}" min="0" max="5" step="1" value="${escapeHTML(product.usageTimeScores?.[id] ?? "")}"/></label>`).join("")}
+    </div></fieldset>
     <div class="performance-auto-panel">
       <header><div><b>✦ ${adminCopy("نتائج محسوبة عند الحفظ", "Calculated on save")}</b><small>${adminCopy("تعتمد فقط على الأكوردات اليدوية والثبات والفوحان.", "Based only on manual accords, longevity, and projection.")}</small></div></header>
       <div class="review-grid performance-generated-grid">
-        <label>${adminCopy("المواسم المناسبة", "Best seasons")}<input name="generatedSeasons" readonly value="${escapeHTML(csv(product.seasons || []))}" placeholder="${adminCopy("اضغط زر التوليد", "Select generate")}"/></label>
-        <label>${adminCopy("أوقات الاستخدام", "Wear times")}<input name="generatedUsageTimes" readonly value="${escapeHTML(csv(product.usageTimes || []))}" placeholder="${adminCopy("اضغط زر التوليد", "Select generate")}"/></label>
-        <label>${adminCopy("المناسبات", "Occasions")}<input name="generatedOccasions" readonly value="${escapeHTML(csv(product.occasions || []))}" placeholder="${adminCopy("اضغط زر التوليد", "Select generate")}"/></label>
+        <label>${adminCopy("المواسم المناسبة", "Best seasons")}<input name="generatedSeasons" readonly value="${escapeHTML(csv(product.seasons || []))}" placeholder="${adminCopy("لا توجد قيمة — يمكن توليد اقتراح", "No value — a suggestion can be generated")}"/></label>
+        <label>${adminCopy("أوقات الاستخدام", "Wear times")}<input name="generatedUsageTimes" readonly value="${escapeHTML(csv(product.usageTimes || []))}" placeholder="${adminCopy("لا توجد قيمة — يمكن توليد اقتراح", "No value — a suggestion can be generated")}"/></label>
+        <label>${adminCopy("المناسبات", "Occasions")}<input name="generatedOccasions" readonly value="${escapeHTML(csv(product.occasions || []))}" placeholder="${adminCopy("لا توجد قيمة — يمكن توليد اقتراح", "No value — a suggestion can be generated")}"/></label>
       </div>
       <div class="review-grid performance-manual-grid">
         ${searchableCreatableSelect({ name:"seasons", group:"season", labelAr:"تعديل المواسم", labelEn:"Edit seasons", selected:product.seasons, multiple:true })}
@@ -6884,7 +6849,7 @@ function perfumeAnalysisPreviewMarkup(product = {}) {
   </div>`;
 }
 
-async function runPerfumeAnalysisPreview(form, button, { silent = false, overwriteRecommendations = true } = {}) {
+async function runPerfumeAnalysisPreview(form, button, { silent = false, overwriteRecommendations = false } = {}) {
   if (!form || !button || button.dataset.running === "true") return;
   button.dataset.running = "true";
   button.disabled = true;
@@ -6918,7 +6883,7 @@ async function runPerfumeAnalysisPreview(form, button, { silent = false, overwri
     for (const [name, values] of recommendationTargets) {
       const holder = form.querySelector(`[data-smart-select][data-name="${name}"]`);
       if (!holder || !values.length) continue;
-      if (!overwriteRecommendations && holder.dataset.userEdited === "true") continue;
+      if (smartSelectValues(holder).length) continue;
       if (name === "occasions") holder.dataset.automationWriting = "true";
       setSmartSelectValues(holder, values);
       delete holder.dataset.automationWriting;
@@ -7008,9 +6973,21 @@ function productMediaStudioMarkup(images = []) {
   const active = images[activeIndex] || images[0];
   return `<div class="product-media-studio" data-product-media-studio data-index="${activeIndex}">
     <div class="product-media-stage"><img src="${escapeHTML(active.url)}" alt="${adminCopy("معاينة صورة المنتج", "Product image preview")}"/><div class="product-media-stage-actions"><button type="button" data-action="admin-studio-fullscreen" aria-label="${adminCopy("عرض ملء الشاشة", "View fullscreen")}">⛶</button></div>${images.length > 1 ? `<button type="button" class="studio-arrow previous" data-action="admin-studio-step" data-change="-1" aria-label="${adminCopy("الصورة السابقة", "Previous image")}">‹</button><button type="button" class="studio-arrow next" data-action="admin-studio-step" data-change="1" aria-label="${adminCopy("الصورة التالية", "Next image")}">›</button>` : ""}<span class="studio-count"><b>${activeIndex + 1}</b> / ${images.length}</span></div>
-    <div class="product-media-thumbnails" role="list">${images.map((image, index) => `<label class="review-image${index === activeIndex ? " selected" : ""}" data-studio-thumbnail="${index}" role="listitem" draggable="true" title="${adminCopy("اسحب أو استخدم الأسهم لتغيير الترتيب", "Drag or use arrows to reorder")}"><input type="radio" name="selectedImage" value="${index}"${index === activeIndex ? " checked" : ""}/><button type="button" data-action="admin-studio-image" data-index="${index}" aria-label="${adminCopy(`اختيار الصورة ${index + 1}`, `Select image ${index + 1}`)}"><img src="${escapeHTML(image.url)}" alt=""/></button><span><i aria-hidden="true">⠿</i>${escapeHTML(image.fileName || image.provider || `Image ${index + 1}`)}</span><button type="button" class="studio-image-move" data-action="admin-studio-move" data-index="${index}" data-change="-1" aria-label="${adminCopy("تحريك للخلف", "Move backward")}">‹</button><button type="button" class="studio-image-move" data-action="admin-studio-move" data-index="${index}" data-change="1" aria-label="${adminCopy("تحريك للأمام", "Move forward")}">›</button><button type="button" class="studio-image-delete" data-action="admin-studio-delete" data-index="${index}" aria-label="${adminCopy("حذف الصورة", "Delete image")}">×</button></label>`).join("")}</div>
+    <div class="product-media-thumbnails" role="list">${images.map((image, index) => `<article class="review-image${index === activeIndex ? " selected" : ""}" data-studio-thumbnail="${index}" data-image-id="${escapeHTML(image.id || "")}" role="listitem" draggable="true"><input type="radio" name="selectedImage" value="${index}"${index === 0 ? " checked" : ""}/><button type="button" data-action="admin-studio-image" data-index="${index}" aria-label="${adminCopy(`عرض الصورة ${index + 1}`, `View image ${index + 1}`)}"><img src="${escapeHTML(image.url)}" alt=""/></button><b class="studio-image-position">${index + 1}</b>${index === 0 ? `<strong class="studio-main-badge">${adminCopy("الصورة الرئيسية", "Main image")}</strong>` : `<button type="button" class="studio-make-main" data-action="admin-studio-main" data-index="${index}">${adminCopy("تعيين كرئيسية", "Make main")}</button>`}<span class="studio-drag-handle" data-studio-drag-handle tabindex="0"><i aria-hidden="true">⠿</i>${adminCopy("اسحب للترتيب", "Drag to reorder")}</span><div class="studio-image-controls"><button type="button" class="studio-image-move" data-action="admin-studio-move" data-index="${index}" data-change="-1">‹</button><button type="button" class="studio-image-move" data-action="admin-studio-move" data-index="${index}" data-change="1">›</button></div><button type="button" class="studio-image-delete" data-action="admin-studio-delete" data-index="${index}" aria-label="${adminCopy("حذف الصورة", "Delete image")}">×</button></article>`).join("")}</div>
     <dialog class="product-media-lightbox"><button type="button" class="studio-lightbox-close" data-action="admin-studio-close" aria-label="${adminCopy("إغلاق", "Close")}">×</button><img src="${escapeHTML(active.url)}" alt="${adminCopy("صورة المنتج بالحجم الكامل", "Full-size product image")}"/><footer><button type="button" data-action="admin-studio-step" data-change="-1" aria-label="${adminCopy("السابق", "Previous")}">‹</button><span><b>${activeIndex + 1}</b> / ${images.length}</span><button type="button" data-action="admin-studio-step" data-change="1" aria-label="${adminCopy("التالي", "Next")}">›</button></footer></dialog>
   </div>`;
+}
+
+function normalizeProductImages(images = []) {
+  const seen = new Set();
+  return (Array.isArray(images) ? images : []).map((image, index) => {
+    const item = typeof image === "string" ? { url:image } : { ...(image || {}) };
+    const url = String(item.url || "").trim();
+    const key = String(item.id || url);
+    if (!url || seen.has(key) || seen.has(url)) return null;
+    seen.add(key); seen.add(url);
+    return { ...item, id:item.id || `product-image-${Date.now().toString(36)}-${index}`, url, position:index, sortOrder:index, selected:index === 0 };
+  }).filter(Boolean);
 }
 
 function setAdminStudioImage(studio, nextIndex) {
@@ -7271,12 +7248,14 @@ function renderImportReview(product) {
   const identity = `<div class="review-grid">
     <label>${adminCopy("الاسم بالعربية","Arabic name")}<input name="nameAr" maxlength="140" value="${escapeHTML(product.nameAr || "")}"/></label>
     <label>${adminCopy("الاسم بالإنجليزية","English name")}<input name="nameEn" dir="ltr" maxlength="140" value="${escapeHTML(product.nameEn || "")}"/></label>
+    <label>${adminCopy("اسم العلامة بالعربية","Arabic brand name")}<input name="brandAr" dir="rtl" maxlength="160" value="${escapeHTML(product.brandAr || "")}"/></label>
+    <label>${adminCopy("اسم العلامة بالإنجليزية","English brand name")}<input name="brandEn" dir="ltr" maxlength="160" value="${escapeHTML(product.brandEn || product.brand || "")}"/></label>
     ${searchableCreatableSelect({name:"brand",group:"brand",labelAr:"العلامة التجارية",labelEn:"Brand",selected:product.brand,required:true})}
     ${searchableCreatableSelect({name:"category",group:"category",labelAr:"نوع المنتج",labelEn:"Product type",selected:product.category || "perfume",required:true})}
     ${searchableCreatableSelect({name:"gender",group:"gender",labelAr:"الجنس",labelEn:"Gender",selected:product.genders || product.gender,multiple:true})}
     ${searchableCreatableSelect({name:"concentration",group:"concentration",labelAr:"التركيز",labelEn:"Concentration",selected:product.concentration})}
     ${searchableCreatableSelect({name:"size",group:"size",labelAr:"الحجم",labelEn:"Size",selected:product.size || product.sizes?.[0] || ""})}
-    <label>${adminCopy("السعر","Price")}<input name="price" type="number" min="0" value="${escapeHTML(product.price || "")}"/></label>
+    <label>${adminCopy("السعر","Price")}<input name="price" type="number" min="0" value="${escapeHTML(product.price ?? "")}"/></label>
     <label>${adminCopy("السعر قبل الخصم","Compare-at price")}<input name="oldPrice" type="number" min="0" value="${escapeHTML(product.oldPrice ?? "")}"/></label>
     <label>SKU<input name="sku" dir="ltr" value="${escapeHTML(product.sku || "")}"/></label>
     <label>${adminCopy("الباركود","Barcode")}<input name="barcode" dir="ltr" value="${escapeHTML(product.barcode || "")}"/></label>
@@ -7342,11 +7321,14 @@ function projectionScore(value) {
 
 function perfumeBundleEditorSection(product = {}) {
   const stored = product.perfumeBundle || null;
+  const extraFields = Object.entries(product.bundleExtraFields || {});
+  const extraMarkup = extraFields.length ? `<div class="bundle-extra-fields wide"><header><b>${adminCopy("حقول الحزمة الإضافية", "Additional bundle fields")}</b><small>${adminCopy("تم إنشاء هذه الخانات تلقائيًا لأنها غير موجودة في نموذج المنتج الأساسي.", "These fields were created automatically because the base product form has no matching field.")}</small></header><div class="review-grid">${extraFields.map(([key,value]) => { const encoded=encodeURIComponent(key); const structured=value && typeof value === "object"; return `<label class="${structured ? "wide" : ""}">${escapeHTML(key)}${structured ? `<textarea name="bundleExtra.${encoded}" data-bundle-extra-json="true" dir="ltr">${escapeHTML(JSON.stringify(value,null,2))}</textarea>` : `<input name="bundleExtra.${encoded}" value="${escapeHTML(value ?? "")}" dir="auto"/>`}</label>`; }).join("")}</div></div>` : "";
   return `<section class="review-section perfume-bundle-import" data-editor-tier="core" data-perfume-section>
     <div class="review-section-head"><span>⇩</span><div><b>${adminCopy("حزمة بيانات العطر", "Perfume Data Bundle")}</b><small>${adminCopy("ألصق JSON ثم حلّله لتعبئة الحقول الحالية دون حفظ المنتج تلقائيًا.", "Paste JSON, then parse it to populate the existing fields without saving automatically.")}</small></div></div>
     <input type="hidden" name="perfumeBundleData" value="${escapeHTML(stored ? JSON.stringify(stored) : "")}"/>
     <label class="wide perfume-bundle-textarea">${adminCopy("حزمة JSON", "JSON bundle")}<textarea name="perfumeBundleText" dir="ltr" rows="12" spellcheck="false" placeholder='{"perfume":{"name_ar":"...","name_en":"..."}}'></textarea></label>
-    <div class="perfume-bundle-actions"><button type="button" class="button burgundy-button" data-action="parse-perfume-bundle">${adminCopy("تحليل واستيراد البيانات", "Parse & Import")}</button><button type="button" class="button secondary-button" data-action="clear-perfume-bundle">${adminCopy("مسح الحزمة", "Clear bundle")}</button></div>
+    <div class="perfume-bundle-actions"><button type="button" class="button burgundy-button" data-action="parse-perfume-bundle">${adminCopy("تحليل واستيراد البيانات", "Parse & Import")}</button><button type="button" class="button secondary-button" data-action="export-perfume-bundle">${adminCopy("تصدير الحزمة الحالية", "Export current bundle")}</button><button type="button" class="button secondary-button" data-action="clear-perfume-bundle">${adminCopy("مسح الحزمة", "Clear bundle")}</button></div>
+    ${extraMarkup}
     <div class="perfume-bundle-feedback" data-perfume-bundle-feedback${product.bundleImportFeedback ? "" : " hidden"}>${product.bundleImportFeedback || ""}</div>
   </section>`;
 }
@@ -7369,6 +7351,8 @@ function applyPerfumeBundleToEditor(form, normalized) {
   };
   setField("nameAr", normalized.perfume.nameAr);
   setField("nameEn", normalized.perfume.nameEn);
+  setField("brandAr", normalized.perfume.brandAr);
+  setField("brandEn", normalized.perfume.brandEn);
   setSmart("brand", normalized.perfume.brandEn || normalized.perfume.brandAr);
   setSmart("category", "perfume");
   const customAccords = [];
@@ -7413,12 +7397,21 @@ function applyPerfumeBundleToEditor(form, normalized) {
   if (unknown.size_ml != null) setSmart("size", `${Number(unknown.size_ml)} ml`);
   if (unknown.longevity_hours != null) setField("performanceLongevityHours", Number(unknown.longevity_hours));
   if (unknown.sillage != null) setField("performanceProjection", normalizeAdminProjection(unknown.sillage));
+  const imported = normalized.perfume || {};
+  setField("price", imported.price);
+  setField("oldPrice", imported.compareAtPrice);
+  setField("sku", imported.sku);
+  setField("barcode", imported.barcode);
+  setField("quantity", imported.quantity);
+  setField("minimumStock", imported.lowStockThreshold);
+  setField("cost", imported.cost);
+  setField("overallRating", imported.rating);
 
   const seasonAliases = { winter:["winter","الشتاء","شتاء"], autumn:["autumn","fall","الخريف","خريف"], spring:["spring","الربيع","ربيع"], summer:["summer","الصيف","صيف"] };
   const timeAliases = { day:["day","daytime","النهار","نهار"], evening:["evening","المساء","مساء"], night:["night","الليل","ليل"] };
   const occasionAliases = { daily:["daily","everyday","يومي"], work:["work","office","العمل"], formal:["formal","رسمي"], parties:["party","parties","حفلات","السهرات"], wedding:["wedding","زفاف"], "date-night":["date","dates","date night","موعد","المواعيد"], occasions:["occasion","occasions","special occasions","المناسبات"] };
-  const bundleSeasons = normalized.derived.seasons.map((item) => bundleCanonical(item.en || item.ar, seasonAliases));
-  const bundleTimes = normalized.derived.timeOfDay.map((item) => bundleCanonical(item.en || item.ar, timeAliases));
+  const bundleSeasons = normalized.derived.seasons.filter((item) => Number(item.score) >= 3).map((item) => bundleCanonical(item.en || item.ar, seasonAliases));
+  const bundleTimes = normalized.derived.timeOfDay.filter((item) => Number(item.score) >= 3).map((item) => bundleCanonical(item.en || item.ar, timeAliases));
   const bundleOccasions = normalized.derived.occasions.map((item) => bundleCanonical(item.en || item.ar, occasionAliases));
   setSmart("seasons", bundleSeasons);
   setSmart("usageTimes", bundleTimes);
@@ -7426,16 +7419,16 @@ function applyPerfumeBundleToEditor(form, normalized) {
   if (form.elements.generatedSeasons) form.elements.generatedSeasons.value = csv(bundleSeasons);
   if (form.elements.generatedUsageTimes) form.elements.generatedUsageTimes.value = csv(bundleTimes);
   if (form.elements.generatedOccasions) form.elements.generatedOccasions.value = csv(bundleOccasions);
+  normalized.derived.seasons.forEach((item) => setField(`seasonScore.${item.id || bundleCanonical(item.en || item.ar, seasonAliases)}`, item.score));
+  normalized.derived.timeOfDay.forEach((item) => setField(`usageScore.${item.id || bundleCanonical(item.en || item.ar, timeAliases)}`, item.score));
 
-  const allNotesAr = normalized.notes.top.concat(normalized.notes.heart, normalized.notes.base).map((item) => item.ar || item.en).filter(Boolean);
-  const allNotesEn = normalized.notes.top.concat(normalized.notes.heart, normalized.notes.base).map((item) => item.en || item.ar).filter(Boolean);
-  const productAr = normalized.perfume.nameAr || normalized.perfume.nameEn;
-  const productEn = normalized.perfume.nameEn || normalized.perfume.nameAr;
-  const familyAr = normalized.derived.olfactiveFamily.ar || normalized.derived.olfactiveFamily.en;
-  const familyEn = normalized.derived.olfactiveFamily.en || normalized.derived.olfactiveFamily.ar;
-  setField("descriptionAr", `${productAr} من ${normalized.perfume.brandAr || normalized.perfume.brandEn || "ORIGO"}، عطر ${familyAr || "مميز"}${allNotesAr.length ? ` بنوتات ${allNotesAr.slice(0, 6).join("، ")}` : ""}. اختيار مناسب للمواسم والأوقات والمناسبات المحددة.`);
-  setField("descriptionEn", `${productEn} by ${normalized.perfume.brandEn || normalized.perfume.brandAr || "ORIGO"}, a ${familyEn || "distinctive"} fragrance${allNotesEn.length ? ` featuring ${allNotesEn.slice(0, 6).join(", ")}` : ""}. Suited to the selected seasons, times, and occasions.`);
-  updateGeneratedProductSeo(form, { force:true });
+  setField("descriptionAr", imported.descriptionAr);
+  setField("descriptionEn", imported.descriptionEn);
+  setField("slug", imported.slug);
+  setField("seoTitle", imported.seoTitle);
+  setField("seoDescription", imported.seoDescription);
+  if (imported.seoKeywords?.length) setField("seoKeywords", imported.seoKeywords.join("، "));
+  updateGeneratedProductSeo(form);
 
   form.elements.perfumeBundleData.value = JSON.stringify(normalized);
   const feedback = form.querySelector("[data-perfume-bundle-feedback]");
@@ -7541,8 +7534,21 @@ function collectReviewProduct(form) {
   }).filter(Boolean);
   const customAccords = parseManualAccords(data.get("manualAccords")).filter((item) => !libraryAccords.some((known) => known.id === item.id));
   const accordProfile = [...libraryAccords, ...customAccords];
-  const images = [...(base.images || [])].map((image, index) => ({ ...image, selected: String(index) === String(data.get("selectedImage")) }));
-  if (String(data.get("imageUrl") || "").trim()) images.unshift({ url: String(data.get("imageUrl")).trim(), provider: "Manager", selected: true });
+  const scoreValue = (name) => data.get(name) === "" || data.get(name) == null ? null : Math.max(0, Math.min(5, Number(data.get(name))));
+  const seasonScores = Object.fromEntries(["winter","autumn","spring","summer"].map((id) => [id,scoreValue(`seasonScore.${id}`)]));
+  const usageTimeScores = Object.fromEntries(["day","night"].map((id) => [id,scoreValue(`usageScore.${id}`)]));
+  const bundleExtraFields = { ...(base.bundleExtraFields || {}) };
+  for (const [field,value] of data.entries()) {
+    if (!field.startsWith("bundleExtra.")) continue;
+    const name = decodeURIComponent(field.slice("bundleExtra.".length));
+    const element = form.elements[field];
+    if (element?.dataset?.bundleExtraJson === "true") {
+      try { bundleExtraFields[name] = JSON.parse(String(value)); }
+      catch { bundleExtraFields[name] = String(value); }
+    } else bundleExtraFields[name] = String(value);
+  }
+  let images = normalizeProductImages(base.images || []);
+  if (String(data.get("imageUrl") || "").trim()) images = normalizeProductImages([...images, { url:String(data.get("imageUrl")).trim(), provider:"Manager" }]);
   const genders = optionValuesForProduct("gender", data.get("gender"));
   const families = data.has("families") ? optionValuesForProduct("family", data.get("families")).slice(0, 3) : [];
   const country = optionValuesForProduct("country", data.get("originCountry"))[0];
@@ -7574,8 +7580,8 @@ function collectReviewProduct(form) {
     nameAr: String(data.get("nameAr") || "").trim(),
     nameEn: String(data.get("nameEn") || "").trim(),
     brand: String(data.get("brand") || "").trim(),
-    brandAr: perfumeBundle?.perfume?.brandAr || base.brandAr || "",
-    brandEn: perfumeBundle?.perfume?.brandEn || base.brandEn || "",
+    brandAr: String(data.get("brandAr") || perfumeBundle?.perfume?.brandAr || base.brandAr || "").trim(),
+    brandEn: String(data.get("brandEn") || perfumeBundle?.perfume?.brandEn || base.brandEn || "").trim(),
     category: String(data.get("category") || ""),
     gender: genders[0]?.value || "",
     genders: genders.map((item) => item.value),
@@ -7588,8 +7594,10 @@ function collectReviewProduct(form) {
     families: data.has("families") ? families.map((item) => item.value) : (base.families || []),
     familyAr: perfumeBundle?.derived?.olfactiveFamily?.ar || (data.has("families") ? families.map((item) => item.nameAr || item.nameEn).filter(Boolean).join("، ") : (base.familyAr || "")),
     familyEn: perfumeBundle?.derived?.olfactiveFamily?.en || (data.has("families") ? families.map((item) => item.nameEn || item.nameAr).filter(Boolean).join(", ") : (base.familyEn || "")),
-    seasons: String(data.get("category") || "") === "perfume" ? (data.has("seasons") && csvValues(data.get("seasons")).length ? csvValues(data.get("seasons")) : (bundleUsage?.seasons.length ? bundleUsage.seasons : generatedUsage.seasons)) : (data.has("seasons") ? csvValues(data.get("seasons")) : (base.seasons || [])),
-    usageTimes: String(data.get("category") || "") === "perfume" ? (data.has("usageTimes") && csvValues(data.get("usageTimes")).length ? csvValues(data.get("usageTimes")) : (bundleUsage?.usageTimes.length ? bundleUsage.usageTimes : generatedUsage.usageTimes)) : (data.has("usageTimes") ? csvValues(data.get("usageTimes")) : (base.usageTimes || [])),
+    seasons: data.has("seasons") ? csvValues(data.get("seasons")) : (bundleUsage?.seasons.filter((item, index) => Number(perfumeBundle?.derived?.seasons?.[index]?.score ?? 5) >= 3) || base.seasons || []),
+    usageTimes: data.has("usageTimes") ? csvValues(data.get("usageTimes")) : (bundleUsage?.usageTimes.filter((item, index) => Number(perfumeBundle?.derived?.timeOfDay?.[index]?.score ?? 5) >= 3) || base.usageTimes || []),
+    seasonScores,
+    usageTimeScores,
     originCountry: country?.value || "",
     originCountryAr: country?.nameAr || country?.nameEn || "",
     originCountryEn: country?.nameEn || country?.nameAr || "",
@@ -7600,7 +7608,7 @@ function collectReviewProduct(form) {
     descriptionEn: String(data.get("descriptionEn") || "").trim(),
     videoUrl: String(data.get("videoUrl") || "").trim(),
     manualSourceUrl: String(data.get("manualSourceUrl") || "").trim(),
-    images,
+    images: normalizeProductImages(images),
     sourceLog: Array.isArray(base.sourceLog) ? base.sourceLog : [],
     inventory: {
       quantity: Number(data.get("quantity") || 0),
@@ -7610,7 +7618,7 @@ function collectReviewProduct(form) {
     },
     performance: {
       ...(base.performance || {}),
-      longevity: longevityHoursValue == null ? (base.performance?.longevity ?? null) : Math.min(10, longevityHoursValue),
+      longevity: longevityHoursValue == null ? (base.performance?.longevity ?? null) : longevityHoursValue,
       projection: projectionValue || null,
       sillage: projectionValue ? projectionScore(projectionValue) : (base.performance?.sillage ?? null)
     },
@@ -7623,7 +7631,7 @@ function collectReviewProduct(form) {
     releaseYear: data.get("releaseYear") === "" ? null : Number(data.get("releaseYear")),
     perfumer: data.has("perfumers") ? perfumers.map((item) => item.nameEn || item.nameAr).join(", ") : (base.perfumer || ""),
     perfumers: data.has("perfumers") ? perfumers.map((item) => item.value) : (base.perfumers || []),
-    occasions: String(data.get("category") || "") === "perfume" ? (data.has("occasions") && csvValues(data.get("occasions")).length ? csvValues(data.get("occasions")) : (bundleUsage?.occasions.length ? bundleUsage.occasions : generatedUsage.occasions)) : (data.has("occasions") ? csvValues(data.get("occasions")) : (base.occasions || [])),
+    occasions: data.has("occasions") ? csvValues(data.get("occasions")) : (bundleUsage?.occasions || base.occasions || []),
     mainIngredients: [],
     accordProfile,
     mainAccords: accordProfile.map((item) => item.nameAr),
@@ -7632,6 +7640,7 @@ function collectReviewProduct(form) {
     profileStatus: "fresh",
     personalities: perfumeBundle?.derived?.scentCharacter?.map((item) => item.en || item.ar).filter(Boolean) || (data.has("personalities") ? csvValues(data.get("personalities")) : (base.personalities || [])),
     perfumeBundle,
+    bundleExtraFields,
     moods: data.has("moods") ? csvValues(data.get("moods")) : (base.moods || []),
     inspiredBy: newInspiredNameEn || newInspiredNameAr || inspiredReference?.nameEn || inspiredReference?.nameAr || (inspiredReferenceId ? base.inspiredBy || "" : ""),
     inspiredReferenceId,
@@ -7846,10 +7855,9 @@ async function handleGalleryUpload(input) {
         const stored = await api("/api/admin/uploads/storefront-image", { method:"POST", body:JSON.stringify({ folder:"product", dataUrl }) });
         url = stored.url;
       }
-      return { url, provider:"Manager gallery", fileName:file.name, selected:false };
+      return { id:`product-image-${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`, url, provider:"Manager gallery", fileName:file.name, selected:false };
     }));
-    if (!draft.images.some((image) => image.selected) && uploaded[0]) uploaded[0].selected = true;
-    draft.images = [...draft.images, ...uploaded];
+    draft.images = normalizeProductImages([...draft.images, ...uploaded]);
     state.activeImportDraft = draft;
     renderImportReview(draft);
     productEditorStatus($("#import-review-form"), "success", adminCopy("تم رفع الصور", "Images uploaded"), adminCopy(`تمت إضافة ${uploaded.length} صورة مع الاسم والترتيب والصورة الرئيسية.`, `${uploaded.length} images were added with filename, order, and primary-image selection.`));
@@ -8068,6 +8076,13 @@ document.addEventListener("error", (event) => {
 
 let productCardGesture = null;
 document.addEventListener("pointerdown", (event) => {
+  if (event.pointerType === "touch" || event.pointerType === "pen") {
+    const touchedCard = event.target.closest(".origo-exact-product-card");
+    $$(".origo-exact-product-card.show-card-actions").forEach((card) => {
+      if (card !== touchedCard) card.classList.remove("show-card-actions");
+    });
+    touchedCard?.classList.add("show-card-actions");
+  }
   const media = event.target.closest(".product-card-media-swipe");
   if (!media || media.closest("[data-horizontal-rail]") || event.target.closest("button")) return;
   productCardGesture = { media, x: event.clientX, y: event.clientY };
@@ -9301,10 +9316,32 @@ document.addEventListener("click", async (event) => {
     const draft = collectReviewProduct(form);
     const index = Number(actionElement.dataset.index || 0);
     draft.images.splice(index, 1);
-    if (draft.images.length && !draft.images.some((image) => image.selected)) draft.images[0].selected = true;
+    draft.images = normalizeProductImages(draft.images);
     state.activeImportDraft = draft;
     renderImportReview(draft);
     showToast(adminCopy("تم حذف الصورة", "Image removed"));
+    return;
+  }
+  if (action === "export-perfume-bundle") {
+    const form = actionElement.closest("#import-review-form");
+    if (!form) return;
+    const bundle = window.ORIGOPerfumeBundle.buildPerfumeBundleFromProduct(collectReviewProduct(form));
+    form.elements.perfumeBundleText.value = JSON.stringify(bundle, null, 2);
+    showToast(adminCopy("تم إنشاء الحزمة من البيانات الحالية.", "The current bundle was generated."));
+    return;
+  }
+  if (action === "admin-studio-main") {
+    const form = actionElement.closest("#import-review-form");
+    const draft = collectReviewProduct(form);
+    const index = Number(actionElement.dataset.index || 0);
+    if (form && index > 0 && index < draft.images.length) {
+      const [main] = draft.images.splice(index, 1);
+      draft.images.unshift(main);
+      draft.images = normalizeProductImages(draft.images);
+      state.activeImportDraft = draft;
+      renderImportReview(draft);
+      showToast(adminCopy("تم تغيير الصورة الرئيسية", "Main image updated"));
+    }
     return;
   }
   if (action === "admin-studio-move") {
@@ -9315,6 +9352,7 @@ document.addEventListener("click", async (event) => {
     if (form && from !== to) {
       const [moved] = draft.images.splice(from, 1);
       draft.images.splice(to, 0, moved);
+      draft.images = normalizeProductImages(draft.images);
       state.activeImportDraft = draft;
       renderImportReview(draft);
       showToast(adminCopy("تم تحديث ترتيب الصور", "Image order updated"));
@@ -9474,8 +9512,8 @@ document.addEventListener("click", async (event) => {
   }
   if (action === "generate-product-seo") {
     const form = actionElement.closest("#import-review-form");
-    updateGeneratedProductSeo(form, { force:true });
-    showToast(adminCopy("تم توليد SEO ويمكنك تعديله قبل الحفظ.", "SEO generated. You can edit it before saving."));
+    updateGeneratedProductSeo(form);
+    showToast(adminCopy("تم ملء حقول SEO الفارغة فقط.", "Only empty SEO fields were generated."));
   }
   if (action === "accord-help") {
     showToast(state.lang === "ar" ? "طول كل خط يعبّر عن قوة الأكورد بصورة مستقلة، ولا يشترط أن يكون المجموع 100%." : "Each bar independently represents accord strength; totals do not need to equal 100%. ");
@@ -9496,12 +9534,15 @@ document.addEventListener("click", async (event) => {
     const suggestions = perfumeOccasionSuggestions(form);
     [["seasons",suggestions.seasons],["usageTimes",suggestions.usageTimes],["occasions",suggestions.occasions]].forEach(([name,values]) => {
       const holder = form?.querySelector(`[data-smart-select][data-name="${name}"]`);
-      if (holder) setSmartSelectValues(holder, values);
+      if (holder && !smartSelectValues(holder).length) {
+        holder.dataset.valueSource = "auto";
+        setSmartSelectValues(holder, values);
+      }
     });
     const draft = collectReviewProduct(form);
-    if (form?.elements.generatedSeasons) form.elements.generatedSeasons.value = csv(suggestions.seasons);
-    if (form?.elements.generatedUsageTimes) form.elements.generatedUsageTimes.value = csv(suggestions.usageTimes);
-    if (form?.elements.generatedOccasions) form.elements.generatedOccasions.value = csv(suggestions.occasions);
+    if (form?.elements.generatedSeasons) form.elements.generatedSeasons.value = csv(draft.seasons);
+    if (form?.elements.generatedUsageTimes) form.elements.generatedUsageTimes.value = csv(draft.usageTimes);
+    if (form?.elements.generatedOccasions) form.elements.generatedOccasions.value = csv(draft.occasions);
     state.activeImportDraft = draft;
     showToast(adminCopy("تم توليد المواسم والأوقات والمناسبات", "Seasons, times and occasions generated"));
   }
@@ -9865,10 +9906,14 @@ document.addEventListener("submit", async (event) => {
       currency: String(data.get("currency") || current.currency),
       taxRate: Number(data.get("taxRate") || current.taxRate || 0),
       orderNotifications: data.has("orderNotifications"),
+      perfumeOnlyMode: data.has("perfumeOnlyMode"),
       newOrderNotifications: data.has("notify.newOrders")
     });
     saveAdminWorkspace("settings");
     applyStoreIdentity();
+    renderHomeNavigation();
+    renderProducts($(".chip.active")?.dataset.filter || "all");
+    if (document.body.classList.contains("catalog-route")) renderCatalog({ skeleton:false });
     showToast("تم حفظ إعدادات المتجر");
     return;
   }
@@ -10544,6 +10589,7 @@ document.addEventListener("drop", (event) => {
   const draft = collectReviewProduct(form);
   const [moved] = draft.images.splice(draggedProductImageIndex, 1);
   if (moved) draft.images.splice(targetIndex, 0, moved);
+  draft.images = normalizeProductImages(draft.images);
   state.activeImportDraft = draft;
   draggedProductImageIndex = null;
   renderImportReview(draft);
@@ -10552,6 +10598,35 @@ document.addEventListener("drop", (event) => {
 document.addEventListener("dragend", () => {
   draggedProductImageIndex = null;
   document.querySelectorAll("[data-studio-thumbnail].is-dragging").forEach((item) => item.classList.remove("is-dragging"));
+});
+
+let touchedProductImageIndex = null;
+document.addEventListener("pointerdown", (event) => {
+  const handle = event.target.closest?.("[data-studio-drag-handle]");
+  if (!handle || event.pointerType === "mouse") return;
+  const thumbnail = handle.closest("[data-studio-thumbnail]");
+  touchedProductImageIndex = Number(thumbnail?.dataset.studioThumbnail);
+  thumbnail?.classList.add("is-dragging");
+  handle.setPointerCapture?.(event.pointerId);
+  event.preventDefault();
+});
+document.addEventListener("pointerup", (event) => {
+  if (touchedProductImageIndex == null) return;
+  const target = document.elementFromPoint(event.clientX, event.clientY)?.closest?.("[data-studio-thumbnail]");
+  const from = touchedProductImageIndex;
+  touchedProductImageIndex = null;
+  document.querySelectorAll("[data-studio-thumbnail].is-dragging").forEach((item) => item.classList.remove("is-dragging"));
+  if (!target) return;
+  const form = target.closest("#import-review-form");
+  const to = Number(target.dataset.studioThumbnail);
+  if (!form || from === to) return;
+  const draft = collectReviewProduct(form);
+  const [moved] = draft.images.splice(from, 1);
+  if (moved) draft.images.splice(to, 0, moved);
+  draft.images = normalizeProductImages(draft.images);
+  state.activeImportDraft = draft;
+  renderImportReview(draft);
+  showToast(adminCopy("تم تحديث ترتيب الصور", "Image order updated"));
 });
 
 document.addEventListener("change", async (event) => {

@@ -13,13 +13,13 @@ import { promisify } from "node:util";
 
 const ROOT = resolve(fileURLToPath(new URL(".", import.meta.url)));
 const LEGACY_DB_PATH = resolve(ROOT, "data", "origo.db");
-const IS_DEPLOYMENT_RUNTIME = process.env.NODE_ENV === "production" || basename(ROOT).toLowerCase() === "nodejs";
+const IS_PRODUCTION = process.env.NODE_ENV === "production";
+const IS_DEPLOYMENT_RUNTIME = IS_PRODUCTION || basename(ROOT).toLowerCase() === "nodejs";
 const PERSISTENT_DATA_ROOT = process.env.ORIGO_DATA_DIR
   ? resolve(process.env.ORIGO_DATA_DIR)
   : IS_DEPLOYMENT_RUNTIME && process.env.HOME
     ? resolve(process.env.HOME, ".origo-data")
     : resolve(ROOT, "data");
-const IS_PRODUCTION = process.env.NODE_ENV === "production";
 const DB_PATH_CONFIGURED = Boolean(String(process.env.ORIGO_DB_PATH || "").trim());
 const DB_PATH = resolve(process.env.ORIGO_DB_PATH || resolve(PERSISTENT_DATA_ROOT, "origo.db"));
 const DB_DIRECTORY = dirname(DB_PATH);
@@ -43,28 +43,25 @@ export const ROLE_PERMISSIONS = {
 const allowedRoles = new Set(["customer", ...Object.keys(ROLE_PERMISSIONS)]);
 
 if (IS_PRODUCTION && !DB_PATH_CONFIGURED) {
-  console.warn("[ORIGO] Production is using a fallback database path. Set ORIGO_DB_PATH explicitly.");
+  console.warn("[ORIGO] Production is using a fallback database path. Set ORIGO_DB_PATH to an explicit persistent path.");
 }
-
 if (!existsSync(DB_DIRECTORY)) {
   if (IS_PRODUCTION) throw new Error("ORIGO_DATABASE_DIRECTORY_NOT_FOUND");
   mkdirSync(DB_DIRECTORY, { recursive: true });
 }
 accessSync(DB_DIRECTORY, constants.W_OK);
-
-if (!IS_PRODUCTION && DB_PATH !== LEGACY_DB_PATH && !existsSync(DB_PATH) && existsSync(LEGACY_DB_PATH)) {
-  for (const suffix of ["", "-wal", "-shm"]) {
-    const source = `${LEGACY_DB_PATH}${suffix}`;
-    if (existsSync(source)) copyFileSync(source, `${DB_PATH}${suffix}`);
-  }
-}
-
 if (existsSync(DB_PATH)) {
   accessSync(DB_PATH, constants.R_OK | constants.W_OK);
 } else if (IS_PRODUCTION && !ALLOW_DATABASE_CREATE) {
   throw new Error("ORIGO_DATABASE_NOT_FOUND: refusing to create a production database without ORIGO_ALLOW_DATABASE_CREATE=1");
 } else {
   console.warn(`[ORIGO] Creating a new database at configured path: ${DB_PATH}`);
+}
+if (!IS_PRODUCTION && !DB_PATH_CONFIGURED && DB_PATH !== LEGACY_DB_PATH && !existsSync(DB_PATH) && existsSync(LEGACY_DB_PATH)) {
+  for (const suffix of ["", "-wal", "-shm"]) {
+    const source = `${LEGACY_DB_PATH}${suffix}`;
+    if (existsSync(source)) copyFileSync(source, `${DB_PATH}${suffix}`);
+  }
 }
 
 export const db = await openPortableDatabase(DB_PATH);
@@ -794,7 +791,7 @@ const storefrontFixtureIds = [
   "demo-xerjoff-naxos", "demo-initio-oud-for-greatness"
 ];
 const storefrontFixtureMarks = storefrontFixtureIds.map(() => "?").join(",");
-db.prepare(`DELETE FROM products WHERE id IN (${storefrontFixtureMarks})`).run(...storefrontFixtureIds);
+if (!IS_PRODUCTION) db.prepare(`DELETE FROM products WHERE id IN (${storefrontFixtureMarks})`).run(...storefrontFixtureIds);
 
 const seedReferencePerfumes = [
   {
@@ -2630,14 +2627,12 @@ export async function resetExistingAdminPassword(email, password) {
     error.code = "INVALID_ADMIN_RESET_CONFIGURATION";
     throw error;
   }
-
   const user = findUserByEmail(normalized);
   if (!user || !["admin", "owner"].includes(user.staff_role || user.role)) {
     const error = new Error("ADMIN_RESET_TARGET_NOT_FOUND");
     error.code = "ADMIN_RESET_TARGET_NOT_FOUND";
     throw error;
   }
-
   const nextHash = await hashPassword(nextPassword);
   db.exec("BEGIN IMMEDIATE");
   try {
@@ -2650,6 +2645,7 @@ export async function resetExistingAdminPassword(email, password) {
     throw error;
   }
 }
+
 export function adminConfiguredFromEnvironment() {
   const email = normalizedEmail(process.env.ORIGO_ADMIN_EMAIL || "");
   const passwordLoaded = Boolean(String(process.env.ORIGO_ADMIN_PASSWORD || ""));

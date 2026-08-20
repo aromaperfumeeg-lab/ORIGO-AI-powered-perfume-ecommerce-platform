@@ -653,7 +653,7 @@ function cleanProduct(raw) {
       strength: Math.max(0, Math.min(100, Number(item?.strength || 0)))
     })).filter((item) => item.nameAr || item.nameEn),
     performance: {
-      longevity: Math.max(0, Math.min(10, Number(raw?.performance?.longevity || 0))),
+      longevity: raw?.performance?.longevity == null || raw.performance.longevity === "" ? null : Math.max(0, Math.min(72, Number(raw.performance.longevity))),
       sillage: Math.max(0, Math.min(10, Number(raw?.performance?.sillage || 0)))
     },
     occasions: cleanStrings(raw?.occasions, 12),
@@ -798,13 +798,15 @@ async function enrichWithOpenAI(query, knownProduct = {}) {
 
 async function handleAPI(request, response, url, origin) {
   if (url.pathname === "/api/health" && request.method === "GET") {
+    const adminConfigured = adminConfiguredFromEnvironment();
     return jsonResponse(response, 200, {
       databaseConnected: true,
-      databaseWritable,
       databasePathConfigured,
-      adminConfigured: adminConfiguredFromEnvironment(),
-      authConfigured: databaseWritable && adminConfiguredFromEnvironment(),
-      nodeEnv: process.env.NODE_ENV || "development"
+      databaseWritable,
+      adminConfigured,
+      authConfigured: databaseWritable && adminConfigured,
+      nodeEnv: process.env.NODE_ENV || "development",
+      emailRecoveryConfigured: passwordRecoveryChannels().email
     }, origin);
   }
 

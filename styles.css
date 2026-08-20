@@ -9682,3 +9682,9 @@ html[data-theme=dark] .pricing-live-metrics span{background:#211719;color:#d8c9c
 .studio-image-move{min-width:28px;height:28px;border-radius:8px}
 .admin-workflow-strip button.active{border-color:var(--burgundy)!important;background:var(--burgundy)!important;color:#fff!important;box-shadow:0 8px 22px rgba(114,0,25,.16)}
 .admin-workflow-strip button.active :is(small,b,strong){color:inherit!important}
+body:not(.dark) .advanced-admin-panel .admin-order-detail,
+body:not(.dark) .advanced-admin-panel .admin-order-detail>footer,
+body:not(.dark) .advanced-admin-panel .admin-order-items,
+body:not(.dark) .advanced-admin-panel .admin-order-timeline{color:#251a1d!important;background:#fff!important}
+body:not(.dark) .advanced-admin-panel .admin-workflow-strip button{color:#251a1d!important;background:#fff!important;border-color:#e5dadd!important}
+body:not(.dark) .advanced-admin-panel .admin-workflow-strip button.active{color:#fff!important;background:#850020!important;border-color:#850020!important}
