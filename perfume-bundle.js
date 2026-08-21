@@ -69,6 +69,16 @@
     return values.filter((value) => { const key = identity(value); if (!key || seen.has(key)) return false; seen.add(key); return true; });
   }
 
+  function keywordList(value) {
+    const values = Array.isArray(value) ? value : String(value || "").split(/[\r\n,،]+/);
+    const seen = new Set();
+    return values.map((item) => text(String(item ?? ""))).filter((item) => {
+      if (!item || seen.has(item)) return false;
+      seen.add(item);
+      return true;
+    });
+  }
+
   function bilingual(value) {
     return { ar: text(value?.name_ar ?? value?.ar), en: text(value?.name_en ?? value?.en) };
   }
@@ -125,7 +135,7 @@
       time: Object.fromEntries(["day", "night"].map((key) => [key, numberOrNull(perfume.time[key])])),
       occasions: unique(perfume.occasions.map(bilingual).filter((occasion) => occasion.ar || occasion.en)),
       scentCharacter: { ar: unique(perfume.scent_character_ar.map(text).filter(Boolean), normalizedKey), en: unique(perfume.scent_character_en.map(text).filter(Boolean), normalizedKey) },
-      searchKeywords: { ar: unique(perfume.search_keywords_ar.map(text).filter(Boolean), normalizedKey), en: unique(perfume.search_keywords_en.map(text).filter(Boolean), normalizedKey) }
+      searchKeywords: { ar: keywordList(perfume.search_keywords_ar), en: keywordList(perfume.search_keywords_en) }
     };
   }
 
@@ -188,7 +198,9 @@
     const notes = product.noteSelectionsBundle || imported.notes || { top:[], heart:[], base:[] };
     const pair = (value) => ({ name_ar: text(value?.ar ?? value?.nameAr), name_en: text(value?.en ?? value?.nameEn) });
     const size = Number.parseFloat(product.size || importedPerfume.sizeMl);
-    const keywords = Array.isArray(product.seo?.keywords) ? product.seo.keywords : [];
+    const keywords = keywordList(product.seo?.keywords);
+    const keywordsAr = keywordList(product.seo?.keywordsAr);
+    const keywordsEn = keywordList(product.seo?.keywordsEn);
     const importedArabicKeywords = imported.searchKeywords?.ar || [];
     const arabicKeys = new Set(importedArabicKeywords.map(normalizedKey));
     return { perfume: {
@@ -219,8 +231,8 @@
         canonical:text(product.seo?.canonical || importedPerfume.seo?.canonical), robots:text(product.seo?.robots || importedPerfume.seo?.robots)
       },
       scent_character_ar:[...(product.scentCharacterAr || imported.scentCharacter?.ar || [])], scent_character_en:[...(product.scentCharacterEn || imported.scentCharacter?.en || [])],
-      search_keywords_ar:keywords.filter((value) => arabicKeys.has(normalizedKey(value)) || /[\u0600-\u06FF]/.test(value)),
-      search_keywords_en:keywords.filter((value) => !arabicKeys.has(normalizedKey(value)) && !/[\u0600-\u06FF]/.test(value))
+      search_keywords_ar:keywordsAr.length ? keywordsAr : keywords.filter((value) => arabicKeys.has(normalizedKey(value)) || /[\u0600-\u06FF]/.test(value)),
+      search_keywords_en:keywordsEn.length ? keywordsEn : keywords.filter((value) => !arabicKeys.has(normalizedKey(value)) && !/[\u0600-\u06FF]/.test(value))
     } };
   }
 

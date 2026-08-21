@@ -99,6 +99,12 @@ test("database migrates old users and structured notes override stale flat notes
     const normalizedAdmin = database.findUserById(staff.id);
     assert.equal(normalizedAdmin.role, "admin");
     assert.deepEqual(normalizedAdmin.permissions, ["*"]);
+    const keywordsAr = Array.from({ length: 90 }, (_, index) => `كلمة محفوظة ${index + 1}`);
+    const keywordsEn = Array.from({ length: 95 }, (_, index) => `Saved keyword ${index + 1}`);
+    const seoProduct = database.upsertProduct({ id:"seo-keywords-roundtrip", nameAr:"اختبار SEO", nameEn:"SEO test", brand:"ORIGO", price:1, seo:{ keywordsAr, keywordsEn, keywords:[...keywordsAr, ...keywordsEn] } });
+    const reloadedSeoProduct = database.listProducts({ includeHidden:true }).find((product) => product.id === seoProduct.id);
+    assert.deepEqual(reloadedSeoProduct.seo.keywordsAr, keywordsAr);
+    assert.deepEqual(reloadedSeoProduct.seo.keywordsEn, keywordsEn);
     assert.equal(database.deleteProduct(updated.id), true);
     assert.equal(database.listProducts({ includeHidden: true }).some((product) => product.id === updated.id), false);
     database.db.close();

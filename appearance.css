@@ -3232,6 +3232,7 @@ body .product-overlay .origo-exact-product-card .exact-card-favorite:hover{
 .product-editor-v2 label{gap:3px!important;margin:0!important;font-size:11px!important}
 .product-editor-v2 :is(input,select,textarea){min-height:34px!important;padding:6px 9px!important;font-size:12px!important;border-radius:9px!important}
 .product-editor-v2 textarea{min-height:58px!important;max-height:92px!important}
+.product-editor-v2 textarea.seo-keywords-textarea{min-height:168px!important;max-height:none!important;resize:vertical!important;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;line-height:1.65!important}
 .product-editor-v2 .review-section{min-height:0!important}
 .product-editor-v2 .perfume-performance-editor,
 .product-editor-v2 .perfume-bundle-editor,

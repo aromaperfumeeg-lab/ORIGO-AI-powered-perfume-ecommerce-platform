@@ -1586,6 +1586,7 @@ async function loadAdminCatalog() {
 async function persistAdminProduct(product) {
   const result = await api("/api/admin/products", {
     method: "POST",
+    headers: { "Content-Type": "text/plain;charset=UTF-8" },
     body: JSON.stringify(product)
   });
   await loadAdminCatalog();
@@ -6576,6 +6577,26 @@ const csvValues = (value) => [...new Map(String(value || "").split(/[,،]/)
   .map((item) => item.trim()).filter(Boolean)
   .map((item) => [normalizeOptionSearch(item), item])).values()];
 
+function seoKeywordValues(value) {
+  const source = Array.isArray(value) ? value : String(value || "").split(/[\r\n,،]+/);
+  const seen = new Set();
+  return source.map((item) => String(item || "").trim()).filter((item) => {
+    if (!item || seen.has(item)) return false;
+    seen.add(item);
+    return true;
+  });
+}
+
+function bilingualSeoKeywordValues(seo = {}) {
+  const legacy = seoKeywordValues(seo.keywords);
+  const keywordsAr = seoKeywordValues(seo.keywordsAr);
+  const keywordsEn = seoKeywordValues(seo.keywordsEn);
+  return {
+    ar: keywordsAr.length ? keywordsAr : legacy.filter((value) => /[\u0600-\u06FF]/.test(value)),
+    en: keywordsEn.length ? keywordsEn : legacy.filter((value) => !/[\u0600-\u06FF]/.test(value))
+  };
+}
+
 function confidenceLabel(level) {
   return {
     trusted: adminCopy("موثوق", "Trusted"),
@@ -7067,6 +7088,7 @@ function renderImportReview(product) {
   </div>${adminAccordEditor(product)}`;
   const usage = perfumePerformanceEditorSection(product);
   const media = `<div class="product-editor-upload-row"><label class="gallery-upload"><input id="gallery-upload" type="file" accept="image/jpeg,image/png,image/webp,image/avif" multiple/><span>＋</span><div><b>${adminCopy("رفع صور المنتج","Upload product images")}</b><small>${adminCopy("حتى 10 صور؛ اختر الرئيسية ورتّب بالسحب أو الأسهم","Up to 10 images; choose primary and reorder by drag or arrows")}</small></div></label></div>${productMediaStudioMarkup(images)}`;
+  const seoKeywords = bilingualSeoKeywordValues(product.seo);
   const content = `<div class="review-grid product-content-grid">
     <label class="wide">${adminCopy("الوصف المختصر بالعربية","Arabic short description")}<textarea name="descriptionAr">${escapeHTML(product.descriptionAr || "")}</textarea></label>
     <label class="wide">${adminCopy("الوصف المختصر بالإنجليزية","English short description")}<textarea name="descriptionEn" dir="ltr">${escapeHTML(product.descriptionEn || "")}</textarea></label>
@@ -7077,8 +7099,8 @@ function renderImportReview(product) {
     <label>${adminCopy("عنوان SEO بالإنجليزية","English SEO title")}<input name="seoTitleEn" dir="ltr" value="${escapeHTML(product.seo?.titleEn || (state.lang === "en" ? product.seo?.title : "") || "")}"/></label>
     <label class="wide">${adminCopy("وصف SEO بالعربية","Arabic SEO description")}<textarea name="seoDescriptionAr" dir="rtl">${escapeHTML(product.seo?.descriptionAr || (state.lang === "ar" ? product.seo?.description : "") || "")}</textarea></label>
     <label class="wide">${adminCopy("وصف SEO بالإنجليزية","English SEO description")}<textarea name="seoDescriptionEn" dir="ltr">${escapeHTML(product.seo?.descriptionEn || (state.lang === "en" ? product.seo?.description : "") || "")}</textarea></label>
-    <label class="wide">${adminCopy("كلمات SEO بالعربية","Arabic SEO keywords")}<input name="seoKeywordsAr" dir="rtl" value="${escapeHTML(csv(product.seo?.keywordsAr || []))}"/></label>
-    <label class="wide">${adminCopy("كلمات SEO بالإنجليزية","English SEO keywords")}<input name="seoKeywordsEn" dir="ltr" value="${escapeHTML(csv(product.seo?.keywordsEn || []))}"/></label>
+    <label class="wide">${adminCopy("كلمات SEO بالعربية","Arabic SEO keywords")}<textarea class="seo-keywords-textarea" name="seoKeywordsAr" dir="rtl" rows="7" wrap="soft">${escapeHTML(seoKeywords.ar.join("\n"))}</textarea></label>
+    <label class="wide">${adminCopy("كلمات SEO بالإنجليزية","English SEO keywords")}<textarea class="seo-keywords-textarea" name="seoKeywordsEn" dir="ltr" rows="7" wrap="soft">${escapeHTML(seoKeywords.en.join("\n"))}</textarea></label>
     <label>${adminCopy("الرابط الأساسي SEO","SEO canonical URL")}<input name="seoCanonical" dir="ltr" value="${escapeHTML(product.seo?.canonical || "")}"/></label>
     <label>${adminCopy("تعليمات محركات البحث","SEO robots")}<input name="seoRobots" dir="ltr" value="${escapeHTML(product.seo?.robots || "")}" placeholder="index,follow"/></label>
   </div>`;
@@ -7233,8 +7255,8 @@ function applyPerfumeBundleToEditor(form, normalized) {
   setField("seoDescriptionEn", imported.seo?.descriptionEn);
   setField("seoCanonical", imported.seo?.canonical);
   setField("seoRobots", imported.seo?.robots);
-  if (normalized.searchKeywords.ar.length) setField("seoKeywordsAr", normalized.searchKeywords.ar.join("، "));
-  if (normalized.searchKeywords.en.length) setField("seoKeywordsEn", normalized.searchKeywords.en.join(", "));
+  if (normalized.searchKeywords.ar.length) setField("seoKeywordsAr", normalized.searchKeywords.ar.join("\n"));
+  if (normalized.searchKeywords.en.length) setField("seoKeywordsEn", normalized.searchKeywords.en.join("\n"));
 
   form.elements.perfumeBundleData.value = JSON.stringify(normalized);
   const feedback = form.querySelector("[data-perfume-bundle-feedback]");
@@ -7422,11 +7444,11 @@ function collectReviewProduct(form) {
       seo.titleEn = String(data.get("seoTitleEn") || "").trim();
       seo.descriptionAr = String(data.get("seoDescriptionAr") || "").trim();
       seo.descriptionEn = String(data.get("seoDescriptionEn") || "").trim();
-      seo.keywordsAr = csvValues(data.get("seoKeywordsAr"));
-      seo.keywordsEn = csvValues(data.get("seoKeywordsEn"));
+      seo.keywordsAr = seoKeywordValues(data.get("seoKeywordsAr"));
+      seo.keywordsEn = seoKeywordValues(data.get("seoKeywordsEn"));
       seo.title = localizedText(seo.titleAr, seo.titleEn) || seo.title || "";
       seo.description = localizedText(seo.descriptionAr, seo.descriptionEn) || seo.description || "";
-      seo.keywords = [...new Set([...(seo.keywordsAr || []), ...(seo.keywordsEn || [])])];
+      seo.keywords = seoKeywordValues([...(seo.keywordsAr || []), ...(seo.keywordsEn || [])]);
       seo.canonical = String(data.get("seoCanonical") || seo.canonical || "").trim();
       seo.robots = String(data.get("seoRobots") || seo.robots || "").trim();
       return seo;
