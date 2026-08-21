@@ -1,82 +1,20 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import {readFile} from "node:fs/promises";
 
-const root = new URL("../", import.meta.url);
+const source=await readFile(new URL("../app.js",import.meta.url),"utf8");
+const html=await readFile(new URL("../index.html",import.meta.url),"utf8");
+const activeEditor=source.slice(source.indexOf("function renderImportReview(product)"),source.indexOf("function optionValuesForProduct"));
+const importAction=source.slice(source.indexOf('if (action === "parse-perfume-bundle")'),source.indexOf('if (action === "clear-perfume-bundle")'));
 
-test("product editor separates workflows and fragrance data without free-form multi-size input", async () => {
-  const app = await readFile(new URL("app.js", root), "utf8");
-  assert.match(app, /إضافة سريعة/);
-  assert.match(app, /إضافة ذكية/);
-  assert.match(app, /إضافة متقدمة/);
-  assert.match(app, /name="workflowAction" value="draft"/);
-  assert.match(app, /name="workflowAction" value="review"/);
-  assert.match(app, /name="workflowAction" value="published"/);
-  assert.match(app, /name:"size", group:"size"/);
-  assert.match(app, /function searchableCreatableSelect/);
-  assert.match(app, /data-smart-search/);
-  assert.doesNotMatch(app, /name="sizes" value=/);
-  assert.match(app, /name:"mainIngredients", group:"note"/);
-  assert.match(app, /name="accordSelected"/);
-  assert.match(app, /name="accordStrength\./);
-  assert.match(app, /product\.accordProfile/);
-});
-
-test("product options are bilingual database records and the editor persists newly created options", async () => {
-  const app = await readFile(new URL("app.js", root), "utf8");
-  const db = await readFile(new URL("db.mjs", root), "utf8");
-  const server = await readFile(new URL("server.mjs", root), "utf8");
-  assert.match(db, /CREATE TABLE IF NOT EXISTS product_options/);
-  assert.match(db, /name_ar TEXT NOT NULL/);
-  assert.match(db, /name_en TEXT NOT NULL/);
-  assert.match(db, /UNIQUE \(option_group, slug\)/);
-  assert.match(server, /\/api\/admin\/product-options/);
-  assert.match(app, /smart-select-create/);
-  assert.match(app, /save-product-option/);
-  assert.match(app, /api\("\/api\/admin\/product-options"/);
-});
-
-test("notes and brands support bilingual editing and persisted artwork from the product editor", async () => {
-  const app = await readFile(new URL("app.js", root), "utf8");
-  const db = await readFile(new URL("db.mjs", root), "utf8");
-  assert.match(app, /إضافة أو تعديل نوتة عطرية/);
-  assert.match(app, /name="descriptionAr"/);
-  assert.match(app, /name="descriptionEn"/);
-  assert.match(app, /data-product-option-image-upload/);
-  assert.match(app, /window\.ORIGOFragranceNotes\.upsertNote/);
-  assert.match(app, /await persistNotesState\(\)/);
-  assert.match(app, /شعار العلامة التجارية/);
-  assert.match(app, /option\?\.image \? `<img/);
-  assert.match(db, /metadata_json/);
-  assert.match(db, /20_000_000/);
-});
-
-test("product page places fingerprint beside the gallery and keeps ingredients separate", async () => {
-  const app = await readFile(new URL("app.js", root), "utf8");
-  const css = await readFile(new URL("product-detail.css", root), "utf8");
-  assert.match(app, /productHeroProfileMarkup\(product\)/);
-  assert.match(app, /productIngredientsMarkup\(product\)/);
-  assert.match(css, /grid-template-areas:"gallery profile purchase"/);
-  assert.match(css, /\.pdp-main-ingredients/);
-});
-
-test("fragrance insights use bilingual uploaded artwork without customer voting UI", async () => {
-  const app = await readFile(new URL("app.js", root), "utf8");
-  const db = await readFile(new URL("db.mjs", root), "utf8");
-  assert.match(app, /name="profileImage\.\$\{key\}\.\$\{language\}"/);
-  assert.match(app, /data-profile-image-language="\$\{language\}"/);
-  assert.match(app, /productPerformanceImagesMarkup\(product\)/);
-  assert.match(app, /productProfileImage\(product, key\)/);
-  assert.doesNotMatch(app, /window\.ORIGOPerformance\?\.hydrate\(product\.id\)/);
-  assert.doesNotMatch(app, /<section class="pdp-community">/);
-  assert.doesNotMatch(app, /<div class="pdp-rating">/);
-  assert.doesNotMatch(app, /class="product-rating(?:\s|\")/);
-  assert.match(db, /profileImages: metadata\.profileImages/);
-});
-
-test("database validates review status, SKU and barcode uniqueness", async () => {
-  const db = await readFile(new URL("db.mjs", root), "utf8");
-  assert.match(db, /\["draft", "review", "published", "unavailable"\]/);
-  assert.match(db, /SKU مستخدم بالفعل/);
-  assert.match(db, /الباركود مستخدم بالفعل/);
-});
+test("the perfume-name research workflow is absent from the product editor",()=>{assert.doesNotMatch(html,/id="web-product-query"|id="web-import-form"|Dior Sauvage|بحث شامل/);assert.doesNotMatch(source,/\$\("#web-product-query"\)\.addEventListener/)});
+test("the five gates expose only import, review, images and manual content",()=>{for(const number of [1,2,3,4,5])assert.match(activeEditor,new RegExp(`productEditorGate\\(${number}`));assert.match(source,/data-action="parse-perfume-bundle"/);assert.match(source,/data-action="export-perfume-bundle"/);assert.match(activeEditor,/name="releaseYear"/);assert.match(activeEditor,/name:"families"/)});
+test("active editor contains no perfume generation or suggestion controls",()=>{const forbidden=["سيولده النظام تلقائيًا","سيولد النظام تلقائيًا","اضغط زر التوليد","توليد المواسم والأوقات والمناسبات","اقتراح المناسبات","تحديث الاقتراحات تلقائيًا","نتائج محسوبة عند الحفظ","generate-product-seo","generate-perfume-usage"];for(const phrase of forbidden)assert.doesNotMatch(activeEditor,new RegExp(phrase))});
+test("import applies normalized product and does not touch images or commerce directly",()=>{assert.match(importAction,/applyPerfumeBundleToProduct\(current, normalized\)/);assert.doesNotMatch(importAction,/price|quantity|images\s*=/);assert.match(importAction,/state\.activeImportDraft = merged/)});
+test("canonical gender replaces stale smart-select gender state",()=>{assert.match(importAction,/merged\.genders = normalized\.perfume\.gender \? \[normalized\.perfume\.gender\] : \[\]/);assert.match(activeEditor,/Array\.isArray\(product\.genders\) && product\.genders\.length \? product\.genders : product\.gender/)});
+test("imported occasions render in the active language and preserve structured labels",()=>{assert.match(source,/const name = localizedText\(item\.nameAr, item\.nameEn\) \|\| value/);assert.match(source,/occasionLabels: data\.has\("occasions"\) \? occasionSelections\.map/);assert.match(activeEditor,/product\.occasionLabels \|\| \[\]/)});
+test("note smart selects replace failed artwork with a local fallback icon",()=>{assert.match(source,/data-smart-note-image="true"/);assert.match(source,/image\.dataset\.smartNoteImage === "true"/);assert.match(source,/fallback\.textContent = "✿"/)});
+test("season and time percentages use responsive sliders",()=>{assert.match(source,/data-percentage-slider/);assert.match(source,/name:`seasonScore\.\$\{id\}`/);assert.match(source,/name:`usageScore\.\$\{id\}`/);assert.match(source,/name="\$\{name\}" min="0" max="100"/);assert.match(source,/Math\.min\(100, Number\(data\.get\(name\)\)\)/);assert.doesNotMatch(activeEditor,/0 إلى 5|0 to 5/)});
+test("SKU, slug, description and SEO are not auto-generated by active preview",()=>{const preview=source.slice(source.indexOf("function updateProductEditorPreview"),source.indexOf("const ORIGO_ACCORD_LIBRARY"));assert.doesNotMatch(preview,/skuField|slugField|autoGenerated/);assert.doesNotMatch(activeEditor,/updateGeneratedProductSeo/)});
+test("images remain a separate multi-image workflow",()=>{assert.match(activeEditor,/multiple/);assert.match(activeEditor,/productMediaStudioMarkup\(images\)/);assert.match(source,/normalizeProductImages\(base\.images \|\| \[\]\)/)});
+test("image workflow preserves identity, ordering, main image and touch drag",()=>{const normalize=source.slice(source.indexOf("function normalizeProductImages"),source.indexOf("function setAdminStudioImage"));assert.match(normalize,/String\(item\.id \|\| url\)/);assert.match(normalize,/seen\.has\(key\) \|\| seen\.has\(url\)/);assert.match(normalize,/position:index, sortOrder:index, selected:index === 0/);assert.match(source,/data-action="admin-studio-main"/);assert.match(source,/data-action="admin-studio-delete"/);assert.match(source,/window\.confirm/);assert.match(source,/document\.addEventListener\("dragstart"/);assert.match(source,/document\.addEventListener\("pointerdown"/);assert.match(source,/draft\.images\.splice\(index, 1\)/)});

@@ -1099,8 +1099,32 @@ const adminWorkspace = {
   settings: mergeStoreSettings(storedAdminWorkspace.settings || {})
 };
 
+const LANGUAGE_PREFERENCE_KEY = "origoLanguagePreference";
+
+function browserLanguage() {
+  const preferred = navigator.languages?.[0] || navigator.language || "en";
+  return String(preferred).toLowerCase().startsWith("ar") ? "ar" : "en";
+}
+
+function normalizeLanguagePreference(value) {
+  return ["ar", "en", "auto"].includes(value) ? value : "auto";
+}
+
+function savedLanguagePreference() {
+  const current = localStorage.getItem(LANGUAGE_PREFERENCE_KEY);
+  if (current) return normalizeLanguagePreference(current);
+  const legacy = localStorage.getItem("origoLang");
+  return ["ar", "en"].includes(legacy) ? legacy : "auto";
+}
+
+function resolveEffectiveLanguage(preference = savedLanguagePreference()) {
+  const normalized = normalizeLanguagePreference(preference);
+  return normalized === "auto" ? browserLanguage() : normalized;
+}
+
 const state = {
-  lang: localStorage.getItem("origoLang") || "ar",
+  languagePreference: savedLanguagePreference(),
+  lang: resolveEffectiveLanguage(),
   theme: "light",
   currency: "EGP",
   cart: readStoredArray("origoCart"),
@@ -1312,43 +1336,67 @@ const currencyConfig = {
   SAR: { rate: 0.075, currency: "SAR" }
 };
 
+function normalizeLatinDigits(value = "") {
+  return String(value)
+    .replace(/[٠-٩]/g, (digit) => String("٠١٢٣٤٥٦٧٨٩".indexOf(digit)))
+    .replace(/[۰-۹]/g, (digit) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(digit)))
+    .replace(/٪/g, "%")
+    .replace(/٫/g, ".")
+    .replace(/٬/g, ",");
+}
+
+function formatNumber(value, options = {}) {
+  const numeric = Number(normalizeLatinDigits(value));
+  if (!Number.isFinite(numeric)) return normalizeLatinDigits(value);
+  return new Intl.NumberFormat("en-US", { numberingSystem:"latn", ...options }).format(numeric);
+}
+
+const formatPercent = (value, options = {}) => `${formatNumber(value, { maximumFractionDigits:1, ...options })}%`;
+const formatRating = (value) => `${formatNumber(value, { minimumFractionDigits:1, maximumFractionDigits:1 })} / 5`;
+
 const formatPrice = (value) => {
   const config = currencyConfig[state.currency] || currencyConfig.EGP;
   const amount = Number(value || 0) * config.rate;
   const digits = state.currency === "EGP" ? 0 : 2;
   if (state.lang === "ar" && state.currency === "EGP") {
-    const number = new Intl.NumberFormat("ar-EG", {
+    const number = new Intl.NumberFormat("en-US", {
+      numberingSystem: "latn",
       minimumFractionDigits: digits,
       maximumFractionDigits: digits
     }).format(amount);
-    // Keep the Arabic number, separator, and currency abbreviation in one RTL isolate.
+    // Keep Latin digits, separator, and currency abbreviation in one RTL isolate.
     return `\u2067${number}\u00A0ج.م\u2069`;
   }
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: config.currency,
+    numberingSystem: "latn",
     minimumFractionDigits: digits,
     maximumFractionDigits: digits
   }).format(amount);
 };
 
 function formatProductSize(value) {
-  const text = String(value || "").trim();
+  const text = normalizeLatinDigits(value).trim();
   if (!text) return "";
   const number = text.match(/[0-9]+(?:[.,][0-9]+)?/)?.[0];
   if (number && /(?:\bml\b|مل)/i.test(text)) return `${number} ml`;
   return text.replace(/\bML\b/gi, "ml");
 }
 
-function localizedProductName(product, lang = state.lang) {
-  if (!product) return lang === "ar" ? "عطر ORIGO" : "ORIGO fragrance";
-  const translated = String(lang === "ar" ? product.nameAr || "" : product.nameEn || "").trim();
-  if (translated) return translated;
-  const brand = String(product.brand || "ORIGO").trim();
-  const sku = String(product.sku || "").trim();
-  return lang === "ar"
-    ? `${brand} — عطر`
-    : `${brand} fragrance${sku ? ` ${sku}` : ""}`;
+function localizedText(ar, en, language = state.lang) {
+  const arabic = String(ar || "").trim();
+  const english = String(en || "").trim();
+  return language === "ar" ? arabic || english : english || arabic;
+}
+
+function localizedProductName(product, language = state.lang) {
+  if (!product) return localizedText("عطر ORIGO", "ORIGO fragrance", language);
+  return localizedText(product.nameAr, product.nameEn, language) || localizedText(product.brandAr, product.brandEn, language) || String(product.brand || "ORIGO").trim();
+}
+
+function localizedProductBrand(product) {
+  return localizedText(product?.brandAr, product?.brandEn) || String(product?.brand || "ORIGO").trim();
 }
 
 function rebuildStorefrontProducts() {
@@ -1879,8 +1927,8 @@ function operationalAdminMarkup(kind = "overview") {
   const filterTitle = kind === "orders" ? "حالة الطلب" : kind === "customers" ? "الجنس" : "الأقسام";
   const sideOptions = kind === "orders" ? [["جميع الطلبات",128],["قيد المعالجة",42],["قيد الشحن",36],["تم الشحن",18],["تم التسليم",24],["ملغي",15]] : kind === "customers" ? [["كل العملاء",2543],["ذكر",1542],["أنثى",1001],["نشط",2301],["غير نشط",146],["محظور",96]] : [["جميع الأقسام",10],["جميع الماركات",125],["جميع الاستخدامات",12],["جميع فئات السعر",8]];
   const filters = `<aside class="ops-filter-panel"><label class="ops-filter-master"><input type="checkbox" checked/><i></i>تفعيل الفلاتر في المتجر</label><h3>معاينة الفلاتر في المتجر</h3><div class="ops-phone-preview"><header><b>10:30</b><span>▮▮ ◉</span></header><h4>تصفية النتائج ☷</h4><section><b>${filterTitle}</b>${sideOptions.map(([label,count],i)=>`<label><span>${label}</span><small>(${count})</small><input type="checkbox"${i===0?" checked":""}/></label>`).join("")}<button>عرض المزيد</button></section><section><b>${kind==="customers"?"المدينة":"القيمة الإجمالية"}</b><div class="ops-range"><input value="0"/><input value="${kind==="customers"?"القاهرة":"100,000+"}"/></div><input type="range" value="80"/></section><button class="primary">عرض ${kind==="overview"?489:2543} ${kind==="customers"?"عميل":kind==="orders"?"طلب":"منتج"}</button></div><div class="ops-tip"><b>ⓘ نصيحة ذكية</b><p>استخدم الفلاتر الذكية للوصول بسرعة إلى البيانات التي تحتاج انتباهك.</p></div></aside>`;
-  if (kind === "orders") return `<section class="ops-console" dir="rtl">${filters}<main><header class="ops-view-head"><div><h2>إدارة الطلبات</h2><p>الرئيسية ‹ الطلبات</p></div><div class="ops-view-controls"><select><option>جميع الطلبات</option></select><button>▣</button><button class="active">▤</button></div></header><div class="ops-order-stats">${[["ملغي",146],["تم التسليم",2301],["تم الشحن",42],["قيد الشحن",36],["قيد المعالجة",42],["إجمالي الطلبات",2543]].map(([l,v])=>`<article><small>${l}</small><b>${v.toLocaleString()}</b></article>`).join("")}</div>${opsToolbar("طلب")}<div class="ops-data-table"><table><thead><tr><th>رقم الطلب</th><th>العميل</th><th>التاريخ</th><th>القيمة الإجمالية</th><th>طريقة الدفع</th><th>حالة الطلب</th><th>الإجراءات</th></tr></thead><tbody>${orders.slice(0,10).map(o=>`<tr><td><b class="ops-id">#${o.orderNumber}</b></td><td><b>${escapeHTML(o.customerName)}</b><small>${escapeHTML(o.phone||"")}</small></td><td>${new Date(o.createdAt).toLocaleDateString("ar-EG")}<small>${new Date(o.createdAt).toLocaleTimeString("ar-EG",{hour:"2-digit",minute:"2-digit"})}</small></td><td><b>${formatPrice(o.total)}</b></td><td>${escapeHTML(o.paymentMethod||"الدفع عند الاستلام")}</td><td><span class="ops-status ${o.status}">${adminStatusLabel(o.status)}</span></td><td><button>◉</button><button>⋮</button></td></tr>`).join("")}</tbody></table>${opsPagination("طلب")}</div></main></section>`;
-  if (kind === "customers") return `<section class="ops-console" dir="rtl">${filters}<main><header class="ops-view-head"><div><h2>إدارة العملاء</h2><p>الرئيسية ‹ العملاء</p></div><div class="ops-view-controls"><select><option>العملاء</option></select><button>▣</button><button class="active">▤</button></div></header><div class="ops-customer-stats">${[["إجمالي المبيعات","1,245,890"],["متوسط الطلبات للعميل","1.8"],["العملاء النشطون","2,301"],["عملاء جدد (7 يوم)","198"],["إجمالي العملاء","2,543"]].map(([l,v])=>`<article><small>${l}</small><b>${v}</b></article>`).join("")}</div>${opsToolbar("عميل")}<div class="ops-data-table"><table><thead><tr><th>رقم العميل</th><th>الاسم</th><th>البريد الإلكتروني</th><th>الهاتف</th><th>المدينة</th><th>عدد الطلبات</th><th>إجمالي المشتريات</th><th>تاريخ التسجيل</th><th>الإجراءات</th></tr></thead><tbody>${customers.slice(0,10).map(c=>`<tr><td><b class="ops-id">#${c.id}</b></td><td><b>${escapeHTML(c.name)}</b></td><td dir="ltr">${escapeHTML(c.email||"")}</td><td dir="ltr">${escapeHTML(c.phone||"")}</td><td>${escapeHTML(c.city||"القاهرة")}</td><td>${c.orders}</td><td>${formatPrice(c.total)}</td><td>${new Date(c.lastOrder).toLocaleDateString("ar-EG")}</td><td><button>✉</button><button>◉</button><button>⋮</button></td></tr>`).join("")}</tbody></table>${opsPagination("عميل")}</div></main></section>`;
+  if (kind === "orders") return `<section class="ops-console" dir="rtl">${filters}<main><header class="ops-view-head"><div><h2>إدارة الطلبات</h2><p>الرئيسية ‹ الطلبات</p></div><div class="ops-view-controls"><select><option>جميع الطلبات</option></select><button>▣</button><button class="active">▤</button></div></header><div class="ops-order-stats">${[["ملغي",146],["تم التسليم",2301],["تم الشحن",42],["قيد الشحن",36],["قيد المعالجة",42],["إجمالي الطلبات",2543]].map(([l,v])=>`<article><small>${l}</small><b>${formatNumber(v)}</b></article>`).join("")}</div>${opsToolbar("طلب")}<div class="ops-data-table"><table><thead><tr><th>رقم الطلب</th><th>العميل</th><th>التاريخ</th><th>القيمة الإجمالية</th><th>طريقة الدفع</th><th>حالة الطلب</th><th>الإجراءات</th></tr></thead><tbody>${orders.slice(0,10).map(o=>`<tr><td><b class="ops-id">#${o.orderNumber}</b></td><td><b>${escapeHTML(o.customerName)}</b><small>${escapeHTML(o.phone||"")}</small></td><td>${new Date(o.createdAt).toLocaleDateString("ar-EG-u-nu-latn")}<small>${new Date(o.createdAt).toLocaleTimeString("ar-EG-u-nu-latn",{hour:"2-digit",minute:"2-digit"})}</small></td><td><b>${formatPrice(o.total)}</b></td><td>${escapeHTML(o.paymentMethod||"الدفع عند الاستلام")}</td><td><span class="ops-status ${o.status}">${adminStatusLabel(o.status)}</span></td><td><button>◉</button><button>⋮</button></td></tr>`).join("")}</tbody></table>${opsPagination("طلب")}</div></main></section>`;
+  if (kind === "customers") return `<section class="ops-console" dir="rtl">${filters}<main><header class="ops-view-head"><div><h2>إدارة العملاء</h2><p>الرئيسية ‹ العملاء</p></div><div class="ops-view-controls"><select><option>العملاء</option></select><button>▣</button><button class="active">▤</button></div></header><div class="ops-customer-stats">${[["إجمالي المبيعات","1,245,890"],["متوسط الطلبات للعميل","1.8"],["العملاء النشطون","2,301"],["عملاء جدد (7 يوم)","198"],["إجمالي العملاء","2,543"]].map(([l,v])=>`<article><small>${l}</small><b>${v}</b></article>`).join("")}</div>${opsToolbar("عميل")}<div class="ops-data-table"><table><thead><tr><th>رقم العميل</th><th>الاسم</th><th>البريد الإلكتروني</th><th>الهاتف</th><th>المدينة</th><th>عدد الطلبات</th><th>إجمالي المشتريات</th><th>تاريخ التسجيل</th><th>الإجراءات</th></tr></thead><tbody>${customers.slice(0,10).map(c=>`<tr><td><b class="ops-id">#${c.id}</b></td><td><b>${escapeHTML(c.name)}</b></td><td dir="ltr">${escapeHTML(c.email||"")}</td><td dir="ltr">${escapeHTML(c.phone||"")}</td><td>${escapeHTML(c.city||"القاهرة")}</td><td>${c.orders}</td><td>${formatPrice(c.total)}</td><td>${new Date(c.lastOrder).toLocaleDateString("ar-EG-u-nu-latn")}</td><td><button>✉</button><button>◉</button><button>⋮</button></td></tr>`).join("")}</tbody></table>${opsPagination("عميل")}</div></main></section>`;
   return `<section class="ops-console ops-overview" dir="rtl">${filters}<main><header class="ops-view-head"><div><h2>لوحة التحكم</h2><p>الرئيسية ‹ لوحة التحكم</p></div></header><div class="ops-dashboard-kpis">${[["إجمالي المبيعات","256,890","↗ 12.5%"],["عدد الطلبات","1,245","↗ 48.2%"],["العملاء الجدد","892","↗ 45.2%"],["زيارات المتجر","48,762","↗ 49.7%"],["عدد المنتجات","2,301",""]].map(([l,v,t])=>`<article><small>${l}</small><b>${v}</b><em>${t}</em></article>`).join("")}</div><div class="ops-charts"><article><h3>طلبات حسب الحالة</h3><div class="ops-donut"><b>1,245<small>إجمالي الطلبات</small></b></div><ul><li>تم التسليم 65%</li><li>قيد الشحن 18%</li><li>قيد المعالجة 10%</li><li>ملغي 4%</li></ul></article><article><h3>مبيعات آخر 7 أيام</h3><div class="ops-line-chart">${[18,35,47,45,65,72,94,70,58].map(v=>`<i style="--v:${v}%"></i>`).join("")}</div></article></div><div class="ops-lower-grids"><article><h3>أفضل المنتجات مبيعاً</h3>${state.products.slice(0,5).map((p,i)=>`<p><img src="${escapeHTML(p.image)}"/><b>${escapeHTML(p.nameAr||p.nameEn)}</b><span>${156-i*17}</span><em>${formatPrice(78000-i*11000)}</em></p>`).join("")}</article><article><h3>أحدث الطلبات</h3>${orders.slice(0,5).map(o=>`<p><b class="ops-id">#${o.orderNumber}</b><span>${formatPrice(o.total)}</span><em class="ops-status ${o.status}">${adminStatusLabel(o.status)}</em></p>`).join("")}</article></div></main></section>`;
 }
 
@@ -1901,7 +1949,7 @@ function ordersViewMarkup() {
     <td><b>${escapeHTML(order.customerName)}</b><small>${escapeHTML(order.phone)}</small></td>
     <td>${(order.items || []).reduce((sum, item) => sum + Number(item.quantity), 0)}</td><td><b>${formatPrice(order.total)}</b></td>
     <td><select data-action="order-status" data-id="${order.id}">${orderStatusOptions(order.status)}</select></td>
-    <td><small>${new Date(order.createdAt).toLocaleDateString(state.lang === "ar" ? "ar-EG" : "en-US")}</small></td>
+    <td><small>${new Date(order.createdAt).toLocaleDateString(state.lang === "ar" ? "ar-EG-u-nu-latn" : "en-US")}</small></td>
     <td><button type="button" class="secondary-button compact-button" data-action="open-order-details" data-id="${order.id}">${state.lang === "ar" ? "عرض التفاصيل" : "View details"}</button></td></tr>`);
   const activeOrder = state.adminOrders.find((order) => Number(order.id) === Number(state.activeAdminOrderId));
   return `${activeOrder ? orderDetailsMarkup(activeOrder) : ""}<div class="admin-workflow-strip">${orderStatusSummary()}</div>${adminTable(headers, rows, state.lang === "ar" ? "لا توجد طلبات بعد" : "No orders yet")}`;
@@ -1982,10 +2030,10 @@ function performanceProductsViewMarkup() {
     return `<tr>
       <td><span class="admin-product-cell"><img src="${escapeHTML(product.image || PRODUCT_IMAGE_PLACEHOLDER)}" alt="" /><span><b>${escapeHTML(ar ? product.nameAr : product.nameEn || product.nameAr)}</b><small>${escapeHTML(product.brand || "ORIGO")}</small></span></span></td>
       <td><span class="admin-status ${enabled ? "active" : "draft"}">${enabled ? (ar ? "ظاهر" : "Visible") : (ar ? "مخفي" : "Hidden")}</span></td>
-      <td><b>${Number(counts.customers || 0).toLocaleString(ar ? "ar-EG" : "en-EG")}</b><small>${ar ? "عميل ORIGO" : "ORIGO customers"}</small></td>
-      <td><b>${Number(counts.verifiedCustomers || 0).toLocaleString(ar ? "ar-EG" : "en-EG")}</b><small>${ar ? "شراء موثّق" : "verified purchases"}</small></td>
+      <td><b>${formatNumber(counts.customers || 0)}</b><small>${ar ? "عميل ORIGO" : "ORIGO customers"}</small></td>
+      <td><b>${formatNumber(counts.verifiedCustomers || 0)}</b><small>${ar ? "شراء موثّق" : "verified purchases"}</small></td>
       <td><span class="admin-status active">${escapeHTML(modeLabel(insights.aggregate?.mode))}</span></td>
-      <td><small>${updatedAt ? new Date(updatedAt).toLocaleDateString(ar ? "ar-EG" : "en-EG") : "—"}</small></td>
+      <td><small>${updatedAt ? new Date(updatedAt).toLocaleDateString(ar ? "ar-EG-u-nu-latn" : "en-EG") : "—"}</small></td>
       <td><span class="admin-table-actions"><button class="table-action" data-action="edit-admin-product" data-id="${escapeHTML(product.id)}">${ar ? "إدارة" : "Manage"}</button><button class="table-action" data-action="recalculate-performance" data-id="${escapeHTML(product.id)}">${ar ? "إعادة احتساب" : "Recalculate"}</button></span></td>
     </tr>`;
   });
@@ -2463,9 +2511,9 @@ function storeSettingsDashboardMarkup() {
   return `<form id="store-basic-settings" class="store-settings-dashboard" dir="rtl">
     <div class="store-settings-tabs"><button class="active" type="button">⚙ إعدادات المتجر</button><button type="button" data-action="advanced-settings">الإضافات والتكاملات</button></div>
     <div class="store-settings-grid">
-      <section class="store-settings-card store-info-card"><h3>ⓘ هوية المتجر والشعار المركزي</h3><div class="store-info-layout"><div class="store-logo-box"><span>الشعار المركزي</span><img src="${escapeHTML(settings.logos.dark)}" alt="ORIGO"/><button type="button" data-action="advanced-settings">تغيير الشعار</button></div><div class="store-info-fields"><label>اسم المتجر<input name="storeName" value="${escapeHTML(settings.storeName || "ORIGO")}"/></label><label>الوصف القصير<textarea name="shortDescription">متجر فاخر للعطور الأصلية ومنتجات العناية الشخصية</textarea></label><div><label>رقم الجوال<input name="phone" value="010 1234 5678" dir="ltr"/></label><label>البريد الإلكتروني<input name="supportEmail" value="${escapeHTML(settings.supportEmail || "info@origoscents.com")}" dir="ltr"/></label></div><div><label>العملة الأساسية<select name="currency"><option value="EGP"${settings.currency === "EGP" ? " selected" : ""}>الجنيه المصري</option><option value="USD">الدولار الأمريكي</option></select></label><label>اللغة الافتراضية<select name="defaultLanguage"><option>العربية</option><option>English</option></select></label></div><div><label>المنطقة الزمنية<select name="timezone"><option>القاهرة (GMT+2)</option></select></label></div></div></div><button class="store-save-button" type="submit">حفظ التغييرات</button></section>
+      <section class="store-settings-card store-info-card"><h3>ⓘ هوية المتجر والشعار المركزي</h3><div class="store-info-layout"><div class="store-logo-box"><span>الشعار المركزي</span><img src="${escapeHTML(settings.logos.dark)}" alt="ORIGO"/><button type="button" data-action="advanced-settings">تغيير الشعار</button></div><div class="store-info-fields"><label>اسم المتجر<input name="storeName" value="${escapeHTML(settings.storeName || "ORIGO")}"/></label><label>الوصف القصير<textarea name="shortDescription">متجر فاخر للعطور الأصلية ومنتجات العناية الشخصية</textarea></label><div><label>رقم الجوال<input name="phone" value="010 1234 5678" dir="ltr"/></label><label>البريد الإلكتروني<input name="supportEmail" value="${escapeHTML(settings.supportEmail || "info@origoscents.com")}" dir="ltr"/></label></div><div><label>العملة الأساسية<select name="currency"><option value="EGP"${settings.currency === "EGP" ? " selected" : ""}>الجنيه المصري</option><option value="USD">الدولار الأمريكي</option></select></label><label>${adminCopy("اللغة","Language")}<select data-language-preference><option value="auto">${adminCopy("تلقائي","Auto")}</option><option value="ar">${adminCopy("العربية","Arabic")}</option><option value="en">${adminCopy("الإنجليزية","English")}</option></select></label></div><div><label>المنطقة الزمنية<select name="timezone"><option>القاهرة (GMT+2)</option></select></label></div></div></div><button class="store-save-button" type="submit">حفظ التغييرات</button></section>
       <div class="store-settings-stack"><section class="store-settings-card"><h3>▣ إعدادات الدفع</h3>${[["الدفع عند الاستلام","الدفع نقداً عند استلام الطلب","cod",true],["بطاقات الائتمان / الخصم","Visa, Mastercard, Meeza","cards",true],["فودافون كاش","الدفع عبر فودافون كاش","vodafone",true],["إنستاباي","الدفع عبر تطبيق إنستاباي","instapay",false]].map(([title,desc,name,on]) => `<div class="payment-setting"><span><b>${title}</b><small>${desc}</small></span><button type="button">إعداد</button>${toggle(`payment.${name}`,on)}</div>`).join("")}</section><section class="store-settings-card"><h3>▱ إعدادات الشحن والتوصيل</h3><div class="two-setting-fields"><label>شركة التوصيل<select><option>شركة واحدة - الشحن السريع</option></select></label><label>مدة التوصيل المتوقعة<select><option>2 - 5 أيام عمل</option></select></label><label>رسوم الشحن<input name="shippingFee" value="ثابتة"/></label><label>قيمة رسوم (EGP)<input name="shippingFeeValue" value="60"/></label></div><p class="store-success-note">ⓘ يتم حساب الرسوم بناءً على إجمالي الطلب والموقع</p></section></div>
-      <div class="store-settings-stack"><section class="store-settings-card"><h3>◎ إعدادات اللغة والترجمة</h3><label>اللغات المتاحة</label><div class="language-checks"><label><input type="checkbox" checked/> العربية</label><label><input type="checkbox" checked/> English</label></div><label>اللغة الافتراضية<select><option>العربية</option><option>English</option></select></label><label>اتجاه النص</label><div class="direction-choice"><button class="active" type="button">من اليمين لليسار (RTL)</button><button type="button">من اليسار لليمين (LTR)</button></div><div class="translation-toggle"><span><b>تفعيل الترجمة اليدوية</b><small>سيمكنك ترجمة المحتوى يدوياً بدلاً من الترجمة التلقائية</small></span>${toggle("manualTranslation",true)}</div></section><section class="store-settings-card"><h3>% إعدادات الضرائب</h3><label>تفعيل الضرائب</label><div class="two-setting-fields"><label>نوع الضريبة<select><option>ضريبة القيمة المضافة (VAT)</option></select></label><label>نسبة الضريبة (%)<input name="taxRate" type="number" value="${Number(settings.taxRate || 14)}"/></label><label>تطبيق الضريبة على<select><option>جميع المنتجات</option></select></label></div></section></div>
+      <div class="store-settings-stack"><section class="store-settings-card"><h3>◎ ${adminCopy("إعدادات اللغة","Language settings")}</h3><label>${adminCopy("اللغة","Language")}<select data-language-preference><option value="auto">${adminCopy("تلقائي","Auto")}</option><option value="ar">${adminCopy("العربية","Arabic")}</option><option value="en">${adminCopy("الإنجليزية","English")}</option></select></label><small>${adminCopy("الوضع التلقائي يتبع لغة المتصفح في كل زيارة.","Auto follows the browser language on every visit.")}</small></section><section class="store-settings-card"><h3>% إعدادات الضرائب</h3><label>تفعيل الضرائب</label><div class="two-setting-fields"><label>نوع الضريبة<select><option>ضريبة القيمة المضافة (VAT)</option></select></label><label>نسبة الضريبة (%)<input name="taxRate" type="number" value="${Number(settings.taxRate || 14)}"/></label><label>تطبيق الضريبة على<select><option>جميع المنتجات</option></select></label></div></section></div>
       <section class="store-settings-card"><h3>▥ إعدادات SEO</h3><label>عنوان الموقع<input name="seoTitle" value="ORIGO - متجر العطور الأصلية ومنتجات العناية"/></label><label>الوصف التعريفي<textarea name="seoDescription">تسوق أفضل العطور الأصلية ومنتجات العناية الشخصية. أشهر الماركات العالمية، توصيل سريع وأسعار تنافسية.</textarea></label><label>الكلمات المفتاحية<input name="seoKeywords" value="عطور، perfumes، عطر رجالي، عطر نسائي، عطور أصلية"/></label><label>رابط الموقع (URL)<input name="siteUrl" value="https://origoscents.com" dir="ltr"/></label></section>
       <section class="store-settings-card"><h3>◉ إعدادات العملة</h3><label>العملة الأساسية<select name="currencyMirror"><option>EGP - الجنيه المصري</option></select></label><label>عرض الأسعار<select><option>مع العملة</option></select></label><label>تنسيق الأسعار<input value="1,250.00 EGP" readonly/></label><label>عدد الأرقام العشرية<select><option>2</option></select></label></section>
       <section class="store-settings-card"><h3>♢ إعدادات الإشعارات</h3>${[["إشعارات الطلبات الجديدة","newOrders"],["إشعارات الطلبات الملغاة","cancelledOrders"],["إشعارات العملاء الجدد","newCustomers"],["تذكيرات سلة التسوق المهجورة","abandonedCart"],["عروض وتحديثات المتجر","storeUpdates"]].map(([label,name]) => `<div class="notification-setting"><span>${label}</span>${toggle(`notify.${name}`,true)}</div>`).join("")}<label>إرسال الإشعارات عبر</label><div class="language-checks"><label><input name="orderNotifications" type="checkbox" checked/> البريد الإلكتروني</label><label><input type="checkbox" checked/> الجوال (SMS)</label></div></section>
@@ -2828,6 +2876,7 @@ function renderAdminDashboard(view = state.adminView) {
     if (view === "coupons") initializeCouponManager();
     if (view === "activity") initializeActivitySecurity();
     if (view === "brands") initializeBrandsManagement();
+    $$('[data-language-preference]', dashboardContent).forEach((select) => { select.value = state.languagePreference; });
   } catch (error) {
     console.error("Admin view render failed:", view, error);
     dashboardContent.innerHTML = `<section class="admin-view-error" role="alert">
@@ -3085,7 +3134,7 @@ function renderOrders(orders, admin = false) {
   }
   return orders.map((order) => {
     const products = (order.items || []).map((item) => `${item.quantity}× ${item.productName}`).join(" · ");
-    const date = new Intl.DateTimeFormat(ar ? "ar-EG" : "en-GB", { dateStyle: "medium", timeStyle: "short" })
+    const date = new Intl.DateTimeFormat(ar ? "ar-EG-u-nu-latn" : "en-GB", { dateStyle: "medium", timeStyle: "short" })
       .format(new Date(String(order.createdAt).replace(" ", "T") + (String(order.createdAt).includes("Z") ? "" : "Z")));
     return `<article class="order-card">
       <div class="order-card-head">
@@ -3162,6 +3211,13 @@ function openCheckout() {
   else window.location.assign("/checkout");
 }
 
+function setLanguagePreference(preference) {
+  state.languagePreference = normalizeLanguagePreference(preference);
+  localStorage.setItem(LANGUAGE_PREFERENCE_KEY, state.languagePreference);
+  state.lang = resolveEffectiveLanguage(state.languagePreference);
+  updateLanguage();
+}
+
 function updateLanguage() {
   const isArabic = state.lang === "ar";
   document.documentElement.lang = state.lang;
@@ -3179,9 +3235,11 @@ function updateLanguage() {
   });
   const languageButton = $(".lang-button[data-action='language']");
   if (languageButton) {
-    languageButton.textContent = isArabic ? "English ◎" : "العربية ◎";
-    languageButton.setAttribute("aria-label", isArabic ? "Switch to English" : "التبديل إلى العربية");
+    const preferenceLabel = { ar:"العربية", en:"English", auto:isArabic ? "تلقائي" : "Auto" }[state.languagePreference];
+    languageButton.textContent = `${preferenceLabel} ◎`;
+    languageButton.setAttribute("aria-label", isArabic ? "تغيير تفضيل اللغة" : "Change language preference");
   }
+  $$('[data-language-preference]').forEach((select) => { select.value = state.languagePreference; });
   const currencyLabel = $("#current-currency");
   if (currencyLabel) currencyLabel.textContent = isArabic ? "ج.م" : "EGP";
   document.title = isArabic ? "ORIGO | أصل الحكاية العطرية" : "ORIGO | The origin of scent";
@@ -3214,7 +3272,6 @@ function updateLanguage() {
   if ($("#notes-admin-overlay").classList.contains("open")) renderNotesAdmin();
   if ($("#admin-overlay").classList.contains("open")) renderAdminDashboard(state.adminView);
   applyHomepageRailSettings();
-  localStorage.setItem("origoLang", state.lang);
 }
 
 function setupTheme(toggle = false) {
@@ -3646,7 +3703,7 @@ function applyStoreIdentity() {
   const announcement = $(".announcement");
   if (announcement) {
     const threshold = Number(settings.freeShippingThreshold || 3000);
-    const value = new Intl.NumberFormat(state.lang === "ar" ? "ar-EG" : "en-EG", { maximumFractionDigits: 0 }).format(threshold);
+    const value = formatNumber(threshold, { maximumFractionDigits:0 });
     const announcementText = state.lang === "ar"
       ? `شحن مجاني للطلبات المؤهلة فوق ${value} جنيه مصري • منتجات أصلية 100% • استرجاع سهل • دعم عملاء 24/7`
       : `Free shipping on eligible orders over EGP ${value} • 100% authentic products • Easy returns • 24/7 support`;
@@ -5732,11 +5789,11 @@ function productCardMarkup(product, options = {}) {
         <button class="card-action-button card-compare-button${compared ? " active" : ""}"${interactive ? ` data-action="toggle-product-compare"` : disabled} aria-label="${escapeHTML(compareLabel)}" aria-pressed="${compared}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h12m0 0-3-3m3 3-3 3M17 17H5m0 0 3 3m-3-3 3-3"/></svg></button>
       </div>
       <button type="button" class="product-card-media-link"${interactive ? ` data-action="open-product" data-id="${escapeHTML(product.id)}"` : disabled} aria-label="${escapeHTML(isArabic ? `عرض ${name}` : `View ${name}`)}">${hasProductImage
-        ? `<img src="${escapeHTML(mainImage)}" alt="${escapeHTML(`${product.brand || "ORIGO"} ${name}`)}" width="640" height="700" loading="lazy" decoding="async" draggable="false" />`
+        ? `<img src="${escapeHTML(mainImage)}" alt="${escapeHTML(`${localizedProductBrand(product)} ${name}`)}" width="640" height="700" loading="lazy" decoding="async" draggable="false" />`
         : `<span class="product-image-missing" role="img" aria-label="${escapeHTML(isArabic ? "صورة المنتج غير متاحة" : "Product image unavailable")}"><i aria-hidden="true">◇</i><small>${isArabic ? "الصورة غير متاحة" : "Image unavailable"}</small></span>`}</button>
     </div>
     <div class="product-info">
-      <div class="exact-card-heading"><div class="product-brand" dir="auto">${escapeHTML(product.brand || "ORIGO")}</div><span class="exact-card-rating">${rating > 0 ? rating.toFixed(1) : "—"}<b aria-hidden="true">★</b></span></div>
+      <div class="exact-card-heading"><div class="product-brand" dir="auto">${escapeHTML(localizedProductBrand(product))}</div><span class="exact-card-rating">${rating > 0 ? rating.toFixed(1) : "—"}<b aria-hidden="true">★</b></span></div>
       <h3 class="exact-card-product-name${productNameSizeClass}"><button type="button"${interactive ? ` data-action="open-product" data-id="${escapeHTML(product.id)}"` : disabled}>${escapeHTML(name || (isArabic ? "منتج جديد" : "New product"))}</button></h3>
       <div class="product-bottom">
         <div class="exact-card-prices"><b class="product-price">${formatPrice(price)}</b>${oldPrice > price ? `<del>${formatPrice(oldPrice)}</del>` : ""}</div>
@@ -5968,8 +6025,8 @@ function showProductDetails(product, shouldOpen = true) {
     state.activeProductImageIndex = 0;
   }
   const isArabic = state.lang === "ar";
-  const name = localizedProductName(product, isArabic ? "ar" : "en");
-  const secondName = isArabic ? product.nameEn : product.nameAr;
+  const name = localizedProductName(product);
+  const brandName = localizedProductBrand(product);
   const media = productMedia(product);
   if (!media.length) media.push({ url: PRODUCT_IMAGE_PLACEHOLDER, type: "image" });
   state.activeProductImageIndex = Math.min(state.activeProductImageIndex, media.length - 1);
@@ -5983,8 +6040,8 @@ function showProductDetails(product, shouldOpen = true) {
   const sizes = Array.isArray(product.sizes) ? product.sizes.filter(Boolean) : [];
   const related = productRelated(product);
   const recent = readStoredArray("origoRecentlyViewed").filter((id) => id !== product.id).map(getProduct).filter(Boolean).slice(0, 4);
-  const description = (isArabic ? product.descriptionAr : product.descriptionEn) || product.description || "";
-  const family = isArabic ? product.familyAr : product.familyEn;
+  const description = localizedText(product.descriptionAr, product.descriptionEn) || product.description || "";
+  const family = localizedText(product.fragranceFamilyAr || product.familyAr, product.fragranceFamilyEn || product.familyEn);
   const discount = product.oldPrice > product.price ? Math.round((1 - product.price / product.oldPrice) * 100) : 0;
   const taxRate = Number(state.adminWorkspace.settings?.taxRate || 0);
   const restockEmail = state.user?.email || "";
@@ -6015,7 +6072,7 @@ function showProductDetails(product, shouldOpen = true) {
           <div class="pdp-main-image" data-action="product-zoom" role="button" tabindex="0" aria-label="${isArabic ? "فتح صورة المنتج بملء الشاشة" : "Open product image fullscreen"}"><span>${escapeHTML(isArabic ? product.badgeAr || "" : product.badgeEn || "")}</span>${media.length > 1 ? `<button type="button" class="pdp-media-arrow previous" data-action="product-image-step" data-change="-1" aria-label="${isArabic ? "الصورة السابقة" : "Previous image"}">‹</button><button type="button" class="pdp-media-arrow next" data-action="product-image-step" data-change="1" aria-label="${isArabic ? "الصورة التالية" : "Next image"}">›</button><small class="pdp-media-count" aria-live="polite">${state.activeProductImageIndex + 1} / ${media.length}</small>` : ""}<img src="${escapeHTML(activeMedia.url)}" alt="${escapeHTML(`${product.brand} ${name}`)}" draggable="false" /></div>
         </div>
         <aside class="pdp-purchase">
-          <a class="pdp-brand" href="/brands/${encodeURIComponent(normalizeOptionSearch(product.brand).replaceAll(" ","-"))}">${escapeHTML(product.brand)}</a><h1 id="product-dialog-title">${escapeHTML(name)}</h1>${secondName && secondName !== name ? `<p class="pdp-english-name">${escapeHTML(secondName)}</p>` : ""}
+          <a class="pdp-brand" href="/brands/${encodeURIComponent(normalizeOptionSearch(product.brand).replaceAll(" ","-"))}">${escapeHTML(brandName)}</a><h1 id="product-dialog-title">${escapeHTML(name)}</h1>
           <div class="pdp-tags"><span>${catalogGender(product) === "women" ? "♀" : catalogGender(product) === "men" ? "♂" : "⚥"} ${escapeHTML(isArabic ? product.type || (catalogGender(product) === "women" ? "للنساء" : catalogGender(product) === "men" ? "للرجال" : "للجنسين") : product.typeEn || product.type || catalogGender(product))}</span>${product.concentration ? `<span>${escapeHTML(product.concentration)}</span>` : ""}${product.sku ? `<span>SKU ${escapeHTML(product.sku)}</span>` : ""}</div>
           <div class="pdp-price-row"><div class="pdp-price"><b>${formatPrice(product.price)}</b>${product.oldPrice ? `<del>${formatPrice(product.oldPrice)}</del>` : ""}${discount ? `<em>-${discount}%</em>` : ""}<small>${taxRate ? (isArabic ? `شامل ضريبة القيمة المضافة ${taxRate}%` : `VAT ${taxRate}% included`) : ""}</small></div></div>
           ${sizes[0] ? `<p class="pdp-fixed-size">${isArabic ? "الحجم" : "Size"}: <b><bdi dir="ltr">${escapeHTML(formatProductSize(sizes[0]))}</bdi></b></p>` : ""}
@@ -6089,7 +6146,7 @@ function showToast(message, type = "success") {
 }
 
 function escapeHTML(value = "") {
-  return String(value).replace(/[&<>"']/g, (char) => ({
+  return normalizeLatinDigits(value).replace(/[&<>"']/g, (char) => ({
     "&": "&amp;",
     "<": "&lt;",
     ">": "&gt;",
@@ -6097,6 +6154,42 @@ function escapeHTML(value = "") {
     "'": "&#039;"
   })[char]);
 }
+
+function normalizeRenderedLatinDigits(root = document) {
+  if (!root) return;
+  const normalizeElement = (element) => {
+    if (!(element instanceof Element) || element.matches("script,style,textarea,input,[contenteditable='true']")) return;
+    for (const attribute of ["aria-label", "title", "placeholder", "alt"]) {
+      if (!element.hasAttribute(attribute)) continue;
+      const current = element.getAttribute(attribute) || "";
+      const normalized = normalizeLatinDigits(current);
+      if (normalized !== current) element.setAttribute(attribute, normalized);
+    }
+  };
+  if (root instanceof Element) normalizeElement(root);
+  const documentRoot = root instanceof Document ? root.documentElement : root;
+  if (!documentRoot) return;
+  documentRoot.querySelectorAll?.("*").forEach(normalizeElement);
+  const walker = document.createTreeWalker(documentRoot, NodeFilter.SHOW_TEXT);
+  let node;
+  while ((node = walker.nextNode())) {
+    if (node.parentElement?.closest("script,style,textarea,input,[contenteditable='true']")) continue;
+    const normalized = normalizeLatinDigits(node.nodeValue || "");
+    if (normalized !== node.nodeValue) node.nodeValue = normalized;
+  }
+}
+
+const latinDigitObserver = new MutationObserver((mutations) => {
+  mutations.forEach((mutation) => {
+    mutation.addedNodes.forEach((node) => {
+      if (node.nodeType === Node.TEXT_NODE) {
+        if (node.parentElement?.closest("script,style,textarea,input,[contenteditable='true']")) return;
+        const normalized = normalizeLatinDigits(node.nodeValue || "");
+        if (normalized !== node.nodeValue) node.nodeValue = normalized;
+      } else if (node instanceof Element) normalizeRenderedLatinDigits(node);
+    });
+  });
+});
 
 function syncBodyLock() {
   document.body.classList.toggle("locked", Boolean($(".overlay.open, .drawer.open, .mobile-menu-panel.open, .catalog-filter-drawer.open")));
@@ -6392,7 +6485,7 @@ function runAlternativeSearch() {
   showToast(state.lang === "ar" ? "تم تحليل البصمة العطرية" : "Scent fingerprint analyzed");
 }
 
-const adminCopy = (ar, en) => state.lang === "ar" ? ar : en;
+const adminCopy = (ar, en) => localizedText(ar, en);
 const csv = (values) => (values || []).join(", ");
 const csvValues = (value) => [...new Map(String(value || "").split(/[,،]/)
   .map((item) => item.trim()).filter(Boolean)
@@ -6502,7 +6595,7 @@ function smartSelectOptionMarkup(item, values = []) {
   const label = state.lang === "ar" ? item.nameAr || item.nameEn || value : item.nameEn || item.nameAr || value;
   const secondary = state.lang === "ar" ? item.nameEn || "" : item.nameAr || "";
   const selected = values.some((selectedValue) => normalizeOptionSearch(selectedValue) === normalizeOptionSearch(value));
-  return `<button type="button" role="option" data-action="smart-select-option" data-value="${escapeHTML(value)}" data-search="${escapeHTML(normalizeOptionSearch(`${item.nameAr || ""} ${item.nameEn || ""} ${value}`))}" aria-selected="${selected}">${item.image ? `<img src="${escapeHTML(item.image)}" alt=""/>` : `<em style="${item.color ? `--option-color:${escapeHTML(item.color)}` : ""}">${escapeHTML(item.icon || "◇")}</em>`}<span><b>${escapeHTML(label)}</b><small>${escapeHTML(secondary)}</small></span><i>✓</i></button>`;
+  return `<button type="button" role="option" data-action="smart-select-option" data-value="${escapeHTML(value)}" data-search="${escapeHTML(normalizeOptionSearch(`${item.nameAr || ""} ${item.nameEn || ""} ${value}`))}" aria-selected="${selected}">${item.image ? `<img src="${escapeHTML(item.image)}" alt=""${item.group === "note" ? ` data-smart-note-image="true"` : ""}/>` : `<em style="${item.color ? `--option-color:${escapeHTML(item.color)}` : ""}">${escapeHTML(item.icon || "◇")}</em>`}<span><b>${escapeHTML(label)}</b><small>${escapeHTML(secondary)}</small></span><i>✓</i></button>`;
 }
 
 function renderSmartSelectSearch(select, query = "") {
@@ -6544,10 +6637,10 @@ function searchableCreatableSelect({ name, group, labelAr, labelEn, selected = [
 }
 
 function smartSelectChipMarkup(item, value, { multiple = false, group = "" } = {}) {
-  const name = state.lang === "ar" ? item.nameAr || item.nameEn : item.nameEn || item.nameAr;
+  const name = localizedText(item.nameAr, item.nameEn) || value;
   const editNote = group === "note" ? `<button type="button" class="smart-select-edit-note" data-action="smart-select-edit-note" data-value="${escapeHTML(value)}" title="${adminCopy("تعديل النوتة أو إضافة صورتها","Edit note or add its image")}" aria-label="${adminCopy(`تعديل نوتة ${name}`, `Edit ${name} note`)}">✎</button>` : "";
   const remove = multiple ? `<button type="button" class="smart-select-remove" data-action="smart-select-remove" data-value="${escapeHTML(value)}" aria-label="${adminCopy("حذف","Remove")}">×</button>` : "";
-  return `<i data-smart-value="${escapeHTML(value)}">${item.image ? `<img src="${escapeHTML(item.image)}" alt="" />` : item.icon ? `<em>${escapeHTML(item.icon)}</em>` : ""}<span>${escapeHTML(name)}</span>${editNote}${remove}</i>`;
+  return `<i data-smart-value="${escapeHTML(value)}">${item.image ? `<img src="${escapeHTML(item.image)}" alt=""${group === "note" ? ` data-smart-note-image="true"` : ""} />` : item.icon ? `<em>${escapeHTML(item.icon)}</em>` : ""}<span>${escapeHTML(name)}</span>${editNote}${remove}</i>`;
 }
 
 function findDuplicate(product, excludeId = "") {
@@ -6608,15 +6701,32 @@ function perfumePerformanceEditorSection(product) {
       <label>${adminCopy("قوة الفوحان", "Projection strength")}<select name="performanceProjection"><option value="">${adminCopy("غير محدد", "Not specified")}</option>${selectOptions([["weak",adminCopy("ضعيف", "Weak")],["moderate",adminCopy("متوسط", "Moderate")],["strong",adminCopy("قوي", "Strong")],["very_strong",adminCopy("قوي جدًا", "Very strong")]], normalizeAdminProjection(performance.projection ?? performance.sillage))}</select></label>
     </div>
     <fieldset class="bundle-score-fields percentage-score-fields"><legend>${adminCopy("ملاءمة الفصول", "Season suitability")}</legend><div class="season-percentage-grid">
-      ${[["winter","❄","الشتاء","Winter"],["autumn","🍂","الخريف","Autumn"],["spring","🌸","الربيع","Spring"],["summer","☀","الصيف","Summer"]].map(([id,icon,ar,en]) => { const value=product.seasonScores?.[id]; const shown=value ?? 0; return `<label class="percentage-score-card"><span><i>${icon}</i><b>${adminCopy(ar,en)}</b><output data-percentage-output>${value == null ? "—" : `${shown}%`}</output></span><input type="range" data-percentage-slider${value == null ? ` data-score-missing="true"` : ""} name="seasonScore.${id}" min="0" max="100" step="1" value="${shown}" style="--percentage:${shown}%"/></label>`; }).join("")}
+      ${[["winter","الشتاء","Winter"],["autumn","الخريف","Autumn"],["spring","الربيع","Spring"],["summer","الصيف","Summer"]].map(([id,nameAr,nameEn]) => percentageScoreCard({ id, name:`seasonScore.${id}`, value:product.seasonScores?.[id], nameAr, nameEn })).join("")}
     </div></fieldset>
     <fieldset class="bundle-score-fields percentage-score-fields"><legend>${adminCopy("وقت الاستخدام", "Usage time")}</legend><div class="time-percentage-grid">
-      ${[["day","☀","النهار","Day"],["night","🌙","الليل","Night"]].map(([id,icon,ar,en]) => { const value=product.usageTimeScores?.[id]; const shown=value ?? 0; return `<label class="percentage-score-card"><span><i>${icon}</i><b>${adminCopy(ar,en)}</b><output data-percentage-output>${value == null ? "—" : `${shown}%`}</output></span><input type="range" data-percentage-slider${value == null ? ` data-score-missing="true"` : ""} name="usageScore.${id}" min="0" max="100" step="1" value="${shown}" style="--percentage:${shown}%"/></label>`; }).join("")}
+      ${[["day","النهار","Day"],["night","الليل","Night"]].map(([id,nameAr,nameEn]) => percentageScoreCard({ id, name:`usageScore.${id}`, value:product.usageTimeScores?.[id], nameAr, nameEn })).join("")}
     </div></fieldset>
     <div class="review-grid performance-manual-grid">
-      ${searchableCreatableSelect({ name:"occasions", group:"occasion", labelAr:"المناسبات", labelEn:"Occasions", selected:product.occasions, multiple:true })}
+      ${searchableCreatableSelect({ name:"occasions", group:"occasion", labelAr:"المناسبات", labelEn:"Occasions", selected:(product.occasionLabels || []).map((item) => item.en || item.name_en || item.ar || item.name_ar).filter(Boolean).length ? (product.occasionLabels || []).map((item) => item.en || item.name_en || item.ar || item.name_ar).filter(Boolean) : product.occasions, multiple:true })}
     </div>
   </section>`;
+}
+
+function perfumeTimeIcon(id) {
+  const paths = {
+    winter:`<path d="M12 2v20M4.2 6.5l15.6 11M4.2 17.5l15.6-11M8.7 4.3 12 7.6l3.3-3.3M8.7 19.7 12 16.4l3.3 3.3M3.8 10.2 8.2 12l-4.4 1.8M20.2 10.2 15.8 12l4.4 1.8"/>`,
+    autumn:`<path d="M19.5 3.5C12.8 3.8 6.2 7.2 5 14.2c-.5 3 1.4 5.4 4.5 5.1 6.9-.7 9.5-8.5 10-15.8Z"/><path d="M5 20c2.7-4.4 6.2-7.6 11.2-10.2"/>`,
+    spring:`<path d="M12 9.2c-1.8-5-6.8-4.3-6.4-.5.2 1.8 1.6 3 3.5 3.3-5 1.8-4.3 6.8-.5 6.4 1.8-.2 3-1.6 3.3-3.5 1.8 5 6.8 4.3 6.4.5-.2-1.8-1.6-3-3.5-3.3 5-1.8 4.3-6.8.5-6.4-1.8.2-3 1.6-3.3 3.5Z"/><circle cx="12" cy="12" r="2.2"/>`,
+    summer:`<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>`,
+    day:`<path d="M3 18h18M5 15a7 7 0 0 1 14 0M12 3v3M4.9 7.2l2.1 2M19.1 7.2l-2.1 2"/>`,
+    night:`<path d="M20.2 15.2A8.8 8.8 0 0 1 8.8 3.8 9 9 0 1 0 20.2 15.2Z"/>`
+  };
+  return `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">${paths[id] || paths.summer}</svg>`;
+}
+
+function percentageScoreCard({ id, name, value, nameAr, nameEn }) {
+  const shown = value ?? 0;
+  return `<label class="percentage-score-card percentage-score-${id}"><span class="percentage-score-head"><i class="percentage-score-icon">${perfumeTimeIcon(id)}</i><span class="percentage-score-copy"><b>${localizedText(nameAr, nameEn)}</b></span><output data-percentage-output>${value == null ? "—" : formatPercent(shown)}</output></span><input type="range" data-percentage-slider${value == null ? ` data-score-missing="true"` : ""} name="${name}" min="0" max="100" step="1" value="${shown}" style="--percentage:${shown}%"/></label>`;
 }
 
 const PRODUCT_PROFILE_IMAGE_FIELDS = [
@@ -6715,7 +6825,7 @@ function adminAccordEditor(product) {
   return `<div class="accord-admin-editor">
     <div class="accord-admin-toolbar"><div><b>${adminCopy("الأكوردات الرئيسية", "Main accords")}</b><small>${adminCopy("اختر الأكورد واضبط قوته؛ ويمكنك البحث بالعربية أو الإنجليزية.", "Select an accord, adjust its strength, and search in Arabic or English.")}</small></div><div><input type="search" data-accord-search placeholder="${adminCopy("بحث عن أكورد…", "Search accords…")}"/><button type="button" data-action="accord-selected-only">${adminCopy("المختارة", "Selected")}</button><button type="button" data-action="clear-admin-accords">${adminCopy("مسح", "Clear")}</button></div></div>
     <div class="accord-search-count">${adminCopy("المحدد:", "Selected:")} <b>${selected.size}</b></div>
-    <div class="accord-admin-list">${ORIGO_ACCORD_LIBRARY.map(([id,nameAr,nameEn,color,icon]) => { const strength=selected.get(id) ?? 50; const checked=selected.has(id); return `<label class="accord-admin-item${checked ? " selected" : ""}" data-accord-search-value="${escapeHTML(normalizeOptionSearch(`${id} ${nameAr} ${nameEn}`))}" style="--accord-color:${color}"><input type="checkbox" name="accordSelected" value="${id}"${checked ? " checked" : ""}/><i>${icon}</i><span><b>${escapeHTML(nameAr)}</b><small>${escapeHTML(nameEn)}</small></span><input type="range" name="accordStrength.${id}" min="1" max="100" value="${strength}"/><output>${strength}%</output></label>`; }).join("")}</div>
+    <div class="accord-admin-list">${ORIGO_ACCORD_LIBRARY.map(([id,nameAr,nameEn,color,icon]) => { const strength=selected.get(id) ?? 50; const checked=selected.has(id); return `<label class="accord-admin-item${checked ? " selected" : ""}" data-accord-search-value="${escapeHTML(normalizeOptionSearch(`${id} ${nameAr} ${nameEn}`))}" style="--accord-color:${color}"><input type="checkbox" name="accordSelected" value="${id}"${checked ? " checked" : ""}/><i>${icon}</i><span><b>${escapeHTML(nameAr)}</b><small>${escapeHTML(nameEn)}</small></span><input type="range" name="accordStrength.${id}" min="1" max="100" value="${strength}"/><output>${formatPercent(strength)}</output></label>`; }).join("")}</div>
     <p class="accord-search-empty" hidden>${adminCopy("لا توجد أكوردات مطابقة.", "No matching accords.")}</p>
     <label class="manual-accord-text"><span>${adminCopy("أكوردات مخصصة إضافية", "Additional custom accords")}</span><textarea name="manualAccords" rows="4" dir="auto" placeholder="خشبي | Woody | 85">${escapeHTML(lines)}</textarea><small>${adminCopy("يمكنك إضافة أكورد غير موجود في القائمة هنا.", "Add an accord not found in the list here.")}</small></label>
     <div class="accord-admin-live">${productAccordMarkup(product)}</div>
@@ -6831,6 +6941,14 @@ function productEditorGate(number, titleAr, titleEn, body, extra = "") {
 
 function renderImportReview(product) {
   product = { ...ORIGOCatalog.emptyProduct(), ...(product || {}), notes:{ ...ORIGOCatalog.emptyProduct().notes, ...(product?.notes || {}) } };
+  (product.occasionLabels || []).forEach((occasion) => {
+    const nameAr = occasion?.ar || occasion?.name_ar || "";
+    const nameEn = occasion?.en || occasion?.name_en || "";
+    const value = nameEn || nameAr;
+    if (!value) return;
+    const option = { group:"occasion", value, slug:normalizeOptionSearch(value).replaceAll(" ", "-"), nameAr:nameAr || nameEn, nameEn:nameEn || nameAr, icon:"◇", active:true, metadata:{ source:"perfume_data_bundle" } };
+    state.productOptions = [...state.productOptions.filter((item) => !(item.group === "occasion" && normalizeOptionSearch(item.value || item.slug || item.nameEn || item.nameAr) === normalizeOptionSearch(value))), option];
+  });
   state.activeImportDraft = product;
   const images = Array.isArray(product.images) ? product.images : [];
   const identity = `<div class="review-grid">
@@ -6840,7 +6958,7 @@ function renderImportReview(product) {
     <label>${adminCopy("اسم العلامة بالإنجليزية","English brand name")}<input name="brandEn" dir="ltr" maxlength="160" value="${escapeHTML(product.brandEn || product.brand || "")}"/></label>
     ${searchableCreatableSelect({name:"brand",group:"brand",labelAr:"العلامة التجارية",labelEn:"Brand",selected:product.brand,required:true})}
     ${searchableCreatableSelect({name:"category",group:"category",labelAr:"نوع المنتج",labelEn:"Product type",selected:product.category || "perfume",required:true})}
-    ${searchableCreatableSelect({name:"gender",group:"gender",labelAr:"الجنس",labelEn:"Gender",selected:product.genders || product.gender,multiple:true})}
+    ${searchableCreatableSelect({name:"gender",group:"gender",labelAr:"الجنس",labelEn:"Gender",selected:Array.isArray(product.genders) && product.genders.length ? product.genders : product.gender,multiple:true})}
     ${searchableCreatableSelect({name:"concentration",group:"concentration",labelAr:"التركيز",labelEn:"Concentration",selected:product.concentration})}
     ${searchableCreatableSelect({name:"size",group:"size",labelAr:"الحجم",labelEn:"Size",selected:product.size || product.sizes?.[0] || ""})}
     <label>${adminCopy("سنة الإصدار","Release year")}<input name="releaseYear" type="number" min="1800" max="2200" value="${escapeHTML(product.releaseYear ?? "")}"/></label>
@@ -7095,6 +7213,7 @@ function collectReviewProduct(form) {
   const families = data.has("families") ? optionValuesForProduct("family", data.get("families")).slice(0, 3) : [];
   const country = optionValuesForProduct("country", data.get("originCountry"))[0];
   const perfumers = data.has("perfumers") ? optionValuesForProduct("perfumer", data.get("perfumers")) : [];
+  const occasionSelections = data.has("occasions") ? optionValuesForProduct("occasion", data.get("occasions")) : [];
   const noteSelections = Object.fromEntries(["top","heart","base"].map((levelName) => [levelName, optionValuesForProduct("note", data.get(`${levelName}Notes`))]));
   const noteRefs = Object.entries(noteSelections).flatMap(([position, items]) => items.map((item, sortOrder) => ({
     id: item.slug || normalizeOptionSearch(item.value || item.nameEn || item.nameAr).replaceAll(" ", "-"),
@@ -7169,7 +7288,8 @@ function collectReviewProduct(form) {
     releaseYear: data.get("releaseYear") === "" ? null : Number(data.get("releaseYear")),
     perfumer: data.has("perfumers") ? perfumers.map((item) => item.nameEn || item.nameAr).join(", ") : (base.perfumer || ""),
     perfumers: data.has("perfumers") ? perfumers.map((item) => item.value) : (base.perfumers || []),
-    occasions: data.has("occasions") ? csvValues(data.get("occasions")) : (base.occasions || []),
+    occasions: data.has("occasions") ? occasionSelections.map((item) => item.value) : (base.occasions || []),
+    occasionLabels: data.has("occasions") ? occasionSelections.map((item) => ({ ar:item.nameAr || item.nameEn || item.value, en:item.nameEn || item.nameAr || item.value })) : (base.occasionLabels || []),
     mainIngredients: [],
     accordProfile,
     mainAccords: accordProfile.map((item) => item.nameAr),
@@ -7768,6 +7888,7 @@ document.addEventListener("click", async (event) => {
       const current = collectReviewProduct(form);
       const merged = window.ORIGOPerfumeBundle.applyPerfumeBundleToProduct(current, normalized);
       merged.category = "perfume";
+      merged.genders = normalized.perfume.gender ? [normalized.perfume.gender] : [];
       merged.notes = {
         ...(current.notes || {}),
         topAr:normalized.notes.top.map((item) => item.ar || item.en), topEn:normalized.notes.top.map((item) => item.en || item.ar),
@@ -8657,8 +8778,8 @@ document.addEventListener("click", async (event) => {
   if (action === "close-product-page") closeProductPage();
   if (action === "theme") setupTheme(true);
   if (action === "language") {
-    state.lang = state.lang === "ar" ? "en" : "ar";
-    updateLanguage();
+    const cycle = { ar:"en", en:"auto", auto:"ar" };
+    setLanguagePreference(cycle[state.languagePreference] || "auto");
   }
   if (action === "toggle-wishlist") {
     toggleWishlist(actionElement.closest(".product-card").dataset.id);
@@ -9800,6 +9921,9 @@ $$("[data-search-value]").forEach((button) => button.addEventListener("click", (
 }));
 
 let notesSearchTimer;
+document.addEventListener("change", (event) => {
+  if (event.target.matches("[data-language-preference]")) setLanguagePreference(event.target.value);
+});
 document.addEventListener("input", (event) => {
   if (event.target.matches("[data-percentage-slider]")) {
     event.target.dataset.scoreMissing = "false";
@@ -9943,6 +10067,13 @@ document.addEventListener("input", (event) => {
 
 document.addEventListener("error", (event) => {
   const image = event.target;
+  if (image instanceof HTMLImageElement && image.dataset.smartNoteImage === "true") {
+    const fallback = document.createElement("em");
+    fallback.textContent = "✿";
+    fallback.setAttribute("aria-hidden", "true");
+    image.replaceWith(fallback);
+    return;
+  }
   if (!(image instanceof HTMLImageElement) || image.dataset.noteArtwork !== "true" || image.dataset.noteFallback === "true") return;
   const note = window.ORIGOFragranceNotes?.find(image.dataset.noteSlug) || {
     nameAr: image.dataset.noteNameAr || "مكوّن عطري",
@@ -10661,6 +10792,10 @@ window.ORIGOStore = {
   api,
   get state() { return state; },
   getProduct,
+  normalizeLatinDigits,
+  formatNumber,
+  formatPercent,
+  formatRating,
   formatPrice,
   renderCart,
   persist,
@@ -10694,5 +10829,7 @@ renderHomeHero();
 renderBrandCarousel();
 renderProducts($(".chip.active")?.dataset.filter || "all");
 renderHomepageCommerce();
+normalizeRenderedLatinDigits(document);
+latinDigitObserver.observe(document.documentElement, { childList:true, subtree:true });
 observeReveals();
 hydrateServer();
