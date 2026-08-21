@@ -90,6 +90,7 @@
   function normalizePerfumeBundle(bundle) {
     validatePerfumeBundle(bundle);
     const perfume = bundle.perfume;
+    const seo = isObject(perfume.seo) ? perfume.seo : (isObject(bundle.seo) ? bundle.seo : null);
     const noteList = (level) => unique(perfume.notes[level].map(bilingual).filter((note) => note.ar || note.en));
     return {
       source: "origo_perfume_bundle_v2",
@@ -106,10 +107,10 @@
         reviewCount: perfume.review_count == null ? numberOrNull(perfume.rating_details?.votes) : numberOrNull(perfume.review_count),
         ratingDetails: isObject(perfume.rating_details) ? { ...perfume.rating_details } : null,
         slug: text(perfume.slug), productUrl: text(perfume.product_url), canonicalUrl: text(perfume.canonical_url),
-        seo: isObject(perfume.seo) ? {
-          titleAr:text(perfume.seo.title_ar), titleEn:text(perfume.seo.title_en),
-          descriptionAr:text(perfume.seo.description_ar), descriptionEn:text(perfume.seo.description_en),
-          canonical:text(perfume.seo.canonical), robots:text(perfume.seo.robots)
+        seo: seo ? {
+          titleAr:text(seo.title_ar), titleEn:text(seo.title_en),
+          descriptionAr:text(seo.description_ar), descriptionEn:text(seo.description_en),
+          canonical:text(seo.canonical), robots:text(seo.robots)
         } : null
       },
       accords: unique(perfume.accords.map((accord) => ({ ...bilingual(accord), percentage: Number(accord.percentage) })).filter((accord) => accord.ar || accord.en)),

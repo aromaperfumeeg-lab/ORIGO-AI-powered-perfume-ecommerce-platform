@@ -7014,6 +7014,8 @@ function renderImportReview(product) {
     <label>${adminCopy("عنوان SEO","SEO title")}<input name="seoTitle" value="${escapeHTML(localizedText(product.seo?.titleAr, product.seo?.titleEn) || product.seo?.title || "")}"/></label>
     <label class="wide">${adminCopy("وصف SEO","SEO description")}<textarea name="seoDescription">${escapeHTML(localizedText(product.seo?.descriptionAr, product.seo?.descriptionEn) || product.seo?.description || "")}</textarea></label>
     <label class="wide">${adminCopy("كلمات SEO","SEO keywords")}<input name="seoKeywords" value="${escapeHTML(csv((state.lang === "ar" ? product.seo?.keywordsAr : product.seo?.keywordsEn) || (state.lang === "ar" ? product.seo?.keywordsEn : product.seo?.keywordsAr) || product.seo?.keywords || []))}"/></label>
+    <label>${adminCopy("الرابط الأساسي SEO","SEO canonical URL")}<input name="seoCanonical" dir="ltr" value="${escapeHTML(product.seo?.canonical || "")}"/></label>
+    <label>${adminCopy("تعليمات محركات البحث","SEO robots")}<input name="seoRobots" dir="ltr" value="${escapeHTML(product.seo?.robots || "")}" placeholder="index,follow"/></label>
   </div>`;
   const publish = `<div class="product-publish-summary"><b>${adminCopy("اختر طريقة الحفظ","Choose save action")}</b><small>${adminCopy("المسودة مخفية، والمراجعة غير منشورة، والنشر يظهر المنتج فوراً للزوار.","Draft is hidden, review is unpublished, and publish makes the product visible immediately.")}</small></div><div class="review-submit-actions"><button class="button secondary-button" type="submit" name="workflowAction" value="draft">${adminCopy("حفظ كمسودة","Save draft")}</button><button class="button secondary-button" type="submit" name="workflowAction" value="review">${adminCopy("إرسال للمراجعة","Send for review")}</button><button class="button burgundy-button" type="submit" name="workflowAction" value="published">${adminCopy("نشر المنتج","Publish product")}</button>${product.id ? `<button class="button product-delete-button" type="button" data-action="delete-admin-product" data-id="${escapeHTML(product.id)}">${adminCopy("حذف المنتج نهائياً","Delete product permanently")}</button>` : ""}</div>`;
   $("#import-workspace").innerHTML = `<form class="catalog-review product-editor-v2" id="import-review-form" data-editor-mode="smart">
@@ -7119,7 +7121,12 @@ function applyPerfumeBundleToEditor(form, normalized) {
   const family = { ar:normalized.perfume.fragranceFamilyAr, en:normalized.perfume.fragranceFamilyEn };
   if (family.ar || family.en) setSmart("families", family.en || family.ar);
   const gender = normalized.perfume.gender;
-  if (gender) setSmart("gender", gender);
+  if (gender) {
+    const labels = { men:["رجالي","Men"], women:["نسائي","Women"], unisex:["للجنسين","Unisex"] }[gender] || [gender,gender];
+    const option = { group:"gender", value:gender, slug:gender, nameAr:labels[0], nameEn:labels[1], icon:gender === "men" ? "♂" : gender === "women" ? "♀" : "⚥", active:true };
+    state.productOptions = [...state.productOptions.filter((item) => !(item.group === "gender" && normalizeOptionSearch(item.value) === normalizeOptionSearch(gender))), option];
+    setSmart("gender", gender);
+  }
   setSmart("personalities", [...normalized.scentCharacter.ar, ...normalized.scentCharacter.en]);
 
   if (normalized.perfume.concentrationCode) setSmart("concentration", normalized.perfume.concentrationCode);
@@ -7155,6 +7162,8 @@ function applyPerfumeBundleToEditor(form, normalized) {
   setField("slug", imported.slug || imported.productUrl || imported.canonicalUrl);
   setField("seoTitle", localizedText(imported.seo?.titleAr, imported.seo?.titleEn));
   setField("seoDescription", localizedText(imported.seo?.descriptionAr, imported.seo?.descriptionEn));
+  setField("seoCanonical", imported.seo?.canonical);
+  setField("seoRobots", imported.seo?.robots);
   const importedKeywords = state.lang === "ar" ? normalized.searchKeywords.ar : normalized.searchKeywords.en;
   const fallbackKeywords = state.lang === "ar" ? normalized.searchKeywords.en : normalized.searchKeywords.ar;
   if ((importedKeywords.length || fallbackKeywords.length)) setField("seoKeywords", (importedKeywords.length ? importedKeywords : fallbackKeywords).join(", "));
@@ -7346,6 +7355,8 @@ function collectReviewProduct(form) {
       seo.title = seo[`title${suffix}`] || seo.title || "";
       seo.description = seo[`description${suffix}`] || seo.description || "";
       seo.keywords = [...new Set([...(seo.keywordsAr || []), ...(seo.keywordsEn || [])])];
+      seo.canonical = String(data.get("seoCanonical") || seo.canonical || "").trim();
+      seo.robots = String(data.get("seoRobots") || seo.robots || "").trim();
       return seo;
     })(),
     variants: csvValues(data.get("variants")),

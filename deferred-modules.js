@@ -3,7 +3,7 @@
   const loaded = new Set([...document.scripts].map((script) => script.src).filter(Boolean));
   const route = location.pathname;
   const routeScripts = [
-    ["alternatives.js?v=3", /\/alternatives(?:\/|$)/],
+    ["alternatives.js?v=4", /\/alternatives(?:\/|$)/],
     ["performance-insights.js?v=2", /\/performance(?:\/|$)/],
     ["commerce.js?v=3", /\/(?:cart|checkout|payment|track(?:ing)?|orders?)(?:\/|$)/],
     ["account.js?v=3", /\/(?:account|login|register|profile)(?:\/|$)/],
