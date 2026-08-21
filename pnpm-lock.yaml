@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       nodemailer:
-        specifier: 7.0.0
-        version: 7.0.0
+        specifier: 7.0.7
+        version: 7.0.7
       sql.js:
         specifier: ^1.13.0
         version: 1.14.1
@@ -48,8 +48,8 @@ packages:
   commander@2.20.3:
     resolution: {integrity: sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==}
 
-  nodemailer@7.0.0:
-    resolution: {integrity: sha512-9QyEp969UmUWVDB2gVQvxHm1bqkyuC5YZIyX/ySJUpIVyXpuEFyBAuoFFs+G5/C2ZaUp9F5A65DPfxedfVHXXQ==}
+  nodemailer@7.0.7:
+    resolution: {integrity: sha512-jGOaRznodf62TVzdyhKt/f1Q/c3kYynk8629sgJHpRzGZj01ezbgMMWJSAjHADcwTKxco3B68/R+KHJY2T5BaA==}
     engines: {node: '>=6.0.0'}
 
   source-map-support@0.5.21:
@@ -94,7 +94,7 @@ snapshots:
 
   commander@2.20.3: {}
 
-  nodemailer@7.0.0: {}
+  nodemailer@7.0.7: {}
 
   source-map-support@0.5.21:
     dependencies:

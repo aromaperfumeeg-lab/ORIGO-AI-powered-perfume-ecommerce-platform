@@ -166,8 +166,21 @@ function otpEmailHtml(code, purpose = "verification") {
   return `<!doctype html><html lang="ar" dir="rtl"><body style="margin:0;background:#f6f1ed;font-family:Arial,sans-serif;color:#2b2023"><table role="presentation" width="100%"><tr><td align="center" style="padding:24px 12px"><table role="presentation" width="100%" style="max-width:560px;background:#fff;border-radius:14px;overflow:hidden"><tr><td style="padding:28px;text-align:center;border-top:6px solid #710b24"><div style="font-size:22px;letter-spacing:3px;color:#710b24;font-weight:700">ORIGO SCENTS</div><h1 style="font-size:20px;margin:28px 0 12px">${title}</h1><div style="font-size:36px;letter-spacing:8px;font-weight:700;color:#710b24;direction:ltr">${String(code)}</div><p style="line-height:1.8;margin:24px 0 8px">هذا الرمز صالح لمدة 10 دقائق.</p><p style="color:#74696c;font-size:13px">إذا لم تطلب هذا الرمز يمكنك تجاهل الرسالة.</p></td></tr></table></td></tr></table></body></html>`;
 }
 
+function validMailRecipient(valueToCheck) {
+  const email = String(valueToCheck || "").trim();
+  if (!email || email.length > 254 || email.includes('"') || email.includes("'")) return false;
+  const parts = email.split("@");
+  if (parts.length !== 2) return false;
+  const [local, domain] = parts;
+  if (!local || local.length > 64 || local.startsWith(".") || local.endsWith(".") || local.includes("..")) return false;
+  if (!/^[A-Z0-9.!#$%&*+/=?^_`{|}~-]+$/i.test(local)) return false;
+  return domain.length <= 253 && domain.split(".").length >= 2 && domain.split(".").every((label) => /^(?!-)[A-Z0-9-]{1,63}(?<!-)$/i.test(label));
+}
+
 async function sendResetEmail(to, code, purpose = "reset") {
   if (!integrationStatus().email.configured) throw new Error("Email is not configured.");
+  const recipient = String(to || "").trim();
+  if (!validMailRecipient(recipient)) throw new Error("Invalid email recipient.");
   const port = Number(value("SMTP_PORT"));
   const transporter = nodemailer.createTransport({
     host: value("SMTP_HOST"), port,
@@ -178,7 +191,7 @@ async function sendResetEmail(to, code, purpose = "reset") {
     socketTimeout: Number(value("SMTP_SOCKET_TIMEOUT_MS") || 15_000)
   });
   return transporter.sendMail({
-    from: value("SMTP_FROM"), to: String(to),
+    from: value("SMTP_FROM"), to: recipient,
     subject: purpose === "reset" ? "رمز استعادة كلمة مرور ORIGO" : "رمز التحقق من بريد ORIGO",
     text: `ORIGO SCENTS\n\nرمز التحقق الخاص بك: ${String(code)}\nهذا الرمز صالح لمدة 10 دقائق.\nإذا لم تطلب هذا الرمز يمكنك تجاهل الرسالة.`,
     html: otpEmailHtml(code, purpose)

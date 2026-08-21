@@ -5,6 +5,7 @@ import {
   createPaymobIntention,
   dispatchPurchaseEvents,
   integrationStatus,
+  sendEmailVerificationCode,
   sendWhatsAppTemplate
 } from "../external-integrations.mjs";
 
@@ -31,6 +32,24 @@ test("unconfigured external providers stay disabled without network calls", asyn
     await assert.rejects(() => sendWhatsAppTemplate({}), /not configured/);
     const events = await dispatchPurchaseEvents({ orderNumber: "TEST", total: 10, phone: "201000000000" });
     assert.equal(events.every((event) => event.ok && event.result.skipped), true);
+  } finally {
+    names.forEach((name) => {
+      if (saved[name] == null) delete process.env[name];
+      else process.env[name] = saved[name];
+    });
+  }
+});
+
+test("email sending rejects malformed or ambiguous recipients before SMTP", async () => {
+  const names = ["SMTP_HOST", "SMTP_PORT", "SMTP_USER", "SMTP_PASS", "SMTP_FROM"];
+  const saved = Object.fromEntries(names.map((name) => [name, process.env[name]]));
+  Object.assign(process.env, {
+    SMTP_HOST:"smtp.example.com", SMTP_PORT:"465", SMTP_USER:"mailer@example.com",
+    SMTP_PASS:"test-secret", SMTP_FROM:"ORIGO <mailer@example.com>"
+  });
+  try {
+    await assert.rejects(() => sendEmailVerificationCode({ to:'"target@example.com"@internal.test', code:"123456" }), /Invalid email recipient/);
+    await assert.rejects(() => sendEmailVerificationCode({ to:"first@example.com,second@example.com", code:"123456" }), /Invalid email recipient/);
   } finally {
     names.forEach((name) => {
       if (saved[name] == null) delete process.env[name];
