@@ -6850,15 +6850,18 @@ function updateProductEditorPreview(form) {
   ];
   $$("#product-editor-checklist span").forEach((item, index) => {
     item.classList.toggle("ready", checks[index]);
-    $("i", item).textContent = checks[index] ? "✓" : "○";
+    const icon = $("i", item);
+    if (icon) icon.textContent = checks[index] ? "✓" : "○";
   });
   clearTimeout(productAutosaveTimer);
   productAutosaveTimer = setTimeout(() => {
     try {
       localStorage.setItem("origoProductAutosave", JSON.stringify({ ...draft, images: draft.images?.filter((image) => !String(image.url).startsWith("data:")) }));
-      $("#product-autosave-status").textContent = adminCopy("تم الحفظ منذ لحظات", "Saved moments ago");
+      const autosaveStatus = $("#product-autosave-status");
+      if (autosaveStatus) autosaveStatus.textContent = adminCopy("تم الحفظ منذ لحظات", "Saved moments ago");
     } catch {
-      $("#product-autosave-status").textContent = adminCopy("تعذر الحفظ التلقائي بسبب حجم الصور", "Autosave skipped because images are too large");
+      const autosaveStatus = $("#product-autosave-status");
+      if (autosaveStatus) autosaveStatus.textContent = adminCopy("تعذر الحفظ التلقائي بسبب حجم الصور", "Autosave skipped because images are too large");
     }
   }, 700);
 }
