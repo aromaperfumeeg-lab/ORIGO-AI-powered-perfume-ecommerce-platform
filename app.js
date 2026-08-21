@@ -7071,7 +7071,7 @@ function renderImportReview(product) {
   </div>`;
   const publish = `<div class="product-publish-summary"><b>${adminCopy("اختر طريقة الحفظ","Choose save action")}</b><small>${adminCopy("المسودة مخفية، والمراجعة غير منشورة، والنشر يظهر المنتج فوراً للزوار.","Draft is hidden, review is unpublished, and publish makes the product visible immediately.")}</small></div><div class="review-submit-actions"><button class="button secondary-button" type="button" name="workflowAction" value="draft" data-action="save-catalog-product">${adminCopy("حفظ كمسودة","Save draft")}</button><button class="button secondary-button" type="button" name="workflowAction" value="review" data-action="save-catalog-product">${adminCopy("إرسال للمراجعة","Send for review")}</button><button class="button burgundy-button" type="button" name="workflowAction" value="published" data-action="save-catalog-product">${adminCopy("نشر المنتج","Publish product")}</button>${product.id ? `<button class="button product-delete-button" type="button" data-action="delete-admin-product" data-id="${escapeHTML(product.id)}">${adminCopy("حذف المنتج نهائياً","Delete product permanently")}</button>` : ""}</div>`;
   $("#import-workspace").innerHTML = `<form class="catalog-review product-editor-v2" id="import-review-form" data-editor-mode="smart">
-    ${productEditorHiddenFields(product)}<div class="product-editor-status" data-product-editor-status role="alert" aria-live="assertive" hidden></div>
+    ${productEditorHiddenFields(product)}<div class="product-editor-status" data-product-editor-status role="alert" aria-live="assertive" hidden></div><div class="duplicate-alert" id="duplicate-alert" role="alert" aria-live="polite" hidden></div>
     ${productEditorGate(1,"الحزمة والهوية","Bundle & identity",`${perfumeBundleEditorSection(product)}${identity}`)}
     ${productEditorGate(2,"النوتات والأكوردات","Notes & accords",notes,"product-perfume-only")}
     ${usage ? productEditorGate(3,"الأداء والاستخدام","Performance & usage",usage,"product-perfume-only") : ""}
@@ -7652,8 +7652,11 @@ function updateDuplicateWarning(form) {
   const product = collectReviewProduct(form);
   const duplicate = findDuplicate(product, product.id);
   const alert = $("#duplicate-alert");
-  alert.hidden = !duplicate;
-  if (duplicate) alert.innerHTML = `<b>${adminCopy("منتج مشابه موجود مسبقًا", "Possible duplicate found")}</b><span>${escapeHTML(duplicate.brand)} · ${escapeHTML(duplicate.nameEn || duplicate.nameAr)}${duplicate.sku ? ` · SKU ${escapeHTML(duplicate.sku)}` : ""}</span>`;
+  if (alert) {
+    alert.hidden = !duplicate;
+    if (duplicate) alert.innerHTML = `<b>${adminCopy("منتج مشابه موجود مسبقًا", "Possible duplicate found")}</b><span>${escapeHTML(duplicate.brand)} · ${escapeHTML(duplicate.nameEn || duplicate.nameAr)}${duplicate.sku ? ` · SKU ${escapeHTML(duplicate.sku)}` : ""}</span>`;
+    else alert.innerHTML = "";
+  }
   return duplicate;
 }
 
