@@ -1277,11 +1277,16 @@ async function api(path, options = {}) {
       ...(options.headers || {})
     }
   });
-  const payload = await response.json().catch(() => ({}));
+  const responseText = await response.text();
+  let payload = {};
+  try { payload = responseText ? JSON.parse(responseText) : {}; }
+  catch { payload = {}; }
   if (!response.ok) {
-    const error = new Error(payload.error || (state.lang === "ar" ? "تعذر إكمال الطلب." : "The request could not be completed."));
+    const error = new Error(payload.error || "");
     error.status = response.status;
     error.code = payload.code;
+    error.path = path;
+    if (!error.message) error.message = userFacingErrorMessage(error);
     throw error;
   }
   return payload;
@@ -6175,7 +6180,10 @@ function userFacingErrorMessage(error) {
   if (status === 401 || /UNAUTH|SESSION|LOGIN/.test(code)) return ar ? "انتهت جلسة الدخول. سجّل الدخول مجددًا ثم أعد المحاولة." : "Your session has expired. Sign in again and retry.";
   if (status === 403 || /FORBIDDEN|PERMISSION/.test(code)) return ar ? "ليس لديك صلاحية لتنفيذ هذا الأمر." : "You do not have permission to perform this action.";
   if (status === 404) return ar ? "العنصر المطلوب غير موجود أو تم حذفه." : "The requested item was not found or was deleted.";
+  if (status === 400) return ar ? "رفض الخادم البيانات المرسلة. راجع الحقول المطلوبة والقيم ثم أعد المحاولة." : "The server rejected the submitted data. Review required fields and values, then retry.";
+  if (status === 405) return ar ? "هذا الأمر غير مدعوم في نسخة الخادم الحالية. حدّث نشر الخادم ثم أعد المحاولة." : "This action is not supported by the current server version. Deploy the latest server and retry.";
   if (status === 409 || /DUPLICATE|CONFLICT/.test(code)) return ar ? "تعذر التنفيذ بسبب تعارض أو بيانات مكررة. حدّث الصفحة وراجع البيانات." : "The action conflicts with existing or duplicate data. Refresh and review the values.";
+  if (status === 429) return ar ? "تم إرسال طلبات كثيرة خلال وقت قصير. انتظر قليلًا ثم أعد المحاولة." : "Too many requests were sent. Wait briefly and try again.";
   if (status === 413 || /TOO_LARGE|PAYLOAD/.test(code)) return ar ? "حجم البيانات أو الصور أكبر من الحد المسموح." : "The data or images exceed the allowed size.";
   if (status === 422 || /VALID|INVALID|REQUIRED/.test(code)) return ar ? "بعض البيانات غير صالحة أو ناقصة. راجع الحقول المحددة." : "Some data is invalid or missing. Review the highlighted fields.";
   if (/QUOTA|STORAGE/.test(code) || error?.name === "QuotaExceededError") return ar ? "مساحة التخزين غير كافية. قلّل حجم الصور أو احذف بيانات غير ضرورية." : "Storage is full. Reduce image sizes or remove unnecessary data.";
@@ -7778,7 +7786,7 @@ async function safelySaveCatalogProduct(form, workflowAction = "draft") {
     await saveCatalogProduct(form, workflowAction);
   } catch (error) {
     form.querySelectorAll("[name='workflowAction']").forEach((button) => { button.disabled = false; });
-    productEditorStatus(form, "error", adminCopy("تعذر حفظ المنتج", "Product save failed"), error?.message || adminCopy("حدث خطأ غير متوقع أثناء تجهيز بيانات المنتج.", "An unexpected error occurred while preparing the product data."));
+    productEditorStatus(form, "error", adminCopy("تعذر حفظ المنتج", "Product save failed"), userFacingErrorMessage(error));
   }
 }
 
