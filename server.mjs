@@ -1690,7 +1690,7 @@ async function handleAPI(request, response, url, origin) {
     } catch (error) { return jsonResponse(response, 400, { error: error.message, code: "ALTERNATIVES_IMPORT_FAILED" }, origin); }
   }
 
-  if (url.pathname === "/api/admin/products" && request.method === "POST") {
+  if (["/api/admin/products", "/api/catalog/save-product"].includes(url.pathname) && request.method === "POST") {
     const user = requireUser(request, response, origin, "catalog");
     if (!user) return;
     try {

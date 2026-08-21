@@ -1593,7 +1593,7 @@ async function loadAdminCatalog() {
 }
 
 async function persistAdminProduct(product) {
-  const result = await api("/api/admin/products", {
+  const result = await api("/api/catalog/save-product", {
     method: "POST",
     headers: {
       "Content-Type": "text/plain;charset=UTF-8",
