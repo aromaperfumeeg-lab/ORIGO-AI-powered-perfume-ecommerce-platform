@@ -1279,13 +1279,17 @@ async function api(path, options = {}) {
   });
   const responseText = await response.text();
   let payload = {};
-  try { payload = responseText ? JSON.parse(responseText) : {}; }
+  let jsonResponse = false;
+  try { payload = responseText ? JSON.parse(responseText) : {}; jsonResponse = true; }
   catch { payload = {}; }
   if (!response.ok) {
     const error = new Error(payload.error || "");
     error.status = response.status;
     error.code = payload.code;
     error.path = path;
+    error.isJsonResponse = jsonResponse;
+    error.role = payload.role;
+    error.requiredPermission = payload.requiredPermission;
     if (!error.message) error.message = userFacingErrorMessage(error);
     throw error;
   }
@@ -6178,7 +6182,13 @@ function userFacingErrorMessage(error) {
     return ar ? "تعذر الاتصال بالخادم. تحقق من الإنترنت ثم أعد المحاولة." : "Could not reach the server. Check your connection and try again.";
   }
   if (status === 401 || /UNAUTH|SESSION|LOGIN/.test(code)) return ar ? "انتهت جلسة الدخول. سجّل الدخول مجددًا ثم أعد المحاولة." : "Your session has expired. Sign in again and retry.";
-  if (status === 403 || /FORBIDDEN|PERMISSION/.test(code)) return ar ? "ليس لديك صلاحية لتنفيذ هذا الأمر." : "You do not have permission to perform this action.";
+  if (status === 403 && !error?.isJsonResponse) return ar ? "رفضت حماية الاستضافة الطلب قبل وصوله إلى ORIGO. راجع قواعد الحماية في Hostinger أو حجم ومحتوى البيانات المرسلة." : "Hosting security rejected the request before it reached ORIGO. Check Hostinger security rules or the submitted payload.";
+  if (status === 403 || /FORBIDDEN|PERMISSION/.test(code)) {
+    const role = String(error?.role || "").trim();
+    return ar
+      ? `الحساب الحالي (${role || "دور غير معروف"}) لا يملك صلاحية ${error?.requiredPermission || "تنفيذ هذا الأمر"}. سجّل الخروج ثم ادخل بحساب admin مجددًا.`
+      : `The current account (${role || "unknown role"}) lacks ${error?.requiredPermission || "the required permission"}. Sign out, then sign in with the admin account again.`;
+  }
   if (status === 404) return ar ? "العنصر المطلوب غير موجود أو تم حذفه." : "The requested item was not found or was deleted.";
   if (status === 400) return ar ? "رفض الخادم البيانات المرسلة. راجع الحقول المطلوبة والقيم ثم أعد المحاولة." : "The server rejected the submitted data. Review required fields and values, then retry.";
   if (status === 405) return ar ? "هذا الأمر غير مدعوم في نسخة الخادم الحالية. حدّث نشر الخادم ثم أعد المحاولة." : "This action is not supported by the current server version. Deploy the latest server and retry.";

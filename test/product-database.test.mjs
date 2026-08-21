@@ -95,6 +95,10 @@ test("database migrates old users and structured notes override stale flat notes
     });
     assert.equal(staff.role, "product_manager");
     assert.deepEqual(staff.permissions, ["catalog", "inventory"]);
+    database.db.prepare("UPDATE users SET staff_role = ? WHERE id = ?").run(" Admin ", staff.id);
+    const normalizedAdmin = database.findUserById(staff.id);
+    assert.equal(normalizedAdmin.role, "admin");
+    assert.deepEqual(normalizedAdmin.permissions, ["*"]);
     assert.equal(database.deleteProduct(updated.id), true);
     assert.equal(database.listProducts({ includeHidden: true }).some((product) => product.id === updated.id), false);
     database.db.close();

@@ -43,6 +43,11 @@ export const ROLE_PERMISSIONS = {
 const PRODUCT_LONG_TEXT_LIMIT = 2_000_000;
 const allowedRoles = new Set(["customer", ...Object.keys(ROLE_PERMISSIONS)]);
 
+function normalizedRole(value) {
+  const role = String(value || "").trim().toLowerCase().replace(/[\s-]+/g, "_");
+  return allowedRoles.has(role) ? role : "";
+}
+
 if (IS_PRODUCTION && !DB_PATH_CONFIGURED) {
   console.warn("[ORIGO] Production is using a fallback database path. Set ORIGO_DB_PATH to an explicit persistent path.");
 }
@@ -984,7 +989,7 @@ function filterValuesForProduct(productId) {
 
 function publicUser(row) {
   if (!row) return null;
-  const effectiveRole = row.staff_role || row.role;
+  const effectiveRole = normalizedRole(row.staff_role) || normalizedRole(row.role) || "customer";
   return {
     id: Number(row.id),
     name: row.name,

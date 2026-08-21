@@ -478,7 +478,12 @@ function requireUser(request, response, origin, permission = "customer") {
     return null;
   }
   if (permission !== "customer" && permission !== "staff" && !userCan(user, permission)) {
-    jsonResponse(response, 403, { error: "ليست لديك الصلاحية المطلوبة لهذه العملية.", code: "PERMISSION_REQUIRED" }, origin);
+    jsonResponse(response, 403, {
+      error: "ليست لديك الصلاحية المطلوبة لهذه العملية.",
+      code: "PERMISSION_REQUIRED",
+      role: user.role,
+      requiredPermission: permission
+    }, origin);
     return null;
   }
   if (permission === "staff" && user.role === "customer") {
