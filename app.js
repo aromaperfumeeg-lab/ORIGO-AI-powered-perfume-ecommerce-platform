@@ -1592,7 +1592,7 @@ async function loadAdminCatalog() {
   return state.catalogProducts;
 }
 
-async function persistAdminProduct(product) {
+async function requestAdminProductSave(product) {
   const result = await api("/api/catalog/save-product", {
     method: "POST",
     headers: {
@@ -1601,9 +1601,14 @@ async function persistAdminProduct(product) {
     },
     body: encodedJsonRequestBody(product)
   });
+  return result.product;
+}
+
+async function persistAdminProduct(product) {
+  const savedProduct = await requestAdminProductSave(product);
   await loadAdminCatalog();
   if ($("#admin-overlay").classList.contains("open")) renderAdminDashboard("products");
-  return result.product;
+  return savedProduct;
 }
 
 function printOrderDocument(order, kind = "invoice") {
@@ -7776,11 +7781,7 @@ async function saveCatalogProduct(form, workflowAction = "draft") {
   submit.textContent = adminCopy("جارٍ الحفظ…", "Saving…");
   try {
     if (state.serverAvailable) {
-      const result = await api("/api/admin/products", {
-        method: "POST",
-        body: JSON.stringify(product)
-      });
-      product = result.product;
+      product = await requestAdminProductSave(product);
       if (wantsNewInspiredReference) {
         state.alternativesAdmin = await api("/api/admin/alternative-references", {
           method: "POST",
