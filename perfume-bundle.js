@@ -1,41 +1,185 @@
-(function(g){"use strict";
-const obj=v=>v&&typeof v==="object"&&!Array.isArray(v),txt=v=>typeof v==="string"?v.trim():"",num=v=>v==null||v===""?null:Number(v),key=v=>txt(String(v??"")).toLocaleLowerCase().replace(/[\s-]+/g,"_"),err=(p,m)=>new Error(`Invalid value: ${p} ${m}`);
-function parsePerfumeBundle(s){if(typeof s!=="string"||!s.trim())throw err("bundle","must contain JSON text");try{return JSON.parse(s)}catch(e){throw new Error(`Invalid JSON: ${e.message}`)}}
-function validNum(v,p,min,max=Infinity){if(v==null)return;if(typeof v!=="number"||!Number.isFinite(v)||v<min||v>max)throw err(p,`must be between ${min} and ${max}`)}
-function validatePerfumeBundle(b){if(!obj(b))throw err("bundle","must be an object");if(!obj(b.perfume))throw err("perfume","must be an object");const p=b.perfume,c=["top_notes","heart_notes","base_notes","main_accords","usage_time"].some(f=>f in p)||["rating","seasons","seo_title"].some(f=>f in p);if(c){["top_notes","heart_notes","base_notes"].forEach(f=>{if(p[f]!=null&&!Array.isArray(p[f]))throw err(`perfume.${f}`,"must be an array")});if(p.main_accords!=null&&!Array.isArray(p.main_accords))throw err("perfume.main_accords","must be an array");(p.main_accords||[]).forEach((a,i)=>validNum(a.strength,`perfume.main_accords[${i}].strength`,0,100));validNum(p.rating,"perfume.rating",0,5);validNum(p.longevity_hours,"perfume.longevity_hours",0);["size_ml","price","compare_at_price","quantity","low_stock_threshold","cost"].forEach(f=>validNum(p[f],`perfume.${f}`,0));if(p.seasons!=null&&!obj(p.seasons))throw err("perfume.seasons","must be an object");if(p.usage_time!=null&&!obj(p.usage_time))throw err("perfume.usage_time","must be an object");Object.entries(p.seasons||{}).forEach(([f,v])=>validNum(v,`perfume.seasons.${f}`,0,5));Object.entries(p.usage_time||{}).forEach(([f,v])=>validNum(v,`perfume.usage_time.${f}`,0,5));if(p.occasions!=null&&!Array.isArray(p.occasions))throw err("perfume.occasions","must be an array");if(p.seo_keywords!=null&&!Array.isArray(p.seo_keywords)&&typeof p.seo_keywords!=="string")throw err("perfume.seo_keywords","must be an array or string");return true}if(b.accords!=null&&!Array.isArray(b.accords))throw err("accords","must be an array");(b.accords||[]).forEach((a,i)=>validNum(a.percentage,`accords[${i}].percentage`,0,100));if(b.notes!=null&&!obj(b.notes))throw err("notes","must be an object");return true}
-function bi(v){if(typeof v==="string"){const x=v.split("|");return{ar:txt(x[0]),en:txt(x.slice(1).join("|"))||txt(x[0])}}return{ar:txt(v?.ar??v?.name_ar),en:txt(v?.en??v?.name_en)}}
-function uniq(a,id=x=>key(x.en||x.ar)){const s=new Set;return a.filter(x=>{const k=id(x);if(!k||s.has(k))return false;s.add(k);return true})}
-function projection(v){const k=key(v);return({"ضعيف":"weak","متوسط":"moderate","قوي":"strong","قوي_جدا":"very_strong","قوي_جدًا":"very_strong",weak:"weak",moderate:"moderate",strong:"strong",very_strong:"very_strong"})[k]||k}
-const sl={winter:["الشتاء","Winter"],autumn:["الخريف","Autumn"],spring:["الربيع","Spring"],summer:["الصيف","Summer"]},tl={day:["النهار","Day"],night:["الليل","Night"]};
-const scored=(o,l)=>Object.entries(o||{}).filter(([,v])=>v!=null).map(([id,v])=>({ar:l[id]?.[0]||id,en:l[id]?.[1]||id,id,score:Number(v)}));
-function normalizePerfumeBundle(b){validatePerfumeBundle(b);const p=b.perfume,c=["top_notes","heart_notes","base_notes","main_accords","usage_time"].some(f=>f in p);if(c){const notes=f=>uniq((p[f]||[]).map(bi).filter(x=>x.ar||x.en));return{perfume:{nameAr:txt(p.name_ar),nameEn:txt(p.name_en),brandAr:txt(p.brand_ar),brandEn:txt(p.brand_en),productType:txt(p.product_type)||"عطر",gender:txt(p.gender),concentration:txt(p.concentration),sizeMl:num(p.size_ml),price:num(p.price),compareAtPrice:num(p.compare_at_price),sku:txt(p.sku),barcode:txt(p.barcode),quantity:num(p.quantity),lowStockThreshold:num(p.low_stock_threshold),cost:num(p.cost),rating:num(p.rating),longevityHours:num(p.longevity_hours),sillage:projection(p.sillage),descriptionAr:txt(p.description_ar),descriptionEn:txt(p.description_en),slug:txt(p.slug),seoTitle:txt(p.seo_title),seoDescription:txt(p.seo_description),seoKeywords:uniq((Array.isArray(p.seo_keywords)?p.seo_keywords:txt(p.seo_keywords).split(/[,،]/)).map(txt).filter(Boolean),key)},accords:uniq((p.main_accords||[]).map(a=>({...bi(a),percentage:Number(a.strength)}))),notes:{top:notes("top_notes"),heart:notes("heart_notes"),base:notes("base_notes")},derived:{dataType:"canonical",olfactiveFamily:{ar:"",en:""},scentCharacter:[],gender:{ar:txt(p.gender),en:txt(p.gender)},seasons:scored(p.seasons,sl),timeOfDay:scored(p.usage_time,tl),occasions:(p.occasions||[]).map(v=>({ar:txt(v),en:txt(v)}))},unknownFields:{concentration:txt(p.concentration),size_ml:num(p.size_ml),longevity_hours:num(p.longevity_hours),sillage:projection(p.sillage)},source:"perfume_data_bundle",schema:"canonical"}}
-const list=(a,score=false)=>uniq((a||[]).map(x=>({...bi(x),...(score?{score:Number(x.score)/(Number(x.score)>5?20:1)}:{})})).filter(x=>x.ar||x.en)),u=b.unknown_fields||{};return{perfume:{nameAr:txt(p.name_ar),nameEn:txt(p.name_en),brandAr:txt(p.brand_ar),brandEn:txt(p.brand_en),productType:"عطر",gender:txt(b.derived?.gender?.en||b.derived?.gender?.ar),concentration:txt(u.concentration),sizeMl:num(u.size_ml),price:null,compareAtPrice:null,sku:"",barcode:"",quantity:null,lowStockThreshold:null,cost:null,rating:null,longevityHours:num(u.longevity_hours),sillage:projection(u.sillage),descriptionAr:"",descriptionEn:"",slug:"",seoTitle:"",seoDescription:"",seoKeywords:[]},accords:uniq((b.accords||[]).map(a=>({...bi(a),percentage:Number(a.percentage)}))),notes:{top:list(b.notes?.top),heart:list(b.notes?.heart),base:list(b.notes?.base)},derived:{dataType:txt(b.derived?.data_type)||"legacy",olfactiveFamily:bi(b.derived?.olfactive_family),scentCharacter:list(b.derived?.scent_character),gender:bi(b.derived?.gender),seasons:list(b.derived?.seasons,true),timeOfDay:list(b.derived?.time_of_day,true),occasions:list(b.derived?.occasions)},unknownFields:Object.fromEntries(Object.entries(u).filter(([,v])=>v!=null&&v!=="")),source:"perfume_data_bundle",schema:"legacy"}}
-function gender(v){const k=key(v);if(["men","male","رجالي","للرجال"].includes(k))return"men";if(["women","female","نسائي","للنساء"].includes(k))return"women";if(["unisex","للجنسين","مشترك"].includes(k))return"unisex";return k}
-function applyPerfumeBundleToProduct(product={},bundle){const n=bundle?.source==="perfume_data_bundle"?bundle:normalizePerfumeBundle(bundle),p=n.perfume,x={...product,images:Array.isArray(product.images)?product.images:[]},set=(f,v)=>{if(v!=null&&v!=="")x[f]=v};set("nameAr",p.nameAr);set("nameEn",p.nameEn);set("brandAr",p.brandAr);set("brandEn",p.brandEn);set("brand",p.brandEn||p.brandAr);set("concentration",p.concentration);set("sku",p.sku);set("barcode",p.barcode);set("descriptionAr",p.descriptionAr);set("descriptionEn",p.descriptionEn);set("slug",p.slug);if(p.sizeMl!=null){x.size=`${p.sizeMl} ml`;x.sizes=[x.size]}if(p.price!=null)x.price=p.price;if(p.compareAtPrice!=null)x.oldPrice=p.compareAtPrice;x.gender=gender(p.gender||n.derived.gender.en||n.derived.gender.ar);x.inventory={...(product.inventory||{})};if(p.quantity!=null)x.inventory.quantity=p.quantity;if(p.lowStockThreshold!=null)x.inventory.minimum=p.lowStockThreshold;if(p.cost!=null)x.inventory.cost=p.cost;if(p.rating!=null){x.rating=p.rating;x.reviewSummary={...(product.reviewSummary||{}),average:p.rating}}x.performance={...(product.performance||{})};if(p.longevityHours!=null)x.performance.longevity=p.longevityHours;if(p.sillage){x.performance.projection=p.sillage;x.performance.sillage=p.sillage}x.accordProfile=n.accords.map(a=>({nameAr:a.ar,nameEn:a.en,strength:a.percentage,score:a.percentage,source:"bundle"}));x.noteSelectionsBundle=n.notes;x.seasonScores=Object.fromEntries(n.derived.seasons.map(a=>[a.id||key(a.en||a.ar),a.score]));x.usageTimeScores=Object.fromEntries(n.derived.timeOfDay.map(a=>[a.id||key(a.en||a.ar),a.score]));x.seasons=n.derived.seasons.filter(a=>a.score>=3).map(a=>a.id||key(a.en||a.ar));x.usageTimes=n.derived.timeOfDay.filter(a=>a.score>=3).map(a=>a.id||key(a.en||a.ar));x.occasions=n.derived.occasions.map(a=>a.en||a.ar);x.seo={...(product.seo||{})};if(p.seoTitle)x.seo.title=p.seoTitle;if(p.seoDescription)x.seo.description=p.seoDescription;if(p.seoKeywords.length)x.seo.keywords=[...p.seoKeywords];x.perfumeBundle=n;return x}
-function buildPerfumeBundleFromProduct(x={}){const s=x.perfumeBundle?.perfume||{},n=x.noteSelectionsBundle||x.perfumeBundle?.notes||{},notes=l=>(n[l]||[]).map(v=>{const a=bi(v);return a.ar&&a.en&&a.ar!==a.en?`${a.ar} | ${a.en}`:a.ar||a.en}),scores=(ids,saved,selected)=>Object.fromEntries(ids.map(id=>[id,saved?.[id]??((selected||[]).includes(id)?5:null)])),size=Number.parseFloat(x.size||s.sizeMl);return{perfume:{name_ar:txt(x.nameAr||s.nameAr),name_en:txt(x.nameEn||s.nameEn),brand_ar:txt(x.brandAr||s.brandAr),brand_en:txt(x.brandEn||x.brand||s.brandEn),product_type:txt(s.productType)||"عطر",gender:txt(x.gender||s.gender),concentration:txt(x.concentration||s.concentration),size_ml:Number.isFinite(size)?size:null,price:x.price??s.price??null,compare_at_price:x.oldPrice??s.compareAtPrice??null,sku:txt(x.sku||s.sku),barcode:txt(x.barcode||s.barcode),quantity:x.inventory?.quantity??s.quantity??null,low_stock_threshold:x.inventory?.minimum??s.lowStockThreshold??null,cost:x.inventory?.cost??s.cost??null,top_notes:notes("top"),heart_notes:notes("heart"),base_notes:notes("base"),main_accords:(x.accordProfile||[]).map(a=>({name_ar:txt(a.nameAr),name_en:txt(a.nameEn),strength:Number(a.strength??a.score??0)})),rating:x.rating??x.reviewSummary?.average??s.rating??null,longevity_hours:x.performance?.longevity??s.longevityHours??null,sillage:projection(x.performance?.projection||x.performance?.sillage||s.sillage),seasons:scores(["winter","autumn","spring","summer"],x.seasonScores,x.seasons),usage_time:scores(["day","night"],x.usageTimeScores,x.usageTimes),occasions:[...(x.occasions||[])],description_ar:txt(x.descriptionAr||s.descriptionAr),description_en:txt(x.descriptionEn||s.descriptionEn),slug:txt(x.slug||s.slug),seo_title:txt(x.seo?.title||s.seoTitle),seo_description:txt(x.seo?.description||s.seoDescription),seo_keywords:[...(x.seo?.keywords||s.seoKeywords||[])]}}}
-g.ORIGOPerfumeBundle={parsePerfumeBundle,validatePerfumeBundle,normalizePerfumeBundle,applyPerfumeBundleToProduct,buildPerfumeBundleFromProduct};
-})(typeof window!=="undefined"?window:globalThis);
-
-(function(g){
+(function (global) {
   "use strict";
-  const api=g.ORIGOPerfumeBundle;
-  if(!api)return;
-  const known=new Set(["name_ar","name_en","brand_ar","brand_en","product_type","gender","concentration","size_ml","price","compare_at_price","sku","barcode","quantity","low_stock_threshold","cost","top_notes","heart_notes","base_notes","main_accords","rating","longevity_hours","sillage","seasons","usage_time","occasions","description_ar","description_en","slug","seo_title","seo_description","seo_keywords"]);
-  const normalize=api.normalizePerfumeBundle,apply=api.applyPerfumeBundleToProduct,build=api.buildPerfumeBundleFromProduct;
-  api.normalizePerfumeBundle=function(bundle){
-    const result=normalize(bundle);
-    result.extraFields=Object.fromEntries(Object.entries(bundle?.perfume||{}).filter(([field])=>!known.has(field)));
+
+  const UNSUPPORTED = "صيغة حزمة العطر غير مدعومة. استخدم حزمة ORIGO الجديدة.";
+  const isObject = (value) => Boolean(value) && typeof value === "object" && !Array.isArray(value);
+  const text = (value) => typeof value === "string" ? value.trim() : "";
+  const numberOrNull = (value) => value === null || value === "" || value === undefined ? null : Number(value);
+  const normalizedKey = (value) => text(String(value ?? "")).toLocaleLowerCase().replace(/[\u064B-\u065F\u0670]/g, "").replace(/[أإآ]/g, "ا").replace(/ى/g, "ي").replace(/[\s-]+/g, "_");
+  const fail = (path, message) => { throw new Error(`${path}: ${message}`); };
+
+  function parsePerfumeBundle(source) {
+    if (typeof source !== "string" || !source.trim()) fail("bundle", "أدخل حزمة JSON أولًا.");
+    try { return JSON.parse(source); }
+    catch (error) { throw new Error(`JSON غير صالح: ${error.message}`); }
+  }
+
+  function validateNumber(value, path, minimum, maximum = Infinity, { positive = false } = {}) {
+    if (value === null) return;
+    if (typeof value !== "number" || !Number.isFinite(value) || value < minimum || value > maximum || (positive && value === 0)) {
+      fail(path, maximum === Infinity ? `يجب أن يكون رقمًا ${positive ? "موجبًا" : `لا يقل عن ${minimum}`}` : `يجب أن يكون بين ${minimum} و${maximum}`);
+    }
+  }
+
+  function validateArray(value, path) {
+    if (!Array.isArray(value)) fail(path, "يجب أن يكون Array.");
+  }
+
+  function validatePerfumeBundle(bundle) {
+    if (!isObject(bundle)) fail("root", "يجب أن يكون Object.");
+    if (!isObject(bundle.perfume)) fail("perfume", "يجب أن يكون Object.");
+    const perfume = bundle.perfume;
+    const requiredShape = ["accords", "notes", "performance", "seasons", "time", "occasions"].every((field) => Object.prototype.hasOwnProperty.call(perfume, field));
+    const legacyShape = ["derived", "unknown_fields", "accords", "notes"].some((field) => Object.prototype.hasOwnProperty.call(bundle, field)) || ["main_accords", "top_notes", "heart_notes", "base_notes", "usage_time"].some((field) => Object.prototype.hasOwnProperty.call(perfume, field));
+    if (!requiredShape || legacyShape) throw new Error(UNSUPPORTED);
+
+    validateArray(perfume.accords, "perfume.accords");
+    perfume.accords.forEach((accord, index) => {
+      if (!isObject(accord)) fail(`perfume.accords[${index}]`, "يجب أن يكون Object.");
+      validateNumber(accord.percentage, `perfume.accords[${index}].percentage`, 0, 100);
+    });
+    if (!isObject(perfume.notes)) fail("perfume.notes", "يجب أن يكون Object.");
+    ["top", "heart", "base"].forEach((level) => validateArray(perfume.notes[level], `perfume.notes.${level}`));
+    if (!isObject(perfume.performance)) fail("perfume.performance", "يجب أن يكون Object.");
+    validateNumber(perfume.performance.longevity_hours, "perfume.performance.longevity_hours", 0);
+    if (!isObject(perfume.seasons)) fail("perfume.seasons", "يجب أن يكون Object.");
+    ["winter", "autumn", "spring", "summer"].forEach((season) => validateNumber(perfume.seasons[season], `perfume.seasons.${season}`, 0, 100));
+    if (!isObject(perfume.time)) fail("perfume.time", "يجب أن يكون Object.");
+    ["day", "night"].forEach((period) => validateNumber(perfume.time[period], `perfume.time.${period}`, 0, 100));
+    validateArray(perfume.occasions, "perfume.occasions");
+    validateArray(perfume.scent_character_ar, "perfume.scent_character_ar");
+    validateArray(perfume.scent_character_en, "perfume.scent_character_en");
+    validateArray(perfume.search_keywords_ar, "perfume.search_keywords_ar");
+    validateArray(perfume.search_keywords_en, "perfume.search_keywords_en");
+    validateNumber(perfume.size_ml, "perfume.size_ml", 0, Infinity, { positive: true });
+    validateNumber(perfume.release_year, "perfume.release_year", 1800, new Date().getFullYear() + 2);
+    return true;
+  }
+
+  function unique(values, identity = (value) => normalizedKey(value.en || value.ar || value)) {
+    const seen = new Set();
+    return values.filter((value) => { const key = identity(value); if (!key || seen.has(key)) return false; seen.add(key); return true; });
+  }
+
+  function bilingual(value) {
+    return { ar: text(value?.name_ar ?? value?.ar), en: text(value?.name_en ?? value?.en) };
+  }
+
+  function normalizeGender(...values) {
+    const keys = values.map(normalizedKey);
+    if (keys.some((key) => ["رجالي", "للرجال", "men", "male"].includes(key))) return "men";
+    if (keys.some((key) => ["نسائي", "للنساء", "women", "female"].includes(key))) return "women";
+    if (keys.some((key) => ["للجنسين", "unisex", "مشترك"].includes(key))) return "unisex";
+    return "";
+  }
+
+  function normalizeProjection(...values) {
+    const keys = values.map(normalizedKey);
+    const map = { "ضعيف":"weak", weak:"weak", "متوسط":"moderate", moderate:"moderate", "قوي":"strong", strong:"strong", "قوي_جدا":"very_strong", "قوي_جدًا":"very_strong", very_strong:"very_strong" };
+    return keys.map((key) => map[key]).find(Boolean) || "";
+  }
+
+  function normalizePerfumeBundle(bundle) {
+    validatePerfumeBundle(bundle);
+    const perfume = bundle.perfume;
+    const noteList = (level) => unique(perfume.notes[level].map(bilingual).filter((note) => note.ar || note.en));
+    return {
+      source: "origo_perfume_bundle_v2",
+      perfume: {
+        nameAr: text(perfume.name_ar), nameEn: text(perfume.name_en),
+        brandAr: text(perfume.brand_ar), brandEn: text(perfume.brand_en),
+        genderAr: text(perfume.gender_ar), genderEn: text(perfume.gender_en), gender: normalizeGender(perfume.gender_ar, perfume.gender_en),
+        concentrationAr: text(perfume.concentration_ar), concentrationEn: text(perfume.concentration_en), concentrationCode: text(perfume.concentration_code),
+        sizeMl: numberOrNull(perfume.size_ml), releaseYear: numberOrNull(perfume.release_year),
+        fragranceFamilyAr: text(perfume.fragrance_family_ar), fragranceFamilyEn: text(perfume.fragrance_family_en),
+        descriptionAr: text(perfume.short_description_ar), descriptionEn: text(perfume.short_description_en)
+      },
+      accords: unique(perfume.accords.map((accord) => ({ ...bilingual(accord), percentage: Number(accord.percentage) })).filter((accord) => accord.ar || accord.en)),
+      notes: { top: noteList("top"), heart: noteList("heart"), base: noteList("base") },
+      performance: {
+        longevityAr: text(perfume.performance.longevity_ar), longevityEn: text(perfume.performance.longevity_en),
+        longevityHours: numberOrNull(perfume.performance.longevity_hours),
+        projectionAr: text(perfume.performance.projection_ar), projectionEn: text(perfume.performance.projection_en),
+        projection: normalizeProjection(perfume.performance.projection_ar, perfume.performance.projection_en)
+      },
+      seasons: Object.fromEntries(["winter", "autumn", "spring", "summer"].map((key) => [key, numberOrNull(perfume.seasons[key])])),
+      time: Object.fromEntries(["day", "night"].map((key) => [key, numberOrNull(perfume.time[key])])),
+      occasions: unique(perfume.occasions.map(bilingual).filter((occasion) => occasion.ar || occasion.en)),
+      scentCharacter: { ar: unique(perfume.scent_character_ar.map(text).filter(Boolean), normalizedKey), en: unique(perfume.scent_character_en.map(text).filter(Boolean), normalizedKey) },
+      searchKeywords: { ar: unique(perfume.search_keywords_ar.map(text).filter(Boolean), normalizedKey), en: unique(perfume.search_keywords_en.map(text).filter(Boolean), normalizedKey) }
+    };
+  }
+
+  function applyPerfumeBundleToProduct(product = {}, bundle) {
+    const normalized = bundle?.source === "origo_perfume_bundle_v2" ? bundle : normalizePerfumeBundle(bundle);
+    const perfume = normalized.perfume;
+    const result = { ...product, images: Array.isArray(product.images) ? [...product.images] : [] };
+    Object.assign(result, {
+      nameAr: perfume.nameAr, nameEn: perfume.nameEn,
+      brandAr: perfume.brandAr, brandEn: perfume.brandEn, brand: perfume.brandEn || perfume.brandAr,
+      gender: perfume.gender, genderAr: perfume.genderAr, genderEn: perfume.genderEn,
+      concentration: perfume.concentrationCode, concentrationAr: perfume.concentrationAr, concentrationEn: perfume.concentrationEn,
+      releaseYear: perfume.releaseYear, fragranceFamilyAr: perfume.fragranceFamilyAr, fragranceFamilyEn: perfume.fragranceFamilyEn,
+      families: [perfume.fragranceFamilyEn || perfume.fragranceFamilyAr].filter(Boolean),
+      descriptionAr: perfume.descriptionAr, descriptionEn: perfume.descriptionEn,
+      accordProfile: normalized.accords.map((accord) => ({ nameAr: accord.ar, nameEn: accord.en, strength: accord.percentage, score: accord.percentage, source: "bundle" })),
+      noteSelectionsBundle: normalized.notes,
+      notes: unique(Object.values(normalized.notes).flat().map((note) => note.en || note.ar).filter(Boolean), normalizedKey),
+      seasonScores: { ...normalized.seasons }, usageTimeScores: { ...normalized.time },
+      seasons: [],
+      usageTimes: [],
+      occasions: normalized.occasions.map((occasion) => occasion.en || occasion.ar), occasionLabels: normalized.occasions,
+      scentCharacterAr: [...normalized.scentCharacter.ar], scentCharacterEn: [...normalized.scentCharacter.en],
+      personalities: unique([...normalized.scentCharacter.ar, ...normalized.scentCharacter.en], normalizedKey),
+      perfumeBundle: normalized
+    });
+    if (perfume.sizeMl === null) { result.size = ""; result.sizes = []; }
+    else { result.size = `${perfume.sizeMl} ml`; result.sizes = [result.size]; }
+    result.performance = {
+      ...(product.performance || {}),
+      longevity: normalized.performance.longevityHours,
+      longevityHours: normalized.performance.longevityHours,
+      longevityAr: normalized.performance.longevityAr,
+      longevityEn: normalized.performance.longevityEn,
+      projection: normalized.performance.projection,
+      projectionAr: normalized.performance.projectionAr,
+      projectionEn: normalized.performance.projectionEn
+    };
+    result.seo = { ...(product.seo || {}), keywords: unique([...normalized.searchKeywords.ar, ...normalized.searchKeywords.en], normalizedKey) };
     return result;
-  };
-  api.applyPerfumeBundleToProduct=function(product,bundle){
-    const normalized=bundle?.source==="perfume_data_bundle"?bundle:api.normalizePerfumeBundle(bundle);
-    const result=apply(product,normalized);
-    result.bundleExtraFields={...(product?.bundleExtraFields||{}),...(normalized.extraFields||{})};
-    return result;
-  };
-  api.buildPerfumeBundleFromProduct=function(product){
-    const result=build(product);
-    result.perfume={...(product?.bundleExtraFields||{}),...result.perfume};
-    return result;
-  };
-})(typeof window!=="undefined"?window:globalThis);
+  }
+
+  function buildPerfumeBundleFromProduct(product = {}) {
+    const imported = product.perfumeBundle?.source === "origo_perfume_bundle_v2" ? product.perfumeBundle : {};
+    const importedPerfume = imported.perfume || {};
+    const notes = product.noteSelectionsBundle || imported.notes || { top:[], heart:[], base:[] };
+    const pair = (value) => ({ name_ar: text(value?.ar ?? value?.nameAr), name_en: text(value?.en ?? value?.nameEn) });
+    const size = Number.parseFloat(product.size || importedPerfume.sizeMl);
+    const keywords = Array.isArray(product.seo?.keywords) ? product.seo.keywords : [];
+    const importedArabicKeywords = imported.searchKeywords?.ar || [];
+    const arabicKeys = new Set(importedArabicKeywords.map(normalizedKey));
+    return { perfume: {
+      name_ar: text(product.nameAr), name_en: text(product.nameEn), brand_ar: text(product.brandAr || importedPerfume.brandAr), brand_en: text(product.brandEn || product.brand),
+      gender_ar: text(product.genderAr || importedPerfume.genderAr), gender_en: text(product.genderEn || importedPerfume.genderEn),
+      concentration_ar: text(product.concentrationAr || importedPerfume.concentrationAr), concentration_en: text(product.concentrationEn || importedPerfume.concentrationEn), concentration_code: text(product.concentration),
+      size_ml: Number.isFinite(size) ? size : null, release_year: product.releaseYear ?? importedPerfume.releaseYear ?? null,
+      fragrance_family_ar: text(product.fragranceFamilyAr || importedPerfume.fragranceFamilyAr), fragrance_family_en: text(product.fragranceFamilyEn || product.families?.[0] || importedPerfume.fragranceFamilyEn),
+      accords: (product.accordProfile || []).map((accord) => ({ name_ar:text(accord.nameAr), name_en:text(accord.nameEn), percentage:Number(accord.strength ?? accord.score ?? 0) })),
+      notes: Object.fromEntries(["top", "heart", "base"].map((level) => [level, (notes[level] || []).map(pair)])),
+      performance: {
+        longevity_ar:text(product.performance?.longevityAr || imported.performance?.longevityAr), longevity_en:text(product.performance?.longevityEn || imported.performance?.longevityEn),
+        longevity_hours:product.performance?.longevityHours ?? product.performance?.longevity ?? null,
+        projection_ar:text(product.performance?.projectionAr || imported.performance?.projectionAr), projection_en:text(product.performance?.projectionEn || imported.performance?.projectionEn)
+      },
+      seasons: Object.fromEntries(["winter", "autumn", "spring", "summer"].map((key) => [key, product.seasonScores?.[key] ?? null])),
+      time: Object.fromEntries(["day", "night"].map((key) => [key, product.usageTimeScores?.[key] ?? null])),
+      occasions: (product.occasionLabels || product.occasions || []).map((value) => typeof value === "string" ? { name_ar:value, name_en:value } : pair(value)),
+      short_description_ar:text(product.descriptionAr), short_description_en:text(product.descriptionEn),
+      scent_character_ar:[...(product.scentCharacterAr || imported.scentCharacter?.ar || [])], scent_character_en:[...(product.scentCharacterEn || imported.scentCharacter?.en || [])],
+      search_keywords_ar:keywords.filter((value) => arabicKeys.has(normalizedKey(value)) || /[\u0600-\u06FF]/.test(value)),
+      search_keywords_en:keywords.filter((value) => !arabicKeys.has(normalizedKey(value)) && !/[\u0600-\u06FF]/.test(value))
+    } };
+  }
+
+  global.ORIGOPerfumeBundle = { parsePerfumeBundle, validatePerfumeBundle, normalizePerfumeBundle, applyPerfumeBundleToProduct, buildPerfumeBundleFromProduct };
+})(typeof window !== "undefined" ? window : globalThis);

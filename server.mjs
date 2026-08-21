@@ -127,6 +127,7 @@ import {
   setProductPerformanceVoteStatus,
   submitProductPerformanceVote
 } from "./performance-service.mjs";
+import { buildSitemap, injectSeoIntoHtml, robotsTxt, seoForRoute } from "./seo.mjs";
 
 const ROOT = resolve(fileURLToPath(new URL(".", import.meta.url)));
 const STOREFRONT_UPLOAD_ROOT = resolve(ROOT, "uploads", "storefront");
@@ -171,6 +172,9 @@ const productOccasionKeys = (values = []) => values.map((key) => PRODUCT_OCCASIO
 function preparePerfumeProduct(input = {}, { force = false } = {}) {
   const product = { ...input };
   if ((product.category || "perfume") !== "perfume") return product;
+  // Products imported through the canonical bundle are manager-owned records.
+  // Analysis and SEO consumers may read them, but must never enrich or rewrite them.
+  if (product.perfumeBundle && typeof product.perfumeBundle === "object") return product;
   const engineInput = perfumeInputFromProduct(product);
   const hasNotes = [engineInput.topNotes, engineInput.middleNotes, engineInput.baseNotes].some((items) => Array.isArray(items) && items.length);
   const currentProfile = product.perfumeProfile && typeof product.perfumeProfile === "object" ? product.perfumeProfile : {};
@@ -186,16 +190,15 @@ function preparePerfumeProduct(input = {}, { force = false } = {}) {
     || currentProfile.inputFingerprint !== fingerprint || product.profileStatus === "stale";
   const manualOverrides = Array.isArray(currentProfile.manualOverrides) ? currentProfile.manualOverrides : [];
   const profile = needsAnalysis ? analyzePerfume(engineInput, { manualOverrides }) : currentProfile;
-  const bundleManaged = product.perfumeBundle && typeof product.perfumeBundle === "object";
   product.perfumeProfile = profile;
   product.profileStatus = "fresh";
   product.profileEngineVersion = profile.engineVersion;
   product.profileSource = profile.source;
   product.descriptionAr = profile.descriptions?.fullDescriptionAr || product.descriptionAr || "";
   product.descriptionEn = profile.descriptions?.fullDescriptionEn || product.descriptionEn || "";
-  if (!bundleManaged || !Array.isArray(product.seasons) || !product.seasons.length) product.seasons = profile.recommended?.seasons || scoreKeys(profile.seasons, 55, 4);
-  if (!bundleManaged || !Array.isArray(product.usageTimes) || !product.usageTimes.length) product.usageTimes = profile.recommended?.timeOfDay || scoreKeys(profile.time, 45, 2);
-  if (!bundleManaged || !Array.isArray(product.occasions) || !product.occasions.length) product.occasions = productOccasionKeys(profile.recommended?.occasions || scoreKeys(profile.occasions, 48, 6));
+  product.seasons = profile.recommended?.seasons || scoreKeys(profile.seasons, 55, 4);
+  product.usageTimes = profile.recommended?.timeOfDay || scoreKeys(profile.time, 45, 2);
+  product.occasions = productOccasionKeys(profile.recommended?.occasions || scoreKeys(profile.occasions, 48, 6));
   product.personalities = (profile.character || []).map((item) => item.labelAr);
   product.moods = (profile.character || []).map((item) => item.labelAr);
   product.families = profile.scentFamilies || [];
@@ -2045,7 +2048,7 @@ function cacheCompressedStatic(key, body) {
 async function serveStatic(request, response, url) {
   const isNotesRoute = /^\/notes(?:\/[a-z0-9-]+)?\/?$/i.test(url.pathname);
   const isBenefitRoute = /^\/benefits(?:\/[a-z0-9-]+)?\/?$/i.test(url.pathname);
-  const isStorefrontRoute = /^\/(perfumes|search)\/?$/i.test(url.pathname);
+  const isStorefrontRoute = /^\/(?:perfumes(?:\/[a-z0-9-]+)?|perfume\/[a-z0-9-]+|brands\/[a-z0-9-]+|search)\/?$/i.test(url.pathname);
   const isCommerceRoute = /^\/(checkout|order\/[^/]+|feedback\/[^/]+|feedback-insights|account(?:\/.*)?|fragrance-finder\/[a-z-]+|alternatives(?:\/compare\/[^/]+)?)\/?$/i.test(url.pathname);
   const isAdminRoute = /^\/admin\/orders(?:\/[^/]+)?\/?$/i.test(url.pathname);
   const pathname = decodeURIComponent(url.pathname === "/" || isNotesRoute || isBenefitRoute || isStorefrontRoute || isCommerceRoute || isAdminRoute ? "/index.html" : url.pathname);
@@ -2074,7 +2077,7 @@ async function serveStatic(request, response, url) {
         .replace("ORIGO_INITIAL_HERO_STATE", hero ? "data-initial-hero=\"true\"" : "hidden data-initial-hero=\"false\"")
         .replace("ORIGO_INITIAL_HERO_STYLE", hero ? `style=\"background-image:url(&quot;${safeHeroUrl}&quot;)\"` : "")
         .replace("<!-- ORIGO_INITIAL_HERO_PRELOAD -->", hero ? `<link rel=\"preload\" as=\"image\" href=\"${safeHeroUrl}\" fetchpriority=\"high\" />` : "");
-      data = Buffer.from(html);
+      data = Buffer.from(injectSeoIntoHtml(html, seoForRoute(url.pathname, listProducts())));
     }
     const isVersionedRuntimeAsset = [".js", ".mjs", ".css"].includes(extension) && url.searchParams.has("v");
     const isServiceWorker = cleanPath === "sw.js";
@@ -2171,6 +2174,14 @@ const server = createServer(async (request, response) => {
   }
   if (request.method !== "GET" && request.method !== "HEAD") {
     response.writeHead(405).end("Method not allowed");
+    return;
+  }
+  if (url.pathname === "/robots.txt") {
+    response.writeHead(200, { "Content-Type":"text/plain; charset=utf-8", "Cache-Control":"public, max-age=3600" }).end(request.method === "HEAD" ? undefined : robotsTxt());
+    return;
+  }
+  if (url.pathname === "/sitemap.xml") {
+    response.writeHead(200, { "Content-Type":"application/xml; charset=utf-8", "Cache-Control":"public, max-age=900" }).end(request.method === "HEAD" ? undefined : buildSitemap(listProducts()));
     return;
   }
   await serveStatic(request, response, url);
