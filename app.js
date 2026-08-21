@@ -7055,12 +7055,17 @@ function renderImportReview(product) {
   const usage = perfumePerformanceEditorSection(product);
   const media = `<div class="product-editor-upload-row"><label class="gallery-upload"><input id="gallery-upload" type="file" accept="image/jpeg,image/png,image/webp,image/avif" multiple/><span>＋</span><div><b>${adminCopy("رفع صور المنتج","Upload product images")}</b><small>${adminCopy("حتى 10 صور؛ اختر الرئيسية ورتّب بالسحب أو الأسهم","Up to 10 images; choose primary and reorder by drag or arrows")}</small></div></label></div>${productMediaStudioMarkup(images)}`;
   const content = `<div class="review-grid product-content-grid">
-    <label class="wide">${adminCopy("الوصف العربي","Arabic description")}<textarea name="descriptionAr">${escapeHTML(product.descriptionAr || "")}</textarea></label>
-    <label class="wide">${adminCopy("الوصف الإنجليزي","English description")}<textarea name="descriptionEn">${escapeHTML(product.descriptionEn || "")}</textarea></label>
+    <label class="wide">${adminCopy("الوصف المختصر بالعربية","Arabic short description")}<textarea name="descriptionAr">${escapeHTML(product.descriptionAr || "")}</textarea></label>
+    <label class="wide">${adminCopy("الوصف المختصر بالإنجليزية","English short description")}<textarea name="descriptionEn" dir="ltr">${escapeHTML(product.descriptionEn || "")}</textarea></label>
+    <label class="wide">${adminCopy("الوصف الكامل بالعربية","Arabic full description")}<textarea name="fullDescriptionAr" rows="7">${escapeHTML(product.fullDescriptionAr || "")}</textarea></label>
+    <label class="wide">${adminCopy("الوصف الكامل بالإنجليزية","English full description")}<textarea name="fullDescriptionEn" dir="ltr" rows="7">${escapeHTML(product.fullDescriptionEn || "")}</textarea></label>
     <label>${adminCopy("رابط المنتج","Slug")}<input name="slug" dir="ltr" value="${escapeHTML(product.slug || "")}"/></label>
-    <label>${adminCopy("عنوان SEO","SEO title")}<input name="seoTitle" value="${escapeHTML(localizedText(product.seo?.titleAr, product.seo?.titleEn) || product.seo?.title || "")}"/></label>
-    <label class="wide">${adminCopy("وصف SEO","SEO description")}<textarea name="seoDescription">${escapeHTML(localizedText(product.seo?.descriptionAr, product.seo?.descriptionEn) || product.seo?.description || "")}</textarea></label>
-    <label class="wide">${adminCopy("كلمات SEO","SEO keywords")}<input name="seoKeywords" value="${escapeHTML(csv((state.lang === "ar" ? product.seo?.keywordsAr : product.seo?.keywordsEn) || (state.lang === "ar" ? product.seo?.keywordsEn : product.seo?.keywordsAr) || product.seo?.keywords || []))}"/></label>
+    <label>${adminCopy("عنوان SEO بالعربية","Arabic SEO title")}<input name="seoTitleAr" dir="rtl" value="${escapeHTML(product.seo?.titleAr || (state.lang === "ar" ? product.seo?.title : "") || "")}"/></label>
+    <label>${adminCopy("عنوان SEO بالإنجليزية","English SEO title")}<input name="seoTitleEn" dir="ltr" value="${escapeHTML(product.seo?.titleEn || (state.lang === "en" ? product.seo?.title : "") || "")}"/></label>
+    <label class="wide">${adminCopy("وصف SEO بالعربية","Arabic SEO description")}<textarea name="seoDescriptionAr" dir="rtl">${escapeHTML(product.seo?.descriptionAr || (state.lang === "ar" ? product.seo?.description : "") || "")}</textarea></label>
+    <label class="wide">${adminCopy("وصف SEO بالإنجليزية","English SEO description")}<textarea name="seoDescriptionEn" dir="ltr">${escapeHTML(product.seo?.descriptionEn || (state.lang === "en" ? product.seo?.description : "") || "")}</textarea></label>
+    <label class="wide">${adminCopy("كلمات SEO بالعربية","Arabic SEO keywords")}<input name="seoKeywordsAr" dir="rtl" value="${escapeHTML(csv(product.seo?.keywordsAr || []))}"/></label>
+    <label class="wide">${adminCopy("كلمات SEO بالإنجليزية","English SEO keywords")}<input name="seoKeywordsEn" dir="ltr" value="${escapeHTML(csv(product.seo?.keywordsEn || []))}"/></label>
     <label>${adminCopy("الرابط الأساسي SEO","SEO canonical URL")}<input name="seoCanonical" dir="ltr" value="${escapeHTML(product.seo?.canonical || "")}"/></label>
     <label>${adminCopy("تعليمات محركات البحث","SEO robots")}<input name="seoRobots" dir="ltr" value="${escapeHTML(product.seo?.robots || "")}" placeholder="index,follow"/></label>
   </div>`;
@@ -7206,14 +7211,17 @@ function applyPerfumeBundleToEditor(form, normalized) {
 
   setField("descriptionAr", imported.descriptionAr);
   setField("descriptionEn", imported.descriptionEn);
+  setField("fullDescriptionAr", imported.fullDescriptionAr);
+  setField("fullDescriptionEn", imported.fullDescriptionEn);
   setField("slug", imported.slug || imported.productUrl || imported.canonicalUrl);
-  setField("seoTitle", localizedText(imported.seo?.titleAr, imported.seo?.titleEn));
-  setField("seoDescription", localizedText(imported.seo?.descriptionAr, imported.seo?.descriptionEn));
+  setField("seoTitleAr", imported.seo?.titleAr);
+  setField("seoTitleEn", imported.seo?.titleEn);
+  setField("seoDescriptionAr", imported.seo?.descriptionAr);
+  setField("seoDescriptionEn", imported.seo?.descriptionEn);
   setField("seoCanonical", imported.seo?.canonical);
   setField("seoRobots", imported.seo?.robots);
-  const importedKeywords = state.lang === "ar" ? normalized.searchKeywords.ar : normalized.searchKeywords.en;
-  const fallbackKeywords = state.lang === "ar" ? normalized.searchKeywords.en : normalized.searchKeywords.ar;
-  if ((importedKeywords.length || fallbackKeywords.length)) setField("seoKeywords", (importedKeywords.length ? importedKeywords : fallbackKeywords).join(", "));
+  if (normalized.searchKeywords.ar.length) setField("seoKeywordsAr", normalized.searchKeywords.ar.join("، "));
+  if (normalized.searchKeywords.en.length) setField("seoKeywordsEn", normalized.searchKeywords.en.join(", "));
 
   form.elements.perfumeBundleData.value = JSON.stringify(normalized);
   const feedback = form.querySelector("[data-perfume-bundle-feedback]");
@@ -7351,6 +7359,8 @@ function collectReviewProduct(form) {
     tags: csvValues(data.get("tags")),
     descriptionAr: String(data.get("descriptionAr") || "").trim(),
     descriptionEn: String(data.get("descriptionEn") || "").trim(),
+    fullDescriptionAr: String(data.get("fullDescriptionAr") || base.fullDescriptionAr || "").trim(),
+    fullDescriptionEn: String(data.get("fullDescriptionEn") || base.fullDescriptionEn || "").trim(),
     videoUrl: String(data.get("videoUrl") || "").trim(),
     manualSourceUrl: String(data.get("manualSourceUrl") || "").trim(),
     images: normalizeProductImages(images),
@@ -7395,12 +7405,14 @@ function collectReviewProduct(form) {
     slug: String(data.get("slug") || "").trim(),
     seo: (() => {
       const seo = { ...(base.seo || {}) };
-      const suffix = state.lang === "ar" ? "Ar" : "En";
-      seo[`title${suffix}`] = String(data.get("seoTitle") || "").trim();
-      seo[`description${suffix}`] = String(data.get("seoDescription") || "").trim();
-      seo[`keywords${suffix}`] = csvValues(data.get("seoKeywords"));
-      seo.title = seo[`title${suffix}`] || seo.title || "";
-      seo.description = seo[`description${suffix}`] || seo.description || "";
+      seo.titleAr = String(data.get("seoTitleAr") || "").trim();
+      seo.titleEn = String(data.get("seoTitleEn") || "").trim();
+      seo.descriptionAr = String(data.get("seoDescriptionAr") || "").trim();
+      seo.descriptionEn = String(data.get("seoDescriptionEn") || "").trim();
+      seo.keywordsAr = csvValues(data.get("seoKeywordsAr"));
+      seo.keywordsEn = csvValues(data.get("seoKeywordsEn"));
+      seo.title = localizedText(seo.titleAr, seo.titleEn) || seo.title || "";
+      seo.description = localizedText(seo.descriptionAr, seo.descriptionEn) || seo.description || "";
       seo.keywords = [...new Set([...(seo.keywordsAr || []), ...(seo.keywordsEn || [])])];
       seo.canonical = String(data.get("seoCanonical") || seo.canonical || "").trim();
       seo.robots = String(data.get("seoRobots") || seo.robots || "").trim();
@@ -10157,7 +10169,7 @@ document.addEventListener("input", (event) => {
   }
   if (event.target.closest("#import-review-form")) {
     const editorForm = $("#import-review-form");
-    if (["seoTitle", "seoDescription", "seoKeywords"].includes(event.target.name)) {
+    if (["seoTitleAr", "seoTitleEn", "seoDescriptionAr", "seoDescriptionEn", "seoKeywordsAr", "seoKeywordsEn"].includes(event.target.name)) {
       event.target.dataset.userEdited = "true";
       event.target.dataset.autoGenerated = "false";
     }
