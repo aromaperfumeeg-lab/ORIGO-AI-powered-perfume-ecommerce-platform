@@ -1296,6 +1296,15 @@ async function api(path, options = {}) {
   return payload;
 }
 
+function encodedJsonRequestBody(value) {
+  const bytes = new TextEncoder().encode(JSON.stringify(value));
+  let binary = "";
+  for (let offset = 0; offset < bytes.length; offset += 0x8000) {
+    binary += String.fromCharCode(...bytes.subarray(offset, offset + 0x8000));
+  }
+  return btoa(binary).replaceAll("+", "-").replaceAll("/", "_").replace(/=+$/, "");
+}
+
 function mergeCartItems(first, second) {
   const merged = new Map();
   for (const item of [...(first || []), ...(second || [])]) {
@@ -1586,8 +1595,11 @@ async function loadAdminCatalog() {
 async function persistAdminProduct(product) {
   const result = await api("/api/admin/products", {
     method: "POST",
-    headers: { "Content-Type": "text/plain;charset=UTF-8" },
-    body: JSON.stringify(product)
+    headers: {
+      "Content-Type": "text/plain;charset=UTF-8",
+      "X-ORIGO-Content-Encoding": "base64url-json"
+    },
+    body: encodedJsonRequestBody(product)
   });
   await loadAdminCatalog();
   if ($("#admin-overlay").classList.contains("open")) renderAdminDashboard("products");

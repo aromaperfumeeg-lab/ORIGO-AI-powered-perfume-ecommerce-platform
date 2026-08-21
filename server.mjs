@@ -550,7 +550,10 @@ async function readJSONBody(request) {
     if (size > MAX_BODY_BYTES) throw new Error("REQUEST_TOO_LARGE");
     chunks.push(chunk);
   }
-  return JSON.parse(Buffer.concat(chunks).toString("utf8") || "{}");
+  const raw = Buffer.concat(chunks).toString("utf8");
+  const encoding = String(request.headers["x-origo-content-encoding"] || "").trim().toLowerCase();
+  const json = encoding === "base64url-json" ? Buffer.from(raw, "base64url").toString("utf8") : raw;
+  return JSON.parse(json || "{}");
 }
 
 async function saveStorefrontImageUpload(body = {}) {
