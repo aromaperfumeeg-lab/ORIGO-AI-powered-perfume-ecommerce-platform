@@ -40,6 +40,7 @@ export const ROLE_PERMISSIONS = {
   delivery_staff: ["orders:view", "shipping"],
   content_editor: ["catalog:view", "content", "reviews"]
 };
+const PRODUCT_LONG_TEXT_LIMIT = 2_000_000;
 const allowedRoles = new Set(["customer", ...Object.keys(ROLE_PERMISSIONS)]);
 
 if (IS_PRODUCTION && !DB_PATH_CONFIGURED) {
@@ -1529,8 +1530,8 @@ export function upsertProduct(input) {
         || input.images?.[0]?.url,
       2_000_000
     ),
-    clean(input.descriptionAr, 4000),
-    clean(input.descriptionEn, 4000),
+    clean(input.descriptionAr, PRODUCT_LONG_TEXT_LIMIT),
+    clean(input.descriptionEn, PRODUCT_LONG_TEXT_LIMIT),
     JSON.stringify(input),
     JSON.stringify(input.perfumeProfile && typeof input.perfumeProfile === "object" ? input.perfumeProfile : {}),
     clean(input.profileStatus || input.perfumeProfile?.profileStatus || "stale", 40),
