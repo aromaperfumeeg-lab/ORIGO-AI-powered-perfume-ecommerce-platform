@@ -82,7 +82,8 @@
   const lang = () => store()?.state?.lang === "en" ? "en" : "ar";
   const t = (key) => copy[lang()][key] || key;
   const esc = (value) => store()?.escapeHTML?.(String(value ?? "")) || String(value ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-  const money = (value) => store()?.formatPrice?.(Number(value || 0)) || `${Number(value || 0).toLocaleString(lang() === "ar" ? "ar-EG" : "en-EG")} ${lang() === "ar" ? "ج.م" : "EGP"}`;
+  const number = (value, options = {}) => store()?.formatNumber?.(value, options) || new Intl.NumberFormat("en-US", { numberingSystem:"latn", ...options }).format(Number(value));
+  const money = (value) => store()?.formatPrice?.(Number(value || 0)) || `${number(Number(value || 0))} ${lang() === "ar" ? "ج.م" : "EGP"}`;
   const label = (item, key) => lang() === "ar" ? item?.[`${key}Ar`] || item?.[`${key}En`] : item?.[`${key}En`] || item?.[`${key}Ar`];
   const go = (path) => { if (location.pathname !== path) history.pushState({ alternatives: true }, "", path); route(); };
   const postEvent = (item, eventType) => store()?.api?.("/api/alternatives/events", { method: "POST", body: JSON.stringify({ referenceId: item?.reference?.id, productId: item?.product?.id, eventType, sessionKey: sessionStorage.getItem("origoAltSession") || "" }) }).catch(() => {});
@@ -102,9 +103,12 @@
     return labels[item.relationshipType]?.[lang() === "ar" ? 0 : 1] || labels.similar_character[lang() === "ar" ? 0 : 1];
   }
   function stars(item) {
-    const average = Number(item.product.reviewSummary?.average || 4.7);
-    const count = Number(item.product.reviewSummary?.count || 0);
-    return `<span class="alt-stars" aria-label="${average} / 5"><b>★ ${average.toFixed(1)}</b><i>★★★★★</i>${count ? `<small>(${count.toLocaleString()})</small>` : ""}</span>`;
+    const rawAverage = item.product.reviewSummary?.average ?? item.product.rating;
+    const rawCount = item.product.reviewSummary?.count;
+    const average = rawAverage == null || rawAverage === "" ? null : Number(rawAverage);
+    const count = rawCount == null || rawCount === "" ? null : Number(rawCount);
+    if (!Number.isFinite(average)) return "";
+    return `<span class="alt-stars" aria-label="${number(average, { maximumFractionDigits:2 })} / 5"><b>★ ${number(average, { maximumFractionDigits:2 })}</b><i>★★★★★</i>${Number.isInteger(count) && count >= 0 ? `<small>(${number(count)})</small>` : ""}</span>`;
   }
   function actionButtons(item, compact = false) {
     return `<div class="alt-actions${compact ? " compact" : ""}">

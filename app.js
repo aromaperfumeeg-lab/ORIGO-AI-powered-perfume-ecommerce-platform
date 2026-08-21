@@ -1352,7 +1352,12 @@ function formatNumber(value, options = {}) {
 }
 
 const formatPercent = (value, options = {}) => `${formatNumber(value, { maximumFractionDigits:1, ...options })}%`;
-const formatRating = (value) => `${formatNumber(value, { minimumFractionDigits:1, maximumFractionDigits:1 })} / 5`;
+const formatRating = (value) => `${formatNumber(value, { minimumFractionDigits:0, maximumFractionDigits:2 })} / 5`;
+const formatDate = (value, options = {}) => {
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) return normalizeLatinDigits(value);
+  return normalizeLatinDigits(new Intl.DateTimeFormat(state.lang === "ar" ? "ar-EG-u-nu-latn" : "en-GB", { dateStyle:"medium", ...options }).format(date));
+};
 
 const formatPrice = (value) => {
   const config = currencyConfig[state.currency] || currencyConfig.EGP;
@@ -1880,9 +1885,9 @@ function overviewMarkup() {
   return `
     <section class="admin-metrics-grid">
       ${adminMetric("◈", state.lang === "ar" ? "إجمالي المبيعات" : "Total sales", formatPrice(sales), liveOrders.length ? "+12.4%" : "—", "burgundy")}
-      ${adminMetric("▤", state.lang === "ar" ? "الطلبات" : "Orders", orders.length.toLocaleString(), `${orders.filter((order) => order.status === "new").length} ${state.lang === "ar" ? "جديد" : "new"}`)}
+      ${adminMetric("▤", state.lang === "ar" ? "الطلبات" : "Orders", formatNumber(orders.length), `${formatNumber(orders.filter((order) => order.status === "new").length)} ${state.lang === "ar" ? "جديد" : "new"}`)}
       ${adminMetric("◇", state.lang === "ar" ? "متوسط قيمة الطلب" : "Average order value", formatPrice(average), "AOV")}
-      ${adminMetric("♙", state.lang === "ar" ? "العملاء" : "Customers", customers.length.toLocaleString(), state.lang === "ar" ? "ملفات فعلية" : "live profiles")}
+      ${adminMetric("♙", state.lang === "ar" ? "العملاء" : "Customers", formatNumber(customers.length), state.lang === "ar" ? "ملفات فعلية" : "live profiles")}
       ${adminMetric("◎", state.lang === "ar" ? "معدل التحويل" : "Conversion rate", `${state.adminWorkspace.analytics.conversionRate}%`, state.lang === "ar" ? "تمهيدي" : "baseline")}
       ${adminMetric("↗", "ROAS", `${roas.toFixed(1)}×`, state.lang === "ar" ? "الحملات" : "campaigns")}
       ${adminMetric("▦", state.lang === "ar" ? "مخزون منخفض" : "Low stock", lowStockProducts().length, state.lang === "ar" ? "يحتاج متابعة" : "needs action", lowStockProducts().length ? "warning" : "")}
@@ -4091,6 +4096,17 @@ function catalogRating(product) {
   return Number(product.reviewSummary?.average || product.insights?.rating || 0);
 }
 
+function productRatingSummary(product) {
+  const rawRating = product.reviewSummary?.average ?? product.rating;
+  const rawCount = product.reviewSummary?.count;
+  const rating = rawRating === null || rawRating === undefined || rawRating === "" ? null : Number(rawRating);
+  const count = rawCount === null || rawCount === undefined || rawCount === "" ? null : Number(rawCount);
+  return {
+    rating: Number.isFinite(rating) && rating >= 0 && rating <= 5 ? rating : null,
+    count: Number.isInteger(count) && count >= 0 ? count : null
+  };
+}
+
 function catalogGender(product) {
   const value = ORIGOCatalog.normalize(product.gender || product.typeEn || product.type || "");
   if (/women|female|نسائي|نساء/.test(value)) return "women";
@@ -4826,9 +4842,9 @@ function renderNotesLibrary() {
           : "Explore scent families, understand each note's role, and discover perfumes built around it."}</p>
       </div>
       <div class="notes-page-stats">
-        <div class="notes-page-stat"><strong>${library.notes.length.toLocaleString()}</strong><span>${state.lang === "ar" ? "إجمالي النوتات" : "total notes"}</span></div>
-        <div class="notes-page-stat complete"><strong>${readyCount.toLocaleString()}</strong><span>${state.lang === "ar" ? "صور معتمدة" : "approved artwork"}</span></div>
-        <div class="notes-page-stat pending"><strong>${pendingCount.toLocaleString()}</strong><span>${state.lang === "ar" ? "بانتظار صورة" : "awaiting artwork"}</span></div>
+        <div class="notes-page-stat"><strong>${formatNumber(library.notes.length)}</strong><span>${state.lang === "ar" ? "إجمالي النوتات" : "total notes"}</span></div>
+        <div class="notes-page-stat complete"><strong>${formatNumber(readyCount)}</strong><span>${state.lang === "ar" ? "صور معتمدة" : "approved artwork"}</span></div>
+        <div class="notes-page-stat pending"><strong>${formatNumber(pendingCount)}</strong><span>${state.lang === "ar" ? "بانتظار صورة" : "awaiting artwork"}</span></div>
       </div>
     </header>
     <section class="notes-family-showcase" aria-label="${state.lang === "ar" ? "عائلات النوتات العطرية" : "Fragrance note families"}">
@@ -5757,7 +5773,7 @@ function productCardMarkup(product, options = {}) {
   const isNew = Boolean(product.isNew) || /new|جديد|وصل حديثا/.test(normalizedBadge);
   const saved = state.wishlist.includes(product.id);
   const compared = state.comparison.includes(product.id);
-  const rating = catalogRating(product);
+  const ratingSummary = productRatingSummary(product);
   const genderLabel = productCardGenderLabel(product, isArabic);
   const formattedSize = formatProductSize(variant?.size || product.size || product.sizes?.[0] || "");
   const sizeLabel = isArabic ? formattedSize.replace(/\bml\b/gi, "مل") : formattedSize;
@@ -5793,7 +5809,7 @@ function productCardMarkup(product, options = {}) {
         : `<span class="product-image-missing" role="img" aria-label="${escapeHTML(isArabic ? "صورة المنتج غير متاحة" : "Product image unavailable")}"><i aria-hidden="true">◇</i><small>${isArabic ? "الصورة غير متاحة" : "Image unavailable"}</small></span>`}</button>
     </div>
     <div class="product-info">
-      <div class="exact-card-heading"><div class="product-brand" dir="auto">${escapeHTML(localizedProductBrand(product))}</div><span class="exact-card-rating">${rating > 0 ? rating.toFixed(1) : "—"}<b aria-hidden="true">★</b></span></div>
+      <div class="exact-card-heading"><div class="product-brand" dir="auto">${escapeHTML(localizedProductBrand(product))}</div>${ratingSummary.rating == null ? "" : `<span class="exact-card-rating"><b aria-hidden="true">★</b><span>${formatNumber(ratingSummary.rating, { maximumFractionDigits:2 })}</span>${ratingSummary.count == null ? "" : `<small>(${formatNumber(ratingSummary.count)})</small>`}</span>`}</div>
       <h3 class="exact-card-product-name${productNameSizeClass}"><button type="button"${interactive ? ` data-action="open-product" data-id="${escapeHTML(product.id)}"` : disabled}>${escapeHTML(name || (isArabic ? "منتج جديد" : "New product"))}</button></h3>
       <div class="product-bottom">
         <div class="exact-card-prices"><b class="product-price">${formatPrice(price)}</b>${oldPrice > price ? `<del>${formatPrice(oldPrice)}</del>` : ""}</div>
@@ -6046,6 +6062,8 @@ function showProductDetails(product, shouldOpen = true) {
   const taxRate = Number(state.adminWorkspace.settings?.taxRate || 0);
   const restockEmail = state.user?.email || "";
   const restockPhone = state.user?.phone || "";
+  const ratingSummary = productRatingSummary(product);
+  const ratingMarkup = ratingSummary.rating == null ? "" : `<div class="pdp-rating-summary" aria-label="${escapeHTML(isArabic ? "ملخص التقييم" : "Rating summary")}"><strong><span aria-hidden="true">★</span> ${formatNumber(ratingSummary.rating, { maximumFractionDigits:2 })}</strong>${ratingSummary.count == null ? "" : `<small>${formatNumber(ratingSummary.count)} ${isArabic ? "تقييم" : "reviews"}</small>`}</div>`;
   const restockMarkup = available ? "" : `
     <section class="pdp-restock-card" id="pdp-restock-card" aria-labelledby="pdp-restock-title">
       <header><span aria-hidden="true">♧</span><div><strong id="pdp-restock-title">${isArabic ? "غير متوفر حاليًا" : "Currently unavailable"}</strong><p>${isArabic ? "سنعلمك فور عودة هذا المنتج إلى المخزون." : "We will let you know as soon as this product is back in stock."}</p></div></header>
@@ -6072,7 +6090,7 @@ function showProductDetails(product, shouldOpen = true) {
           <div class="pdp-main-image" data-action="product-zoom" role="button" tabindex="0" aria-label="${isArabic ? "فتح صورة المنتج بملء الشاشة" : "Open product image fullscreen"}"><span>${escapeHTML(isArabic ? product.badgeAr || "" : product.badgeEn || "")}</span>${media.length > 1 ? `<button type="button" class="pdp-media-arrow previous" data-action="product-image-step" data-change="-1" aria-label="${isArabic ? "الصورة السابقة" : "Previous image"}">‹</button><button type="button" class="pdp-media-arrow next" data-action="product-image-step" data-change="1" aria-label="${isArabic ? "الصورة التالية" : "Next image"}">›</button><small class="pdp-media-count" aria-live="polite">${state.activeProductImageIndex + 1} / ${media.length}</small>` : ""}<img src="${escapeHTML(activeMedia.url)}" alt="${escapeHTML(`${product.brand} ${name}`)}" draggable="false" /></div>
         </div>
         <aside class="pdp-purchase">
-          <a class="pdp-brand" href="/brands/${encodeURIComponent(normalizeOptionSearch(product.brand).replaceAll(" ","-"))}">${escapeHTML(brandName)}</a><h1 id="product-dialog-title">${escapeHTML(name)}</h1>
+          <a class="pdp-brand" href="/brands/${encodeURIComponent(normalizeOptionSearch(product.brand).replaceAll(" ","-"))}">${escapeHTML(brandName)}</a><h1 id="product-dialog-title">${escapeHTML(name)}</h1>${ratingMarkup}
           <div class="pdp-tags"><span>${catalogGender(product) === "women" ? "♀" : catalogGender(product) === "men" ? "♂" : "⚥"} ${escapeHTML(isArabic ? product.type || (catalogGender(product) === "women" ? "للنساء" : catalogGender(product) === "men" ? "للرجال" : "للجنسين") : product.typeEn || product.type || catalogGender(product))}</span>${product.concentration ? `<span>${escapeHTML(product.concentration)}</span>` : ""}${product.sku ? `<span>SKU ${escapeHTML(product.sku)}</span>` : ""}</div>
           <div class="pdp-price-row"><div class="pdp-price"><b>${formatPrice(product.price)}</b>${product.oldPrice ? `<del>${formatPrice(product.oldPrice)}</del>` : ""}${discount ? `<em>-${discount}%</em>` : ""}<small>${taxRate ? (isArabic ? `شامل ضريبة القيمة المضافة ${taxRate}%` : `VAT ${taxRate}% included`) : ""}</small></div></div>
           ${sizes[0] ? `<p class="pdp-fixed-size">${isArabic ? "الحجم" : "Size"}: <b><bdi dir="ltr">${escapeHTML(formatProductSize(sizes[0]))}</bdi></b></p>` : ""}
@@ -6190,6 +6208,16 @@ const latinDigitObserver = new MutationObserver((mutations) => {
     });
   });
 });
+
+document.addEventListener("input", (event) => {
+  if (!(event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement)) return;
+  const normalized = normalizeLatinDigits(event.target.value);
+  if (normalized === event.target.value) return;
+  const start = event.target.selectionStart;
+  const end = event.target.selectionEnd;
+  event.target.value = normalized;
+  if (start != null && end != null) event.target.setSelectionRange(start, end);
+}, true);
 
 function syncBodyLock() {
   document.body.classList.toggle("locked", Boolean($(".overlay.open, .drawer.open, .mobile-menu-panel.open, .catalog-filter-drawer.open")));
@@ -6696,7 +6724,8 @@ function perfumePerformanceEditorSection(product) {
   return `<section class="review-section perfume-performance-editor" data-editor-tier="smart" data-perfume-section>
     <div class="review-section-head"><span>04</span><div><b>${adminCopy("الأداء والاستخدام", "Performance & usage")}</b><small>${adminCopy("القيم المستوردة من JSON قابلة للمراجعة والتعديل اليدوي.", "JSON values remain available for manual review and editing.")}</small></div></div>
     <div class="review-grid performance-core-grid">
-      <label>${adminCopy("التقييم العام من 5", "Overall rating out of 5")}<input type="number" name="overallRating" min="0" max="5" step="0.1" value="${escapeHTML(product.reviewSummary?.average ?? product.rating ?? "")}" placeholder="4.5"/><small>${adminCopy("هو نفس التقييم الظاهر في بطاقة المنتج.", "This is the same rating shown on the product card.")}</small></label>
+      <label>${adminCopy("التقييم العام من 5", "Overall rating out of 5")}<input type="number" name="overallRating" min="0" max="5" step="0.01" value="${escapeHTML(normalizeLatinDigits(product.reviewSummary?.average ?? product.rating ?? ""))}" placeholder="4.42"/><small>${adminCopy("هو نفس التقييم الظاهر في بطاقة المنتج.", "This is the same rating shown on the product card.")}</small></label>
+      <label>${adminCopy("عدد المقيّمين", "Number of reviewers")}<input type="number" name="reviewCount" min="0" step="1" value="${escapeHTML(normalizeLatinDigits(product.reviewSummary?.count ?? ""))}" placeholder="5812"/></label>
       <label>${adminCopy("الثبات بالساعات", "Longevity in hours")}<input type="number" name="performanceLongevityHours" min="0" max="72" step="0.5" value="${escapeHTML(performance.longevityHours ?? performance.longevity ?? details.longevityHours ?? details.longevityMaxHours ?? details.longevityMinHours ?? "")}" placeholder="7"/></label>
       <label>${adminCopy("قوة الفوحان", "Projection strength")}<select name="performanceProjection"><option value="">${adminCopy("غير محدد", "Not specified")}</option>${selectOptions([["weak",adminCopy("ضعيف", "Weak")],["moderate",adminCopy("متوسط", "Moderate")],["strong",adminCopy("قوي", "Strong")],["very_strong",adminCopy("قوي جدًا", "Very strong")]], normalizeAdminProjection(performance.projection ?? performance.sillage))}</select></label>
     </div>
@@ -6982,9 +7011,9 @@ function renderImportReview(product) {
     <label class="wide">${adminCopy("الوصف العربي","Arabic description")}<textarea name="descriptionAr">${escapeHTML(product.descriptionAr || "")}</textarea></label>
     <label class="wide">${adminCopy("الوصف الإنجليزي","English description")}<textarea name="descriptionEn">${escapeHTML(product.descriptionEn || "")}</textarea></label>
     <label>${adminCopy("رابط المنتج","Slug")}<input name="slug" dir="ltr" value="${escapeHTML(product.slug || "")}"/></label>
-    <label>${adminCopy("عنوان SEO","SEO title")}<input name="seoTitle" value="${escapeHTML(product.seo?.title || "")}"/></label>
-    <label class="wide">${adminCopy("وصف SEO","SEO description")}<textarea name="seoDescription">${escapeHTML(product.seo?.description || "")}</textarea></label>
-    <label class="wide">${adminCopy("كلمات SEO","SEO keywords")}<input name="seoKeywords" value="${escapeHTML(csv(product.seo?.keywords || []))}"/></label>
+    <label>${adminCopy("عنوان SEO","SEO title")}<input name="seoTitle" value="${escapeHTML(localizedText(product.seo?.titleAr, product.seo?.titleEn) || product.seo?.title || "")}"/></label>
+    <label class="wide">${adminCopy("وصف SEO","SEO description")}<textarea name="seoDescription">${escapeHTML(localizedText(product.seo?.descriptionAr, product.seo?.descriptionEn) || product.seo?.description || "")}</textarea></label>
+    <label class="wide">${adminCopy("كلمات SEO","SEO keywords")}<input name="seoKeywords" value="${escapeHTML(csv((state.lang === "ar" ? product.seo?.keywordsAr : product.seo?.keywordsEn) || (state.lang === "ar" ? product.seo?.keywordsEn : product.seo?.keywordsAr) || product.seo?.keywords || []))}"/></label>
   </div>`;
   const publish = `<div class="product-publish-summary"><b>${adminCopy("اختر طريقة الحفظ","Choose save action")}</b><small>${adminCopy("المسودة مخفية، والمراجعة غير منشورة، والنشر يظهر المنتج فوراً للزوار.","Draft is hidden, review is unpublished, and publish makes the product visible immediately.")}</small></div><div class="review-submit-actions"><button class="button secondary-button" type="submit" name="workflowAction" value="draft">${adminCopy("حفظ كمسودة","Save draft")}</button><button class="button secondary-button" type="submit" name="workflowAction" value="review">${adminCopy("إرسال للمراجعة","Send for review")}</button><button class="button burgundy-button" type="submit" name="workflowAction" value="published">${adminCopy("نشر المنتج","Publish product")}</button>${product.id ? `<button class="button product-delete-button" type="button" data-action="delete-admin-product" data-id="${escapeHTML(product.id)}">${adminCopy("حذف المنتج نهائياً","Delete product permanently")}</button>` : ""}</div>`;
   $("#import-workspace").innerHTML = `<form class="catalog-review product-editor-v2" id="import-review-form" data-editor-mode="smart">
@@ -7106,6 +7135,7 @@ function applyPerfumeBundleToEditor(form, normalized) {
   setField("minimumStock", imported.lowStockThreshold);
   setField("cost", imported.cost);
   setField("overallRating", imported.rating);
+  setField("reviewCount", imported.reviewCount);
 
   const seasonAliases = { winter:["winter","الشتاء","شتاء"], autumn:["autumn","fall","الخريف","خريف"], spring:["spring","الربيع","ربيع"], summer:["summer","الصيف","صيف"] };
   const timeAliases = { day:["day","daytime","النهار","نهار"], evening:["evening","المساء","مساء"], night:["night","الليل","ليل"] };
@@ -7122,10 +7152,12 @@ function applyPerfumeBundleToEditor(form, normalized) {
 
   setField("descriptionAr", imported.descriptionAr);
   setField("descriptionEn", imported.descriptionEn);
-  setField("slug", imported.slug);
-  setField("seoTitle", imported.seoTitle);
-  setField("seoDescription", imported.seoDescription);
-  if (imported.seoKeywords?.length) setField("seoKeywords", imported.seoKeywords.join("، "));
+  setField("slug", imported.slug || imported.productUrl || imported.canonicalUrl);
+  setField("seoTitle", localizedText(imported.seo?.titleAr, imported.seo?.titleEn));
+  setField("seoDescription", localizedText(imported.seo?.descriptionAr, imported.seo?.descriptionEn));
+  const importedKeywords = state.lang === "ar" ? normalized.searchKeywords.ar : normalized.searchKeywords.en;
+  const fallbackKeywords = state.lang === "ar" ? normalized.searchKeywords.en : normalized.searchKeywords.ar;
+  if ((importedKeywords.length || fallbackKeywords.length)) setField("seoKeywords", (importedKeywords.length ? importedKeywords : fallbackKeywords).join(", "));
 
   form.elements.perfumeBundleData.value = JSON.stringify(normalized);
   const feedback = form.querySelector("[data-perfume-bundle-feedback]");
@@ -7279,11 +7311,11 @@ function collectReviewProduct(form) {
       projection: projectionValue || null,
       sillage: projectionValue ? projectionScore(projectionValue) : (base.performance?.sillage ?? null)
     },
-    rating: Math.max(0, Math.min(5, Number(data.get("overallRating") || base.reviewSummary?.average || base.rating || 0))),
+    rating: data.get("overallRating") === "" ? (base.rating ?? null) : Math.max(0, Math.min(5, Number(data.get("overallRating")))),
     reviewSummary: {
       ...(base.reviewSummary || {}),
-      average: Math.max(0, Math.min(5, Number(data.get("overallRating") || base.reviewSummary?.average || base.rating || 0))),
-      count: Number(base.reviewSummary?.count || 0)
+      ...(data.get("overallRating") === "" ? {} : { average:Math.max(0, Math.min(5, Number(data.get("overallRating")))) }),
+      ...(data.get("reviewCount") === "" ? {} : { count:Math.max(0, Math.trunc(Number(data.get("reviewCount")))) })
     },
     releaseYear: data.get("releaseYear") === "" ? null : Number(data.get("releaseYear")),
     perfumer: data.has("perfumers") ? perfumers.map((item) => item.nameEn || item.nameAr).join(", ") : (base.perfumer || ""),
@@ -7305,11 +7337,17 @@ function collectReviewProduct(form) {
     inspiredReferenceId,
     similarity: data.has("similarity") ? (data.get("similarity") === "" ? null : Number(data.get("similarity"))) : (base.similarity ?? null),
     slug: String(data.get("slug") || "").trim(),
-    seo: {
-      title: String(data.get("seoTitle") || "").trim(),
-      description: String(data.get("seoDescription") || "").trim(),
-      keywords: csvValues(data.get("seoKeywords"))
-    },
+    seo: (() => {
+      const seo = { ...(base.seo || {}) };
+      const suffix = state.lang === "ar" ? "Ar" : "En";
+      seo[`title${suffix}`] = String(data.get("seoTitle") || "").trim();
+      seo[`description${suffix}`] = String(data.get("seoDescription") || "").trim();
+      seo[`keywords${suffix}`] = csvValues(data.get("seoKeywords"));
+      seo.title = seo[`title${suffix}`] || seo.title || "";
+      seo.description = seo[`description${suffix}`] || seo.description || "";
+      seo.keywords = [...new Set([...(seo.keywordsAr || []), ...(seo.keywordsEn || [])])];
+      return seo;
+    })(),
     variants: csvValues(data.get("variants")),
     featuredNotes: csvValues(data.get("featuredNotes")),
     hoverImage: String(data.get("hoverImage") || "").trim(),
@@ -7901,6 +7939,11 @@ document.addEventListener("click", async (event) => {
         base:normalized.notes.base.map((item) => item.en || item.ar)
       };
       merged.families = [normalized.perfume.fragranceFamilyEn || normalized.perfume.fragranceFamilyAr].filter(Boolean);
+      normalized.occasions.forEach((occasion, index) => {
+        const value = occasion.en || occasion.ar;
+        const option = { group:"occasion", value, slug:normalizeOptionSearch(value).replaceAll(" ", "-") || `bundle-occasion-${index}`, nameAr:occasion.ar || occasion.en, nameEn:occasion.en || occasion.ar, icon:"◇", active:true, metadata:{ source:"perfume_data_bundle" } };
+        state.productOptions = [...state.productOptions.filter((item) => !(item.group === "occasion" && normalizeOptionSearch(item.value || item.slug || item.nameEn || item.nameAr) === normalizeOptionSearch(value))), option];
+      });
       merged.accordProfile = normalized.accords.map((item, index) => {
         const known = ORIGO_ACCORD_LIBRARY.find(([id,nameAr,nameEn]) => [id,nameAr,nameEn].some((value) => [item.ar,item.en].some((name) => normalizeOptionSearch(name) === normalizeOptionSearch(value))));
         return known
@@ -10796,6 +10839,7 @@ window.ORIGOStore = {
   formatNumber,
   formatPercent,
   formatRating,
+  formatDate,
   formatPrice,
   renderCart,
   persist,

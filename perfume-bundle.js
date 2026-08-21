@@ -53,6 +53,14 @@
     validateArray(perfume.search_keywords_en, "perfume.search_keywords_en");
     validateNumber(perfume.size_ml, "perfume.size_ml", 0, Infinity, { positive: true });
     validateNumber(perfume.release_year, "perfume.release_year", 1800, new Date().getFullYear() + 2);
+    if (perfume.rating !== undefined) validateNumber(perfume.rating, "perfume.rating", 0, 5);
+    if (perfume.review_count !== undefined) validateNumber(perfume.review_count, "perfume.review_count", 0);
+    if (perfume.review_count != null && !Number.isInteger(perfume.review_count)) fail("perfume.review_count", "يجب أن يكون عددًا صحيحًا.");
+    if (isObject(perfume.rating_details)) {
+      if (perfume.rating_details.value !== undefined) validateNumber(perfume.rating_details.value, "perfume.rating_details.value", 0, 5);
+      if (perfume.rating_details.max !== undefined) validateNumber(perfume.rating_details.max, "perfume.rating_details.max", 0, Infinity, { positive:true });
+      if (perfume.rating_details.votes !== undefined) validateNumber(perfume.rating_details.votes, "perfume.rating_details.votes", 0);
+    }
     return true;
   }
 
@@ -88,11 +96,21 @@
       perfume: {
         nameAr: text(perfume.name_ar), nameEn: text(perfume.name_en),
         brandAr: text(perfume.brand_ar), brandEn: text(perfume.brand_en),
-        genderAr: text(perfume.gender_ar), genderEn: text(perfume.gender_en), gender: normalizeGender(perfume.gender_ar, perfume.gender_en),
+        genderAr: text(perfume.gender_ar), genderEn: text(perfume.gender_en), gender: normalizeGender(perfume.gender, perfume.gender_code, perfume.gender_ar, perfume.gender_en),
         concentrationAr: text(perfume.concentration_ar), concentrationEn: text(perfume.concentration_en), concentrationCode: text(perfume.concentration_code),
         sizeMl: numberOrNull(perfume.size_ml), releaseYear: numberOrNull(perfume.release_year),
         fragranceFamilyAr: text(perfume.fragrance_family_ar), fragranceFamilyEn: text(perfume.fragrance_family_en),
-        descriptionAr: text(perfume.short_description_ar), descriptionEn: text(perfume.short_description_en)
+        descriptionAr: text(perfume.short_description_ar), descriptionEn: text(perfume.short_description_en),
+        fullDescriptionAr: text(perfume.full_description_ar), fullDescriptionEn: text(perfume.full_description_en),
+        rating: perfume.rating == null ? numberOrNull(perfume.rating_details?.value) : numberOrNull(perfume.rating),
+        reviewCount: perfume.review_count == null ? numberOrNull(perfume.rating_details?.votes) : numberOrNull(perfume.review_count),
+        ratingDetails: isObject(perfume.rating_details) ? { ...perfume.rating_details } : null,
+        slug: text(perfume.slug), productUrl: text(perfume.product_url), canonicalUrl: text(perfume.canonical_url),
+        seo: isObject(perfume.seo) ? {
+          titleAr:text(perfume.seo.title_ar), titleEn:text(perfume.seo.title_en),
+          descriptionAr:text(perfume.seo.description_ar), descriptionEn:text(perfume.seo.description_en),
+          canonical:text(perfume.seo.canonical), robots:text(perfume.seo.robots)
+        } : null
       },
       accords: unique(perfume.accords.map((accord) => ({ ...bilingual(accord), percentage: Number(accord.percentage) })).filter((accord) => accord.ar || accord.en)),
       notes: { top: noteList("top"), heart: noteList("heart"), base: noteList("base") },
@@ -122,6 +140,7 @@
       releaseYear: perfume.releaseYear, fragranceFamilyAr: perfume.fragranceFamilyAr, fragranceFamilyEn: perfume.fragranceFamilyEn,
       families: [perfume.fragranceFamilyEn || perfume.fragranceFamilyAr].filter(Boolean),
       descriptionAr: perfume.descriptionAr, descriptionEn: perfume.descriptionEn,
+      fullDescriptionAr: perfume.fullDescriptionAr, fullDescriptionEn: perfume.fullDescriptionEn,
       accordProfile: normalized.accords.map((accord) => ({ nameAr: accord.ar, nameEn: accord.en, strength: accord.percentage, score: accord.percentage, source: "bundle" })),
       noteSelectionsBundle: normalized.notes,
       notes: unique(Object.values(normalized.notes).flat().map((note) => note.en || note.ar).filter(Boolean), normalizedKey),
@@ -133,6 +152,14 @@
       personalities: unique([...normalized.scentCharacter.ar, ...normalized.scentCharacter.en], normalizedKey),
       perfumeBundle: normalized
     });
+    const urlSlug = [perfume.slug, perfume.productUrl, perfume.canonicalUrl].map((value) => text(value)).find(Boolean) || "";
+    if (urlSlug) result.slug = urlSlug.replace(/[?#].*$/, "").replace(/\/$/, "").split("/").pop();
+    if (perfume.rating != null) {
+      result.rating = perfume.rating;
+      result.reviewSummary = { ...(product.reviewSummary || {}), average:perfume.rating };
+    }
+    if (perfume.reviewCount != null) result.reviewSummary = { ...(result.reviewSummary || product.reviewSummary || {}), count:perfume.reviewCount };
+    if (perfume.ratingDetails) result.ratingDetails = { ...perfume.ratingDetails };
     if (perfume.sizeMl === null) { result.size = ""; result.sizes = []; }
     else { result.size = `${perfume.sizeMl} ml`; result.sizes = [result.size]; }
     result.performance = {
@@ -145,7 +172,12 @@
       projectionAr: normalized.performance.projectionAr,
       projectionEn: normalized.performance.projectionEn
     };
-    result.seo = { ...(product.seo || {}), keywords: unique([...normalized.searchKeywords.ar, ...normalized.searchKeywords.en], normalizedKey) };
+    result.seo = {
+      ...(product.seo || {}),
+      ...(perfume.seo || {}),
+      keywordsAr:[...normalized.searchKeywords.ar], keywordsEn:[...normalized.searchKeywords.en],
+      keywords: unique([...normalized.searchKeywords.ar, ...normalized.searchKeywords.en], normalizedKey)
+    };
     return result;
   }
 
@@ -161,6 +193,7 @@
     return { perfume: {
       name_ar: text(product.nameAr), name_en: text(product.nameEn), brand_ar: text(product.brandAr || importedPerfume.brandAr), brand_en: text(product.brandEn || product.brand),
       gender_ar: text(product.genderAr || importedPerfume.genderAr), gender_en: text(product.genderEn || importedPerfume.genderEn),
+      gender: text(product.gender || importedPerfume.gender), gender_code: text(product.gender || importedPerfume.gender),
       concentration_ar: text(product.concentrationAr || importedPerfume.concentrationAr), concentration_en: text(product.concentrationEn || importedPerfume.concentrationEn), concentration_code: text(product.concentration),
       size_ml: Number.isFinite(size) ? size : null, release_year: product.releaseYear ?? importedPerfume.releaseYear ?? null,
       fragrance_family_ar: text(product.fragranceFamilyAr || importedPerfume.fragranceFamilyAr), fragrance_family_en: text(product.fragranceFamilyEn || product.families?.[0] || importedPerfume.fragranceFamilyEn),
@@ -175,6 +208,15 @@
       time: Object.fromEntries(["day", "night"].map((key) => [key, product.usageTimeScores?.[key] ?? null])),
       occasions: (product.occasionLabels || product.occasions || []).map((value) => typeof value === "string" ? { name_ar:value, name_en:value } : pair(value)),
       short_description_ar:text(product.descriptionAr), short_description_en:text(product.descriptionEn),
+      full_description_ar:text(product.fullDescriptionAr || importedPerfume.fullDescriptionAr), full_description_en:text(product.fullDescriptionEn || importedPerfume.fullDescriptionEn),
+      rating:product.reviewSummary?.average ?? product.rating ?? null, review_count:product.reviewSummary?.count ?? null,
+      rating_details:product.ratingDetails || importedPerfume.ratingDetails || undefined,
+      slug:text(product.slug || importedPerfume.slug), product_url:text(importedPerfume.productUrl), canonical_url:text(importedPerfume.canonicalUrl),
+      seo:{
+        title_ar:text(product.seo?.titleAr || importedPerfume.seo?.titleAr), title_en:text(product.seo?.titleEn || importedPerfume.seo?.titleEn),
+        description_ar:text(product.seo?.descriptionAr || importedPerfume.seo?.descriptionAr), description_en:text(product.seo?.descriptionEn || importedPerfume.seo?.descriptionEn),
+        canonical:text(product.seo?.canonical || importedPerfume.seo?.canonical), robots:text(product.seo?.robots || importedPerfume.seo?.robots)
+      },
       scent_character_ar:[...(product.scentCharacterAr || imported.scentCharacter?.ar || [])], scent_character_en:[...(product.scentCharacterEn || imported.scentCharacter?.en || [])],
       search_keywords_ar:keywords.filter((value) => arabicKeys.has(normalizedKey(value)) || /[\u0600-\u06FF]/.test(value)),
       search_keywords_en:keywords.filter((value) => !arabicKeys.has(normalizedKey(value)) && !/[\u0600-\u06FF]/.test(value))
