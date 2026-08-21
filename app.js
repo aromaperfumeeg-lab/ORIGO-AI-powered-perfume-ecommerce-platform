@@ -6163,6 +6163,45 @@ function showToast(message, type = "success") {
   setTimeout(() => toast.remove(), 4800);
 }
 
+let lastCommandFailure = { key:"", time:0 };
+
+function userFacingErrorMessage(error) {
+  const status = Number(error?.status || 0);
+  const code = String(error?.code || "").toUpperCase();
+  const ar = state.lang === "ar";
+  if (!navigator.onLine || error instanceof TypeError && /fetch|network|load/i.test(String(error.message || ""))) {
+    return ar ? "تعذر الاتصال بالخادم. تحقق من الإنترنت ثم أعد المحاولة." : "Could not reach the server. Check your connection and try again.";
+  }
+  if (status === 401 || /UNAUTH|SESSION|LOGIN/.test(code)) return ar ? "انتهت جلسة الدخول. سجّل الدخول مجددًا ثم أعد المحاولة." : "Your session has expired. Sign in again and retry.";
+  if (status === 403 || /FORBIDDEN|PERMISSION/.test(code)) return ar ? "ليس لديك صلاحية لتنفيذ هذا الأمر." : "You do not have permission to perform this action.";
+  if (status === 404) return ar ? "العنصر المطلوب غير موجود أو تم حذفه." : "The requested item was not found or was deleted.";
+  if (status === 409 || /DUPLICATE|CONFLICT/.test(code)) return ar ? "تعذر التنفيذ بسبب تعارض أو بيانات مكررة. حدّث الصفحة وراجع البيانات." : "The action conflicts with existing or duplicate data. Refresh and review the values.";
+  if (status === 413 || /TOO_LARGE|PAYLOAD/.test(code)) return ar ? "حجم البيانات أو الصور أكبر من الحد المسموح." : "The data or images exceed the allowed size.";
+  if (status === 422 || /VALID|INVALID|REQUIRED/.test(code)) return ar ? "بعض البيانات غير صالحة أو ناقصة. راجع الحقول المحددة." : "Some data is invalid or missing. Review the highlighted fields.";
+  if (/QUOTA|STORAGE/.test(code) || error?.name === "QuotaExceededError") return ar ? "مساحة التخزين غير كافية. قلّل حجم الصور أو احذف بيانات غير ضرورية." : "Storage is full. Reduce image sizes or remove unnecessary data.";
+  if (status >= 500) return ar ? "حدث خطأ في الخادم ولم يُنفّذ الأمر. حاول مجددًا بعد قليل." : "The server failed to complete the action. Try again shortly.";
+  const raw = String(error?.message || "").trim();
+  const safe = raw && raw.length <= 240 && !/\b(?:stack|syntaxerror|referenceerror|typeerror)\b|https?:\/\/|[A-Z]:\\/i.test(raw);
+  return safe ? raw : (ar ? "لم يُنفّذ الأمر بسبب خطأ غير متوقع. أعد المحاولة، وإذا استمر الخطأ حدّث الصفحة." : "The action failed because of an unexpected error. Retry, then refresh if it persists.");
+}
+
+function reportCommandFailure(error) {
+  const message = userFacingErrorMessage(error);
+  const now = Date.now();
+  if (lastCommandFailure.key === message && now - lastCommandFailure.time < 1500) return;
+  lastCommandFailure = { key:message, time:now };
+  showToast(message, "error");
+}
+
+window.addEventListener("unhandledrejection", (event) => {
+  reportCommandFailure(event.reason);
+});
+
+window.addEventListener("error", (event) => {
+  if (event.target && event.target !== window) return;
+  reportCommandFailure(event.error || new Error(event.message || "Unexpected command error"));
+});
+
 function escapeHTML(value = "") {
   return normalizeLatinDigits(value).replace(/[&<>"']/g, (char) => ({
     "&": "&amp;",
