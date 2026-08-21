@@ -7017,7 +7017,7 @@ function renderImportReview(product) {
     <label>${adminCopy("الرابط الأساسي SEO","SEO canonical URL")}<input name="seoCanonical" dir="ltr" value="${escapeHTML(product.seo?.canonical || "")}"/></label>
     <label>${adminCopy("تعليمات محركات البحث","SEO robots")}<input name="seoRobots" dir="ltr" value="${escapeHTML(product.seo?.robots || "")}" placeholder="index,follow"/></label>
   </div>`;
-  const publish = `<div class="product-publish-summary"><b>${adminCopy("اختر طريقة الحفظ","Choose save action")}</b><small>${adminCopy("المسودة مخفية، والمراجعة غير منشورة، والنشر يظهر المنتج فوراً للزوار.","Draft is hidden, review is unpublished, and publish makes the product visible immediately.")}</small></div><div class="review-submit-actions"><button class="button secondary-button" type="submit" name="workflowAction" value="draft">${adminCopy("حفظ كمسودة","Save draft")}</button><button class="button secondary-button" type="submit" name="workflowAction" value="review">${adminCopy("إرسال للمراجعة","Send for review")}</button><button class="button burgundy-button" type="submit" name="workflowAction" value="published">${adminCopy("نشر المنتج","Publish product")}</button>${product.id ? `<button class="button product-delete-button" type="button" data-action="delete-admin-product" data-id="${escapeHTML(product.id)}">${adminCopy("حذف المنتج نهائياً","Delete product permanently")}</button>` : ""}</div>`;
+  const publish = `<div class="product-publish-summary"><b>${adminCopy("اختر طريقة الحفظ","Choose save action")}</b><small>${adminCopy("المسودة مخفية، والمراجعة غير منشورة، والنشر يظهر المنتج فوراً للزوار.","Draft is hidden, review is unpublished, and publish makes the product visible immediately.")}</small></div><div class="review-submit-actions"><button class="button secondary-button" type="button" name="workflowAction" value="draft" data-action="save-catalog-product">${adminCopy("حفظ كمسودة","Save draft")}</button><button class="button secondary-button" type="button" name="workflowAction" value="review" data-action="save-catalog-product">${adminCopy("إرسال للمراجعة","Send for review")}</button><button class="button burgundy-button" type="button" name="workflowAction" value="published" data-action="save-catalog-product">${adminCopy("نشر المنتج","Publish product")}</button>${product.id ? `<button class="button product-delete-button" type="button" data-action="delete-admin-product" data-id="${escapeHTML(product.id)}">${adminCopy("حذف المنتج نهائياً","Delete product permanently")}</button>` : ""}</div>`;
   $("#import-workspace").innerHTML = `<form class="catalog-review product-editor-v2" id="import-review-form" data-editor-mode="smart">
     ${productEditorHiddenFields(product)}<div class="product-editor-status" data-product-editor-status role="alert" aria-live="assertive" hidden></div>
     ${productEditorGate(1,"الحزمة والهوية","Bundle & identity",`${perfumeBundleEditorSection(product)}${identity}`)}
@@ -7733,6 +7733,16 @@ async function saveCatalogProduct(form, workflowAction = "draft") {
   showToast(product.status === "published" ? adminCopy("تم نشر المنتج", "Product published") : product.status === "review" ? adminCopy("تم الإرسال للمراجعة", "Sent for review") : adminCopy("تم حفظ المسودة", "Draft saved"));
 }
 
+async function safelySaveCatalogProduct(form, workflowAction = "draft") {
+  if (!form) return;
+  try {
+    await saveCatalogProduct(form, workflowAction);
+  } catch (error) {
+    form.querySelectorAll("[name='workflowAction']").forEach((button) => { button.disabled = false; });
+    productEditorStatus(form, "error", adminCopy("تعذر حفظ المنتج", "Product save failed"), error?.message || adminCopy("حدث خطأ غير متوقع أثناء تجهيز بيانات المنتج.", "An unexpected error occurred while preparing the product data."));
+  }
+}
+
 function renderCatalogList() {
   const list = $("#catalog-list");
   if (!list) return;
@@ -7919,6 +7929,10 @@ document.addEventListener("click", async (event) => {
     return;
   }
   const action = actionElement.dataset.action;
+  if (action === "save-catalog-product") {
+    await safelySaveCatalogProduct(actionElement.closest("#import-review-form"), actionElement.value || "draft");
+    return;
+  }
   if (action === "drag-strip-scroll") {
     const track = actionElement.closest(".home-brand-directory,.home-benefits-directory")?.querySelector(".brand-carousel-track,.benefit-carousel-track");
     if (track) {
@@ -9949,7 +9963,7 @@ document.addEventListener("submit", async (event) => {
       button.querySelector("span").textContent = state.lang === "ar" ? "اشترك الآن" : "Subscribe now";
     }, 1200);
   }
-  if (event.target.id === "import-review-form") await saveCatalogProduct(event.target, event.submitter?.value || "draft");
+  if (event.target.id === "import-review-form") await safelySaveCatalogProduct(event.target, event.submitter?.value || "draft");
 });
 
 $$(".note-bubble").forEach((button) => button.addEventListener("click", () => updateNoteSelection(button)));
