@@ -4,6 +4,7 @@ import { readFile } from "node:fs/promises";
 
 const app = await readFile(new URL("../app.js", import.meta.url), "utf8");
 const finder = await readFile(new URL("../fragrance-finder.js", import.meta.url), "utf8");
+const alternatives = await readFile(new URL("../alternatives.js", import.meta.url), "utf8");
 const helperSource = app.slice(app.indexOf("function normalizeLatinDigits"), app.indexOf("const formatPrice"));
 const helpers = Function(`${helperSource}; return { normalizeLatinDigits, formatNumber, formatPercent, formatRating };`)();
 
@@ -45,3 +46,23 @@ test("Arabic-Indic literals exist only inside the conversion utility", () => {
   assert.doesNotMatch(finder, /[٠-٩۰-۹]/u);
 });
 
+test("product cards and details share rating and reviewer-count formatting", () => {
+  assert.match(app, /function productRatingSummary\(product\)/);
+  assert.match(app, /class="exact-card-rating"[\s\S]{0,400}formatNumber\(ratingSummary\.count\)/);
+  assert.match(app, /class="pdp-rating-summary"[\s\S]{0,500}formatNumber\(ratingSummary\.count\)/);
+  assert.match(app, /isArabic \? "تقييم" : "reviews"/);
+  assert.match(app, /ratingSummary\.rating == null \? ""/);
+});
+
+test("the shared date formatter forces Latin digits", () => {
+  assert.match(app, /const formatDate =/);
+  assert.match(app, /ar-EG-u-nu-latn/);
+  assert.match(app, /formatDate,/);
+});
+
+test("dynamic form values normalize digits without parsing IDs or phone numbers", () => {
+  assert.match(app, /document\.addEventListener\("input"[\s\S]*normalizeLatinDigits\(event\.target\.value\)/);
+  assert.doesNotMatch(app, /parseInt\(event\.target\.value\)/);
+  assert.match(alternatives, /Intl\.NumberFormat\("en-US", \{ numberingSystem:"latn"/);
+  assert.doesNotMatch(alternatives, /toLocaleString\(lang\(\) === "ar"/);
+});
