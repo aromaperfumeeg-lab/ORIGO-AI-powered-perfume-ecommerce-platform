@@ -984,8 +984,14 @@ h2 em {
     var(--paper);
 }
 
-.dark .product-image {
-  background: radial-gradient(circle at 50% 40%, #332b27, #1b1615 68%);
+.dark .product-image,
+html[data-theme="dark"] .product-image {
+  background: #000;
+}
+
+body:not(.dark) .product-image,
+html[data-theme="light"] .product-image {
+  background: #fff;
 }
 
 .product-image::after {

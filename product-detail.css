@@ -77,6 +77,9 @@ body.dark .pdp-restock-card>header>span{background:#321c22}
 }
 .pdp-accord-visual img,.pdp-accord-visual .accord-photo{width:100%;height:100%;display:block;object-fit:cover}.pdp-accord-visual .accord-photo{background-image:var(--accord-photo-url);background-size:500% 200%;background-position:calc(var(--accord-photo-x) * 25%) calc(var(--accord-photo-y) * 100%);background-repeat:no-repeat}.pdp-accord-visual .accord-photo.is-generic{background-image:radial-gradient(circle at 35% 35%,color-mix(in srgb,var(--accord-color) 28%,white),transparent 38%),linear-gradient(145deg,color-mix(in srgb,var(--accord-color) 18%,white),color-mix(in srgb,var(--accord-color) 45%,#ddd))}
 
+body.dark .pdp-main-image,html[data-theme="dark"] .pdp-main-image,body.dark .pdp-thumbnails button,html[data-theme="dark"] .pdp-thumbnails button{background:#000}
+body:not(.dark) .pdp-main-image,html[data-theme="light"] .pdp-main-image,body:not(.dark) .pdp-thumbnails button,html[data-theme="light"] .pdp-thumbnails button{background:#fff}
+
 /* Fullscreen product image studio with touch pinch/drag support. */
 body.product-image-lightbox-open{overflow:hidden!important}
 .pdp-main-image[data-action="product-zoom"]{cursor:zoom-in;touch-action:manipulation}

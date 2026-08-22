@@ -9,6 +9,18 @@ const styles = await readFile(new URL("../styles.css", import.meta.url), "utf8")
 const productDetail = await readFile(new URL("../product-detail.css", import.meta.url), "utf8");
 const performance = app.slice(app.indexOf("function perfumePerformanceEditorSection"), app.indexOf("const PRODUCT_PROFILE_IMAGE_FIELDS"));
 
+test("dark mode uses a black background behind product imagery", () => {
+  assert.match(styles,/html\[data-theme="dark"\] \.product-image \{\s*background: #000/);
+  assert.match(productDetail,/html\[data-theme="dark"\] \.pdp-main-image/);
+  assert.match(productDetail,/\.pdp-thumbnails button\{background:#000\}/);
+});
+
+test("light mode uses a white background behind transparent product imagery", () => {
+  assert.match(styles,/html\[data-theme="light"\] \.product-image \{\s*background: #fff/);
+  assert.match(productDetail,/html\[data-theme="light"\] \.pdp-main-image/);
+  assert.match(productDetail,/\.pdp-thumbnails button\{background:#fff\}/);
+});
+
 test("season and time controls use inline decorative SVG instead of emoji", () => {
   assert.match(performance, /<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">/);
   assert.doesNotMatch(performance, /❄|🍂|🌸|☀|🌙/u);
