@@ -1604,6 +1604,36 @@ async function requestAdminProductSave(product) {
   return result.product;
 }
 
+function productTranslationKey(value) {
+  return normalizeOptionSearch(String(value || ""));
+}
+
+function productArabicTranslation(product, ar, en) {
+  const arabic = String(ar || "").trim();
+  const english = String(en || "").trim();
+  const missing = !arabic || productTranslationKey(arabic) === productTranslationKey(english);
+  return missing ? String(product?.translationOverrides?.[productTranslationKey(english)] || arabic || english).trim() : arabic;
+}
+
+function applyProductArabicTranslations(product = {}) {
+  const translate = (ar,en) => productArabicTranslation(product,ar,en);
+  product.familyAr = translate(product.familyAr,product.familyEn);
+  product.fragranceFamilyAr = translate(product.fragranceFamilyAr,product.fragranceFamilyEn);
+  product.occasionLabels = (product.occasionLabels || []).map(item => ({ ...item, ar:translate(item.ar || item.nameAr || item.name_ar,item.en || item.nameEn || item.name_en) }));
+  product.accordProfile = (product.accordProfile || []).map(item => ({ ...item, nameAr:translate(item.nameAr,item.nameEn || item.name || item.id) }));
+  if (product.perfumeProfile) {
+    product.perfumeProfile = { ...product.perfumeProfile };
+    ["accords","manualOverrides"].forEach(key => { if (Array.isArray(product.perfumeProfile[key])) product.perfumeProfile[key] = product.perfumeProfile[key].map(item => ({ ...item, nameAr:translate(item.nameAr,item.nameEn || item.name || item.id) })); });
+  }
+  const noteBundle = product.noteSelectionsBundle || {};
+  product.noteSelectionsBundle = Object.fromEntries(Object.entries(noteBundle).map(([level,items]) => [level,(items || []).map(item => ({ ...item, ar:translate(item.ar || item.nameAr || item.name_ar,item.en || item.nameEn || item.name_en) }))]));
+  if (product.notes) ["top","heart","base"].forEach(level => { const en=product.notes[`${level}En`] || []; product.notes[`${level}Ar`] = en.map((value,index)=>translate(product.notes[`${level}Ar`]?.[index],value)); });
+  if (product.noteLibrary?.refs) product.noteLibrary.refs = product.noteLibrary.refs.map(item => ({ ...item, nameAr:translate(item.nameAr,item.nameEn) }));
+  product.scentCharacterAr = (product.scentCharacterEn || []).map((value,index)=>translate(product.scentCharacterAr?.[index],value));
+  ["inspiredBy","closestMatches"].forEach(kind => { if (product.inspiration?.[kind]) product.inspiration[kind] = product.inspiration[kind].map(item => ({ ...item, nameAr:translate(item.nameAr,item.nameEn), brandAr:translate(item.brandAr,item.brandEn), reasonAr:translate(item.reasonAr,item.reasonEn) })); });
+  return product;
+}
+
 async function persistAdminProduct(product) {
   const savedProduct = await requestAdminProductSave(product);
   await loadAdminCatalog();
@@ -5153,7 +5183,7 @@ function accordPhotoMarkup(item, className = "") {
   if (item?.image) return `<img src="${escapeHTML(item.image)}" alt="" loading="lazy"/>`;
   const cell = accordPhotoCell(item);
   if (!cell) return `<span class="accord-photo is-generic${className ? ` ${className}` : ""}" aria-hidden="true"></span>`;
-  return `<span class="accord-photo${className ? ` ${className}` : ""}" style="--accord-photo-url:url('assets/accords/accord-photo-atlas-v2-${cell.atlas}.webp');--accord-photo-x:${cell.column};--accord-photo-y:${cell.row}" aria-hidden="true"></span>`;
+  return `<span class="accord-photo${className ? ` ${className}` : ""}" style="--accord-photo-url:url('assets/accords/accord-photo-atlas-v3-${cell.atlas}.webp');--accord-photo-x:${cell.column};--accord-photo-y:${cell.row}" aria-hidden="true"></span>`;
 }
 
 function productAccordMarkup(product) {
@@ -7264,7 +7294,7 @@ function renderImportReview(product) {
   const relationships = fragranceRelationshipsEditorSection(product);
   const media = `<div class="product-editor-upload-row"><label class="gallery-upload"><input id="gallery-upload" type="file" accept="image/jpeg,image/png,image/webp,image/avif" multiple/><span>＋</span><div><b>${adminCopy("رفع صور المنتج","Upload product images")}</b><small>${adminCopy("حتى 10 صور؛ اختر الرئيسية ورتّب بالسحب أو الأسهم","Up to 10 images; choose primary and reorder by drag or arrows")}</small></div></label></div>${productMediaStudioMarkup(images)}`;
   const seoKeywords = bilingualSeoKeywordValues(product.seo);
-  const content = `<div class="review-grid product-content-grid">
+  const content = `${productArabicTranslationEditor(product)}<div class="review-grid product-content-grid">
     <label class="wide">${adminCopy("الوصف المختصر بالعربية","Arabic short description")}<textarea name="descriptionAr">${escapeHTML(product.descriptionAr || "")}</textarea></label>
     <label class="wide">${adminCopy("الوصف المختصر بالإنجليزية","English short description")}<textarea name="descriptionEn" dir="ltr">${escapeHTML(product.descriptionEn || "")}</textarea></label>
     <label class="wide">${adminCopy("الوصف الكامل بالعربية","Arabic full description")}<textarea name="fullDescriptionAr" rows="7">${escapeHTML(product.fullDescriptionAr || "")}</textarea></label>
@@ -7498,6 +7528,12 @@ function clearProductEditorStatus(form) {
 function collectReviewProduct(form) {
   const data = new FormData(form);
   const base = state.activeImportDraft || ORIGOCatalog.emptyProduct();
+  const translationOverrides = { ...(base.translationOverrides || {}) };
+  form.querySelectorAll("[data-product-translation]").forEach(row => {
+    const key=String(row.dataset.translationKey || "").trim(), value=String(row.querySelector("input")?.value || "").trim();
+    if (!key) return;
+    if (value) translationOverrides[key]=value; else delete translationOverrides[key];
+  });
   let perfumeBundle = null;
   try { perfumeBundle = data.get("perfumeBundleData") ? JSON.parse(data.get("perfumeBundleData")) : (base.perfumeBundle || null); } catch {}
   const inspiredReferenceId = String(data.get("inspiredReferenceId") || "").trim();
@@ -7540,6 +7576,7 @@ function collectReviewProduct(form) {
   const projectionValue = normalizeAdminProjection(data.get("performanceProjection"));
   const product = {
     ...base,
+    translationOverrides,
     id: base.id || `catalog-${Date.now()}`,
     nameAr: String(data.get("nameAr") || "").trim(),
     nameEn: String(data.get("nameEn") || "").trim(),
@@ -7698,7 +7735,7 @@ function collectReviewProduct(form) {
       fetchedAt: new Date().toISOString()
     }];
   }
-  return ORIGOCatalog.computeConfidence(product);
+  return ORIGOCatalog.computeConfidence(applyProductArabicTranslations(product));
 }
 
 function fileAsDataURL(file) {
@@ -7871,6 +7908,23 @@ function updateDuplicateWarning(form) {
     else alert.innerHTML = "";
   }
   return duplicate;
+}
+
+function productArabicTranslationEditor(product = {}) {
+  const terms = new Map();
+  const add = (ar,en,section) => {
+    const english=String(en || "").trim(), arabic=String(ar || "").trim(), key=productTranslationKey(english);
+    if (!english || /[\u0600-\u06ff]/.test(english) || (arabic && productTranslationKey(arabic)!==key)) return;
+    if (!terms.has(key)) terms.set(key,{ key,english,section,arabic:String(product.translationOverrides?.[key] || "").trim() });
+  };
+  add(product.fragranceFamilyAr || product.familyAr,product.fragranceFamilyEn || product.familyEn,"العائلة العطرية");
+  (product.occasionLabels || []).forEach(item=>add(item.ar || item.nameAr || item.name_ar,item.en || item.nameEn || item.name_en,"المناسبات"));
+  (product.accordProfile || []).forEach(item=>add(item.nameAr,item.nameEn || item.name || item.id,"الأكوردات"));
+  Object.values(product.noteSelectionsBundle || {}).flat().forEach(item=>add(item.ar || item.nameAr || item.name_ar,item.en || item.nameEn || item.name_en,"النوتات"));
+  (product.scentCharacterEn || []).forEach((en,index)=>add(product.scentCharacterAr?.[index],en,"شخصية العطر"));
+  ["inspiredBy","closestMatches"].forEach(kind=>(product.inspiration?.[kind] || []).forEach(item=>{add(item.nameAr,item.nameEn,"العلاقات العطرية");add(item.brandAr,item.brandEn,"العلاقات العطرية");add(item.reasonAr,item.reasonEn,"أسباب العلاقة")}));
+  if (!terms.size) return `<section class="product-translation-audit is-complete"><b>${adminCopy("اكتمال الترجمة العربية","Arabic translation complete")}</b><p>${adminCopy("لا توجد قيم إنجليزية مفقودة الترجمة في بيانات هذا المنتج.","No product values are missing Arabic translations.")}</p></section>`;
+  return `<section class="product-translation-audit"><header><div><b>${adminCopy("ترجمات عربية ناقصة","Missing Arabic translations")}</b><p>${adminCopy("أكمل هذه الحقول حتى لا تظهر المصطلحات الإنجليزية في المتجر العربي.","Complete these fields so English terms do not appear in the Arabic storefront.")}</p></div><em>${formatNumber(terms.size)}</em></header><div>${[...terms.values()].map(item=>`<label data-product-translation data-translation-key="${escapeHTML(item.key)}"><span><small>${escapeHTML(item.section)}</small><b dir="ltr">${escapeHTML(item.english)}</b></span><input dir="rtl" value="${escapeHTML(item.arabic)}" placeholder="${adminCopy("اكتب الترجمة العربية","Enter Arabic translation")}"/></label>`).join("")}</div></section>`;
 }
 
 async function handleRelationshipImageUpload(input) {

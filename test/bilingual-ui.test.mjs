@@ -39,6 +39,17 @@ test("storefront, admin, product data and finder render one effective language",
   assert.match(finderI18n, /Find Your Perfect Fragrance/);
 });
 
+test("product editor exposes and persists missing Arabic product-data translations", () => {
+  assert.match(app,/function productArabicTranslationEditor/);
+  assert.match(app,/data-product-translation/);
+  assert.match(app,/translationOverrides/);
+  assert.match(app,/applyProductArabicTranslations\(product\)/);
+  assert.match(app,/fragranceFamilyAr/);
+  assert.match(app,/occasionLabels/);
+  assert.match(app,/noteSelectionsBundle/);
+  assert.match(app,/accordProfile/);
+});
+
 test("uses, fragrance family and notes follow the active storefront language with fallback", () => {
   assert.match(app,/return localizedText\(note\?\.nameAr, note\?\.nameEn\)/);
   assert.match(app,/return localizedText\(family\?\.nameAr, family\?\.nameEn\)/);
@@ -88,12 +99,12 @@ test("admin and storefront accords are ordered by descending strength", () => {
 
 test("admin and storefront accords use local photographic artwork instead of symbols", async () => {
   const accordDisplay = app.slice(app.indexOf("function accordPhotoCell"),app.indexOf("function productHeroProfileMarkup"));
-  assert.match(accordDisplay,/accord-photo-atlas-v2-/);
+  assert.match(accordDisplay,/accord-photo-atlas-v3-/);
   assert.match(accordDisplay,/atlas:atlas\+1, column:index%5, row:Math\.floor\(index\/5\)/);
   assert.match(app,/accordPhotoMarkup\(\{id,nameAr,nameEn\},"is-admin"\)/);
   assert.doesNotMatch(accordDisplay,/item\.icon\|\|item\.symbol/);
   for (let atlas=1; atlas<=5; atlas+=1) {
-    const artwork = await readFile(new URL(`../assets/accords/accord-photo-atlas-v2-${atlas}.webp`,import.meta.url));
+    const artwork = await readFile(new URL(`../assets/accords/accord-photo-atlas-v3-${atlas}.webp`,import.meta.url));
     assert.ok(artwork.length > 10000);
   }
 });
