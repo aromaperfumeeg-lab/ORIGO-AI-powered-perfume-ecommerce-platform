@@ -49,6 +49,12 @@ test("product detail displays official inspiration and clearly labelled estimate
   assert.doesNotMatch(storefront,/perfumeResolvedAccords|productRelated/);
 });
 
+test("internal fragrance relationships resolve images through the product media system", () => {
+  const storefront = app.slice(app.indexOf("function resolveFragranceRelationship"), app.indexOf("let lastCommandFailure"));
+  assert.match(storefront,/productMedia\(internal\)\[0\]\?\.url \|\| internal\.image/);
+  assert.doesNotMatch(storefront,/\bproductImage\(internal\)/);
+});
+
 test("similar-scent products require complete data and a meaningful note-and-accord score", () => {
   const matcher = app.slice(app.indexOf("function fragranceMatchData"), app.indexOf("function rememberProduct"));
   assert.match(matcher,/\["top","heart","base"\]/);

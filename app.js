@@ -2051,11 +2051,13 @@ function productViewMarkup() {
     : ["Product", "SKU", "Price", "Inventory", "Status", "Action"];
   const rows = state.products.map((product) => {
     const inventory = inventoryForProduct(product);
-    return `<tr><td><span class="admin-product-cell"><img src="${escapeHTML(product.image || PRODUCT_IMAGE_PLACEHOLDER)}" alt="" /><span><b>${escapeHTML(state.lang === "ar" ? product.nameAr : product.nameEn || product.nameAr)}</b><small>${escapeHTML(product.brand)}</small></span></span></td>
-      <td><small dir="ltr">${escapeHTML(product.sku || "—")}</small></td><td><b>${formatPrice(product.price)}</b></td>
-      <td><span class="stock-pill ${inventory.quantity - inventory.reserved <= inventory.minimum ? "low" : ""}">${inventory.quantity - inventory.reserved}</span></td>
+    const available = Math.max(0,inventory.quantity-inventory.reserved);
+    return `<tr data-inline-product-row data-id="${escapeHTML(product.id)}"><td><span class="admin-product-cell"><img src="${escapeHTML(product.image || PRODUCT_IMAGE_PLACEHOLDER)}" alt="" /><span><b>${escapeHTML(state.lang === "ar" ? product.nameAr : product.nameEn || product.nameAr)}</b><small>${escapeHTML(product.brand)}</small></span></span></td>
+      <td><small dir="ltr">${escapeHTML(product.sku || "—")}</small></td><td><label class="product-inline-number"><span>${state.lang === "ar" ? "السعر" : "Price"}</span><input type="number" min="0" step="0.01" inputmode="decimal" data-inline-product-price value="${escapeHTML(normalizeLatinDigits(product.price ?? 0))}"/></label></td>
+      <td><label class="product-inline-number"><span>${state.lang === "ar" ? "المخزون المتاح" : "Available stock"}</span><input type="number" min="0" step="1" inputmode="numeric" data-inline-product-stock value="${escapeHTML(normalizeLatinDigits(available))}"/></label></td>
       <td><span class="admin-status ${escapeHTML(product.status || "published")}">${adminStatusLabel(product.status || "published")}</span></td>
       <td><span class="admin-table-actions">
+        <button class="table-action product-inline-save" data-action="save-inline-product" data-id="${escapeHTML(product.id)}">${state.lang === "ar" ? "حفظ" : "Save"}</button>
         <button class="table-action" data-action="edit-admin-product" data-id="${escapeHTML(product.id)}">${state.lang === "ar" ? "تعديل" : "Edit"}</button>
         <button class="table-action" data-action="duplicate-admin-product" data-id="${escapeHTML(product.id)}">${state.lang === "ar" ? "نسخ" : "Duplicate"}</button>
         <button class="table-action" data-action="toggle-admin-product" data-id="${escapeHTML(product.id)}">${product.status === "published" ? (state.lang === "ar" ? "إيقاف" : "Disable") : (state.lang === "ar" ? "نشر" : "Publish")}</button>
@@ -6363,7 +6365,7 @@ function fragranceRelationshipCard(relation, kind) {
   const sources = closest ? [...(relation.sources || []), ...(relation.sourceName || relation.sourceUrl ? [{name:relation.sourceName,url:relation.sourceUrl}] : [])].filter((source) => source?.name || source?.url) : [];
   const evidence = breakdown.length ? `<dl class="relationship-evidence">${breakdown.map(([score,label]) => `<div><dt>${label}</dt><dd>${formatPercent(score)}</dd></div>`).join("")}</dl>` : "";
   const citations = sources.length ? `<div class="relationship-sources"><b>${ar ? "المصادر" : "Sources"}</b>${sources.map((source) => `<small title="${escapeHTML(source.url || "")}">${escapeHTML(source.name || source.url)}</small>`).join("")}</div>` : "";
-  const relationshipImage = internal ? productImage(internal) : String(relation.imageUrl || "").trim();
+  const relationshipImage = internal ? (productMedia(internal)[0]?.url || internal.image || "") : String(relation.imageUrl || "").trim();
   const content = `${relationshipImage ? `<img src="${escapeHTML(relationshipImage)}" alt="${escapeHTML(name)}" loading="lazy"/>` : ""}<span><small>${escapeHTML(brand)}</small><b>${escapeHTML(name || brand || (ar ? "مرجع عطري" : "Fragrance reference"))}</b>${percentage}${closest ? `<small class="relationship-estimate-notice">${ar ? "تقدير تحليلي غير رسمي من الشركة" : "Analytical estimate; not an official brand statement"}</small>` : ""}${evidence}${reason ? `<p>${escapeHTML(reason)}</p>` : ""}${citations}</span>`;
   return internal ? `<button type="button" class="fragrance-relationship-card-public is-internal" data-action="open-product" data-id="${escapeHTML(internal.id)}">${content}</button>` : `<article class="fragrance-relationship-card-public is-external${relationshipImage ? " has-image" : ""}">${content}</article>`;
 }
@@ -9091,6 +9093,36 @@ document.addEventListener("click", async (event) => {
     renderCatalogList();
     openOverlay("#product-admin-overlay");
     startManualProduct();
+  }
+  if (action === "save-inline-product") {
+    const row=actionElement.closest("[data-inline-product-row]");
+    const product=state.catalogProducts.find(item=>String(item.id)===String(actionElement.dataset.id)) || state.products.find(item=>String(item.id)===String(actionElement.dataset.id));
+    const price=Number(row?.querySelector("[data-inline-product-price]")?.value);
+    const available=Number(row?.querySelector("[data-inline-product-stock]")?.value);
+    if (!product || !Number.isFinite(price) || price<0 || !Number.isInteger(available) || available<0) {
+      showToast(adminCopy("أدخل سعرًا صحيحًا ومخزونًا صحيحًا دون كسور.","Enter a valid price and a non-negative whole stock quantity."),"error");
+      return;
+    }
+    const inventory=inventoryForProduct(product);
+    const updated={ ...structuredClone(product), price, inventory:{ ...(product.inventory || {}), ...inventory, quantity:available+inventory.reserved } };
+    const original=actionElement.textContent;
+    actionElement.disabled=true;
+    actionElement.textContent=adminCopy("جارٍ الحفظ…","Saving…");
+    try {
+      const saved=await requestAdminProductSave(updated);
+      state.adminWorkspace.inventory[product.id]={ ...updated.inventory };
+      await saveAdminWorkspaceNow("products");
+      const index=state.catalogProducts.findIndex(item=>String(item.id)===String(product.id));
+      if(index>=0) state.catalogProducts.splice(index,1,saved || updated);
+      await loadAdminCatalog();
+      renderAdminDashboard("products");
+      showToast(adminCopy("تم حفظ السعر والمخزون.","Price and inventory saved."),"success");
+    } catch(error) {
+      actionElement.disabled=false;
+      actionElement.textContent=original;
+      showToast(error.message || adminCopy("تعذر حفظ السعر والمخزون.","Could not save price and inventory."),"error");
+    }
+    return;
   }
   if (action === "edit-admin-product") {
     const product = state.catalogProducts.find((item) => item.id === actionElement.dataset.id)
