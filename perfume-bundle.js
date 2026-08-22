@@ -61,15 +61,16 @@
       if (perfume.rating_details.max !== undefined) validateNumber(perfume.rating_details.max, "perfume.rating_details.max", 0, Infinity, { positive:true });
       if (perfume.rating_details.votes !== undefined) validateNumber(perfume.rating_details.votes, "perfume.rating_details.votes", 0);
     }
-    const inspiredBy = perfume.inspiration?.inspired_by;
-    const closestMatches = perfume.inspiration?.closest_matches;
+    const inspiredBy = perfume.inspiration?.inspired_by ?? perfume.inspiration?.inspiredBy;
+    const closestMatches = perfume.inspiration?.closest_matches ?? perfume.inspiration?.closestMatches;
     if (inspiredBy !== undefined) validateArray(inspiredBy, "perfume.inspiration.inspired_by");
     if (closestMatches !== undefined) validateArray(closestMatches, "perfume.inspiration.closest_matches");
     if (perfume.similar_fragrances !== undefined) validateArray(perfume.similar_fragrances, "perfume.similar_fragrances");
     [...(inspiredBy || []), ...(closestMatches || []), ...(perfume.similar_fragrances || [])].forEach((relation, index) => {
       if (!isObject(relation)) fail(`perfume.fragrance_relationships[${index}]`, "يجب أن يكون Object.");
-      if (relation.similarity_percentage !== undefined) validateNumber(relation.similarity_percentage, `perfume.fragrance_relationships[${index}].similarity_percentage`, 0, 100);
-      ["notes_similarity","accords_similarity","character_similarity","community_similarity"].forEach((field) => { if (relation[field] !== undefined) validateNumber(relation[field], `perfume.fragrance_relationships[${index}].${field}`, 0, 100); });
+      const overall = relation.similarity_percentage ?? relation.similarityPercentage;
+      if (overall !== undefined) validateNumber(overall, `perfume.fragrance_relationships[${index}].${relation.similarity_percentage !== undefined ? "similarity_percentage" : "similarityPercentage"}`, 0, 100);
+      [["notes_similarity","notesSimilarity"],["accords_similarity","accordsSimilarity"],["character_similarity","characterSimilarity"],["community_similarity","communitySimilarity"]].forEach(([snake,camel]) => { const score=relation[snake] ?? relation[camel]; if (score !== undefined) validateNumber(score, `perfume.fragrance_relationships[${index}].${camel}`, 0, 100); });
       if (relation.sources !== undefined) validateArray(relation.sources, `perfume.fragrance_relationships[${index}].sources`);
     });
     return true;
@@ -95,6 +96,13 @@
   }
 
   function normalizeRelationship(value, { inspired = false, closest = false } = {}) {
+    const sources = (Array.isArray(value?.sources) ? value.sources : []).map((source) => {
+      if (typeof source === "string") {
+        const [name,...urlParts] = source.split("|");
+        return { name:text(name), url:text(urlParts.join("|")) };
+      }
+      return { name:text(source?.name), url:text(source?.url) };
+    }).filter((source) => source.name || source.url);
     const relation = {
       nameAr:text(value?.name_ar ?? value?.nameAr), nameEn:text(value?.name_en ?? value?.nameEn),
       brandAr:text(value?.brand_ar ?? value?.brandAr), brandEn:text(value?.brand_en ?? value?.brandEn),
@@ -104,7 +112,7 @@
       imageUrl:text(value?.image_url ?? value?.imageUrl),
       notesSimilarity:numberOrNull(value?.notes_similarity ?? value?.notesSimilarity), accordsSimilarity:numberOrNull(value?.accords_similarity ?? value?.accordsSimilarity),
       characterSimilarity:numberOrNull(value?.character_similarity ?? value?.characterSimilarity), communitySimilarity:numberOrNull(value?.community_similarity ?? value?.communitySimilarity),
-      sources:(Array.isArray(value?.sources) ? value.sources : []).map((source) => ({ name:text(source?.name), url:text(source?.url) })).filter((source) => source.name || source.url)
+      sources
     };
     if (inspired) {
       relation.relationshipAr = text(value?.relationship_ar ?? value?.relationshipAr) || "مستوحى منه";
@@ -187,7 +195,7 @@
       occasions: unique(perfume.occasions.map(bilingual).filter((occasion) => occasion.ar || occasion.en)),
       scentCharacter: { ar: unique(perfume.scent_character_ar.map(text).filter(Boolean), normalizedKey), en: unique(perfume.scent_character_en.map(text).filter(Boolean), normalizedKey) },
       searchKeywords: { ar: keywordList(perfume.search_keywords_ar), en: keywordList(perfume.search_keywords_en) },
-      inspiration: { inspiredBy:normalizeRelationships(perfume.inspiration?.inspired_by, { inspired:true }), ...(Array.isArray(perfume.inspiration?.closest_matches) ? { closestMatches:normalizeRelationships(perfume.inspiration.closest_matches, { closest:true }) } : {}) },
+      inspiration: { inspiredBy:normalizeRelationships(perfume.inspiration?.inspired_by ?? perfume.inspiration?.inspiredBy, { inspired:true }), ...(Array.isArray(perfume.inspiration?.closest_matches ?? perfume.inspiration?.closestMatches) ? { closestMatches:normalizeRelationships(perfume.inspiration.closest_matches ?? perfume.inspiration.closestMatches, { closest:true }) } : {}) },
       similarFragrances: normalizeRelationships(perfume.similar_fragrances)
     };
   }
