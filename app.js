@@ -4841,6 +4841,7 @@ function restoreStoreMeta() {
   const meta = document.querySelector('meta[name="description"]');
   if (meta) meta.content = defaultMetaDescription;
   document.querySelector('link[rel="canonical"]')?.remove();
+  document.querySelector('meta[data-product-robots="true"]')?.remove();
   document.querySelector("#notes-structured-data")?.remove();
 }
 
@@ -5069,10 +5070,10 @@ function productNotePyramid(product) {
             familyId: ref?.familyId || "uncategorized", symbol: "?", image: ref?.image || ""
           };
           const label = state.lang === "ar" ? unknown.nameAr || unknown.nameEn : unknown.nameEn || unknown.nameAr;
-          return `<span class="dialog-note-chip${ref ? " custom" : " unknown"}"><img src="${escapeHTML(ref?.image || library?.artwork?.(unknown) || PRODUCT_IMAGE_PLACEHOLDER)}" alt="${escapeHTML(label)}" /><b>${escapeHTML(label)}</b><small>${escapeHTML(ref ? (state.lang === "ar" ? unknown.nameEn : unknown.nameAr) : (state.lang === "ar" ? "غير مصنف" : "Unclassified"))}</small></span>`;
+          return `<span class="dialog-note-chip${ref ? " custom" : " unknown"}"><img src="${escapeHTML(ref?.image || library?.artwork?.(unknown) || PRODUCT_IMAGE_PLACEHOLDER)}" alt="${escapeHTML(label)}" data-note-artwork="true" data-note-name-ar="${escapeHTML(unknown.nameAr)}" data-note-name-en="${escapeHTML(unknown.nameEn)}" data-note-family="${escapeHTML(unknown.familyId)}" /><b>${escapeHTML(label)}</b>${ref ? "" : `<small>${state.lang === "ar" ? "غير مصنف" : "Unclassified"}</small>`}</span>`;
         }
         return `<button class="dialog-note-chip" data-action="open-note" data-slug="${escapeHTML(note.slug)}">
-          <img src="${escapeHTML(library.artwork(note))}" alt="" /><b>${escapeHTML(noteLabel(note))}</b><small>${escapeHTML(state.lang === "ar" ? note.nameEn : note.nameAr)}</small></button>`;
+          <img src="${escapeHTML(library.artwork(note))}" alt="${escapeHTML(noteLabel(note))}" data-note-artwork="true" data-note-slug="${escapeHTML(note.slug)}" /><b>${escapeHTML(noteLabel(note))}</b></button>`;
       }).join("")}</div>
     </div>`;
   }).join("");
@@ -5148,7 +5149,7 @@ function productProfileArtwork(product, key, className = "") {
 function productPerformanceImagesMarkup(product) {
   const keys = ["scent", "wear", "longevity", "sillage", "gender", "value"];
   const cards = keys.map((key) => productProfileArtwork(product, key, `is-${key}`)).filter(Boolean);
-  if (!cards.length) return `<div class="pdp-empty-compact">${state.lang === "ar" ? "لم تُرفع صور مؤشرات العطر بعد." : "Fragrance insight artwork has not been uploaded yet."}</div>`;
+  if (!cards.length) return productPerformanceMarkup(product) || `<div class="pdp-empty-compact">${state.lang === "ar" ? "لا توجد بيانات أداء محفوظة لهذا العطر بعد." : "No saved performance data is available for this fragrance yet."}</div>`;
   return `<div class="pdp-performance-artwork-grid">${cards.join("")}</div>`;
 }
 
@@ -5160,12 +5161,30 @@ function productHeroProfileMarkup(product) {
 }
 
 function productIntelligenceMarkup(product) {
-  const profile = product.perfumeProfile;
+  const savedProfile = product.perfumeProfile && typeof product.perfumeProfile === "object" ? product.perfumeProfile : {};
+  const characterAr = product.scentCharacterAr || [];
+  const characterEn = product.scentCharacterEn || [];
+  const importedOccasions = (product.occasionLabels || []).map((item, index) => ({
+    key: `imported-${index}`,
+    ar: item.ar || item.nameAr || item.name_ar || item.en || item.nameEn || item.name_en || "",
+    en: item.en || item.nameEn || item.name_en || item.ar || item.nameAr || item.name_ar || ""
+  }));
+  const profile = savedProfile.engineVersion ? savedProfile : {
+    engineVersion: "CANONICAL",
+    character: Array.from({ length: Math.max(characterAr.length, characterEn.length) }, (_, index) => ({
+      labelAr: characterAr[index] || characterEn[index], labelEn: characterEn[index] || characterAr[index], score: 100
+    })),
+    seasons: product.seasonScores || {},
+    time: product.usageTimeScores || {},
+    occasions: Object.fromEntries(importedOccasions.map((item) => [item.key, 100])),
+    descriptions: { fullDescriptionAr: product.fullDescriptionAr || product.descriptionAr || "", fullDescriptionEn: product.fullDescriptionEn || product.descriptionEn || "" }
+  };
   const ar = state.lang === "ar";
-  if (!profile?.engineVersion) return `<div class="pdp-empty-compact">${ar ? "سيظهر التحليل الذكي بعد تحديث هذا العطر من لوحة التحكم." : "Intelligence analysis will appear after this fragrance is updated in admin."}</div>`;
+  const hasImportedAnalysis = Object.keys(profile.seasons || {}).length || Object.keys(profile.time || {}).length || profile.character?.length || Object.keys(profile.occasions || {}).length;
+  if (!savedProfile.engineVersion && !hasImportedAnalysis) return `<div class="pdp-empty-compact">${ar ? "لا توجد بيانات تحليل محفوظة لهذا العطر بعد." : "No saved analysis is available for this fragrance yet."}</div>`;
   const characters = (profile.character || []).slice(0, 5);
   const seasonLabels = { winter:["الشتاء","Winter"],spring:["الربيع","Spring"],summer:["الصيف","Summer"],autumn:["الخريف","Autumn"] };
-  const occasionLabels = { daily:["يومي","Daily"],work:["العمل","Work"],formal:["رسمي","Formal"],evening:["المساء","Evening"],party:["حفلات","Party"],date:["موعد","Date"],specialOccasion:["مناسبة خاصة","Special occasion"],casual:["كاجوال","Casual"] };
+  const occasionLabels = { daily:["يومي","Daily"],work:["العمل","Work"],formal:["رسمي","Formal"],evening:["المساء","Evening"],party:["حفلات","Party"],date:["موعد","Date"],specialOccasion:["مناسبة خاصة","Special occasion"],casual:["كاجوال","Casual"], ...Object.fromEntries(importedOccasions.map((item) => [item.key, [item.ar, item.en]])) };
   const seasons = Object.entries(profile.seasons || {}).sort((a,b)=>b[1]-a[1]);
   const occasions = Object.entries(profile.occasions || {}).sort((a,b)=>b[1]-a[1]).filter(([,score])=>score>=45).slice(0,6);
   const bar = (label,score) => `<label><span>${escapeHTML(label)}</span><i><u style="width:${Math.min(100,Number(score)||0)}%"></u></i><em>${Math.round(Number(score)||0)}%</em></label>`;
@@ -5181,6 +5200,26 @@ function productIngredientsMarkup(product) {
   const values = Array.isArray(product.mainIngredients) ? product.mainIngredients : [];
   if (!values.length) return "";
   return `<section class="pdp-main-ingredients"><div class="pdp-section-heading"><span>KEY INGREDIENTS</span><h2>${state.lang === "ar" ? "المكونات الأساسية" : "Key ingredients"}</h2><p>${state.lang === "ar" ? "المواد الأبرز التي تبني شخصية العطر، منفصلة عن هرم النوتات." : "The leading materials shaping the fragrance, separate from its note pyramid."}</p></div><div>${values.map((value) => { const note = window.ORIGOFragranceNotes?.find(value); const image = note ? window.ORIGOFragranceNotes.artwork(note) : useCaseArtwork("sparkles"); const label = note ? noteLabel(note) : value; return `<article><img src="${escapeHTML(image)}" alt="${escapeHTML(label)}" loading="lazy"/><b>${escapeHTML(label)}</b></article>`; }).join("")}</div></section>`;
+}
+
+function productPublicDetailsMarkup(product) {
+  const ar = state.lang === "ar";
+  const shortDescription = localizedText(product.descriptionAr, product.descriptionEn) || product.description || "";
+  const fullDescription = localizedText(product.fullDescriptionAr, product.fullDescriptionEn);
+  const details = [
+    [ar ? "العائلة العطرية" : "Fragrance family", localizedText(product.fragranceFamilyAr || product.familyAr, product.fragranceFamilyEn || product.familyEn) || (product.families || []).join(" · ")],
+    [ar ? "سنة الإصدار" : "Release year", product.releaseYear],
+    [ar ? "بلد المنشأ" : "Country of origin", localizedText(product.originCountryAr, product.originCountryEn) || product.originCountry],
+    [ar ? "صانع العطر" : "Perfumer", product.perfumer || (product.perfumers || []).join(" · ")],
+    [ar ? "التركيز" : "Concentration", localizedText(product.concentrationAr, product.concentrationEn) || product.concentration],
+    [ar ? "الحجم" : "Size", product.size || product.sizes?.[0]]
+  ].filter(([, value]) => value !== undefined && value !== null && String(value).trim());
+  if (!shortDescription && !fullDescription && !details.length) return "";
+  return `<section class="pdp-public-details" aria-labelledby="pdp-public-details-title"><div class="pdp-section-heading"><span>PRODUCT DETAILS</span><h2 id="pdp-public-details-title">${ar ? "تفاصيل المنتج" : "Product details"}</h2></div>
+    ${shortDescription ? `<p class="pdp-short-description">${escapeHTML(shortDescription)}</p>` : ""}
+    ${fullDescription && fullDescription !== shortDescription ? `<p class="pdp-full-description">${escapeHTML(fullDescription)}</p>` : ""}
+    ${details.length ? `<dl>${details.map(([label, value]) => `<div><dt>${escapeHTML(label)}</dt><dd${/[0-9]/.test(String(value)) ? ` dir="ltr"` : ""}>${escapeHTML(normalizeLatinDigits(value))}</dd></div>`).join("")}</dl>` : ""}
+  </section>`;
 }
 
 function productProfileAccordions(product) {
@@ -5395,17 +5434,19 @@ function buildProductSeo(product, language = state.lang) {
   const isArabic = language === "ar";
   const name = localizedProductName(product, isArabic ? "ar" : "en");
   const manual = product.seo || {};
-  const description = manual.description || (isArabic ? product.descriptionAr : product.descriptionEn) || product.description || [product.brand, name].filter(Boolean).join(" ");
-  const title = manual.title || `${name} | ORIGO`;
-  const keywords = Array.isArray(manual.keywords) ? [...manual.keywords] : [];
-  return Object.freeze({ title, description:String(description || "").slice(0,500), keywords, slug:product.slug || product.id });
+  const title = localizedText(manual.titleAr, manual.titleEn, language) || manual.title || `${name} | ORIGO`;
+  const description = localizedText(manual.descriptionAr, manual.descriptionEn, language) || manual.description || localizedText(product.descriptionAr, product.descriptionEn, language) || product.description || [product.brand, name].filter(Boolean).join(" ");
+  const preferredKeywords = isArabic ? manual.keywordsAr : manual.keywordsEn;
+  const fallbackKeywords = isArabic ? manual.keywordsEn : manual.keywordsAr;
+  const keywords = seoKeywordValues(preferredKeywords).length ? seoKeywordValues(preferredKeywords) : (seoKeywordValues(fallbackKeywords).length ? seoKeywordValues(fallbackKeywords) : seoKeywordValues(manual.keywords));
+  return Object.freeze({ title, description:String(description || "").slice(0,500), keywords, slug:product.slug || product.id, canonical:manual.canonical || "", robots:manual.robots || "" });
 }
 
 function productStructuredData(product, media) {
   const name = localizedProductName(product);
   const seo = buildProductSeo(product);
   const slug = seo.slug;
-  const canonical = `${location.origin}/?product=${encodeURIComponent(slug)}`;
+  const canonical = seo.canonical || `${location.origin}/perfume/${encodeURIComponent(slug)}`;
   document.title = seo.title;
   const description = seo.description;
   let descriptionMeta = document.querySelector('meta[name="description"]');
@@ -5417,6 +5458,16 @@ function productStructuredData(product, media) {
     document.head.append(canonicalNode);
   }
   canonicalNode.href = canonical;
+  let robotsNode = document.querySelector('meta[name="robots"]');
+  if (seo.robots) {
+    if (!robotsNode) {
+      robotsNode = document.createElement("meta");
+      robotsNode.name = "robots";
+      document.head.appendChild(robotsNode);
+    }
+    robotsNode.dataset.productRobots = "true";
+    robotsNode.content = seo.robots;
+  } else document.querySelector('meta[data-product-robots="true"]')?.remove();
   const schema = {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -6128,8 +6179,11 @@ function showProductDetails(product, shouldOpen = true) {
           <div class="pdp-benefits"><span><i>✓</i>${isArabic ? "منتج أصلي 100%" : "100% authentic"}</span><span><i>◉</i>${isArabic ? "الدفع عند الاستلام" : "Cash on delivery"}</span></div>
         </aside>
       </section>
+      ${productPublicDetailsMarkup(product)}
       ${productProfileAccordions(product)}
-      ${window.ORIGOAlternatives?.productPanel?.(product.id) || ""}
+      ${productIngredientsMarkup(product)}
+      ${productSuitabilityMarkup(product)}
+      ${window.ORIGOAlternatives?.productPanel?.(product) || productFragranceRelationshipsMarkup(product)}
       ${related.length ? `<section class="pdp-recommendations pdp-similar-fragrances"><div class="pdp-section-heading"><span>SCENT MATCH</span><h2>${isArabic ? "عطور مشابهة في الرائحة" : "Similar fragrances"}</h2><p>${isArabic ? "قارن النوتات والعائلة العطرية قبل الشراء حتى تتجنب تكرار رائحة قريبة من عطر تملكه." : "Compare notes and fragrance family before buying to avoid duplicating a scent you already own."}</p></div><div class="pdp-products-row">${related.map(({ item, shared, score }) => productCardMarkup(item, `${score}% ${isArabic ? "تشابه عطري" : "scent match"}${shared.length ? ` · ${shared.slice(0, 2).join("، ")}` : ""}`)).join("")}</div></section>` : ""}
       ${recent.length ? `<section class="pdp-recommendations recently"><div class="pdp-section-heading"><span>RECENT</span><h2>${isArabic ? "شوهد مؤخرًا" : "Recently viewed"}</h2></div><div class="pdp-products-row">${recent.map((item) => productCardMarkup(item)).join("")}</div></section>` : ""}
     </main>`;
@@ -6188,6 +6242,31 @@ function showToast(message, type = "success") {
   toast.querySelector("button").addEventListener("click", () => toast.remove(), { once: true });
   $("#toast-region").append(toast);
   setTimeout(() => toast.remove(), 4800);
+}
+
+function resolveFragranceRelationship(relation) {
+  const slug = String(relation?.slug || "").trim().replace(/^.*\/perfume\//, "").replace(/[?#].*$/, "").replace(/^\/+|\/+$/g, "");
+  if (!slug) return null;
+  return state.products.find((product) => product.status === "published" && String(product.slug || "").toLocaleLowerCase() === slug.toLocaleLowerCase()) || null;
+}
+
+function fragranceRelationshipCard(relation, kind) {
+  const ar = state.lang === "ar";
+  const internal = resolveFragranceRelationship(relation);
+  const name = internal ? localizedProductName(internal) : localizedText(relation.nameAr, relation.nameEn);
+  const brand = internal ? localizedProductBrand(internal) : localizedText(relation.brandAr, relation.brandEn);
+  const reason = localizedText(relation.reasonAr, relation.reasonEn);
+  const percentage = relation.similarityPercentage == null ? "" : `<em>${ar ? "تشابه" : "Similarity"} ${formatPercent(relation.similarityPercentage)}</em>`;
+  const content = `${internal ? `<img src="${escapeHTML(productImage(internal))}" alt="${escapeHTML(name)}" loading="lazy"/>` : ""}<span><small>${escapeHTML(brand)}</small><b>${escapeHTML(name || brand || (ar ? "مرجع عطري" : "Fragrance reference"))}</b>${percentage}${reason ? `<p>${escapeHTML(reason)}</p>` : ""}</span>`;
+  return internal ? `<button type="button" class="fragrance-relationship-card-public is-internal" data-action="open-product" data-id="${escapeHTML(internal.id)}">${content}</button>` : `<article class="fragrance-relationship-card-public is-external">${content}</article>`;
+}
+
+function productFragranceRelationshipsMarkup(product) {
+  const ar = state.lang === "ar";
+  const inspired = Array.isArray(product.inspiration?.inspiredBy) ? product.inspiration.inspiredBy : [];
+  const similar = Array.isArray(product.similarFragrances) ? product.similarFragrances : [];
+  const section = (kind, values, title) => values.length ? `<section class="pdp-fragrance-relationships is-${kind}"><div class="pdp-section-heading"><span>${kind === "inspired" ? "INSPIRATION" : "SCENT RELATIONSHIPS"}</span><h2>${title}</h2></div><div class="fragrance-relationship-cards">${values.map((relation) => fragranceRelationshipCard(relation,kind)).join("")}</div></section>` : "";
+  return `${section("inspired",inspired,ar ? "مستوحى من" : "Inspired By")}${section("similar",similar,ar ? "عطور مشابهة في الرائحة" : "Similar Fragrances")}`;
 }
 
 let lastCommandFailure = { key:"", time:0 };
@@ -6945,14 +7024,15 @@ const ORIGO_ACCORD_LIBRARY = [
 function adminAccordEditor(product) {
   const existingValues = product.perfumeProfile?.manualOverrides || product.perfumeProfile?.accords || product.accordProfile || [];
   const fallback = (product.mainAccords || product.accords || []).map((value) => typeof value === "object" ? value : { nameAr:value, nameEn:value, strength:50 });
-  const values = existingValues.length ? existingValues : fallback;
+  const values = (existingValues.length ? existingValues : fallback).slice().sort((a,b) => Number(b.score ?? b.strength ?? 0) - Number(a.score ?? a.strength ?? 0));
   const libraryIdentity = (item) => ORIGO_ACCORD_LIBRARY.find(([id,nameAr,nameEn]) => [id,nameAr,nameEn].some((value) => normalizeOptionSearch(value) === normalizeOptionSearch(item.id || item.nameAr || item.nameEn || item.name || "")));
   const lines = values.filter((item) => !libraryIdentity(item)).map((item) => `${item.nameAr || item.name || item.id || ""} | ${item.nameEn || item.name || item.id || ""} | ${Math.max(0,Math.min(100,Number(item.score ?? item.strength ?? 0)))}`).join("\n");
   const selected = new Map(values.map((item) => { const known=libraryIdentity(item); return known ? [known[0],Number(item.score ?? item.strength ?? 50)] : null; }).filter(Boolean));
+  const orderedLibrary = ORIGO_ACCORD_LIBRARY.map((item,index) => ({ item,index })).sort((a,b) => Number(selected.has(b.item[0])) - Number(selected.has(a.item[0])) || Number(selected.get(b.item[0]) || 0) - Number(selected.get(a.item[0]) || 0) || a.index - b.index).map(({item}) => item);
   return `<div class="accord-admin-editor">
     <div class="accord-admin-toolbar"><div><b>${adminCopy("الأكوردات الرئيسية", "Main accords")}</b><small>${adminCopy("اختر الأكورد واضبط قوته؛ ويمكنك البحث بالعربية أو الإنجليزية.", "Select an accord, adjust its strength, and search in Arabic or English.")}</small></div><div><input type="search" data-accord-search placeholder="${adminCopy("بحث عن أكورد…", "Search accords…")}"/><button type="button" data-action="accord-selected-only">${adminCopy("المختارة", "Selected")}</button><button type="button" data-action="clear-admin-accords">${adminCopy("مسح", "Clear")}</button></div></div>
     <div class="accord-search-count">${adminCopy("المحدد:", "Selected:")} <b>${selected.size}</b></div>
-    <div class="accord-admin-list">${ORIGO_ACCORD_LIBRARY.map(([id,nameAr,nameEn,color,icon]) => { const strength=selected.get(id) ?? 50; const checked=selected.has(id); return `<label class="accord-admin-item${checked ? " selected" : ""}" data-accord-search-value="${escapeHTML(normalizeOptionSearch(`${id} ${nameAr} ${nameEn}`))}" style="--accord-color:${color}"><input type="checkbox" name="accordSelected" value="${id}"${checked ? " checked" : ""}/><i>${icon}</i><span><b>${escapeHTML(nameAr)}</b><small>${escapeHTML(nameEn)}</small></span><input type="range" name="accordStrength.${id}" min="1" max="100" value="${strength}"/><output>${formatPercent(strength)}</output></label>`; }).join("")}</div>
+    <div class="accord-admin-list">${orderedLibrary.map(([id,nameAr,nameEn,color,icon]) => { const strength=selected.get(id) ?? 50; const checked=selected.has(id); return `<label class="accord-admin-item${checked ? " selected" : ""}" data-accord-search-value="${escapeHTML(normalizeOptionSearch(`${id} ${nameAr} ${nameEn}`))}" style="--accord-color:${color}"><input type="checkbox" name="accordSelected" value="${id}"${checked ? " checked" : ""}/><i>${icon}</i><span><b>${escapeHTML(nameAr)}</b><small>${escapeHTML(nameEn)}</small></span><input type="range" name="accordStrength.${id}" min="1" max="100" value="${strength}"/><output>${formatPercent(strength)}</output></label>`; }).join("")}</div>
     <p class="accord-search-empty" hidden>${adminCopy("لا توجد أكوردات مطابقة.", "No matching accords.")}</p>
     <label class="manual-accord-text"><span>${adminCopy("أكوردات مخصصة إضافية", "Additional custom accords")}</span><textarea name="manualAccords" rows="4" dir="auto" placeholder="خشبي | Woody | 85">${escapeHTML(lines)}</textarea><small>${adminCopy("يمكنك إضافة أكورد غير موجود في القائمة هنا.", "Add an accord not found in the list here.")}</small></label>
     <div class="accord-admin-live">${productAccordMarkup(product)}</div>
@@ -6966,7 +7046,7 @@ function perfumeResolvedAccords(product = {}) {
     const catalog = ORIGO_ACCORD_LIBRARY.find(([id, nameAr, nameEn]) => [id, nameAr, nameEn].some((candidate) => ORIGOCatalog.normalize(candidate) === ORIGOCatalog.normalize(item.id || item.name || item.nameAr || item.nameEn)));
     if (!catalog) return item;
     return { ...item, id: catalog[0], nameAr: catalog[1], nameEn: catalog[2], color: catalog[3], icon: catalog[4], strength: Number(item.score ?? item.strength ?? 0) };
-  }).filter((item) => item.id || item.name || item.nameAr || item.nameEn);
+  }).filter((item) => item.id || item.name || item.nameAr || item.nameEn).sort((a,b) => Number(b.strength ?? b.score ?? 0) - Number(a.strength ?? a.score ?? 0));
 }
 
 function filterAdminAccords(editor) {
@@ -7104,6 +7184,7 @@ function renderImportReview(product) {
     ${searchableCreatableSelect({name:"baseNotes",group:"note",labelAr:"نوتات القاعدة",labelEn:"Base notes",selected:product.notes?.baseEn || product.noteSelections?.base || [],multiple:true})}
   </div>${adminAccordEditor(product)}`;
   const usage = perfumePerformanceEditorSection(product);
+  const relationships = fragranceRelationshipsEditorSection(product);
   const media = `<div class="product-editor-upload-row"><label class="gallery-upload"><input id="gallery-upload" type="file" accept="image/jpeg,image/png,image/webp,image/avif" multiple/><span>＋</span><div><b>${adminCopy("رفع صور المنتج","Upload product images")}</b><small>${adminCopy("حتى 10 صور؛ اختر الرئيسية ورتّب بالسحب أو الأسهم","Up to 10 images; choose primary and reorder by drag or arrows")}</small></div></label></div>${productMediaStudioMarkup(images)}`;
   const seoKeywords = bilingualSeoKeywordValues(product.seo);
   const content = `<div class="review-grid product-content-grid">
@@ -7127,8 +7208,9 @@ function renderImportReview(product) {
     ${productEditorGate(1,"الحزمة والهوية","Bundle & identity",`${perfumeBundleEditorSection(product)}${identity}`)}
     ${productEditorGate(2,"النوتات والأكوردات","Notes & accords",notes,"product-perfume-only")}
     ${usage ? productEditorGate(3,"الأداء والاستخدام","Performance & usage",usage,"product-perfume-only") : ""}
-    ${productEditorGate(4,"صور المنتج","Product images",media)}
-    ${productEditorGate(5,"الوصف وSEO والحفظ","Description, SEO & save",`${content}<div class="product-save-under-seo">${publish}</div>`,"product-editor-publish-gate")}
+    ${productEditorGate(4,"العلاقات العطرية","Fragrance Relationships",relationships,"product-perfume-only")}
+    ${productEditorGate(5,"صور المنتج","Product images",media)}
+    ${productEditorGate(6,"الوصف وSEO والحفظ","Description, SEO & save",`${content}<div class="product-save-under-seo">${publish}</div>`,"product-editor-publish-gate")}
   </form>`;
   updateProductTypeFields($("#import-review-form"));
   updateAdminAccordEditor($("#import-review-form"));
@@ -7351,10 +7433,12 @@ function collectReviewProduct(form) {
     return item ? { id:item[0], nameAr:item[1], nameEn:item[2], color:item[3], icon:item[4], strength:Math.max(0, Math.min(100, rawStrength === null || rawStrength === "" ? 0 : Number(rawStrength))) } : null;
   }).filter(Boolean);
   const customAccords = parseManualAccords(data.get("manualAccords")).filter((item) => !libraryAccords.some((known) => known.id === item.id));
-  const accordProfile = [...libraryAccords, ...customAccords];
+  const accordProfile = [...libraryAccords, ...customAccords].sort((a,b) => Number(b.strength ?? b.score ?? 0) - Number(a.strength ?? a.score ?? 0));
   const scoreValue = (name) => form.elements[name]?.dataset.scoreMissing === "true" || data.get(name) === "" || data.get(name) == null ? null : Math.max(0, Math.min(100, Number(data.get(name))));
   const seasonScores = Object.fromEntries(["winter","autumn","spring","summer"].map((id) => [id,scoreValue(`seasonScore.${id}`)]));
   const usageTimeScores = Object.fromEntries(["day","night"].map((id) => [id,scoreValue(`usageScore.${id}`)]));
+  const inspiredByRelationships = collectProductRelationships(form, "inspiredBy");
+  const similarFragrances = collectProductRelationships(form, "similarFragrances");
   let images = normalizeProductImages(base.images || []);
   if (String(data.get("imageUrl") || "").trim()) images = normalizeProductImages([...images, { url:String(data.get("imageUrl")).trim(), provider:"Manager" }]);
   const genders = optionValuesForProduct("gender", data.get("gender"));
@@ -7451,8 +7535,8 @@ function collectReviewProduct(form) {
     personalities: data.has("personalities") ? csvValues(data.get("personalities")) : (base.personalities || []),
     perfumeBundle,
     moods: data.has("moods") ? csvValues(data.get("moods")) : (base.moods || []),
-    inspiredBy: newInspiredNameEn || newInspiredNameAr || inspiredReference?.nameEn || inspiredReference?.nameAr || (inspiredReferenceId ? base.inspiredBy || "" : ""),
-    inspiredReferenceId,
+    inspiration: { inspiredBy:inspiredByRelationships },
+    similarFragrances,
     similarity: data.has("similarity") ? (data.get("similarity") === "" ? null : Number(data.get("similarity"))) : (base.similarity ?? null),
     slug: String(data.get("slug") || "").trim(),
     seo: (() => {
@@ -7712,6 +7796,54 @@ function updateDuplicateWarning(form) {
   return duplicate;
 }
 
+function fragranceRelationshipEditorCard(kind, relation = {}, index = 0) {
+  const inspired = kind === "inspiredBy";
+  const field = (name, labelAr, labelEn, options = "") => `<label>${adminCopy(labelAr,labelEn)}<input ${options} data-relation-field="${name}" value="${escapeHTML(relation[name] ?? "")}"/></label>`;
+  return `<article class="fragrance-relationship-card" data-relationship-card data-kind="${kind}" draggable="true">
+    <header><span class="relationship-drag-handle" title="${adminCopy("اسحب لإعادة الترتيب","Drag to reorder")}">⋮⋮</span><b>${inspired ? adminCopy("عطر مستوحى منه","Inspired fragrance") : adminCopy("عطر مشابه","Similar fragrance")} <i>${formatNumber(index + 1)}</i></b><div><button type="button" data-action="move-fragrance-relationship" data-direction="-1" aria-label="${adminCopy("تحريك لأعلى","Move up")}">↑</button><button type="button" data-action="move-fragrance-relationship" data-direction="1" aria-label="${adminCopy("تحريك لأسفل","Move down")}">↓</button><button type="button" data-action="remove-fragrance-relationship" aria-label="${adminCopy("حذف","Delete")}">×</button></div></header>
+    <div class="review-grid">
+      ${field("nameAr","اسم العطر بالعربية","Arabic perfume name",'dir="rtl"')}${field("nameEn","اسم العطر بالإنجليزية","English perfume name",'dir="ltr"')}
+      ${field("brandAr","البراند بالعربية","Arabic brand",'dir="rtl"')}${field("brandEn","البراند بالإنجليزية","English brand",'dir="ltr"')}
+      ${field("slug","رابط المنتج الداخلي الاختياري","Optional internal slug",'dir="ltr"')}${field("similarityPercentage","نسبة التشابه الاختيارية %","Optional similarity %",'type="number" min="0" max="100" step="0.01"')}
+      <label class="wide">${adminCopy("سبب العلاقة بالعربية","Arabic reason")}<textarea data-relation-field="reasonAr" dir="rtl">${escapeHTML(relation.reasonAr || "")}</textarea></label>
+      <label class="wide">${adminCopy("سبب العلاقة بالإنجليزية","English reason")}<textarea data-relation-field="reasonEn" dir="ltr">${escapeHTML(relation.reasonEn || "")}</textarea></label>
+      ${inspired ? `${field("relationshipAr","وصف العلاقة بالعربية","Arabic relationship",'dir="rtl"')}${field("relationshipEn","وصف العلاقة بالإنجليزية","English relationship",'dir="ltr"')}` : ""}
+      ${field("sourceName","اسم المصدر الاختياري","Optional source name")}${field("sourceUrl","رابط المصدر الاختياري","Optional source URL",'dir="ltr" type="url"')}
+    </div>
+  </article>`;
+}
+
+function fragranceRelationshipsEditorSection(product) {
+  const inspired = product.inspiration?.inspiredBy || [];
+  const similar = product.similarFragrances || [];
+  const list = (kind, values, titleAr, titleEn) => `<section class="fragrance-relationship-group"><header><div><b>${adminCopy(titleAr,titleEn)}</b><small>${adminCopy("لا تُضف علاقة غير موثقة.","Only add documented relationships.")}</small></div><button type="button" class="button secondary-button" data-action="add-fragrance-relationship" data-kind="${kind}">＋ ${adminCopy("إضافة","Add")}</button></header><div data-relationship-list="${kind}">${values.map((relation,index) => fragranceRelationshipEditorCard(kind,relation,index)).join("")}</div></section>`;
+  return `<div class="fragrance-relationships-editor">${list("inspiredBy",inspired,"العطر المستوحى منه","Inspired By")}${list("similarFragrances",similar,"عطور مشابهة في الرائحة","Similar Fragrances")}</div>`;
+}
+
+function collectProductRelationships(form, kind) {
+  const seen = new Set();
+  return [...form.querySelectorAll(`[data-relationship-list="${kind}"] [data-relationship-card]`)].map((card) => {
+    const value = (name) => String(card.querySelector(`[data-relation-field="${name}"]`)?.value || "").trim();
+    const similarityValue = value("similarityPercentage");
+    const relation = { nameAr:value("nameAr"), nameEn:value("nameEn"), brandAr:value("brandAr"), brandEn:value("brandEn"), slug:value("slug"), similarityPercentage:similarityValue === "" ? null : Math.max(0,Math.min(100,Number(similarityValue))), reasonAr:value("reasonAr"), reasonEn:value("reasonEn"), sourceName:value("sourceName"), sourceUrl:value("sourceUrl") };
+    if (kind === "inspiredBy") { relation.relationshipAr = value("relationshipAr") || "مستوحى منه"; relation.relationshipEn = value("relationshipEn") || "Inspired by"; }
+    return relation;
+  }).filter((relation) => [relation.nameAr,relation.nameEn,relation.brandAr,relation.brandEn,relation.slug,relation.reasonAr,relation.reasonEn,relation.sourceName,relation.sourceUrl].some(Boolean) || relation.similarityPercentage !== null).filter((relation) => {
+    const key = relation.slug ? `slug:${normalizeOptionSearch(relation.slug)}` : (relation.nameEn && relation.brandEn ? `name:${normalizeOptionSearch(relation.nameEn)}|${normalizeOptionSearch(relation.brandEn)}` : "");
+    if (key && seen.has(key)) return false;
+    if (key) seen.add(key);
+    return true;
+  });
+}
+
+function refreshFragranceRelationshipList(list) {
+  [...(list?.querySelectorAll("[data-relationship-card]") || [])].forEach((card,index) => {
+    const number = card.querySelector("header b i");
+    if (number) number.textContent = formatNumber(index + 1);
+  });
+  updateProductEditorPreview(list?.closest("#import-review-form"));
+}
+
 async function saveCatalogProduct(form, workflowAction = "draft") {
   clearProductEditorStatus(form);
   let product = collectReviewProduct(form);
@@ -7722,6 +7854,7 @@ async function saveCatalogProduct(form, workflowAction = "draft") {
     image: String(form.elements.newInspiredImage?.value || "").trim()
   };
   const wantsNewInspiredReference = Object.values(newInspiredReference).some(Boolean);
+  const managesLegacyAlternatives = Boolean(form.querySelector("[name='alternativeReferenceIds'],[name='newInspiredNameAr'],[name='newInspiredNameEn']"));
   let inspiredReferenceId = String(form.elements.inspiredReferenceId?.value || "").trim();
   if (wantsNewInspiredReference) {
     if (!newInspiredReference.nameAr || !newInspiredReference.nameEn || !newInspiredReference.brand) {
@@ -7782,7 +7915,7 @@ async function saveCatalogProduct(form, workflowAction = "draft") {
   try {
     if (state.serverAvailable) {
       product = await requestAdminProductSave(product);
-      if (wantsNewInspiredReference) {
+      if (managesLegacyAlternatives && wantsNewInspiredReference) {
         state.alternativesAdmin = await api("/api/admin/alternative-references", {
           method: "POST",
           body: JSON.stringify({
@@ -7793,7 +7926,7 @@ async function saveCatalogProduct(form, workflowAction = "draft") {
           })
         });
       }
-      for (const referenceId of selectedReferenceIds) {
+      for (const referenceId of managesLegacyAlternatives ? selectedReferenceIds : []) {
         const existing = previousAlternativeMatches.find((item) => item.referenceId === referenceId);
         await api("/api/admin/alternative-relationships/bulk", { method: "POST", body: JSON.stringify({ referenceId, links: [{
           productId: product.id, approvedSimilarity: existing?.approvedSimilarity ?? null,
@@ -7803,10 +7936,10 @@ async function saveCatalogProduct(form, workflowAction = "draft") {
           primaryReference: referenceId === inspiredReferenceId, primaryAlternative: existing?.primaryAlternative || false
         }] }) });
       }
-      for (const match of previousAlternativeMatches.filter((item) => !selectedReferenceIds.includes(item.referenceId))) {
+      for (const match of managesLegacyAlternatives ? previousAlternativeMatches.filter((item) => !selectedReferenceIds.includes(item.referenceId)) : []) {
         await api(`/api/admin/alternative-relationships/${encodeURIComponent(match.id)}`, { method: "DELETE" });
       }
-      if (selectedReferenceIds.length || previousAlternativeMatches.length) state.alternativesAdmin = await api("/api/admin/alternatives");
+      if (managesLegacyAlternatives && (selectedReferenceIds.length || previousAlternativeMatches.length)) state.alternativesAdmin = await api("/api/admin/alternatives");
     } else {
       product.updatedAt = new Date().toISOString();
       product.createdAt = product.createdAt || product.updatedAt;
@@ -8703,6 +8836,29 @@ document.addEventListener("click", async (event) => {
       button.setAttribute("aria-selected", String(active));
     });
     form.querySelector(`[data-product-panel="${panel}"]`)?.scrollIntoView({ block: "start", behavior: "smooth" });
+  }
+  if (action === "add-fragrance-relationship") {
+    const list = actionElement.closest(".fragrance-relationship-group")?.querySelector("[data-relationship-list]");
+    if (list) {
+      const kind = actionElement.dataset.kind;
+      list.insertAdjacentHTML("beforeend", fragranceRelationshipEditorCard(kind, {}, list.querySelectorAll("[data-relationship-card]").length));
+      refreshFragranceRelationshipList(list);
+      list.lastElementChild?.querySelector('[data-relation-field="nameAr"]')?.focus();
+    }
+  }
+  if (action === "remove-fragrance-relationship") {
+    const card = actionElement.closest("[data-relationship-card]");
+    const list = card?.parentElement;
+    card?.remove();
+    refreshFragranceRelationshipList(list);
+  }
+  if (action === "move-fragrance-relationship") {
+    const card = actionElement.closest("[data-relationship-card]");
+    const list = card?.parentElement;
+    const direction = Number(actionElement.dataset.direction || 0);
+    const target = direction < 0 ? card?.previousElementSibling : card?.nextElementSibling;
+    if (card && target) list.insertBefore(direction < 0 ? card : target, direction < 0 ? target : card);
+    refreshFragranceRelationshipList(list);
   }
   if (action === "dismiss-product-editor-status") clearProductEditorStatus(actionElement.closest("#import-review-form"));
   if (action === "save-alternative-match") {
@@ -10314,7 +10470,16 @@ new MutationObserver((mutations) => {
 }).observe(document.body, { childList:true, subtree:true });
 
 let draggedProductImageIndex = null;
+let draggedFragranceRelationship = null;
 document.addEventListener("dragstart", (event) => {
+  const relationshipCard = event.target.closest?.("[data-relationship-card]");
+  if (relationshipCard) {
+    draggedFragranceRelationship = relationshipCard;
+    relationshipCard.classList.add("is-dragging");
+    event.dataTransfer?.setData("text/plain", relationshipCard.dataset.kind || "relationship");
+    if (event.dataTransfer) event.dataTransfer.effectAllowed = "move";
+    return;
+  }
   const thumbnail = event.target.closest?.("[data-studio-thumbnail]");
   if (!thumbnail) return;
   draggedProductImageIndex = Number(thumbnail.dataset.studioThumbnail);
@@ -10323,11 +10488,26 @@ document.addEventListener("dragstart", (event) => {
   if (event.dataTransfer) event.dataTransfer.effectAllowed = "move";
 });
 document.addEventListener("dragover", (event) => {
+  if (draggedFragranceRelationship && event.target.closest?.("[data-relationship-card]")?.parentElement === draggedFragranceRelationship.parentElement) {
+    event.preventDefault();
+    if (event.dataTransfer) event.dataTransfer.dropEffect = "move";
+    return;
+  }
   if (draggedProductImageIndex == null || !event.target.closest?.("[data-studio-thumbnail]")) return;
   event.preventDefault();
   if (event.dataTransfer) event.dataTransfer.dropEffect = "move";
 });
 document.addEventListener("drop", (event) => {
+  const relationshipTarget = event.target.closest?.("[data-relationship-card]");
+  if (relationshipTarget && draggedFragranceRelationship && relationshipTarget !== draggedFragranceRelationship && relationshipTarget.parentElement === draggedFragranceRelationship.parentElement) {
+    event.preventDefault();
+    const list = relationshipTarget.parentElement;
+    const cards = [...list.children];
+    list.insertBefore(draggedFragranceRelationship, cards.indexOf(draggedFragranceRelationship) < cards.indexOf(relationshipTarget) ? relationshipTarget.nextSibling : relationshipTarget);
+    refreshFragranceRelationshipList(list);
+    draggedFragranceRelationship = null;
+    return;
+  }
   const target = event.target.closest?.("[data-studio-thumbnail]");
   if (!target || draggedProductImageIndex == null) return;
   event.preventDefault();
@@ -10344,6 +10524,8 @@ document.addEventListener("drop", (event) => {
   showToast(adminCopy("تم تحديث ترتيب الصور", "Image order updated"));
 });
 document.addEventListener("dragend", () => {
+  draggedFragranceRelationship?.classList.remove("is-dragging");
+  draggedFragranceRelationship = null;
   draggedProductImageIndex = null;
   document.querySelectorAll("[data-studio-thumbnail].is-dragging").forEach((item) => item.classList.remove("is-dragging"));
 });
@@ -10986,6 +11168,7 @@ window.ORIGOStore = {
   addToCart,
   toggleWishlist,
   showProductDetails,
+  renderFragranceRelationships: productFragranceRelationshipsMarkup,
   getFragranceFinderSettings() {
     return structuredClone(mergeStoreSettings(state.adminWorkspace.settings || {}).fragranceFinder);
   },

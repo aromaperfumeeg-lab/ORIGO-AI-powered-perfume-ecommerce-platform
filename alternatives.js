@@ -233,10 +233,13 @@
       <p class="alternatives-disclaimer">ⓘ ${t("disclaimer")}</p><a class="comparison-back" href="/alternatives" data-alt="open">← ${t("returnAlternatives")}</a>`;
   }
 
-  function productPanel(productId) {
+  function productPanel(productOrId) {
+    const product = productOrId && typeof productOrId === "object" ? productOrId : store()?.state?.products?.find((entry) => entry.id === productOrId);
+    const productId = product?.id || productOrId;
+    const canonicalRelationships = product ? store()?.renderFragranceRelationships?.(product) || "" : "";
     const items = (model.payload?.items || []).filter((entry) => entry.product.id === productId).slice(0,4);
-    if (!items.length) return "";
-    return `<section class="pdp-alternative-reference multiple"><div><small>${t("availableAlternative")}</small><h2>${lang() === "ar" ? "بديل لعطور قد تعرفها" : "An alternative to fragrances you may know"}</h2><p>${t("referenceNotice")}</p></div><div class="pdp-reference-list">${items.map((item)=>`<button data-alt="compare" data-slug="${esc(item.reference.slug)}"><img src="${esc(item.reference.image)}" alt="${esc(label(item.reference,"name"))}"/><span><b>${esc(label(item.reference,"name"))}</b><small>${esc(item.reference.brand)} · ${item.similarity}%</small></span></button>`).join("")}</div></section>`;
+    const calculatedAlternatives = items.length ? `<section class="pdp-alternative-reference multiple"><div><small>${t("availableAlternative")}</small><h2>${lang() === "ar" ? "بديل لعطور قد تعرفها" : "An alternative to fragrances you may know"}</h2><p>${t("referenceNotice")}</p></div><div class="pdp-reference-list">${items.map((item)=>`<button data-alt="compare" data-slug="${esc(item.reference.slug)}"><img src="${esc(item.reference.image)}" alt="${esc(label(item.reference,"name"))}"/><span><b>${esc(label(item.reference,"name"))}</b><small>${esc(item.reference.brand)} · ${number(item.similarity)}%</small></span></button>`).join("")}</div></section>` : "";
+    return `${canonicalRelationships}${calculatedAlternatives}`;
   }
 
   function setRoute(active) {

@@ -105,6 +105,11 @@ test("database migrates old users and structured notes override stale flat notes
     const reloadedSeoProduct = database.listProducts({ includeHidden:true }).find((product) => product.id === seoProduct.id);
     assert.deepEqual(reloadedSeoProduct.seo.keywordsAr, keywordsAr);
     assert.deepEqual(reloadedSeoProduct.seo.keywordsEn, keywordsEn);
+    const relationshipProduct = database.upsertProduct({ id:"relationship-roundtrip", nameAr:"علاقات", nameEn:"Relationships", brand:"ORIGO", price:1, status:"published", inspiration:{ inspiredBy:[{ nameAr:"مرجع",nameEn:"Reference",brandAr:"علامة",brandEn:"Brand",slug:"reference",similarityPercentage:null,relationshipAr:"مستوحى منه",relationshipEn:"Inspired by",reasonAr:"سبب",reasonEn:"Reason",sourceName:"Source",sourceUrl:"https://example.test" }] }, similarFragrances:[{ nameAr:"مشابه",nameEn:"Similar",brandAr:"علامة",brandEn:"Brand",slug:"",similarityPercentage:82,reasonAr:"تقارب",reasonEn:"Similar profile",sourceName:"",sourceUrl:"" }] });
+    const reloadedRelationshipProduct = database.listProducts({ includeHidden:true }).find((product) => product.id === relationshipProduct.id);
+    assert.deepEqual(reloadedRelationshipProduct.inspiration, relationshipProduct.inspiration);
+    assert.deepEqual(reloadedRelationshipProduct.similarFragrances, relationshipProduct.similarFragrances);
+    assert.equal(reloadedRelationshipProduct.status,"published");
     assert.equal(database.deleteProduct(updated.id), true);
     assert.equal(database.listProducts({ includeHidden: true }).some((product) => product.id === updated.id), false);
     database.db.close();

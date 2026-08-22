@@ -5,6 +5,8 @@ import { readFile } from "node:fs/promises";
 const app = await readFile(new URL("../app.js", import.meta.url), "utf8");
 const finderI18n = await readFile(new URL("../fragrance-finder-i18n.js", import.meta.url), "utf8");
 const appearance = await readFile(new URL("../appearance.css", import.meta.url), "utf8");
+const styles = await readFile(new URL("../styles.css", import.meta.url), "utf8");
+const productDetail = await readFile(new URL("../product-detail.css", import.meta.url), "utf8");
 const performance = app.slice(app.indexOf("function perfumePerformanceEditorSection"), app.indexOf("const PRODUCT_PROFILE_IMAGE_FIELDS"));
 
 test("season and time controls use inline decorative SVG instead of emoji", () => {
@@ -35,4 +37,43 @@ test("storefront, admin, product data and finder render one effective language",
   assert.match(finderI18n, /translate:\(lang,key\)=>copy\[lang\]/);
   assert.match(finderI18n, /مكتشف العطر المناسب لذوقك/);
   assert.match(finderI18n, /Find Your Perfect Fragrance/);
+});
+
+test("product details use canonical analysis and performance when artwork is absent", () => {
+  const details = app.slice(app.indexOf("function productNoteGroups"), app.indexOf("function productIngredientsMarkup"));
+  assert.match(details, /seasonScores \|\| \{\}/);
+  assert.match(details, /usageTimeScores \|\| \{\}/);
+  assert.match(details, /occasionLabels \|\| \[\]/);
+  assert.match(details, /productPerformanceMarkup\(product\)/);
+  assert.doesNotMatch(details, /لم تُرفع صور مؤشرات العطر بعد/);
+});
+
+test("note pyramid shows one language and replaces missing artwork", () => {
+  const pyramid = app.slice(app.indexOf("function productNotePyramid"), app.indexOf("const PRODUCT_USE_CASES"));
+  assert.match(pyramid, /data-note-artwork="true"/);
+  assert.match(pyramid, /data-note-slug=/);
+  assert.doesNotMatch(pyramid, /state\.lang === "ar" \? note\.nameEn : note\.nameAr/);
+  assert.match(styles, /\.dialog-note-chip \{[\s\S]*grid-template-columns: 1fr;[\s\S]*text-align: center;/);
+  assert.match(styles, /\.dialog-note-chip img \{[\s\S]*width: 100%;[\s\S]*height: 82px;/);
+});
+
+test("published product details expose saved public fields without admin metadata", () => {
+  const details = app.slice(app.indexOf("function productPublicDetailsMarkup"), app.indexOf("function productProfileAccordions"));
+  for (const field of ["fullDescriptionAr", "releaseYear", "originCountryAr", "perfumer"]) assert.match(details, new RegExp(field));
+  for (const privateField of ["barcode", "minimumStock", "cost", "seoKeywords"]) assert.doesNotMatch(details, new RegExp(privateField));
+  assert.match(productDetail, /\.pdp-public-details/);
+  assert.match(productDetail, /white-space:pre-wrap/);
+});
+
+test("product metadata resolves bilingual SEO and canonical product URLs", () => {
+  assert.match(app, /localizedText\(manual\.titleAr, manual\.titleEn, language\)/);
+  assert.match(app, /localizedText\(manual\.descriptionAr, manual\.descriptionEn, language\)/);
+  assert.match(app, /seo\.canonical \|\| `\$\{location\.origin\}\/perfume\//);
+  assert.match(app, /meta\[data-product-robots="true"\]/);
+});
+
+test("admin and storefront accords are ordered by descending strength", () => {
+  assert.match(app,/orderedLibrary = ORIGO_ACCORD_LIBRARY[\s\S]*selected\.get\(b\.item\[0\]\)[\s\S]*selected\.get\(a\.item\[0\]\)/);
+  assert.match(app,/filter\(\(item\) => item\.id[\s\S]*\.sort\(\(a,b\) => Number\(b\.strength/);
+  assert.match(app,/accordProfile = \[\.\.\.libraryAccords, \.\.\.customAccords\]\.sort/);
 });
