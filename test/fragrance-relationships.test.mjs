@@ -8,8 +8,10 @@ const deferred = await readFile(new URL("../deferred-modules.js", import.meta.ur
 
 test("product editor provides two ordered bilingual relationship collections", () => {
   const editor = app.slice(app.indexOf("function fragranceRelationshipEditorCard"), app.indexOf("function collectProductRelationships"));
-  for (const field of ["nameAr","nameEn","brandAr","brandEn","slug","similarityPercentage","reasonAr","reasonEn","sourceName","sourceUrl"]) assert.match(editor,new RegExp(field));
+  for (const field of ["nameAr","nameEn","brandAr","brandEn","imageUrl","slug","similarityPercentage","reasonAr","reasonEn","sourceName","sourceUrl"]) assert.match(editor,new RegExp(field));
   assert.match(editor,/data-relationship-list="\$\{kind\}"/);
+  assert.match(editor,/values\.length \? values : \[\{\}\]/);
+  assert.match(editor,/إضافة علاقة أخرى/);
   assert.match(editor,/draggable="true"/);
   assert.match(app,/add-fragrance-relationship/);
   assert.match(app,/remove-fragrance-relationship/);
@@ -19,6 +21,7 @@ test("product editor provides two ordered bilingual relationship collections", (
 test("saved product model keeps inspired and similar relationships separate", () => {
   assert.match(app,/inspiration: \{ inspiredBy:inspiredByRelationships \}/);
   assert.match(app,/similarFragrances,/);
+  assert.match(app,/imageUrl:value\("imageUrl"\)/);
   assert.doesNotMatch(app,/inspiration: \{ inspiredBy:similarFragrances \}/);
 });
 
@@ -27,6 +30,7 @@ test("product detail hides empty groups and displays only explicit relationships
   assert.match(storefront,/values\.length \?/);
   assert.match(storefront,/product\.inspiration\?\.inspiredBy/);
   assert.match(storefront,/product\.similarFragrances/);
+  assert.match(storefront,/relation\.imageUrl/);
   assert.doesNotMatch(storefront,/perfumeResolvedAccords|productRelated/);
 });
 
@@ -37,10 +41,10 @@ test("internal slug resolution requires an exact published product", () => {
   assert.match(app,/data-action="open-product"/);
 });
 
-test("external references have no invented image, link, price or percentage", () => {
+test("external references display only an explicitly saved image and never invent price or percentage", () => {
   const card = app.slice(app.indexOf("function fragranceRelationshipCard"), app.indexOf("function productFragranceRelationshipsMarkup"));
   assert.match(card,/similarityPercentage == null \? ""/);
-  assert.match(card,/internal \? `<img/);
+  assert.match(card,/relation\.imageUrl/);
   assert.match(card,/is-external/);
   assert.doesNotMatch(card,/PRODUCT_IMAGE_PLACEHOLDER|price|href=/);
 });

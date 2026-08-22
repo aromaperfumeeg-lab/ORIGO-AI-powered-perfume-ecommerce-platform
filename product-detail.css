@@ -75,6 +75,7 @@ body.dark .pdp-restock-card>header>span{background:#321c22}
   .pdp-restock-entry>button{width:100%}
   .pdp-unavailable-actions{grid-template-columns:1fr 1fr}
 }
+.pdp-accord-visual img,.pdp-accord-visual .accord-photo{width:100%;height:100%;display:block;object-fit:cover}.pdp-accord-visual .accord-photo{background-image:url("assets/accords/accord-photo-sprite-v1.webp");background-size:400% 200%;background-position:calc(var(--accord-photo-x) * 33.333%) calc(var(--accord-photo-y) * 100%);background-repeat:no-repeat}
 
 /* Fullscreen product image studio with touch pinch/drag support. */
 body.product-image-lightbox-open{overflow:hidden!important}
@@ -229,6 +230,7 @@ html[dir="ltr"] .pdp-hero-profile{direction:ltr}
 @media(max-width:900px){.pdp-hero{display:flex}.pdp-gallery{order:1}.pdp-purchase{order:2}.pdp-hero-profile{order:3}.pdp-hero-profile .pdp-suitability>div{grid-template-columns:repeat(2,minmax(0,1fr))}.pdp-main-ingredients{padding:16px}.pdp-main-ingredients>div:last-child{display:flex;overflow-x:auto;scroll-snap-type:x mandatory}.pdp-main-ingredients article{flex:0 0 132px;scroll-snap-align:start}}
 @media(max-width:900px){.pdp-public-details{padding:18px}.pdp-public-details dl{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:900px){.fragrance-relationship-cards{display:flex;overflow-x:auto;scroll-snap-type:x mandatory}.fragrance-relationship-card-public{flex:0 0 min(78vw,330px);scroll-snap-align:start}}
+.fragrance-relationship-card-public.is-external.has-image{grid-template-columns:92px minmax(0,1fr)}
 @media(max-width:560px){.pdp-hero-profile .pdp-accord-profile>div{grid-template-columns:1fr}.pdp-main-ingredients img{height:90px}}
 @media(max-width:560px){.pdp-public-details dl{grid-template-columns:1fr}.pdp-public-details>p{font-size:11px}}
 

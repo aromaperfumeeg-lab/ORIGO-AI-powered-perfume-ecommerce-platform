@@ -77,3 +77,12 @@ test("admin and storefront accords are ordered by descending strength", () => {
   assert.match(app,/filter\(\(item\) => item\.id[\s\S]*\.sort\(\(a,b\) => Number\(b\.strength/);
   assert.match(app,/accordProfile = \[\.\.\.libraryAccords, \.\.\.customAccords\]\.sort/);
 });
+
+test("admin and storefront accords use local photographic artwork instead of symbols", async () => {
+  const accordDisplay = app.slice(app.indexOf("function accordPhotoCell"),app.indexOf("function productHeroProfileMarkup"));
+  assert.match(accordDisplay,/accord-photo-sprite-v1\.webp|accordPhotoMarkup/);
+  assert.match(app,/accordPhotoMarkup\(\{id,nameAr,nameEn\},"is-admin"\)/);
+  assert.doesNotMatch(accordDisplay,/item\.icon\|\|item\.symbol/);
+  const artwork = await readFile(new URL("../assets/accords/accord-photo-sprite-v1.webp",import.meta.url));
+  assert.ok(artwork.length > 10000);
+});

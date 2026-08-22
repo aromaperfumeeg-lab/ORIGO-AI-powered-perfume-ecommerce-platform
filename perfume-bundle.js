@@ -96,13 +96,14 @@
       brandAr:text(value?.brand_ar ?? value?.brandAr), brandEn:text(value?.brand_en ?? value?.brandEn),
       slug:text(value?.slug), similarityPercentage:numberOrNull(value?.similarity_percentage ?? value?.similarityPercentage),
       reasonAr:text(value?.reason_ar ?? value?.reasonAr), reasonEn:text(value?.reason_en ?? value?.reasonEn),
-      sourceUrl:text(value?.source_url ?? value?.sourceUrl), sourceName:text(value?.source_name ?? value?.sourceName)
+      sourceUrl:text(value?.source_url ?? value?.sourceUrl), sourceName:text(value?.source_name ?? value?.sourceName),
+      imageUrl:text(value?.image_url ?? value?.imageUrl)
     };
     if (inspired) {
       relation.relationshipAr = text(value?.relationship_ar ?? value?.relationshipAr) || "مستوحى منه";
       relation.relationshipEn = text(value?.relationship_en ?? value?.relationshipEn) || "Inspired by";
     }
-    const hasContent = [relation.nameAr, relation.nameEn, relation.brandAr, relation.brandEn, relation.slug, relation.reasonAr, relation.reasonEn, relation.sourceUrl, relation.sourceName].some(Boolean) || relation.similarityPercentage !== null;
+    const hasContent = [relation.nameAr, relation.nameEn, relation.brandAr, relation.brandEn, relation.slug, relation.reasonAr, relation.reasonEn, relation.sourceUrl, relation.sourceName, relation.imageUrl].some(Boolean) || relation.similarityPercentage !== null;
     return hasContent ? relation : null;
   }
 
@@ -273,7 +274,8 @@
       inspiration:{ inspired_by:normalizeRelationships(product.inspiration?.inspiredBy || imported.inspiration?.inspiredBy, { inspired:true }).map((relation) => ({
         name_ar:relation.nameAr, name_en:relation.nameEn, brand_ar:relation.brandAr, brand_en:relation.brandEn, slug:relation.slug,
         similarity_percentage:relation.similarityPercentage, relationship_ar:relation.relationshipAr, relationship_en:relation.relationshipEn,
-        reason_ar:relation.reasonAr, reason_en:relation.reasonEn, source_url:relation.sourceUrl, source_name:relation.sourceName
+        reason_ar:relation.reasonAr, reason_en:relation.reasonEn, source_url:relation.sourceUrl, source_name:relation.sourceName,
+        ...(relation.imageUrl ? { image_url:relation.imageUrl } : {})
       })) },
       similar_fragrances:normalizeRelationships(product.similarFragrances || imported.similarFragrances).map((relation) => ({
         name_ar:relation.nameAr, name_en:relation.nameEn, brand_ar:relation.brandAr, brand_en:relation.brandEn, slug:relation.slug,
