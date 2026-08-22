@@ -6323,21 +6323,27 @@ function resolveFragranceRelationship(relation) {
 
 function fragranceRelationshipCard(relation, kind) {
   const ar = state.lang === "ar";
+  const closest = kind === "closest";
   const internal = resolveFragranceRelationship(relation);
   const name = internal ? localizedProductName(internal) : localizedText(relation.nameAr, relation.nameEn);
   const brand = internal ? localizedProductBrand(internal) : localizedText(relation.brandAr, relation.brandEn);
   const reason = localizedText(relation.reasonAr, relation.reasonEn);
-  const percentage = relation.similarityPercentage == null ? "" : `<em>${ar ? "تشابه" : "Similarity"} ${formatPercent(relation.similarityPercentage)}</em>`;
+  const percentage = relation.similarityPercentage == null ? "" : `<em>${closest ? (ar ? "تقارب تقديري" : "Estimated match") : (ar ? "تشابه" : "Similarity")} ${formatPercent(relation.similarityPercentage)}</em>`;
+  const breakdown = closest ? [[relation.notesSimilarity,ar?"النوتات":"Notes"],[relation.accordsSimilarity,ar?"الأكوردات":"Accords"],[relation.characterSimilarity,ar?"الطابع":"Character"],[relation.communitySimilarity,ar?"المجتمع":"Community"]].filter(([score]) => score != null) : [];
+  const sources = closest ? [...(relation.sources || []), ...(relation.sourceName || relation.sourceUrl ? [{name:relation.sourceName,url:relation.sourceUrl}] : [])].filter((source) => source?.name || source?.url) : [];
+  const evidence = breakdown.length ? `<dl class="relationship-evidence">${breakdown.map(([score,label]) => `<div><dt>${label}</dt><dd>${formatPercent(score)}</dd></div>`).join("")}</dl>` : "";
+  const citations = sources.length ? `<div class="relationship-sources"><b>${ar ? "المصادر" : "Sources"}</b>${sources.map((source) => `<small title="${escapeHTML(source.url || "")}">${escapeHTML(source.name || source.url)}</small>`).join("")}</div>` : "";
   const relationshipImage = internal ? productImage(internal) : String(relation.imageUrl || "").trim();
-  const content = `${relationshipImage ? `<img src="${escapeHTML(relationshipImage)}" alt="${escapeHTML(name)}" loading="lazy"/>` : ""}<span><small>${escapeHTML(brand)}</small><b>${escapeHTML(name || brand || (ar ? "مرجع عطري" : "Fragrance reference"))}</b>${percentage}${reason ? `<p>${escapeHTML(reason)}</p>` : ""}</span>`;
+  const content = `${relationshipImage ? `<img src="${escapeHTML(relationshipImage)}" alt="${escapeHTML(name)}" loading="lazy"/>` : ""}<span><small>${escapeHTML(brand)}</small><b>${escapeHTML(name || brand || (ar ? "مرجع عطري" : "Fragrance reference"))}</b>${percentage}${closest ? `<small class="relationship-estimate-notice">${ar ? "تقدير تحليلي غير رسمي من الشركة" : "Analytical estimate; not an official brand statement"}</small>` : ""}${evidence}${reason ? `<p>${escapeHTML(reason)}</p>` : ""}${citations}</span>`;
   return internal ? `<button type="button" class="fragrance-relationship-card-public is-internal" data-action="open-product" data-id="${escapeHTML(internal.id)}">${content}</button>` : `<article class="fragrance-relationship-card-public is-external${relationshipImage ? " has-image" : ""}">${content}</article>`;
 }
 
 function productFragranceRelationshipsMarkup(product) {
   const ar = state.lang === "ar";
   const inspired = Array.isArray(product.inspiration?.inspiredBy) ? product.inspiration.inspiredBy : [];
-  const section = (kind, values, title) => values.length ? `<section class="pdp-fragrance-relationships is-${kind}"><div class="pdp-section-heading"><span>${kind === "inspired" ? "INSPIRATION" : "SCENT RELATIONSHIPS"}</span><h2>${title}</h2></div><div class="fragrance-relationship-cards">${values.map((relation) => fragranceRelationshipCard(relation,kind)).join("")}</div></section>` : "";
-  return section("inspired",inspired,ar ? "مستوحى من" : "Inspired By");
+  const closest = Array.isArray(product.inspiration?.closestMatches) ? product.inspiration.closestMatches : [];
+  const section = (kind, values, title) => { if (!values.length) return ""; const query=kind === "closest" ? localizedText(values[0].nameAr,values[0].nameEn) : ""; return `<section class="pdp-fragrance-relationships is-${kind}"><div class="pdp-section-heading"><span>${kind === "inspired" ? "INSPIRATION" : "SCENT RELATIONSHIPS"}</span><h2>${title}</h2></div><div class="fragrance-relationship-cards">${values.map((relation) => fragranceRelationshipCard(relation,kind)).join("")}</div>${kind === "closest" ? `<a class="relationship-alternatives-link" href="/alternatives?q=${encodeURIComponent(query)}">${ar ? "استكشفه في قسم البدائل" : "Explore in Alternatives"} ←</a>` : ""}</section>`; };
+  return `${section("inspired",inspired,ar ? "مستوحى منه رسميًا" : "Officially Inspired By")}${section("closest",closest,ar ? "أقرب عطر" : "Closest Match")}`;
 }
 
 let lastCommandFailure = { key:"", time:0 };
@@ -7509,6 +7515,7 @@ function collectReviewProduct(form) {
   const seasonScores = Object.fromEntries(["winter","autumn","spring","summer"].map((id) => [id,scoreValue(`seasonScore.${id}`)]));
   const usageTimeScores = Object.fromEntries(["day","night"].map((id) => [id,scoreValue(`usageScore.${id}`)]));
   const inspiredByRelationships = collectProductRelationships(form, "inspiredBy");
+  const closestMatchRelationships = collectProductRelationships(form, "closestMatches");
   let images = normalizeProductImages(base.images || []);
   if (String(data.get("imageUrl") || "").trim()) images = normalizeProductImages([...images, { url:String(data.get("imageUrl")).trim(), provider:"Manager" }]);
   const genders = optionValuesForProduct("gender", data.get("gender"));
@@ -7605,7 +7612,7 @@ function collectReviewProduct(form) {
     personalities: data.has("personalities") ? csvValues(data.get("personalities")) : (base.personalities || []),
     perfumeBundle,
     moods: data.has("moods") ? csvValues(data.get("moods")) : (base.moods || []),
-    inspiration: { inspiredBy:inspiredByRelationships },
+    inspiration: { inspiredBy:inspiredByRelationships, closestMatches:closestMatchRelationships },
     similarFragrances: base.similarFragrances || [],
     similarity: data.has("similarity") ? (data.get("similarity") === "" ? null : Number(data.get("similarity"))) : (base.similarity ?? null),
     slug: String(data.get("slug") || "").trim(),
@@ -7895,18 +7902,20 @@ async function handleRelationshipImageUpload(input) {
 
 function fragranceRelationshipEditorCard(kind, relation = {}, index = 0) {
   const inspired = kind === "inspiredBy";
+  const closest = kind === "closestMatches";
   const field = (name, labelAr, labelEn, options = "") => `<label>${adminCopy(labelAr,labelEn)}<input ${options} data-relation-field="${name}" value="${escapeHTML(relation[name] ?? "")}"/></label>`;
   return `<article class="fragrance-relationship-card" data-relationship-card data-kind="${kind}" draggable="true">
-    <header><span class="relationship-drag-handle" title="${adminCopy("اسحب لإعادة الترتيب","Drag to reorder")}">⋮⋮</span><b>${inspired ? adminCopy("عطر مستوحى منه","Inspired fragrance") : adminCopy("عطر مشابه","Similar fragrance")} <i>${formatNumber(index + 1)}</i></b><div><button type="button" data-action="move-fragrance-relationship" data-direction="-1" aria-label="${adminCopy("تحريك لأعلى","Move up")}">↑</button><button type="button" data-action="move-fragrance-relationship" data-direction="1" aria-label="${adminCopy("تحريك لأسفل","Move down")}">↓</button><button type="button" data-action="remove-fragrance-relationship" aria-label="${adminCopy("حذف","Delete")}">×</button></div></header>
+    <header><span class="relationship-drag-handle" title="${adminCopy("اسحب لإعادة الترتيب","Drag to reorder")}">⋮⋮</span><b>${inspired ? adminCopy("مستوحى منه رسميًا","Official inspiration") : adminCopy("أقرب عطر غير رسمي","Unofficial closest match")} <i>${formatNumber(index + 1)}</i></b><div><button type="button" data-action="move-fragrance-relationship" data-direction="-1" aria-label="${adminCopy("تحريك لأعلى","Move up")}">↑</button><button type="button" data-action="move-fragrance-relationship" data-direction="1" aria-label="${adminCopy("تحريك لأسفل","Move down")}">↓</button><button type="button" data-action="remove-fragrance-relationship" aria-label="${adminCopy("حذف","Delete")}">×</button></div></header>
     <div class="review-grid">
       ${field("nameAr","اسم العطر بالعربية","Arabic perfume name",'dir="rtl"')}${field("nameEn","اسم العطر بالإنجليزية","English perfume name",'dir="ltr"')}
       ${field("brandAr","البراند بالعربية","Arabic brand",'dir="rtl"')}${field("brandEn","البراند بالإنجليزية","English brand",'dir="ltr"')}
-      ${inspired ? field("imageUrl","رابط صورة العطر الأصلي","Original perfume image URL",'dir="ltr" type="url" placeholder="https://…"') : ""}
-      ${inspired ? `<label class="wide relationship-image-upload"><span>${adminCopy("رفع صورة العطر الأصلي من الجهاز","Upload original fragrance image")}</span><input type="file" accept="image/jpeg,image/png,image/webp,image/avif" data-relation-image-upload/><small>${adminCopy("تُضغط إلى WebP وتظهر معاينتها هنا قبل الحفظ.","Optimized to WebP and previewed here before saving.")}</small><figure${relation.imageUrl ? "" : " hidden"}>${relation.imageUrl ? `<img src="${escapeHTML(relation.imageUrl)}" alt=""/>` : ""}</figure></label>` : ""}
+      ${inspired || closest ? field("imageUrl","رابط صورة العطر المرجعي","Reference perfume image URL",'dir="ltr" type="url" placeholder="https://…"') : ""}
+      ${inspired || closest ? `<label class="wide relationship-image-upload"><span>${adminCopy("رفع صورة العطر المرجعي من الجهاز","Upload reference fragrance image")}</span><input type="file" accept="image/jpeg,image/png,image/webp,image/avif" data-relation-image-upload/><small>${adminCopy("تُضغط إلى WebP وتظهر معاينتها هنا قبل الحفظ.","Optimized to WebP and previewed here before saving.")}</small><figure${relation.imageUrl ? "" : " hidden"}>${relation.imageUrl ? `<img src="${escapeHTML(relation.imageUrl)}" alt=""/>` : ""}</figure></label>` : ""}
       ${field("slug","رابط المنتج الداخلي الاختياري","Optional internal slug",'dir="ltr"')}${field("similarityPercentage","نسبة التشابه الاختيارية %","Optional similarity %",'type="number" min="0" max="100" step="0.01"')}
       <label class="wide">${adminCopy("سبب العلاقة بالعربية","Arabic reason")}<textarea data-relation-field="reasonAr" dir="rtl">${escapeHTML(relation.reasonAr || "")}</textarea></label>
       <label class="wide">${adminCopy("سبب العلاقة بالإنجليزية","English reason")}<textarea data-relation-field="reasonEn" dir="ltr">${escapeHTML(relation.reasonEn || "")}</textarea></label>
       ${inspired ? `${field("relationshipAr","وصف العلاقة بالعربية","Arabic relationship",'dir="rtl"')}${field("relationshipEn","وصف العلاقة بالإنجليزية","English relationship",'dir="ltr"')}` : ""}
+      ${closest ? `${field("notesSimilarity","تشابه النوتات %","Notes similarity %",'type="number" min="0" max="100" step="0.01"')}${field("accordsSimilarity","تشابه الأكوردات %","Accords similarity %",'type="number" min="0" max="100" step="0.01"')}${field("characterSimilarity","تشابه الطابع العام %","Character similarity %",'type="number" min="0" max="100" step="0.01"')}${field("communitySimilarity","تقارب آراء المجتمع %","Community similarity %",'type="number" min="0" max="100" step="0.01"')}<label class="wide">${adminCopy("المصادر المتعددة — مصدر | رابط لكل سطر","Multiple sources — Source | URL per line")}<textarea data-relation-field="sourcesText" dir="ltr">${escapeHTML(relation.sourcesText || (relation.sources || []).map((source) => `${source.name || ""} | ${source.url || ""}`).join("\n"))}</textarea></label><p class="wide closest-match-editor-notice">${adminCopy("هذه النسبة تقديرية وليست تصريحًا رسميًا من الشركة.","This percentage is estimated and is not an official brand statement.")}</p>` : ""}
       ${field("sourceName","اسم المصدر الاختياري","Optional source name")}${field("sourceUrl","رابط المصدر الاختياري","Optional source URL",'dir="ltr" type="url"')}
     </div>
   </article>`;
@@ -7914,8 +7923,9 @@ function fragranceRelationshipEditorCard(kind, relation = {}, index = 0) {
 
 function fragranceRelationshipsEditorSection(product) {
   const inspired = product.inspiration?.inspiredBy || [];
+  const closest = product.inspiration?.closestMatches || [];
   const list = (kind, values, titleAr, titleEn) => { const visibleValues = values.length ? values : [{}]; return `<section class="fragrance-relationship-group"><header><div><b>${adminCopy(titleAr,titleEn)}</b><small>${adminCopy("لا تُضف علاقة غير موثقة.","Only add documented relationships.")}</small></div><button type="button" class="button secondary-button" data-action="add-fragrance-relationship" data-kind="${kind}">＋ ${adminCopy("إضافة علاقة أخرى","Add another")}</button></header><div data-relationship-list="${kind}">${visibleValues.map((relation,index) => fragranceRelationshipEditorCard(kind,relation,index)).join("")}</div></section>`; };
-  return `<div class="fragrance-relationships-editor">${list("inspiredBy",inspired,"العطر المستوحى منه","Inspired By")}</div>`;
+  return `<div class="fragrance-relationships-editor">${list("inspiredBy",inspired,"العطر المستوحى منه رسميًا","Officially Inspired By")}${list("closestMatches",closest,"أقرب عطر — تقديري غير رسمي","Closest Match — Unofficial Estimate")}</div>`;
 }
 
 function collectProductRelationships(form, kind) {
@@ -7923,8 +7933,14 @@ function collectProductRelationships(form, kind) {
   return [...form.querySelectorAll(`[data-relationship-list="${kind}"] [data-relationship-card]`)].map((card) => {
     const value = (name) => String(card.querySelector(`[data-relation-field="${name}"]`)?.value || "").trim();
     const similarityValue = value("similarityPercentage");
-    const relation = { nameAr:value("nameAr"), nameEn:value("nameEn"), brandAr:value("brandAr"), brandEn:value("brandEn"), imageUrl:value("imageUrl"), slug:value("slug"), similarityPercentage:similarityValue === "" ? null : Math.max(0,Math.min(100,Number(similarityValue))), reasonAr:value("reasonAr"), reasonEn:value("reasonEn"), sourceName:value("sourceName"), sourceUrl:value("sourceUrl") };
+    const component = (name) => value(name) === "" ? null : Math.max(0,Math.min(100,Number(value(name))));
+    const notesSimilarity=component("notesSimilarity"), accordsSimilarity=component("accordsSimilarity"), characterSimilarity=component("characterSimilarity"), communitySimilarity=component("communitySimilarity");
+    const weighted = [[notesSimilarity,.35],[accordsSimilarity,.3],[characterSimilarity,.2],[communitySimilarity,.15]].filter(([score]) => score != null);
+    const estimatedOverall = weighted.length ? Math.round(weighted.reduce((sum,[score,weight]) => sum+score*weight,0)/weighted.reduce((sum,[,weight]) => sum+weight,0)*100)/100 : null;
+    const sources = value("sourcesText").split(/\r?\n/).map((line) => { const [name,...url] = line.split("|"); return { name:String(name||"").trim(), url:url.join("|").trim() }; }).filter((source) => source.name || source.url);
+    const relation = { nameAr:value("nameAr"), nameEn:value("nameEn"), brandAr:value("brandAr"), brandEn:value("brandEn"), imageUrl:value("imageUrl"), slug:value("slug"), similarityPercentage:similarityValue === "" ? estimatedOverall : Math.max(0,Math.min(100,Number(similarityValue))), reasonAr:value("reasonAr"), reasonEn:value("reasonEn"), sourceName:value("sourceName"), sourceUrl:value("sourceUrl"), notesSimilarity, accordsSimilarity, characterSimilarity, communitySimilarity, sources };
     if (kind === "inspiredBy") { relation.relationshipAr = value("relationshipAr") || "مستوحى منه"; relation.relationshipEn = value("relationshipEn") || "Inspired by"; }
+    if (kind === "closestMatches") { relation.classification = "closest_match"; relation.isEstimated = true; }
     return relation;
   }).filter((relation) => [relation.nameAr,relation.nameEn,relation.brandAr,relation.brandEn,relation.imageUrl,relation.slug,relation.reasonAr,relation.reasonEn,relation.sourceName,relation.sourceUrl].some(Boolean) || relation.similarityPercentage !== null).filter((relation) => {
     const key = relation.slug ? `slug:${normalizeOptionSearch(relation.slug)}` : (relation.nameEn && relation.brandEn ? `name:${normalizeOptionSearch(relation.nameEn)}|${normalizeOptionSearch(relation.brandEn)}` : "");

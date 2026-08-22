@@ -6,7 +6,7 @@ const app = await readFile(new URL("../app.js", import.meta.url), "utf8");
 const alternatives = await readFile(new URL("../alternatives.js", import.meta.url), "utf8");
 const deferred = await readFile(new URL("../deferred-modules.js", import.meta.url), "utf8");
 
-test("product editor provides only the ordered bilingual inspired-by collection", () => {
+test("product editor separates official inspiration from unofficial closest matches", () => {
   const editor = app.slice(app.indexOf("function fragranceRelationshipEditorCard"), app.indexOf("function collectProductRelationships"));
   for (const field of ["nameAr","nameEn","brandAr","brandEn","imageUrl","slug","similarityPercentage","reasonAr","reasonEn","sourceName","sourceUrl"]) assert.match(editor,new RegExp(field));
   assert.match(editor,/data-relationship-list="\$\{kind\}"/);
@@ -16,7 +16,10 @@ test("product editor provides only the ordered bilingual inspired-by collection"
   assert.match(app,/function handleRelationshipImageUpload\(input\)/);
   assert.match(app,/folder:"relationship"/);
   assert.match(editor,/list\("inspiredBy",inspired/);
+  assert.match(editor,/list\("closestMatches",closest/);
   assert.doesNotMatch(editor,/list\("similarFragrances"/);
+  for (const field of ["notesSimilarity","accordsSimilarity","characterSimilarity","communitySimilarity","sourcesText"]) assert.match(editor,new RegExp(field));
+  assert.match(editor,/تقديرية وليست تصريحًا رسميًا/);
   assert.match(editor,/draggable="true"/);
   assert.match(app,/add-fragrance-relationship/);
   assert.match(app,/remove-fragrance-relationship/);
@@ -24,16 +27,23 @@ test("product editor provides only the ordered bilingual inspired-by collection"
 });
 
 test("saved product model edits inspired-by and preserves legacy similar data without exposing it", () => {
-  assert.match(app,/inspiration: \{ inspiredBy:inspiredByRelationships \}/);
+  assert.match(app,/inspiration: \{ inspiredBy:inspiredByRelationships, closestMatches:closestMatchRelationships \}/);
   assert.match(app,/similarFragrances: base\.similarFragrances \|\| \[\]/);
   assert.match(app,/imageUrl:value\("imageUrl"\)/);
   assert.doesNotMatch(app,/inspiration: \{ inspiredBy:similarFragrances \}/);
 });
 
-test("product detail displays only explicit inspired-by relationships", () => {
+test("product detail displays official inspiration and clearly labelled estimated closest matches", () => {
   const storefront = app.slice(app.indexOf("function resolveFragranceRelationship"), app.indexOf("let lastCommandFailure"));
-  assert.match(storefront,/values\.length \?/);
+  assert.match(storefront,/if \(!values\.length\) return ""/);
   assert.match(storefront,/product\.inspiration\?\.inspiredBy/);
+  assert.match(storefront,/product\.inspiration\?\.closestMatches/);
+  assert.match(storefront,/تقدير تحليلي غير رسمي من الشركة/);
+  assert.match(storefront,/relationship-evidence/);
+  assert.match(storefront,/relationship-sources/);
+  assert.match(storefront,/relationship-alternatives-link/);
+  assert.match(storefront,/\/alternatives\?q=/);
+  for (const field of ["notesSimilarity","accordsSimilarity","characterSimilarity","communitySimilarity"]) assert.match(storefront,new RegExp(field));
   assert.doesNotMatch(storefront,/product\.similarFragrances/);
   assert.match(storefront,/relation\.imageUrl/);
   assert.doesNotMatch(storefront,/perfumeResolvedAccords|productRelated/);
@@ -71,7 +81,8 @@ test("alternatives panel prioritizes canonical groups then calculated alternativ
   assert.match(panel,/canonicalRelationships/);
   assert.match(panel,/calculatedAlternatives/);
   assert.match(panel,/return `\$\{canonicalRelationships\}\$\{calculatedAlternatives\}`/);
-  assert.match(deferred,/alternatives\.js\?v=5/);
+  assert.match(deferred,/alternatives\.js\?v=6/);
+  assert.match(panel,/closestKeys/);
   assert.match(app,/managesLegacyAlternatives \? previousAlternativeMatches/);
 });
 

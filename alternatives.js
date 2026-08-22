@@ -237,7 +237,8 @@
     const product = productOrId && typeof productOrId === "object" ? productOrId : store()?.state?.products?.find((entry) => entry.id === productOrId);
     const productId = product?.id || productOrId;
     const canonicalRelationships = product ? store()?.renderFragranceRelationships?.(product) || "" : "";
-    const items = (model.payload?.items || []).filter((entry) => entry.product.id === productId).slice(0,4);
+    const closestKeys = new Set((product?.inspiration?.closestMatches || []).flatMap((relation) => [relation.slug,relation.nameEn,relation.nameAr]).filter(Boolean).map((value) => String(value).toLocaleLowerCase("ar")));
+    const items = (model.payload?.items || []).filter((entry) => entry.product.id === productId).filter((entry) => ![entry.reference.slug,label(entry.reference,"name")].some((value) => closestKeys.has(String(value || "").toLocaleLowerCase("ar")))).slice(0,4);
     const calculatedAlternatives = items.length ? `<section class="pdp-alternative-reference multiple"><div><small>${t("availableAlternative")}</small><h2>${lang() === "ar" ? "بديل لعطور قد تعرفها" : "An alternative to fragrances you may know"}</h2><p>${t("referenceNotice")}</p></div><div class="pdp-reference-list">${items.map((item)=>`<button data-alt="compare" data-slug="${esc(item.reference.slug)}"><img src="${esc(item.reference.image)}" alt="${esc(label(item.reference,"name"))}"/><span><b>${esc(label(item.reference,"name"))}</b><small>${esc(item.reference.brand)} · ${number(item.similarity)}%</small></span></button>`).join("")}</div></section>` : "";
     return `${canonicalRelationships}${calculatedAlternatives}`;
   }

@@ -62,11 +62,15 @@
       if (perfume.rating_details.votes !== undefined) validateNumber(perfume.rating_details.votes, "perfume.rating_details.votes", 0);
     }
     const inspiredBy = perfume.inspiration?.inspired_by;
+    const closestMatches = perfume.inspiration?.closest_matches;
     if (inspiredBy !== undefined) validateArray(inspiredBy, "perfume.inspiration.inspired_by");
+    if (closestMatches !== undefined) validateArray(closestMatches, "perfume.inspiration.closest_matches");
     if (perfume.similar_fragrances !== undefined) validateArray(perfume.similar_fragrances, "perfume.similar_fragrances");
-    [...(inspiredBy || []), ...(perfume.similar_fragrances || [])].forEach((relation, index) => {
+    [...(inspiredBy || []), ...(closestMatches || []), ...(perfume.similar_fragrances || [])].forEach((relation, index) => {
       if (!isObject(relation)) fail(`perfume.fragrance_relationships[${index}]`, "يجب أن يكون Object.");
       if (relation.similarity_percentage !== undefined) validateNumber(relation.similarity_percentage, `perfume.fragrance_relationships[${index}].similarity_percentage`, 0, 100);
+      ["notes_similarity","accords_similarity","character_similarity","community_similarity"].forEach((field) => { if (relation[field] !== undefined) validateNumber(relation[field], `perfume.fragrance_relationships[${index}].${field}`, 0, 100); });
+      if (relation.sources !== undefined) validateArray(relation.sources, `perfume.fragrance_relationships[${index}].sources`);
     });
     return true;
   }
@@ -90,19 +94,23 @@
     return { ar: text(value?.name_ar ?? value?.ar), en: text(value?.name_en ?? value?.en) };
   }
 
-  function normalizeRelationship(value, { inspired = false } = {}) {
+  function normalizeRelationship(value, { inspired = false, closest = false } = {}) {
     const relation = {
       nameAr:text(value?.name_ar ?? value?.nameAr), nameEn:text(value?.name_en ?? value?.nameEn),
       brandAr:text(value?.brand_ar ?? value?.brandAr), brandEn:text(value?.brand_en ?? value?.brandEn),
       slug:text(value?.slug), similarityPercentage:numberOrNull(value?.similarity_percentage ?? value?.similarityPercentage),
       reasonAr:text(value?.reason_ar ?? value?.reasonAr), reasonEn:text(value?.reason_en ?? value?.reasonEn),
       sourceUrl:text(value?.source_url ?? value?.sourceUrl), sourceName:text(value?.source_name ?? value?.sourceName),
-      imageUrl:text(value?.image_url ?? value?.imageUrl)
+      imageUrl:text(value?.image_url ?? value?.imageUrl),
+      notesSimilarity:numberOrNull(value?.notes_similarity ?? value?.notesSimilarity), accordsSimilarity:numberOrNull(value?.accords_similarity ?? value?.accordsSimilarity),
+      characterSimilarity:numberOrNull(value?.character_similarity ?? value?.characterSimilarity), communitySimilarity:numberOrNull(value?.community_similarity ?? value?.communitySimilarity),
+      sources:(Array.isArray(value?.sources) ? value.sources : []).map((source) => ({ name:text(source?.name), url:text(source?.url) })).filter((source) => source.name || source.url)
     };
     if (inspired) {
       relation.relationshipAr = text(value?.relationship_ar ?? value?.relationshipAr) || "مستوحى منه";
       relation.relationshipEn = text(value?.relationship_en ?? value?.relationshipEn) || "Inspired by";
     }
+    if (closest) { relation.classification = "closest_match"; relation.isEstimated = true; }
     const hasContent = [relation.nameAr, relation.nameEn, relation.brandAr, relation.brandEn, relation.slug, relation.reasonAr, relation.reasonEn, relation.sourceUrl, relation.sourceName, relation.imageUrl].some(Boolean) || relation.similarityPercentage !== null;
     return hasContent ? relation : null;
   }
@@ -118,6 +126,12 @@
       if (key) seen.add(key);
       return true;
     });
+  }
+
+  function preserveRelationshipImages(imported, existing) {
+    const identity = (relation) => normalizedKey(relation?.slug) || [normalizedKey(relation?.nameEn),normalizedKey(relation?.brandEn)].filter(Boolean).join("|") || [normalizedKey(relation?.nameAr),normalizedKey(relation?.brandAr)].filter(Boolean).join("|");
+    const images = new Map((Array.isArray(existing) ? existing : []).map((relation) => [identity(relation),text(relation?.imageUrl)]).filter(([key,image]) => key && image));
+    return imported.map((relation) => ({ ...relation, imageUrl:images.get(identity(relation)) || "" }));
   }
 
   function normalizeGender(...values) {
@@ -173,7 +187,7 @@
       occasions: unique(perfume.occasions.map(bilingual).filter((occasion) => occasion.ar || occasion.en)),
       scentCharacter: { ar: unique(perfume.scent_character_ar.map(text).filter(Boolean), normalizedKey), en: unique(perfume.scent_character_en.map(text).filter(Boolean), normalizedKey) },
       searchKeywords: { ar: keywordList(perfume.search_keywords_ar), en: keywordList(perfume.search_keywords_en) },
-      inspiration: { inspiredBy:normalizeRelationships(perfume.inspiration?.inspired_by, { inspired:true }) },
+      inspiration: { inspiredBy:normalizeRelationships(perfume.inspiration?.inspired_by, { inspired:true }), ...(Array.isArray(perfume.inspiration?.closest_matches) ? { closestMatches:normalizeRelationships(perfume.inspiration.closest_matches, { closest:true }) } : {}) },
       similarFragrances: normalizeRelationships(perfume.similar_fragrances)
     };
   }
@@ -182,6 +196,8 @@
     const normalized = bundle?.source === "origo_perfume_bundle_v2" ? bundle : normalizePerfumeBundle(bundle);
     const perfume = normalized.perfume;
     const result = { ...product, images: Array.isArray(product.images) ? [...product.images] : [] };
+    const inspiredBy = preserveRelationshipImages(normalized.inspiration.inspiredBy, product.inspiration?.inspiredBy);
+    const closestMatches = preserveRelationshipImages(normalized.inspiration.closestMatches || [], product.inspiration?.closestMatches);
     Object.assign(result, {
       nameAr: perfume.nameAr, nameEn: perfume.nameEn,
       brandAr: perfume.brandAr, brandEn: perfume.brandEn, brand: perfume.brandEn || perfume.brandAr,
@@ -200,7 +216,7 @@
       occasions: normalized.occasions.map((occasion) => occasion.en || occasion.ar), occasionLabels: normalized.occasions,
       scentCharacterAr: [...normalized.scentCharacter.ar], scentCharacterEn: [...normalized.scentCharacter.en],
       personalities: unique([...normalized.scentCharacter.ar, ...normalized.scentCharacter.en], normalizedKey),
-      inspiration: { inspiredBy:normalized.inspiration.inspiredBy.map((relation) => ({ ...relation })) },
+      inspiration: { inspiredBy, ...(closestMatches.length ? { closestMatches } : {}) },
       similarFragrances: normalized.similarFragrances.map((relation) => ({ ...relation })),
       perfumeBundle: normalized
     });
@@ -274,9 +290,13 @@
       inspiration:{ inspired_by:normalizeRelationships(product.inspiration?.inspiredBy || imported.inspiration?.inspiredBy, { inspired:true }).map((relation) => ({
         name_ar:relation.nameAr, name_en:relation.nameEn, brand_ar:relation.brandAr, brand_en:relation.brandEn, slug:relation.slug,
         similarity_percentage:relation.similarityPercentage, relationship_ar:relation.relationshipAr, relationship_en:relation.relationshipEn,
-        reason_ar:relation.reasonAr, reason_en:relation.reasonEn, source_url:relation.sourceUrl, source_name:relation.sourceName,
-        ...(relation.imageUrl ? { image_url:relation.imageUrl } : {})
-      })) },
+        reason_ar:relation.reasonAr, reason_en:relation.reasonEn, source_url:relation.sourceUrl, source_name:relation.sourceName
+      })), ...(normalizeRelationships(product.inspiration?.closestMatches || imported.inspiration?.closestMatches, { closest:true }).length ? { closest_matches:normalizeRelationships(product.inspiration?.closestMatches || imported.inspiration?.closestMatches, { closest:true }).map((relation) => ({
+        name_ar:relation.nameAr, name_en:relation.nameEn, brand_ar:relation.brandAr, brand_en:relation.brandEn, slug:relation.slug,
+        similarity_percentage:relation.similarityPercentage, notes_similarity:relation.notesSimilarity, accords_similarity:relation.accordsSimilarity,
+        character_similarity:relation.characterSimilarity, community_similarity:relation.communitySimilarity, reason_ar:relation.reasonAr, reason_en:relation.reasonEn,
+        sources:relation.sources, is_estimated:true, classification:"closest_match"
+      })) } : {}) },
       similar_fragrances:normalizeRelationships(product.similarFragrances || imported.similarFragrances).map((relation) => ({
         name_ar:relation.nameAr, name_en:relation.nameEn, brand_ar:relation.brandAr, brand_en:relation.brandEn, slug:relation.slug,
         similarity_percentage:relation.similarityPercentage, reason_ar:relation.reasonAr, reason_en:relation.reasonEn,
