@@ -26,12 +26,14 @@ pnpm start
 - Build command: `npm run build` أو اتركه فارغاً؛ الأمر لا يبني مكتبة المعرفة ولا يحتاج `build:knowledge`.
 - Start command: `npm start`
 - اجعل مجلد البيانات دائماً، واضبط `ORIGO_DB_PATH` على مسار كامل قابل للكتابة مثل `/home/USER/origo-data/origo.db`.
+- احفظ صور لوحة التحكم خارج مجلد الإصدار عبر `ORIGO_UPLOAD_DIR=/home/USER/origo-data/uploads/storefront`. إذا لم تضبطه، يستخدم الخادم مجلد `uploads/storefront` بجوار قاعدة البيانات تلقائيًا.
 - يستخدم الخادم `PORT` الذي توفره الاستضافة تلقائياً.
 
 متغيرات البيئة:
 
 ```text
 ORIGO_DB_PATH=/home/USER/origo-data/origo.db
+ORIGO_UPLOAD_DIR=/home/USER/origo-data/uploads/storefront
 ORIGO_ADMIN_EMAIL=admin@example.com
 ORIGO_ADMIN_PASSWORD=use-a-long-unique-password
 ORIGO_ADMIN_NAME=ORIGO Admin

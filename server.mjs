@@ -1,6 +1,6 @@
 import { createServer } from "node:http";
-import { mkdir, readFile, stat, writeFile } from "node:fs/promises";
-import { extname, join, normalize, resolve, sep } from "node:path";
+import { cp, mkdir, readFile, stat, writeFile } from "node:fs/promises";
+import { dirname, extname, join, normalize, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { randomBytes } from "node:crypto";
 import { brotliCompress, constants as zlibConstants, gzip, gzipSync } from "node:zlib";
@@ -130,7 +130,8 @@ import {
 import { buildSitemap, injectSeoIntoHtml, robotsTxt, seoForRoute } from "./seo.mjs";
 
 const ROOT = resolve(fileURLToPath(new URL(".", import.meta.url)));
-const STOREFRONT_UPLOAD_ROOT = resolve(ROOT, "uploads", "storefront");
+const LEGACY_STOREFRONT_UPLOAD_ROOT = resolve(ROOT, "uploads", "storefront");
+const STOREFRONT_UPLOAD_ROOT = resolve(process.env.ORIGO_UPLOAD_DIR || (process.env.NODE_ENV === "production" ? resolve(dirname(databasePath), "uploads", "storefront") : LEGACY_STOREFRONT_UPLOAD_ROOT));
 const HOST = process.env.ORIGO_HOST || "0.0.0.0";
 const PORT = Number(process.env.PORT || process.env.ORIGO_PORT || 4173);
 const OPENAI_MODEL = process.env.OPENAI_MODEL || "gpt-5.4-mini";
@@ -141,6 +142,20 @@ const SESSION_COOKIE = "origo_session";
 const GUEST_CART_COOKIE = "origo_guest_cart";
 const performanceRateLimits = new Map();
 const authRateLimits = new Map();
+
+async function initializeStorefrontUploadStorage() {
+  await mkdir(STOREFRONT_UPLOAD_ROOT, { recursive:true });
+  if (STOREFRONT_UPLOAD_ROOT === LEGACY_STOREFRONT_UPLOAD_ROOT) return;
+  try {
+    await stat(LEGACY_STOREFRONT_UPLOAD_ROOT);
+    await cp(LEGACY_STOREFRONT_UPLOAD_ROOT, STOREFRONT_UPLOAD_ROOT, { recursive:true, force:false, errorOnExist:false });
+    console.log(`[ORIGO] Migrated legacy storefront uploads to persistent storage: ${STOREFRONT_UPLOAD_ROOT}`);
+  } catch (error) {
+    if (error?.code !== "ENOENT") console.warn(`[ORIGO] Could not migrate legacy storefront uploads: ${error.message}`);
+  }
+}
+
+await initializeStorefrontUploadStorage();
 
 function allowAuthRequest(request, action, limit, windowMs) {
   const ip = String(request.headers["x-forwarded-for"] || request.socket?.remoteAddress || "unknown").split(",")[0].trim();
@@ -569,7 +584,7 @@ async function saveStorefrontImageUpload(body = {}) {
     error.code = "STOREFRONT_IMAGE_TOO_LARGE";
     throw error;
   }
-  const folder = ["hero", "gender", "brand", "product"].includes(String(body.folder || "")) ? String(body.folder) : "hero";
+  const folder = ["hero", "gender", "brand", "product", "relationship"].includes(String(body.folder || "")) ? String(body.folder) : "hero";
   const extension = match[1].toLowerCase() === "jpeg" ? "jpg" : match[1].toLowerCase();
   const directory = resolve(STOREFRONT_UPLOAD_ROOT, folder);
   if (!directory.startsWith(`${STOREFRONT_UPLOAD_ROOT}${sep}`)) throw new Error("INVALID_UPLOAD_PATH");
@@ -2060,9 +2075,13 @@ async function serveStatic(request, response, url) {
   const isCommerceRoute = /^\/(checkout|order\/[^/]+|feedback\/[^/]+|feedback-insights|account(?:\/.*)?|fragrance-finder\/[a-z-]+|alternatives(?:\/compare\/[^/]+)?)\/?$/i.test(url.pathname);
   const isAdminRoute = /^\/admin\/orders(?:\/[^/]+)?\/?$/i.test(url.pathname);
   const pathname = decodeURIComponent(url.pathname === "/" || isNotesRoute || isBenefitRoute || isStorefrontRoute || isCommerceRoute || isAdminRoute ? "/index.html" : url.pathname);
+  const uploadPrefix = "/uploads/storefront/";
+  const isPersistentUpload = pathname.startsWith(uploadPrefix);
   const cleanPath = normalize(pathname).replace(/^([/\\])+/, "");
-  const filePath = resolve(join(ROOT, cleanPath));
-  if (filePath !== ROOT && !filePath.startsWith(`${ROOT}${sep}`)) {
+  const uploadPath = isPersistentUpload ? normalize(pathname.slice(uploadPrefix.length)).replace(/^([/\\])+/, "") : "";
+  const staticRoot = isPersistentUpload ? STOREFRONT_UPLOAD_ROOT : ROOT;
+  const filePath = resolve(join(staticRoot, isPersistentUpload ? uploadPath : cleanPath));
+  if (filePath !== staticRoot && !filePath.startsWith(`${staticRoot}${sep}`)) {
     response.writeHead(403).end("Forbidden");
     return;
   }
@@ -2199,6 +2218,7 @@ const adminEmailLoaded = Boolean(String(process.env.ORIGO_ADMIN_EMAIL || "").tri
 const adminPasswordLoaded = Boolean(String(process.env.ORIGO_ADMIN_PASSWORD || ""));
 console.log(`ORIGO_ADMIN_EMAIL loaded: ${adminEmailLoaded}`);
 console.log(`ORIGO_ADMIN_PASSWORD loaded: ${adminPasswordLoaded}`);
+console.log(`ORIGO storefront uploads: ${STOREFRONT_UPLOAD_ROOT}`);
 let adminBootstrapStatus = "disabled";
 try {
   const bootstrap = await ensureAdminFromEnvironment();

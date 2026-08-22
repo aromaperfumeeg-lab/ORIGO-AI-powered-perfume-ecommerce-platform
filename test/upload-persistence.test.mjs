@@ -1,0 +1,24 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+
+const server = await readFile(new URL("../server.mjs", import.meta.url), "utf8");
+const env = await readFile(new URL("../.env.example", import.meta.url), "utf8");
+
+test("storefront uploads use persistent storage outside production releases", () => {
+  assert.match(server,/process\.env\.ORIGO_UPLOAD_DIR/);
+  assert.match(server,/resolve\(dirname\(databasePath\), "uploads", "storefront"\)/);
+  assert.match(server,/initializeStorefrontUploadStorage/);
+  assert.match(server,/cp\(LEGACY_STOREFRONT_UPLOAD_ROOT, STOREFRONT_UPLOAD_ROOT/);
+  assert.match(env,/ORIGO_UPLOAD_DIR=\/home\/USER\/origo-data\/uploads\/storefront/);
+});
+
+test("saved storefront URLs are served from persistent storage without changing product data", () => {
+  assert.match(server,/const uploadPrefix = "\/uploads\/storefront\/"/);
+  assert.match(server,/const staticRoot = isPersistentUpload \? STOREFRONT_UPLOAD_ROOT : ROOT/);
+  assert.match(server,/return `\/uploads\/storefront\/\$\{folder\}\/\$\{fileName\}`/);
+});
+
+test("all product-editor relationship upload folders are retained", () => {
+  for (const folder of ["hero","gender","brand","product","relationship"]) assert.match(server,new RegExp(`"${folder}"`));
+});
