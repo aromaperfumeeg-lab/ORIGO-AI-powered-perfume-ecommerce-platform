@@ -7770,19 +7770,23 @@ async function optimizeGalleryImage(file) {
   const canvas = document.createElement("canvas");
   canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
   canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
-  const context = canvas.getContext("2d", { alpha: false });
+  const context = canvas.getContext("2d", { alpha: true });
   if (!context) throw new Error(adminCopy("تعذر تجهيز الصورة في هذا المتصفح.", "This browser could not process the image."));
+  let outputType = "image/webp";
   const paint = () => {
-    context.fillStyle = "#ffffff";
-    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    if (outputType === "image/jpeg") {
+      context.fillStyle = "#ffffff";
+      context.fillRect(0, 0, canvas.width, canvas.height);
+    }
     context.drawImage(image, 0, 0, canvas.width, canvas.height);
   };
   paint();
   let quality = .84;
-  let outputType = "image/webp";
   let result = canvas.toDataURL(outputType, quality);
   if (!result.startsWith("data:image/webp")) {
     outputType = "image/jpeg";
+    paint();
     result = canvas.toDataURL(outputType, quality);
   }
   while (result.length > 620_000 && quality > .48) {
