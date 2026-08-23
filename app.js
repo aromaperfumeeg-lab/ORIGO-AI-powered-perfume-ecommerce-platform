@@ -8190,8 +8190,15 @@ function observeReveals() {
 
 document.addEventListener("error", (event) => {
   const image = event.target;
-  const card = image instanceof HTMLImageElement ? image.closest(".product-card[data-id]") : null;
-  if (!card || image.dataset.fallbackApplied === "placeholder") return;
+  if (!(image instanceof HTMLImageElement) || image.dataset.fallbackApplied === "placeholder") return;
+  const card = image.closest(".product-card[data-id]");
+  if (!card) {
+    const source = String(image.currentSrc || image.src || "");
+    if (!source.includes("/uploads/storefront/product/")) return;
+    image.dataset.fallbackApplied = "placeholder";
+    image.src = PRODUCT_IMAGE_PLACEHOLDER;
+    return;
+  }
   const media = productMedia(getProduct(card.dataset.id) || {});
   const failedUrl = new URL(image.currentSrc || image.src, location.href).href;
   const failedIndex = media.findIndex((item) => new URL(item.url, location.href).href === failedUrl);

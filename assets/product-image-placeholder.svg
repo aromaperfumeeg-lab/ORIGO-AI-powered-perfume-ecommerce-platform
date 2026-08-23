@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 700" role="img" aria-labelledby="title desc">
+  <title id="title">ORIGO product image placeholder</title>
+  <desc id="desc">A minimal perfume bottle placeholder shown while product photography is unavailable.</desc>
+  <g fill="none" stroke="#a8843f" stroke-linecap="round" stroke-linejoin="round">
+    <path stroke-width="8" d="M250 128h140v88H250zM274 128V82h92v46"/>
+    <path stroke-width="10" d="M218 216h204l38 72v272c0 32-26 58-58 58H238c-32 0-58-26-58-58V288l38-72Z"/>
+    <path stroke-width="5" d="M222 328c54-30 142-30 196 0v168c-54 30-142 30-196 0V328Z"/>
+    <path stroke-width="3" d="M257 390h126M276 431h88"/>
+  </g>
+  <text x="320" y="548" fill="#a8843f" font-family="Arial,sans-serif" font-size="28" font-weight="700" letter-spacing="7" text-anchor="middle">ORIGO</text>
+</svg>
