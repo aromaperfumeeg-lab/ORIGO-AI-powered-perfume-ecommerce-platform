@@ -3738,3 +3738,22 @@ html body .product-overlay .origo-exact-product-card .product-card-top-actions .
 }
 .percentage-score-fields{margin-top:16px;padding:14px;border:1px solid color-mix(in srgb,var(--burgundy,#7a001d) 16%,transparent);border-radius:14px}.percentage-score-fields legend{padding:0 8px;font-weight:700}.season-percentage-grid,.time-percentage-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.time-percentage-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.percentage-score-card{display:grid;gap:12px;min-width:0;padding:13px;border:1px solid color-mix(in srgb,var(--burgundy,#7a001d) 11%,transparent);background:color-mix(in srgb,var(--paper,#fff) 96%,var(--burgundy,#7a001d));border-radius:13px}.percentage-score-head{display:grid;grid-template-columns:42px minmax(0,1fr) auto;align-items:center;gap:9px}.percentage-score-icon{width:42px;height:42px;display:grid;place-items:center;border-radius:11px;color:var(--burgundy,#7a001d);background:color-mix(in srgb,var(--burgundy,#7a001d) 7%,#fff);font-style:normal}.percentage-score-icon svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.percentage-score-autumn .percentage-score-icon{background:#faf5ed}.percentage-score-spring .percentage-score-icon{background:#fbf1f3}.percentage-score-winter .percentage-score-icon{background:#f1f5f7}.percentage-score-summer .percentage-score-icon,.percentage-score-day .percentage-score-icon{background:#fbf6e9}.percentage-score-night .percentage-score-icon{background:#f4f1f6}.percentage-score-copy{display:grid;min-width:0;line-height:1.25}.percentage-score-copy b{font-size:.9rem}.percentage-score-copy small{margin-top:2px;color:var(--muted,#756a6d);font:500 .72rem/1.2 Arial,sans-serif;direction:ltr;unicode-bidi:isolate}.percentage-score-card output{color:var(--burgundy,#7a001d);font:800 .95rem/1 Arial,sans-serif;direction:ltr;unicode-bidi:isolate}.percentage-score-card input[type="range"]{width:100%;min-width:0;accent-color:var(--burgundy,#7a001d);background:linear-gradient(to right,var(--burgundy,#7a001d) var(--percentage),color-mix(in srgb,var(--burgundy,#7a001d) 12%,transparent) var(--percentage));height:6px;border-radius:999px}@media(max-width:980px){.season-percentage-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:760px){.season-percentage-grid,.time-percentage-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:390px){.season-percentage-grid,.time-percentage-grid{grid-template-columns:1fr}}
 .product-price,.pdp-price,.checkout-total,.cart-count,.wishlist-count,.percentage-score-card output,.accord-admin-item output,.performance-score,.finder-results strong,.admin-metric b,.ops-data-table td,.ops-id,input[type="number"],input[type="tel"]{font-variant-numeric:tabular-nums;unicode-bidi:isolate}
+
+/* Transparent product photography: isolate the bottle and box on pure black in dark mode. */
+html[data-theme="dark"] body :is(#storefront-main,.product-overlay) .product-card .product-image,
+html[data-theme="dark"] body :is(#storefront-main,.product-overlay) .product-card .product-card-media-link,
+body.dark :is(#storefront-main,.product-overlay) .product-card .product-image,
+body.dark :is(#storefront-main,.product-overlay) .product-card .product-card-media-link{
+  background:#000!important;
+  background-image:none!important;
+}
+html[data-theme="dark"] body :is(#storefront-main,.product-overlay) .product-card .product-card-media-link img,
+body.dark :is(#storefront-main,.product-overlay) .product-card .product-card-media-link img{
+  width:100%!important;
+  height:100%!important;
+  object-fit:contain!important;
+  object-position:center!important;
+  background:transparent!important;
+  mix-blend-mode:normal!important;
+  filter:none!important;
+}

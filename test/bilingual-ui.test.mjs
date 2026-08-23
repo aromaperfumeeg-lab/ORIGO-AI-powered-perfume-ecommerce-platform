@@ -11,6 +11,8 @@ const performance = app.slice(app.indexOf("function perfumePerformanceEditorSect
 
 test("dark mode uses a black background behind product imagery", () => {
   assert.match(styles,/html\[data-theme="dark"\] \.product-image \{\s*background: #000/);
+  assert.match(appearance,/html\[data-theme="dark"\] body :is\(#storefront-main,\.product-overlay\) \.product-card \.product-card-media-link/);
+  assert.match(appearance,/object-fit:contain!important;[\s\S]{0,140}background:transparent!important;[\s\S]{0,100}mix-blend-mode:normal!important/);
   assert.match(productDetail,/html\[data-theme="dark"\] \.pdp-main-image/);
   assert.match(productDetail,/\.pdp-thumbnails button\{background:#000\}/);
 });

@@ -2,10 +2,6 @@
   "use strict";
 
   const knowledge = global.ORIGOFragranceKnowledge?.database || { categories: [] };
-  const referenceNotes = Array.isArray(global.ORIGOFragranceNoteReferences)
-    ? global.ORIGOFragranceNoteReferences
-    : [];
-  const autoArtwork = global.ORIGOFragranceNoteAutoArtwork || {};
   const STORAGE_VERSION = 2;
   const familyBlueprints = {
     citrus: { color: "#D9A441", accent: "#FFF1B8", symbol: "◉", position: "top" },
@@ -93,9 +89,31 @@
     ["white-flowers", "زهور بيضاء", "White Flowers", "white-flowers", ["الأزهار البيضاء", "White Floral Notes"], "heart", "❀"],
     ["sweet-notes", "نوتات حلوة", "Sweet Notes", "sweets-gourmand", ["حلو", "Sweet Accord"], "base", "◇"]
   ].map(([slug, nameAr, nameEn, familyId, aliases, position, symbol]) => ({
-    slug, nameAr, nameEn, familyId, aliases, position, symbol,
-    image: `assets/notes/generated/${slug}.png`
+    slug, nameAr, nameEn, familyId, aliases, position, symbol, image: ""
   }));
+
+  const arabicNameOverrides = Object.freeze({
+    "black-lemon":"ليمون أسود", kabosu:"كابوسو", murcott:"يوسفي موركوت",
+    chayote:"شايوت", cherimoya:"شيريمويا", "green-banana":"موز أخضر", "guava-nectar":"رحيق الجوافة",
+    pitanga:"بيتانغا", snowberry:"توت الثلج", "umbu-caja-tapereba":"أومبو كاجا وتابيريبا",
+    "blue-pea-flower":"زهرة البازلاء الزرقاء", bouvardia:"بوفارديا", "butomus-umbellatus":"بوتوموس أومبيلاتوس",
+    buttercup:"زهرة الحوذان", clematis:"ياسمين البر", dianthus:"ديانثوس", "elengi-mimusops":"ميموسوبس إيلينجي",
+    hollyhock:"الخطمية", "kanzan-cherry":"كرز كانزان", lamprocapnos:"لامبروكابنوس", leatherwood:"خشب الجلود",
+    "madonna-lily":"زنبق مادونا", "orange-jasmine":"ياسمين البرتقال", "osmanthus-milk":"حليب الأوسمانثوس",
+    paramela:"باراميلا", pataqueira:"باتاكيرا", phlox:"فلوكس", "skeleton-flower-diphylleia-grayi":"زهرة الهيكل العظمي",
+    "solomon-s-seal":"خاتم سليمان", wrightia:"رايتيا", "achillea-olympus":"أخيليا أوليمبوس", culantro:"كولانترو",
+    genmaicha:"شاي جينمايتشا", hojicha:"شاي هوجيتشا", katrafay:"كاترافاي", "olymra-plant-accord":"أكورد نبات أوليمرا",
+    "phoenix-dan-cong-oolong":"شاي فينيكس دان كونغ أولونغ", "strawberry-gum":"صمغ الفراولة", priprioca:"بريبريوكا",
+    aspic:"هلام عطري", canele:"كانيليه", "crispy-roll":"لفافة مقرمشة", lollipop:"مصاصة حلوى",
+    muscovado:"سكر موسكوفادو", "powdered-sugar":"سكر بودرة", "sugar-candy":"حلوى السكر", ube:"يام أرجواني",
+    "apricot-wood":"خشب المشمش", "ghaf-tree":"شجرة الغاف", incienso:"بخور", kowhai:"كوهـاي",
+    "taiwan-incense-cedar":"أرز البخور التايواني", z11tm:"زي 11", "breu-branco":"راتنج بريو برانكو",
+    "copaiba-balm":"بلسم الكوبيبا", mopane:"موباني", ambrexolide:"أمبريكسوليد", "champagne-cola":"كولا الشمبانيا",
+    cola:"كولا", barnyard:"رائحة الحظيرة", cascalone:"كاسكالون", cedramber:"سيدرامبر", doremox:"دوريموكس",
+    "ethyl-vanilin":"إيثيل فانيلين", naphthalene:"نفثالين", naturalcalmtm:"ناتشورال كالم",
+    "party-balloons":"بالونات الحفلات", pomarose:"بوماروز", sublimolidetm:"سوبليموليد", terpentine:"تربنتين",
+    charcoal:"فحم"
+  });
 
   function normalize(value) {
     return String(value || "")
@@ -184,21 +202,6 @@
     return `${note.nameEn} belongs to the ${family.nameEn} family. It can bring a ${family.position === "top" ? "bright opening" : family.position === "heart" ? "distinctive heart" : family.position === "base" ? "deep dry-down" : "flexible character across the composition"}, depending on formula and concentration.`;
   }
 
-  function referenceFamilyId(name) {
-    const value = normalize(name);
-    if (/lemon|orange|bergamot|mandarin|grapefruit|lime|citron|citrus|neroli|petitgrain|calamansi|yuzu|kumquat/.test(value)) return "citrus";
-    if (/rose|flower|blossom|jasmine|iris|orris|lily|violet|orchid|peony|lavender|geranium|tuberose|gardenia|freesia|lotus|camellia|carnation|magnolia|mimosa|narcissus|ylang|hibiscus|heliotrope|champaca|osmanthus/.test(value)) return "flowers";
-    if (/wood|cedar|birch|fir|pine|oak|sandal|vetiver|patchouli|cypress|mahogany|bamboo|palo santo|ebony|driftwood|tree/.test(value)) return "woods-mosses";
-    if (/resin|balsam|benzoin|incense|myrrh|olibanum|labdanum|opoponax|styrax|elemi|amberwood/.test(value)) return "resins-balsams";
-    if (/pepper|spice|cardamom|cinnamon|clove|anise|nutmeg|cumin|coriander|saffron|ginger|turmeric|fennel|fenugreek/.test(value)) return "spices";
-    if (/sugar|candy|caramel|chocolate|cocoa|cream|milk|honey|vanilla|praline|toffee|marshmallow|cake|bread|waffle|tiramisu|ice cream|popcorn|sorbet|fudge|meringue|croissant/.test(value)) return "sweets-gourmand";
-    if (/tea|coffee|wine|rum|gin|vodka|whiskey|cognac|champagne|brandy|cola|liqueur|syrup|absinthe|bellini/.test(value)) return "beverages";
-    if (/leaf|grass|green|herb|mint|basil|sage|thyme|rosemary|tarragon|fern|ivy|moss|hay|tobacco|cannabis|artemisia|wormwood|eucalyptus/.test(value)) return "greens-herbs-fougere";
-    if (/musk|ambrox|cetalox|castoreum|civet|animal|leather|suede|beeswax|amber/.test(value)) return "musk-amber-animalic";
-    if (/apple|pear|peach|plum|berry|berries|currant|cherry|fig|mango|melon|banana|coconut|pineapple|apricot|grape|guava|kiwi|lychee|litchi|papaya|fruit|hazelnut|almond|pistachio|macadamia|date|raisin|pumpkin|tomato|cucumber|carrot|rhubarb|quince|olive/.test(value)) return "fruits-vegetables-nuts";
-    return "natural-synthetic-unusual";
-  }
-
   function rebuild() {
     families = knowledge.categories.map((category) => {
       const blueprint = familyBlueprints[category.id] || familyBlueprints.uncategorized;
@@ -239,6 +242,8 @@
         // presenting phonetic transliteration as a real translation.
         const sourceIsArabic = /[\u0600-\u06FF]/.test(ingredient);
         const slug = curated?.slug || uniqueSlug(ingredient, category.id, result);
+        const translatedNameAr = curated?.nameAr || arabicNameOverrides[slug] || ingredient;
+        const hasArabicTranslation = Boolean(curated || arabicNameOverrides[slug] || sourceIsArabic);
         const familyId = curated?.familyId || category.id;
         const family = families.find((item) => item.id === familyId) || families.find((item) => item.id === "uncategorized");
         const existing = result.get(slug);
@@ -248,7 +253,7 @@
         }
         const note = {
           slug,
-          nameAr: curated?.nameAr || ingredient,
+          nameAr: translatedNameAr,
           nameEn: curated?.nameEn || ingredient,
           aliases: [...new Set([ingredient, ...(curated?.aliases || [])])],
           familyId,
@@ -260,8 +265,8 @@
           compatible: curated?.compatible || [],
           opposite: curated?.opposite || [],
           generatedTranslation: false,
-          translationStatus: curated ? "verified" : "source-only",
-          sourceLanguage: curated ? "bilingual" : (sourceIsArabic ? "ar" : "en"),
+          translationStatus: hasArabicTranslation ? "verified" : "source-only",
+          sourceLanguage: curated || arabicNameOverrides[slug] ? "bilingual" : (sourceIsArabic ? "ar" : "en"),
           sourceName: ingredient
         };
         note.descriptionAr = originalDescription(note, family, "ar");
@@ -278,43 +283,6 @@
         defaultIntensity: 3, related: [], compatible: [], opposite: [],
         ...curated, generatedTranslation: false, translationStatus: "verified", sourceLanguage: "bilingual",
         sourceName: curated.nameAr, image: curated.image || ""
-      };
-      note.descriptionAr = originalDescription(note, family, "ar");
-      note.descriptionEn = originalDescription(note, family, "en");
-      result.set(note.slug, note);
-    });
-
-    referenceNotes.forEach((reference) => {
-      const referenceKey = normalize(reference.nameEn);
-      const existing = result.get(reference.slug)
-        || [...result.values()].find((note) =>
-          normalize(note.nameEn) === referenceKey || normalize(note.sourceName) === referenceKey
-        );
-      if (existing) {
-        if (!existing.image) existing.image = reference.image;
-        return;
-      }
-      const familyId = referenceFamilyId(reference.nameEn);
-      const family = families.find((item) => item.id === familyId)
-        || families.find((item) => item.id === "uncategorized")
-        || families[0];
-      const note = {
-        slug: reference.slug,
-        nameAr: reference.nameEn,
-        nameEn: reference.nameEn,
-        aliases: [],
-        familyId,
-        position: family?.position || "multiple",
-        symbol: family?.symbol || "✦",
-        image: reference.image,
-        defaultIntensity: 3,
-        related: [],
-        compatible: [],
-        opposite: [],
-        generatedTranslation: false,
-        translationStatus: "source-only",
-        sourceLanguage: "en",
-        sourceName: reference.nameEn
       };
       note.descriptionAr = originalDescription(note, family, "ar");
       note.descriptionEn = originalDescription(note, family, "en");
@@ -342,7 +310,7 @@
     notes = [...result.values()]
       .filter((note) => !customState.merges[note.slug])
       .map((note) => {
-        const image = note.image || autoArtwork[note.slug] || "";
+        const image = note.image || "";
         return {
           ...note,
           image,

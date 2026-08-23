@@ -13,8 +13,20 @@ const library = context.window.ORIGOFragranceNotes;
 
 test("builds the complete manager-provided fragrance library", () => {
   assert.ok(library.families.length >= 13);
-  assert.ok(library.notes.length >= 1_871);
+  assert.equal(library.notes.length, 1_868);
   assert.equal(library.familyById("flowers").nameEn, "Flowers");
+});
+
+test("the retained first library has Arabic labels for every English source name", () => {
+  const untranslated = library.notes.filter((note) => note.nameAr === note.nameEn && !/[\u0600-\u06ff]/.test(note.nameEn));
+  assert.equal(untranslated.length, 0);
+  assert.equal(library.find("Black Lemon")?.nameAr, "ليمون أسود");
+  assert.equal(library.find("Party Balloons")?.nameAr, "بالونات الحفلات");
+});
+
+test("removed artwork paths fall back to self-contained local SVGs", () => {
+  assert.ok(library.notes.every((note) => !note.image));
+  assert.match(library.artwork(library.find("Rose")), /^data:image\/svg\+xml/);
 });
 
 test("resolves Arabic, English, and alias spellings to one note", () => {
