@@ -16,6 +16,9 @@ test("dark mode uses a black background behind product imagery", () => {
   assert.match(productDetail,/html\[data-theme="dark"\] \.pdp-main-image/);
   assert.match(productDetail,/\.pdp-thumbnails button\{background:#000\}/);
   assert.match(appearance,/\.product-card\{\s*border:1px solid #7a001d!important/);
+  assert.match(appearance,/border-radius:0!important;[\s\S]{0,80}overflow:hidden!important/);
+  assert.match(appearance,/\.product-card \.exact-card-actions\{[\s\S]{0,140}place-items:center!important/);
+  assert.match(appearance,/\.exact-card-actions \.card-add-button\{[\s\S]{0,120}justify-self:center!important/);
 });
 
 test("light mode uses a white background behind transparent product imagery", () => {

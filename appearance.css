@@ -3761,4 +3761,20 @@ body.dark :is(#storefront-main,.product-overlay) .product-card .product-card-med
 /* A restrained ORIGO burgundy keyline keeps each product card defined. */
 html body :is(#storefront-main,.product-overlay) .product-card{
   border:1px solid #7a001d!important;
+  border-radius:0!important;
+  overflow:hidden!important;
+}
+html body :is(#storefront-main,.product-overlay) .product-card :is(.product-image,.product-card-media-link,.product-info){
+  border-radius:0!important;
+}
+html body :is(#storefront-main,.product-overlay) .product-card .exact-card-actions{
+  width:100%!important;
+  display:grid!important;
+  place-items:center!important;
+  justify-self:center!important;
+}
+html body :is(#storefront-main,.product-overlay) .product-card .exact-card-actions .card-add-button{
+  margin-inline:auto!important;
+  justify-self:center!important;
+  align-self:center!important;
 }
