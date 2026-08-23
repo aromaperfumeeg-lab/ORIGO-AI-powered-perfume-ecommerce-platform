@@ -124,6 +124,13 @@ test("published product details expose saved public fields without admin metadat
   assert.match(app, /product\.cardBadgeAr \|\| product\.badgeAr/);
   assert.match(details, /"الثبات بالساعات" : "Longevity in hours"/);
   assert.match(details, /formatNumber\(longevityHours\)/);
+  assert.match(details, /product\.seasonScores/);
+  assert.match(details, /product\.usageTimeScores/);
+  assert.match(details, /product\.occasionLabels/);
+  assert.match(details, /"ملاءمة الفصول" : "Season suitability"/);
+  assert.match(details, /"وقت الاستخدام" : "Usage time"/);
+  assert.match(details, /"عدد المقيّمين" : "Number of reviewers"/);
+  assert.doesNotMatch(details, /اقتراح|suggested|recommended|Best season|أفضل فصل/);
 });
 
 test("product metadata resolves bilingual SEO and canonical product URLs", () => {

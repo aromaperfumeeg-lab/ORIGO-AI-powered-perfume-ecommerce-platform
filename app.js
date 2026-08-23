@@ -5315,6 +5315,21 @@ function productPublicDetailsMarkup(product) {
   const projection = localizedText(product.performance?.projectionAr, product.performance?.projectionEn)
     || projectionLabels[projectionCode]?.[ar ? 0 : 1] || product.performance?.projection || "";
   const type = localizedText(product.typeAr, product.typeEn) || product.type || categoryLabels[product.category]?.[ar ? 0 : 1] || product.category;
+  const scoreText = (scores, labels) => Object.entries(scores || {})
+    .filter(([, value]) => value !== null && value !== undefined && value !== "")
+    .map(([key, value]) => `${labels[key]?.[ar ? 0 : 1] || key} ${formatPercent(value)}`)
+    .join(" · ");
+  const seasonText = scoreText(product.seasonScores, {
+    winter:["الشتاء","Winter"], autumn:["الخريف","Autumn"], spring:["الربيع","Spring"], summer:["الصيف","Summer"]
+  }) || listText([], [], product.seasons);
+  const usageTimeText = scoreText(product.usageTimeScores, { day:["النهار","Day"], night:["الليل","Night"] })
+    || listText([], [], product.usageTimes);
+  const occasionText = (product.occasionLabels || []).map((item) => localizedText(
+    item?.ar || item?.nameAr || item?.name_ar,
+    item?.en || item?.nameEn || item?.name_en
+  )).filter(Boolean).join(ar ? "، " : ", ") || listText([], [], product.occasions);
+  const ratingValue = product.reviewSummary?.average ?? product.rating;
+  const reviewCount = product.reviewSummary?.count ?? product.review_count;
   const details = [
     [ar ? "نوع المنتج" : "Product type", type],
     [ar ? "الجنس" : "Gender", genderLabels[catalogGender(product)]?.[ar ? 0 : 1]],
@@ -5327,6 +5342,11 @@ function productPublicDetailsMarkup(product) {
     [ar ? "وصف الثبات" : "Longevity description", longevityDescription],
     [ar ? "الثبات بالساعات" : "Longevity in hours", longevityHoursText],
     [ar ? "الفوحان" : "Projection", projection],
+    [ar ? "ملاءمة الفصول" : "Season suitability", seasonText],
+    [ar ? "وقت الاستخدام" : "Usage time", usageTimeText],
+    [ar ? "المناسبات" : "Occasions", occasionText],
+    [ar ? "التقييم العام" : "Overall rating", ratingValue === null || ratingValue === undefined || ratingValue === "" ? "" : `${formatRating(ratingValue)} / 5`],
+    [ar ? "عدد المقيّمين" : "Number of reviewers", reviewCount === null || reviewCount === undefined || reviewCount === "" ? "" : formatNumber(reviewCount)],
     [ar ? "مصدر التقييم" : "Rating source", product.ratingDetails?.source],
     [ar ? "نوع التقييم" : "Rating type", product.ratingDetails?.type ? String(product.ratingDetails.type).replaceAll("_", " ") : ""],
     [ar ? "تقييم عملاء ORIGO" : "ORIGO customer rating", product.ratingDetails?.is_origo_customer_rating === undefined ? "" : (product.ratingDetails.is_origo_customer_rating ? (ar ? "نعم" : "Yes") : (ar ? "لا" : "No"))],
