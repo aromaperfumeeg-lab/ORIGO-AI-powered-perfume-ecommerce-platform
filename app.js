@@ -820,7 +820,11 @@ function toStorefrontProduct(product) {
     ...product,
     noteRefs: Array.isArray(product.noteRefs) ? product.noteRefs : (product.noteLibrary?.refs || [])
   };
-  if (product.notesAr && product.notesEn) return product;
+  const primaryImage = product.images?.find((image) => image?.selected)?.url
+    || product.images?.map((image) => typeof image === "string" ? image : image?.url).find(Boolean)
+    || product.image
+    || PRODUCT_IMAGE_PLACEHOLDER;
+  if (product.notesAr && product.notesEn) return { ...product, image:primaryImage };
   const notes = product.notes || {};
   return {
     ...product,
@@ -830,7 +834,7 @@ function toStorefrontProduct(product) {
     notesEn: [...(notes.topEn || []), ...(notes.heartEn || []), ...(notes.baseEn || [])].slice(0, 4),
     badgeAr: product.status === "published" ? "جديد" : "",
     badgeEn: product.status === "published" ? "NEW" : "",
-    image: product.images?.find((image) => image.selected)?.url || product.images?.[0]?.url || product.image || PRODUCT_IMAGE_PLACEHOLDER
+    image: primaryImage
   };
 }
 
@@ -5475,7 +5479,7 @@ function renderNoteMatchPreview(form) {
 function productMedia(product) {
   const media = Array.isArray(product.images) ? product.images : [];
   const urls = media.map((item) => typeof item === "string" ? item : item?.url).filter(Boolean);
-  if (product.image) urls.unshift(product.image);
+  if (!urls.length && product.image) urls.push(product.image);
   return [...new Set(urls)].map((url) => ({ url, type: "image" }));
 }
 
@@ -8182,8 +8186,18 @@ function observeReveals() {
 
 document.addEventListener("error", (event) => {
   const image = event.target;
-  if (!(image instanceof HTMLImageElement) || !image.closest(".origo-product-card") || image.dataset.fallbackApplied) return;
-  image.dataset.fallbackApplied = "true";
+  const card = image instanceof HTMLImageElement ? image.closest(".product-card[data-id]") : null;
+  if (!card || image.dataset.fallbackApplied === "placeholder") return;
+  const media = productMedia(getProduct(card.dataset.id) || {});
+  const failedUrl = new URL(image.currentSrc || image.src, location.href).href;
+  const failedIndex = media.findIndex((item) => new URL(item.url, location.href).href === failedUrl);
+  const nextImage = media.slice(Math.max(0, failedIndex + 1)).find((item) => item.url && !isProductImagePlaceholder(item.url));
+  if (nextImage) {
+    image.dataset.fallbackApplied = "gallery";
+    image.src = nextImage.url;
+    return;
+  }
+  image.dataset.fallbackApplied = "placeholder";
   image.src = PRODUCT_IMAGE_PLACEHOLDER;
 }, true);
 
