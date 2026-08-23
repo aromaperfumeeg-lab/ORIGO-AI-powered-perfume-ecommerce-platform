@@ -46,7 +46,7 @@
     <link rel="stylesheet" data-idle-href="dark-theme.css?v=14" />
     <link rel="stylesheet" href="origo-identity.css?v=20" />
     <link rel="stylesheet" href="no-effects.css?v=2" />
-    <link rel="stylesheet" href="appearance.css?v=95" />
+    <link rel="stylesheet" href="appearance.css?v=99" />
   </head>
   <body>
     <div class="announcement" aria-hidden="true"></div>
@@ -92,7 +92,7 @@
           <img data-store-logo data-logo-variant="auto" src="assets/origo-logo.svg" alt="ORIGO" />
         </a>
         <div class="header-preference-actions">
-          <button class="theme-toggle" type="button" data-action="theme" aria-label="تفعيل الوضع الليلي" aria-pressed="false">
+          <button class="theme-toggle" type="button" data-action="theme" aria-label="تفعيل الوضع الداكن" aria-pressed="false">
             <span class="sun" aria-hidden="true">☀</span><span class="moon" aria-hidden="true">☾</span>
           </button>
         </div>
@@ -135,7 +135,7 @@
       <div class="mobile-menu-actions mobile-menu-actions-top">
         <button data-action="account"><span data-mobile-menu-icon="user"></span><b data-i18n="account">الحساب</b></button>
         <button data-action="language"><span data-mobile-menu-icon="globe"></span><b data-i18n="language">English</b></button>
-        <button data-action="theme" aria-label="تفعيل الوضع الليلي" aria-pressed="false"><span data-mobile-menu-icon="moon"></span><b>الوضع الليلي</b></button>
+        <button data-action="theme" aria-label="تفعيل الوضع الداكن" aria-pressed="false"><span data-mobile-menu-icon="moon"></span><b data-theme-action-label>الوضع الداكن</b></button>
       </div>
       <button class="mobile-menu-search" data-action="search"><span data-mobile-menu-icon="search"></span><b data-i18n="headerSearchTitle">ابحث عن منتج أو براند</b></button>
       <a class="mobile-finder-quick" href="/fragrance-finder/for-whom" data-action="find-matches"><span data-mobile-menu-icon="sparkle"></span><span data-i18n="finderEntry">اكتشف عطرًا يناسب ذوقك</span><i>‹</i></a>
@@ -602,14 +602,14 @@
 
     <footer class="origo-footer" id="site-footer">
       <div class="footer-directory">
-        <section class="footer-column"><h3>تسوق</h3><a href="/perfumes?quick=men">العطور للرجال <span>♙</span></a><a href="/perfumes?quick=women">العطور للنساء <span>♙</span></a><a href="/perfumes?quick=unisex">العطور للجنسين <span>♙</span></a><a href="/alternatives" data-action="open-alternatives">البدائل <span>⇄</span></a><a href="/search?q=عطور+شرقية">العطور الشرقية <span>♙</span></a><a href="/search?q=عطور+عربية">العطور العربية <span>♙</span></a><a href="/perfumes?quick=sale">العروض <span>‹</span></a><a href="/perfumes?quick=new">الجديد <span>‹</span></a></section>
+        <section class="footer-column"><h3>تسوق</h3><a href="/perfumes?quick=men">العطور للرجال</a><a href="/perfumes?quick=women">العطور للنساء</a><a href="/perfumes?quick=unisex">العطور للجنسين</a><a href="/alternatives" data-action="open-alternatives">البدائل</a><a href="/search?q=عطور+شرقية">العطور الشرقية</a><a href="/search?q=عطور+عربية">العطور العربية</a><a href="/perfumes?quick=sale">العروض</a><a href="/perfumes?quick=new">الجديد</a></section>
         <section class="footer-column"><h3>ماركات</h3><div class="footer-brand-list" id="footer-brand-links"><button data-action="brand-search" data-query="ORIGO">ORIGO</button></div><a class="footer-all-link" href="/brands" data-action="open-brands-page">عرض جميع الماركات <span>▦</span></a></section>
-        <section class="footer-column"><h3>معلومات</h3><a href="/#home-hero">عن أوريجو <span>ⓘ</span></a><a href="/benefits/customer-service">الأسئلة الشائعة <span>?</span></a><a href="/benefits/customer-service">سياسة الشحن والتوصيل <span>▱</span></a><a href="/benefits/easy-returns">سياسة الاسترجاع <span>↶</span></a><a id="footer-privacy-link" href="mailto:support@origoscents.com?subject=سياسة الخصوصية">سياسة الخصوصية <span>♢</span></a><a id="footer-terms-link" href="mailto:support@origoscents.com?subject=الشروط والأحكام">الشروط والأحكام <span>▣</span></a><button data-action="account">تتبع الطلب <span>◇</span></button></section>
+        <section class="footer-column"><h3>معلومات</h3><a href="/#home-hero">عن أوريجو</a><a href="/benefits/customer-service">الأسئلة الشائعة</a><a href="/benefits/customer-service">سياسة الشحن والتوصيل</a><a href="/benefits/easy-returns">سياسة الاسترجاع</a><a id="footer-privacy-link" href="mailto:support@origoscents.com?subject=سياسة الخصوصية">سياسة الخصوصية</a><a id="footer-terms-link" href="mailto:support@origoscents.com?subject=الشروط والأحكام">الشروط والأحكام</a><button data-action="account">تتبع الطلب</button></section>
         <section class="footer-contact footer-column">
           <h3>تواصل معنا</h3>
-          <a id="footer-support-email" href="mailto:support@origoscents.com"><span>✉</span><b dir="ltr">support@origoscents.com</b></a>
-          <a id="footer-support-whatsapp" class="footer-whatsapp-link" href="#" target="_blank" rel="noopener noreferrer" hidden><span>◉</span><b>واتساب</b></a>
-          <p><span>◷</span><b id="footer-support-hours">من السبت إلى الخميس<br />9:00 صباحًا – 11:00 مساءً</b></p>
+          <a id="footer-support-email" href="mailto:support@origoscents.com"><b dir="ltr">support@origoscents.com</b></a>
+          <a id="footer-support-whatsapp" class="footer-whatsapp-link" href="#" target="_blank" rel="noopener noreferrer" hidden><b>واتساب</b></a>
+          <p><b id="footer-support-hours">من السبت إلى الخميس<br />9:00 صباحًا – 11:00 مساءً</b></p>
           <small id="footer-support-note">نجيب الرسائل خلال ساعات العمل الرسمية.</small>
           <div class="footer-contact-app">
             <h3>حمل التطبيق</h3>
@@ -621,10 +621,10 @@
           <h3>تابعنا</h3>
           <div class="footer-socials" id="footer-socials" aria-label="شبكات ORIGO الاجتماعية"></div>
           <div class="footer-newsletter" aria-labelledby="footer-newsletter-title">
-            <span class="footer-spark" aria-hidden="true">✦</span><h2 id="footer-newsletter-title">اشترك في نشرتنا البريدية</h2><p id="footer-newsletter-copy">كن أول من يعرف عن العروض والمنتجات الجديدة</p>
+            <h2 id="footer-newsletter-title">اشترك في نشرتنا البريدية</h2><p id="footer-newsletter-copy">كن أول من يعرف عن العروض والمنتجات الجديدة</p>
             <form id="newsletter-form" novalidate>
               <label for="footer-email" class="sr-only">البريد الإلكتروني</label>
-              <div class="footer-email-field"><span aria-hidden="true">✉</span><input id="footer-email" name="email" type="email" autocomplete="email" required placeholder="أدخل بريدك الإلكتروني" /><button type="submit"><span>اشترك الآن</span><i aria-hidden="true">←</i></button></div>
+              <div class="footer-email-field"><input id="footer-email" name="email" type="email" autocomplete="email" required placeholder="أدخل بريدك الإلكتروني" /><button type="submit"><span>اشترك الآن</span></button></div>
               <small id="newsletter-status" aria-live="polite"></small>
             </form>
           </div>
@@ -971,7 +971,7 @@
     <script defer src="fragrance-finder-engine.js?v=2"></script>
     <script defer src="fragrance-finder-i18n.js?v=2"></script>
     <script defer src="fragrance-finder.js?v=3"></script>
-    <script defer src="app.js?v=244"></script>
+    <script defer src="app.js?v=245"></script>
     <script defer src="components/product-card/storefront-product-card.js?v=3"></script>
     <script defer src="deferred-modules.js?v=11"></script>
   </body>

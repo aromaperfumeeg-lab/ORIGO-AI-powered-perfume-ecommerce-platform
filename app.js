@@ -2551,7 +2551,7 @@ function settingsMarkup() {
           <label>${ar ? "النص الثانوي" : "Muted text"}<input type="color" name="appearance.lightMutedColor" value="${escapeHTML(appearance.lightMutedColor)}"/></label>
           <label>${ar ? "النبيتي الفاتح" : "Light burgundy"}<input type="color" name="appearance.lightBurgundyColor" value="${escapeHTML(appearance.lightBurgundyColor)}"/></label>
         </div></fieldset>
-        <fieldset><legend>${ar ? "ألوان الوضع الليلي — رمادي وأبيض ونبيتي" : "Dark mode — gray, white & burgundy"}</legend><div class="appearance-color-grid">
+        <fieldset><legend>${ar ? "ألوان الوضع الداكن — رمادي وأبيض ونبيتي" : "Dark mode — gray, white & burgundy"}</legend><div class="appearance-color-grid">
           <label>${ar ? "خلفية المتجر" : "Store background"}<input type="color" name="appearance.darkPageColor" value="${escapeHTML(appearance.darkPageColor)}"/></label>
           <label>${ar ? "لون البطاقات" : "Card surface"}<input type="color" name="appearance.darkSurfaceColor" value="${escapeHTML(appearance.darkSurfaceColor)}"/></label>
           <label>${ar ? "السطح المرتفع والحقول" : "Elevated surface & fields"}<input type="color" name="appearance.darkElevatedColor" value="${escapeHTML(appearance.darkElevatedColor)}"/></label>
@@ -2560,7 +2560,7 @@ function settingsMarkup() {
           <label>${ar ? "النبيتي الليلي" : "Dark burgundy"}<input type="color" name="appearance.darkBurgundyColor" value="${escapeHTML(appearance.darkBurgundyColor)}"/></label>
         </div></fieldset>
       </div>
-      <div class="appearance-dual-preview" aria-live="polite"><article data-palette-preview="light"><span>✦</span><div><b>${ar ? "الوضع الفاتح" : "Light mode"}</b><p>${ar ? "أبيض نقي مع تفاصيل نبيتي." : "Pure white with burgundy details."}</p></div></article><article data-palette-preview="dark"><span>✦</span><div><b>${ar ? "الوضع الليلي" : "Dark mode"}</b><p>${ar ? "رمادي هادئ مع أبيض ولمسات نبيتي." : "Calm gray with white and burgundy accents."}</p></div></article></div>
+      <div class="appearance-dual-preview" aria-live="polite"><article data-palette-preview="light"><span>✦</span><div><b>${ar ? "الوضع الفاتح" : "Light mode"}</b><p>${ar ? "أبيض نقي مع تفاصيل نبيتي." : "Pure white with burgundy details."}</p></div></article><article data-palette-preview="dark"><span>✦</span><div><b>${ar ? "الوضع الداكن" : "Dark mode"}</b><p>${ar ? "رمادي هادئ مع أبيض ولمسات نبيتي." : "Calm gray with white and burgundy accents."}</p></div></article></div>
       <div class="appearance-preview" aria-live="polite"><span>✦</span><div><h3>${ar ? "معاينة بطاقة ORIGO" : "ORIGO card preview"}</h3><p>${ar ? "تظهر تغييرات الخط والصورة والأيقونة والبطاقة فورًا قبل الحفظ." : "Font, image, icon, and card changes appear instantly before saving."}</p></div><img src="assets/origo-logo-icon.svg" alt=""/></div>
       <button type="button" class="secondary-button compact-button" data-action="reset-appearance">${ar ? "استعادة المظهر الافتراضي" : "Restore appearance defaults"}</button>
     </section>
@@ -3369,9 +3369,22 @@ function setupTheme(toggle = false) {
   document.body.classList.toggle("dark", isDark);
   localStorage.setItem("origoTheme", state.theme);
   $$('[data-action="theme"]').forEach((button) => {
+    const actionLabel = isDark
+      ? (state.lang === "ar" ? "الوضع الفاتح" : "Light mode")
+      : (state.lang === "ar" ? "الوضع الداكن" : "Dark mode");
+    const accessibleLabel = isDark
+      ? (state.lang === "ar" ? "تفعيل الوضع الفاتح" : "Switch to light mode")
+      : (state.lang === "ar" ? "تفعيل الوضع الداكن" : "Switch to dark mode");
     button.setAttribute("aria-pressed", String(isDark));
-    button.setAttribute("aria-label", isDark ? "تفعيل الوضع النهاري" : "تفعيل الوضع الليلي");
-    button.setAttribute("title", isDark ? "الوضع النهاري" : "الوضع الليلي");
+    button.setAttribute("aria-label", accessibleLabel);
+    button.setAttribute("title", actionLabel);
+    const text = $("[data-theme-action-label]", button);
+    if (text) text.textContent = actionLabel;
+    const mobileIcon = $("[data-mobile-menu-icon]", button);
+    if (mobileIcon) {
+      mobileIcon.dataset.mobileMenuIcon = isDark ? "sun" : "moon";
+      setLuxuryIcon(mobileIcon, mobileIcon.dataset.mobileMenuIcon);
+    }
   });
   applyStoreIdentity();
 }
@@ -3978,7 +3991,7 @@ function renderSiteFooter() {
     ["googlePlay", settings.appLinks.googlePlay, "Google Play"], ["appStore", settings.appLinks.appStore, "App Store"]
   ].filter(([, url]) => safePublicHref(url, { externalOnly: true }));
   $("#footer-app-links").innerHTML = appLinks.length
-    ? appLinks.map(([key, url, label]) => `<a href="${escapeHTML(safePublicHref(url, { externalOnly: true }))}" target="_blank" rel="noopener noreferrer" class="${key}">${key === "appStore" ? "●" : "▶"} ${label}</a>`).join("")
+    ? appLinks.map(([key, url, label]) => `<a href="${escapeHTML(safePublicHref(url, { externalOnly: true }))}" target="_blank" rel="noopener noreferrer" class="${key}">${label}</a>`).join("")
     : `<small>${isArabic ? "التطبيق قريبًا" : "App coming soon"}</small>`;
   const socialNames = ["youtube", "facebook", "tiktok", "instagram", "snapchat", "telegram", "whatsapp"];
   $("#footer-socials").innerHTML = socialNames.map((name) => {

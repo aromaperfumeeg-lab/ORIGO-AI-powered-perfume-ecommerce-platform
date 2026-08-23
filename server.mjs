@@ -44,6 +44,7 @@ import {
   getAdminWorkspaceState,
   getAlternative,
   getFragranceNotesState,
+  getStorefrontMedia,
   getCart,
   getOrderById,
   hashPassword,
@@ -60,6 +61,7 @@ import {
   mergeCart,
   replaceCart,
   saveFragranceNotesState,
+  saveStorefrontMedia,
   saveAdminWorkspaceState,
   setUserRole,
   syncFragranceNoteEntities,
@@ -589,10 +591,15 @@ async function saveStorefrontImageUpload(body = {}) {
   const extension = match[1].toLowerCase() === "jpeg" ? "jpg" : match[1].toLowerCase();
   const directory = resolve(STOREFRONT_UPLOAD_ROOT, folder);
   if (!directory.startsWith(`${STOREFRONT_UPLOAD_ROOT}${sep}`)) throw new Error("INVALID_UPLOAD_PATH");
-  await mkdir(directory, { recursive: true });
-  const fileName = `${Date.now().toString(36)}-${randomBytes(8).toString("hex")}.${extension}`;
-  await writeFile(resolve(directory, fileName), bytes, { flag: "wx" });
-  return `/uploads/storefront/${folder}/${fileName}`;
+  const mediaId = `${folder}-${Date.now().toString(36)}-${randomBytes(8).toString("hex")}`;
+  saveStorefrontMedia({ id: mediaId, mimeType: `image/${match[1].toLowerCase()}`, bytes });
+  try {
+    await mkdir(directory, { recursive: true });
+    await writeFile(resolve(directory, `${mediaId}.${extension}`), bytes, { flag: "wx" });
+  } catch (error) {
+    console.warn("[ORIGO media mirror]", error?.message || error);
+  }
+  return `/media/${mediaId}.${extension}`;
 }
 
 function outputText(apiResponse) {
@@ -2202,6 +2209,22 @@ const server = createServer(async (request, response) => {
   }
   if (request.method !== "GET" && request.method !== "HEAD") {
     response.writeHead(405).end("Method not allowed");
+    return;
+  }
+  const mediaMatch = url.pathname.match(/^\/media\/([a-z0-9-]{12,120})\.(?:jpe?g|png|webp)$/i);
+  if (mediaMatch) {
+    const media = getStorefrontMedia(mediaMatch[1]);
+    if (!media) {
+      response.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" }).end("Not found");
+      return;
+    }
+    response.writeHead(200, {
+      "Content-Type": media.mimeType,
+      "Content-Length": String(media.bytes.length),
+      "Cache-Control": "public, max-age=31536000, immutable",
+      "X-Content-Type-Options": "nosniff"
+    });
+    response.end(request.method === "HEAD" ? undefined : media.bytes);
     return;
   }
   if (url.pathname === "/robots.txt") {

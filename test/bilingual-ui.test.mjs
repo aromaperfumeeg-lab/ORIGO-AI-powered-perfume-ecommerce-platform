@@ -21,6 +21,16 @@ test("dark mode uses a black background behind product imagery", () => {
   assert.match(appearance,/\.exact-card-actions \.card-add-button\{[\s\S]{0,120}justify-self:center!important/);
 });
 
+test("night mode uses one neutral palette across mobile, products and admin", () => {
+  assert.match(appearance, /ORIGO monochrome night system/);
+  assert.match(appearance, /--admin-bg:#000/);
+  assert.match(appearance, /\.mobile-menu-panel :where\([\s\S]{0,220}background:#171717!important/);
+  assert.match(appearance, /\.product-card \.card-add-button[\s\S]{0,180}background:#181818!important/);
+  assert.match(appearance, /\.mobile-menu-active \.store-bottom-nav\{display:none!important\}/);
+  assert.match(appearance, /\.home-gender-card\.gender-women \.gender-card-copy[\s\S]{0,180}background-color:#111!important/);
+  assert.match(appearance, /article,section\[class\*="card"\][\s\S]{0,520}background-color:#111!important/);
+});
+
 test("light mode uses a white background behind transparent product imagery", () => {
   assert.match(styles,/html\[data-theme="light"\] \.product-image \{\s*background: #fff/);
   assert.match(productDetail,/html\[data-theme="light"\] \.pdp-main-image/);
@@ -135,4 +145,28 @@ test("product details expose every saved accord ordered by strength", () => {
   assert.match(publicAccords,/const accords = perfumeResolvedAccords\(product\);/);
   assert.doesNotMatch(publicAccords,/perfumeResolvedAccords\(product\)\.slice\(0, 8\)/);
   assert.match(publicAccords,/localizedText\(item\.nameAr,item\.nameEn\)/);
+});
+
+test("theme action follows the active language and always names the opposite mode", async () => {
+  const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
+  assert.match(html, /data-theme-action-label/);
+  assert.match(app, /state\.lang === "ar" \? "الوضع الفاتح" : "Light mode"/);
+  assert.match(app, /state\.lang === "ar" \? "الوضع الداكن" : "Dark mode"/);
+  assert.match(app, /mobileIcon\.dataset\.mobileMenuIcon = isDark \? "sun" : "moon"/);
+});
+
+test("footer directory centers every heading and keeps only the all-brands row icon", async () => {
+  const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
+  assert.match(appearance, /\.origo-footer \.footer-directory > section\{[\s\S]*align-items:center!important;[\s\S]*text-align:center!important;/);
+  assert.match(html, /class="footer-all-link"[^>]*>عرض جميع الماركات <span>▦<\/span>/);
+  const directory = html.slice(html.indexOf('<div class="footer-directory">'), html.indexOf('<div class="footer-bottom-bar">'));
+  const withoutAllBrands = directory.replace(/<a class="footer-all-link"[\s\S]*?<\/a>/, "");
+  assert.doesNotMatch(withoutAllBrands, /[♙⇄‹ⓘ▱↶♢▣◇✉◉◷✦]/);
+  assert.doesNotMatch(withoutAllBrands, />\?<\/span>/);
+});
+
+test("brands directory uses responsive centered homepage-style cards", () => {
+  assert.match(appearance, /\.brands-page-grid > a\{[\s\S]*grid-template-rows:110px auto;[\s\S]*border-radius:18px;/);
+  assert.match(appearance, /\.brands-page-grid > a > b\{[\s\S]*place-items:center;[\s\S]*text-align:center!important;/);
+  assert.match(appearance, /@media\(max-width:600px\)\{[\s\S]*\.brands-page-grid\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\)!important/);
 });

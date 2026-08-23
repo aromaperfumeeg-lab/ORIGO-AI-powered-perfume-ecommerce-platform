@@ -3804,7 +3804,7 @@ html body :is(#storefront-main,.product-overlay) .product-card .exact-card-actio
   fieldset,details,.product-card,.product-card-info,.pdp-purchase,.pdp-card,
   .account-subview,.auth-card,.finder-option,.alternative-card,.library-note-card,
   .admin-settings-form,.admin-quick-create,.review-submit,.product-options-groups>section
-){color:#fff!important;background:#111!important;background-image:none!important;border-color:#3d3d3d!important;box-shadow:none!important}
+){color:#fff!important;background-color:#111!important;border-color:#3d3d3d!important;box-shadow:none!important}
 :where(body.dark,html[data-theme="dark"] body) :where(
   input,textarea,select,option,[contenteditable="true"],.smart-select-control,.smart-select-menu,
   .admin-global-search,.footer-email-field
@@ -3835,6 +3835,196 @@ html body :is(#storefront-main,.product-overlay) .product-card .exact-card-actio
 ){border-color:#6f0b25!important}
 :where(body.dark,html[data-theme="dark"] body) :where(
   .product-image,.product-card-media-link,.pdp-media,.product-media-stage,.product-media-lightbox
-){background:#000!important;background-image:none!important}
+){background-color:#000!important}
 :where(body.dark,html[data-theme="dark"] body) :where(.overlay){background:rgba(0,0,0,.88)!important;background-image:none!important}
 :where(body.dark,html[data-theme="dark"] body) :where(.toast){color:#fff!important;background:#111!important;background-image:none!important;border-color:#6f0b25!important}
+
+/* Mobile night surfaces: neutral charcoal only, with white icons and copy. */
+:where(body.dark,html[data-theme="dark"] body) :where(
+  .mobile-menu-panel,.mobile-menu-head,.mobile-menu-actions,.mobile-menu-search,
+  .mobile-menu-primary-action,.mobile-menu-links,.mobile-menu-links>*,.mobile-menu-section,
+  .mobile-menu-preferences,.mobile-menu-preferences>*,.mobile-menu-account,
+  .store-bottom-nav,.store-bottom-nav>*,.header-account-menu,.header-account-menu>*
+){color:#fff!important;background:#0b0b0b!important;background-image:none!important;border-color:#3b3b3b!important;box-shadow:none!important}
+:where(body.dark,html[data-theme="dark"] body) :where(
+  .mobile-menu-links>button,.mobile-menu-links>a,.mobile-menu-section>button,
+  .mobile-menu-section>a,.mobile-menu-preferences>button,.mobile-menu-account,
+  .mobile-menu-search
+){color:#fff!important;background:#181818!important;background-image:none!important;border:1px solid #444!important}
+:where(body.dark,html[data-theme="dark"] body) :where(
+  .mobile-menu-panel svg,.mobile-menu-panel i,.mobile-menu-panel [data-mobile-menu-icon],
+  .store-bottom-nav svg,.store-bottom-nav span,.store-bottom-nav i
+){color:#fff!important;fill:none!important;stroke:currentColor!important}
+:where(body.dark,html[data-theme="dark"] body) :where(
+  .mobile-menu-panel .close-button,.mobile-menu-panel [data-action="close-mobile-menu"]
+){color:#fff!important;background:#181818!important;border-color:#4a4a4a!important}
+:where(body.dark,html[data-theme="dark"] body) :where(
+  .mobile-menu-panel .mobile-menu-smart-link,.mobile-menu-panel [data-action="find-matches"]
+){color:#fff!important;background:#76001c!important;border-color:#8b1732!important}
+:where(body.dark,html[data-theme="dark"] body) .store-bottom-nav{border-top:1px solid #5f1026!important}
+:where(body.dark,html[data-theme="dark"] body) .store-bottom-nav>*{border:0!important}
+:where(body.dark,html[data-theme="dark"] body) .store-bottom-nav>*.active{color:#fff!important;background:#181818!important;box-shadow:inset 0 2px 0 #76001c!important}
+
+/* Product cards use the same neutral night palette; no white CTA or colored labels. */
+:where(body.dark,html[data-theme="dark"] body) :where(.product-card,.product-card-info,.exact-card-copy,.exact-card-prices,.exact-card-actions){
+  color:#fff!important;background:#0b0b0b!important;background-image:none!important
+}
+:where(body.dark,html[data-theme="dark"] body) :where(
+  .product-card .product-brand,.product-card .product-name,.product-card .product-price,
+  .product-card .rating-value,.product-card .rating-star,.product-card .product-card-size,
+  .product-card .exact-card-brand,.product-card .exact-card-title,.product-card .exact-card-rating
+){color:#fff!important}
+:where(body.dark,html[data-theme="dark"] body) :where(.product-card del,.product-card .review-count){color:#aaa!important}
+:where(body.dark,html[data-theme="dark"] body) :where(
+  .product-card .card-add-button,.product-card .exact-card-actions .card-add-button
+){color:#fff!important;background:#181818!important;background-image:none!important;border:1px solid #76001c!important;box-shadow:none!important}
+:where(body.dark,html[data-theme="dark"] body) :where(
+  .product-card .card-action-button,.product-card .card-wishlist-button,.product-card .card-compare-button,
+  .product-card .discount-badge
+){color:#fff!important;background:#181818!important;background-image:none!important;border-color:#555!important;box-shadow:none!important}
+:where(body.dark,html[data-theme="dark"] body) :where(
+  .home-section-head::before,.home-section-head::after,.section-head::before,.section-head::after,
+  .home-configured-product-row::before,.home-configured-product-row::after
+){background:#76001c!important;background-image:none!important;border-color:#76001c!important}
+:where(body.dark,html[data-theme="dark"] body) :where(
+  .home-section-head a,.section-head a,.view-all,.eyebrow,.gold,.accent-gold
+){color:#fff!important}
+
+/* Admin stays neutral as well: no legacy medium-gray or colored status surfaces. */
+:where(body.dark,html[data-theme="dark"] body) :where(
+  .advanced-admin-panel,.advanced-admin-main,.advanced-admin-body,.admin-dashboard-content,
+  .catalog-admin-panel,.notes-admin-panel,.admin-panel
+){color:#fff!important;background:#000!important;background-image:none!important}
+:where(body.dark,html[data-theme="dark"] body) :where(
+  .advanced-admin-sidebar,.advanced-admin-topbar,#advanced-admin-nav,
+  .admin-view-head,.admin-editor-modal-shell,.product-option-dialog
+){color:#fff!important;background:#0b0b0b!important;background-image:none!important;border-color:#3d3d3d!important;box-shadow:none!important}
+:where(body.dark,html[data-theme="dark"] body) #advanced-admin-nav :where(button,small,span,i,b){color:#fff!important}
+:where(body.dark,html[data-theme="dark"] body) #advanced-admin-nav button{background:#111!important;background-image:none!important;border:1px solid transparent!important}
+:where(body.dark,html[data-theme="dark"] body) #advanced-admin-nav button.active{background:#181818!important;border-color:#76001c!important;box-shadow:inset 3px 0 0 #76001c!important}
+
+/* Exact mobile-menu structure used by the storefront. */
+:where(body.dark,html[data-theme="dark"] body) .mobile-menu-panel :where(
+  .mobile-menu-actions>button,.mobile-menu-search,.mobile-taxonomy-group>summary,
+  nav>a,.mobile-admin-link
+){color:#fff!important;background:#171717!important;background-image:none!important;border:1px solid #444!important;box-shadow:none!important}
+:where(body.dark,html[data-theme="dark"] body) .mobile-menu-panel .mobile-finder-quick{
+  color:#fff!important;background:#76001c!important;background-image:none!important;border:1px solid #8b1732!important;box-shadow:none!important
+}
+:where(body.dark,html[data-theme="dark"] body) .mobile-menu-panel :where(
+  .mobile-menu-actions>button,.mobile-menu-search,.mobile-taxonomy-group>summary,
+  .mobile-finder-quick,nav>a,.mobile-admin-link
+) :where(span,b,i,svg){color:#fff!important}
+@media(max-width:640px){
+  :where(body.dark,html[data-theme="dark"] body).mobile-menu-active .store-bottom-nav{display:none!important}
+  :where(body.dark,html[data-theme="dark"] body).mobile-menu-active .mobile-menu-panel{inset:0!important;padding-bottom:max(14px,env(safe-area-inset-bottom))!important}
+}
+
+/* Gender, promotion and footer accents are monochrome in night mode. */
+:where(body.dark,html[data-theme="dark"] body) #home :where(
+  .home-gender-card,.gender-card-art,.gender-card-copy,
+  .home-gender-card.gender-men .gender-card-copy,
+  .home-gender-card.gender-women .gender-card-copy,
+  .home-gender-card.gender-unisex .gender-card-copy
+){color:#fff!important;background-color:#111!important;border-color:#444!important;box-shadow:none!important}
+:where(body.dark,html[data-theme="dark"] body) #home .gender-section-title :where(i,h2,span){color:#fff!important}
+:where(body.dark,html[data-theme="dark"] body) :where(
+  .home-ai-banner,.home-promo-strip,.home-benefits,.home-brand-directory,.home-brand-showcase
+){color:#fff!important;background:#111!important;background-image:none!important;border-color:#444!important;box-shadow:none!important}
+:where(body.dark,html[data-theme="dark"] body) .origo-footer :where(.footer-socials>a,.footer-socials>span){color:#fff!important;background:#181818!important;background-image:none!important;border:1px solid #444!important;box-shadow:none!important}
+:where(body.dark,html[data-theme="dark"] body) .origo-footer :where(.footer-whatsapp-link,.footer-whatsapp-link>span){color:#fff!important}
+
+/* Footer directory: centered labels with one intentional brands-directory icon. */
+.origo-footer .footer-directory > section{
+  align-items:center!important;
+  text-align:center!important;
+}
+.origo-footer .footer-directory :where(h2,h3){
+  width:100%;
+  text-align:center!important;
+}
+.origo-footer .footer-directory > section > :where(a,button,p,small),
+.origo-footer .footer-brand-list,
+.origo-footer .footer-contact-app,
+.origo-footer .footer-newsletter{
+  width:100%;
+  justify-content:center!important;
+  text-align:center!important;
+}
+.origo-footer .footer-brand-list{
+  align-items:center!important;
+}
+.origo-footer .footer-directory :where(.footer-socials,.footer-app-links){
+  justify-content:center!important;
+}
+
+/* Brand directory uses the same polished card language as the homepage. */
+.brands-page-grid{
+  grid-template-columns:repeat(auto-fill,minmax(170px,1fr))!important;
+  gap:18px!important;
+  align-items:stretch;
+}
+.brands-page-grid > a{
+  min-width:0;
+  min-height:180px;
+  padding:18px 14px 15px;
+  display:grid;
+  grid-template-rows:110px auto;
+  place-items:center;
+  align-content:center;
+  gap:12px;
+  overflow:hidden;
+  border:1px solid var(--line)!important;
+  border-radius:18px;
+  color:var(--origo-text)!important;
+  background:#fff!important;
+  box-shadow:0 10px 26px rgb(77 0 18 / 6%);
+  text-decoration:none;
+  transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease;
+}
+.brands-page-grid > a:is(:hover,:focus-visible){
+  border-color:var(--burgundy)!important;
+  box-shadow:0 14px 32px rgb(77 0 18 / 12%);
+  transform:translateY(-3px);
+}
+.brands-page-grid > a > img{
+  width:100%!important;
+  height:110px!important;
+  display:block;
+  object-fit:contain;
+  object-position:center;
+}
+.brands-page-grid > a > span{
+  width:82px;
+  height:82px;
+  display:grid;
+  place-items:center;
+  border-radius:16px;
+  background:var(--paper);
+  color:var(--burgundy);
+  font-weight:800;
+}
+.brands-page-grid > a > b{
+  width:100%;
+  min-height:2.6em;
+  display:grid;
+  place-items:center;
+  color:inherit!important;
+  font-size:14px;
+  line-height:1.3;
+  text-align:center!important;
+  overflow-wrap:anywhere;
+}
+:where(body.dark,html[data-theme="dark"] body) .brands-page-grid > a{
+  border-color:#3a3a3a!important;
+  color:#fff!important;
+  background:#111!important;
+  box-shadow:none;
+}
+:where(body.dark,html[data-theme="dark"] body) .brands-page-grid > a > span{background:#1d1d1d;color:#fff}
+@media(max-width:600px){
+  .brands-page-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
+  .brands-page-grid > a{min-height:145px;padding:12px 8px;grid-template-rows:82px auto;border-radius:14px}
+  .brands-page-grid > a > img{height:82px!important}
+  .brands-page-grid > a > b{font-size:12px}
+}

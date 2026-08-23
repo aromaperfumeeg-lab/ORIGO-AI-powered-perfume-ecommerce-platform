@@ -270,6 +270,14 @@ db.exec(`
     UNIQUE (option_group, slug)
   );
 
+  CREATE TABLE IF NOT EXISTS storefront_media (
+    id TEXT PRIMARY KEY,
+    mime_type TEXT NOT NULL,
+    data_base64 TEXT NOT NULL,
+    size_bytes INTEGER NOT NULL,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  );
+
   CREATE TABLE IF NOT EXISTS admin_workspace_state (
     id INTEGER PRIMARY KEY CHECK (id = 1),
     payload_json TEXT NOT NULL DEFAULT '{}',
@@ -2039,6 +2047,35 @@ export function updateOrderAdmin(orderId, input = {}) {
 export function getFragranceNotesState() {
   const row = db.prepare("SELECT payload_json FROM fragrance_notes_state WHERE id = 1").get();
   return parseJSON(row?.payload_json || "{}", {});
+}
+
+export function saveStorefrontMedia({ id, mimeType, bytes }) {
+  const mediaId = String(id || "").trim();
+  const mediaType = String(mimeType || "").trim().toLowerCase();
+  const mediaBytes = Buffer.from(bytes || []);
+  if (!/^[a-z0-9-]{12,120}$/i.test(mediaId)) throw new Error("INVALID_STOREFRONT_MEDIA_ID");
+  if (!/^image\/(?:webp|png|jpeg)$/.test(mediaType)) throw new Error("INVALID_STOREFRONT_MEDIA_TYPE");
+  if (!mediaBytes.length || mediaBytes.length > 2_500_000) throw new Error("INVALID_STOREFRONT_MEDIA_SIZE");
+  db.prepare(`
+    INSERT INTO storefront_media (id, mime_type, data_base64, size_bytes)
+    VALUES (?, ?, ?, ?)
+    ON CONFLICT(id) DO UPDATE SET
+      mime_type = excluded.mime_type,
+      data_base64 = excluded.data_base64,
+      size_bytes = excluded.size_bytes
+  `).run(mediaId, mediaType, mediaBytes.toString("base64"), mediaBytes.length);
+  return { id: mediaId, mimeType: mediaType, sizeBytes: mediaBytes.length };
+}
+
+export function getStorefrontMedia(id) {
+  const row = db.prepare("SELECT id, mime_type, data_base64, size_bytes FROM storefront_media WHERE id = ?").get(String(id || ""));
+  if (!row) return null;
+  return {
+    id: row.id,
+    mimeType: row.mime_type,
+    bytes: Buffer.from(row.data_base64, "base64"),
+    sizeBytes: Number(row.size_bytes || 0)
+  };
 }
 
 export function saveFragranceNotesState(payload) {

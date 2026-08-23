@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
 const server = await readFile(new URL("../server.mjs", import.meta.url), "utf8");
+const database = await readFile(new URL("../db.mjs", import.meta.url), "utf8");
 const env = await readFile(new URL("../.env.example", import.meta.url), "utf8");
 
 test("storefront uploads use persistent storage outside production releases", () => {
@@ -15,12 +16,21 @@ test("storefront uploads use persistent storage outside production releases", ()
   assert.match(env,/ORIGO_UPLOAD_DIR=\/home\/USER\/origo-data\/uploads\/storefront/);
 });
 
-test("saved storefront URLs are served from persistent storage without changing product data", () => {
+test("legacy storefront URLs remain served from persistent storage", () => {
   assert.match(server,/const uploadPrefix = "\/uploads\/storefront\/"/);
   assert.match(server,/const staticRoot = isPersistentUpload \? STOREFRONT_UPLOAD_ROOT : ROOT/);
-  assert.match(server,/return `\/uploads\/storefront\/\$\{folder\}\/\$\{fileName\}`/);
 });
 
 test("all product-editor relationship upload folders are retained", () => {
   for (const folder of ["hero","gender","brand","product","relationship"]) assert.match(server,new RegExp(`"${folder}"`));
+});
+
+test("new storefront media is retained in the database and served through stable URLs", () => {
+  assert.match(database, /CREATE TABLE IF NOT EXISTS storefront_media/);
+  assert.match(database, /export function saveStorefrontMedia/);
+  assert.match(database, /export function getStorefrontMedia/);
+  assert.match(server, /saveStorefrontMedia\(\{ id: mediaId/);
+  assert.match(server, /return `\/media\/\$\{mediaId\}\.\$\{extension\}`/);
+  assert.match(server, /const mediaMatch = url\.pathname\.match/);
+  assert.match(server, /max-age=31536000, immutable/);
 });
