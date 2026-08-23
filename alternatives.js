@@ -96,7 +96,7 @@
     return block[`${side}${lang() === "ar" ? "Ar" : "En"}`] || [];
   }
   function similarityRing(item, small = false) {
-    return `<div class="alt-similarity${small ? " small" : ""}" style="--match:${item.similarity * 3.6}deg"><div><b>${item.similarity}%</b><span>${t("similarity")}</span></div></div>`;
+    return `<div class="alt-similarity${small ? " small" : ""}" style="--match:${item.similarity * 3.6}deg"><div><b>${number(item.similarity)}%</b><span>${t("similarity")}</span></div></div>`;
   }
   function relationLabel(item) {
     const labels = { direct_alternative:["بديل مباشر","Direct alternative"], inspired_by:["مستوحى من","Inspired by"], similar_character:["طابع مشابه","Similar character"], similar_opening:["افتتاحية مشابهة","Similar opening"], similar_drydown:["قاعدة مشابهة","Similar dry-down"], custom:[item.customRelationAr,item.customRelationEn] };
@@ -235,12 +235,7 @@
 
   function productPanel(productOrId) {
     const product = productOrId && typeof productOrId === "object" ? productOrId : store()?.state?.products?.find((entry) => entry.id === productOrId);
-    const productId = product?.id || productOrId;
-    const canonicalRelationships = product ? store()?.renderFragranceRelationships?.(product) || "" : "";
-    const closestKeys = new Set((product?.inspiration?.closestMatches || []).flatMap((relation) => [relation.slug,relation.nameEn,relation.nameAr]).filter(Boolean).map((value) => String(value).toLocaleLowerCase("ar")));
-    const items = (model.payload?.items || []).filter((entry) => entry.product.id === productId).filter((entry) => ![entry.reference.slug,label(entry.reference,"name")].some((value) => closestKeys.has(String(value || "").toLocaleLowerCase("ar")))).slice(0,4);
-    const calculatedAlternatives = items.length ? `<section class="pdp-alternative-reference multiple"><div><small>${t("availableAlternative")}</small><h2>${lang() === "ar" ? "بديل لعطور قد تعرفها" : "An alternative to fragrances you may know"}</h2><p>${t("referenceNotice")}</p></div><div class="pdp-reference-list">${items.map((item)=>`<button data-alt="compare" data-slug="${esc(item.reference.slug)}"><img src="${esc(item.reference.image)}" alt="${esc(label(item.reference,"name"))}"/><span><b>${esc(label(item.reference,"name"))}</b><small>${esc(item.reference.brand)} · ${number(item.similarity)}%</small></span></button>`).join("")}</div></section>` : "";
-    return `${canonicalRelationships}${calculatedAlternatives}`;
+    return product ? store()?.renderFragranceRelationships?.(product) || "" : "";
   }
 
   function setRoute(active) {

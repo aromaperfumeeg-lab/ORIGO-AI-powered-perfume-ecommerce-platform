@@ -3954,6 +3954,11 @@ html body :is(#storefront-main,.product-overlay) .product-card .exact-card-actio
 .origo-footer .footer-brand-list{
   align-items:center!important;
 }
+.origo-footer .footer-brand-list > :where(a,button){
+  width:100%!important;
+  justify-content:center!important;
+  text-align:center!important;
+}
 .origo-footer .footer-directory :where(.footer-socials,.footer-app-links){
   justify-content:center!important;
 }

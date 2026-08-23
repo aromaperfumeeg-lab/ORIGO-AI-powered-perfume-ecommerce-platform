@@ -5166,15 +5166,12 @@ function productUseCases(product) {
     const known = Object.values(PRODUCT_USE_CASES).find((entry) => entry.aliases.test(searchable));
     return [`imported-${index}`, { ar:ar || en, en:en || ar, icon:known?.icon || "sparkles" }];
   }).filter(([, item]) => item.ar || item.en);
-  if (imported.length) return imported.slice(0, 6);
-  const generated = Object.entries(product.perfumeProfile?.occasions || {}).sort((a,b) => Number(b[1])-Number(a[1])).filter(([,score]) => Number(score) >= 45).slice(0, 6);
-  if (generated.length) {
-    const mapping = { daily:"daily", work:"work", formal:"occasions", evening:"evening", party:"occasions", date:"romantic", specialOccasion:"occasions", casual:"daily" };
-    return generated.map(([key]) => [key, PRODUCT_USE_CASES[mapping[key]] || PRODUCT_USE_CASES.occasions]);
-  }
-  const values = [...(product.occasions || []), ...(product.usageTimes || [])].map(String);
-  const matched = Object.entries(PRODUCT_USE_CASES).filter(([, item]) => values.some((value) => item.aliases.test(value.toLowerCase())));
-  return (matched.length ? matched : values.slice(0, 4).map((value, index) => [`custom-${index}`, { ar: value, en: value, icon: "sparkles" }])).slice(0, 6);
+  if (imported.length) return imported;
+  const values = [...new Set((product.occasions || []).map(String).map((value) => value.trim()).filter(Boolean))];
+  return values.map((value, index) => {
+    const known = Object.values(PRODUCT_USE_CASES).find((item) => item.aliases.test(value.toLowerCase()));
+    return [`saved-${index}`, known ? { ar:known.ar, en:known.en, icon:known.icon } : { ar:value, en:value, icon:"sparkles" }];
+  });
 }
 
 function useCaseArtwork(kind = "sparkles") {
@@ -5195,8 +5192,8 @@ function productGenderMarkup(product) {
 
 function productSuitabilityMarkup(product) {
   const items = productUseCases(product);
-  if (!items.length) return `<div class="pdp-empty-compact">${state.lang === "ar" ? "لم تُحدد الاستخدامات المناسبة بعد." : "Suitable uses are not configured yet."}</div>`;
-  return `<section class="pdp-suitability"><header><span>${state.lang === "ar" ? "مناسب لماذا؟" : "Best suited for"}</span><p>${state.lang === "ar" ? "اقتراحات فريق ORIGO بحسب طابع العطر، وليست تصويتات عملاء." : "ORIGO editorial guidance based on the fragrance character."}</p></header><div>${items.map(([, item]) => `<article><img src="${useCaseArtwork(item.icon)}" alt="" loading="lazy"/><b>${escapeHTML(state.lang === "ar" ? item.ar : item.en)}</b></article>`).join("")}</div></section>`;
+  if (!items.length) return "";
+  return `<section class="pdp-suitability"><header><span>${state.lang === "ar" ? "الاستخدامات والمناسبات" : "Uses and occasions"}</span><p>${state.lang === "ar" ? "البيانات المحفوظة مع المنتج." : "Information saved with this product."}</p></header><div>${items.map(([, item]) => `<article><img src="${useCaseArtwork(item.icon)}" alt="" loading="lazy"/><b>${escapeHTML(state.lang === "ar" ? item.ar : item.en)}</b></article>`).join("")}</div></section>`;
 }
 
 function accordPhotoCell(item = {}) {
@@ -5259,12 +5256,10 @@ function productPerformanceImagesMarkup(product) {
 function productHeroProfileMarkup(product) {
   const ar = state.lang === "ar";
   const artwork = productProfileArtwork(product, "fingerprint", "is-fingerprint");
-  const generated = Boolean(product.perfumeProfile?.engineVersion);
-  return `<aside class="pdp-hero-profile"><header><span>⌁</span><div><b>${ar ? "البصمة العطرية" : "Fragrance fingerprint"}</b><small>${generated ? (ar ? "تحليل ORIGO الذكي المحفوظ" : "Saved ORIGO intelligence analysis") : (ar ? "ملف العطر من ORIGO" : "ORIGO fragrance profile")}</small></div></header>${artwork || productAccordMarkup(product)}</aside>`;
+  return `<aside class="pdp-hero-profile"><header><span>⌁</span><div><b>${ar ? "البصمة العطرية" : "Fragrance fingerprint"}</b><small>${ar ? "البيانات المحفوظة مع المنتج" : "Saved product information"}</small></div></header>${artwork || productAccordMarkup(product)}</aside>`;
 }
 
 function productIntelligenceMarkup(product) {
-  const savedProfile = product.perfumeProfile && typeof product.perfumeProfile === "object" ? product.perfumeProfile : {};
   const characterAr = product.scentCharacterAr || [];
   const characterEn = product.scentCharacterEn || [];
   const importedOccasions = (product.occasionLabels || []).map((item, index) => ({
@@ -5272,31 +5267,24 @@ function productIntelligenceMarkup(product) {
     ar: item.ar || item.nameAr || item.name_ar || item.en || item.nameEn || item.name_en || "",
     en: item.en || item.nameEn || item.name_en || item.ar || item.nameAr || item.name_ar || ""
   }));
-  const profile = savedProfile.engineVersion ? savedProfile : {
-    engineVersion: "CANONICAL",
-    character: Array.from({ length: Math.max(characterAr.length, characterEn.length) }, (_, index) => ({
-      labelAr: characterAr[index] || characterEn[index], labelEn: characterEn[index] || characterAr[index], score: 100
-    })),
-    seasons: product.seasonScores || {},
-    time: product.usageTimeScores || {},
-    occasions: Object.fromEntries(importedOccasions.map((item) => [item.key, 100])),
-    descriptions: { fullDescriptionAr: product.fullDescriptionAr || product.descriptionAr || "", fullDescriptionEn: product.fullDescriptionEn || product.descriptionEn || "" }
-  };
   const ar = state.lang === "ar";
-  const hasImportedAnalysis = Object.keys(profile.seasons || {}).length || Object.keys(profile.time || {}).length || profile.character?.length || Object.keys(profile.occasions || {}).length;
-  if (!savedProfile.engineVersion && !hasImportedAnalysis) return `<div class="pdp-empty-compact">${ar ? "لا توجد بيانات تحليل محفوظة لهذا العطر بعد." : "No saved analysis is available for this fragrance yet."}</div>`;
-  const characters = (profile.character || []).slice(0, 5);
+  const characters = Array.from({ length: Math.max(characterAr.length, characterEn.length) }, (_, index) => ({
+    labelAr: characterAr[index] || characterEn[index], labelEn: characterEn[index] || characterAr[index]
+  })).filter((item) => item.labelAr || item.labelEn);
   const seasonLabels = { winter:["الشتاء","Winter"],spring:["الربيع","Spring"],summer:["الصيف","Summer"],autumn:["الخريف","Autumn"] };
-  const occasionLabels = { daily:["يومي","Daily"],work:["العمل","Work"],formal:["رسمي","Formal"],evening:["المساء","Evening"],party:["حفلات","Party"],date:["موعد","Date"],specialOccasion:["مناسبة خاصة","Special occasion"],casual:["كاجوال","Casual"], ...Object.fromEntries(importedOccasions.map((item) => [item.key, [item.ar, item.en]])) };
-  const seasons = Object.entries(profile.seasons || {}).sort((a,b)=>b[1]-a[1]);
-  const occasions = Object.entries(profile.occasions || {}).sort((a,b)=>b[1]-a[1]).filter(([,score])=>score>=45).slice(0,6);
+  const seasons = Object.entries(product.seasonScores || {}).filter(([,score]) => score !== null && score !== undefined && score !== "").sort((a,b)=>b[1]-a[1]);
+  const time = product.usageTimeScores || {};
+  const hasTime = [time.day,time.night].some((score) => score !== null && score !== undefined && score !== "");
+  const hasSavedInformation = characters.length || seasons.length || hasTime || importedOccasions.length;
+  if (!hasSavedInformation) return "";
   const bar = (label,score) => `<label><span>${escapeHTML(label)}</span><i><u style="width:${Math.min(100,Number(score)||0)}%"></u></i><em>${Math.round(Number(score)||0)}%</em></label>`;
-  return `<section class="pdp-intelligence" dir="${ar ? "rtl" : "ltr"}"><div class="pdp-intelligence-summary"><span>✦</span><div><b>${ar ? "تحليل ORIGO الذكي" : "ORIGO intelligence analysis"}</b><small>${ar ? "مُنشأ من هرم النوتات ومحفوظ مع المنتج" : "Generated from the note pyramid and saved with the product"}</small></div><em>v${escapeHTML(profile.engineVersion)}</em></div>
-    <div class="pdp-intelligence-grid"><article><h4>${ar ? "شخصية العطر" : "Fragrance character"}</h4><div class="pdp-intelligence-chips">${characters.map((item)=>`<span>${escapeHTML(ar ? item.labelAr : item.labelEn)}<small>${item.score}%</small></span>`).join("")}</div></article>
-    <article><h4>${ar ? "المواسم" : "Seasons"}</h4>${seasons.map(([key,score])=>bar(seasonLabels[key]?.[ar?0:1] || key,score)).join("")}</article>
-    <article><h4>${ar ? "الوقت الأنسب" : "Best time"}</h4>${bar(ar?"النهار":"Day",profile.time?.day)}${bar(ar?"الليل":"Night",profile.time?.night)}</article>
-    <article><h4>${ar ? "المناسبات" : "Occasions"}</h4><div class="pdp-intelligence-chips">${occasions.map(([key,score])=>`<span>${escapeHTML(occasionLabels[key]?.[ar?0:1] || key)}<small>${score}%</small></span>`).join("")}</div></article></div>
-    <p>${escapeHTML(ar ? profile.descriptions?.fullDescriptionAr : profile.descriptions?.fullDescriptionEn)}</p></section>`;
+  return `<section class="pdp-intelligence" dir="${ar ? "rtl" : "ltr"}"><div class="pdp-intelligence-summary"><div><b>${ar ? "بيانات الطابع والاستخدام" : "Character and usage information"}</b><small>${ar ? "كما حُفظت مع المنتج دون اقتراحات تلقائية" : "Saved with the product without automatic suggestions"}</small></div></div>
+    <div class="pdp-intelligence-grid">
+    ${characters.length ? `<article><h4>${ar ? "شخصية العطر" : "Fragrance character"}</h4><div class="pdp-intelligence-chips">${characters.map((item)=>`<span>${escapeHTML(ar ? item.labelAr : item.labelEn)}</span>`).join("")}</div></article>` : ""}
+    ${seasons.length ? `<article><h4>${ar ? "المواسم" : "Seasons"}</h4>${seasons.map(([key,score])=>bar(seasonLabels[key]?.[ar?0:1] || key,score)).join("")}</article>` : ""}
+    ${hasTime ? `<article><h4>${ar ? "وقت الاستخدام" : "Wear time"}</h4>${time.day !== null && time.day !== undefined && time.day !== "" ? bar(ar?"النهار":"Day",time.day) : ""}${time.night !== null && time.night !== undefined && time.night !== "" ? bar(ar?"الليل":"Night",time.night) : ""}</article>` : ""}
+    ${importedOccasions.length ? `<article><h4>${ar ? "المناسبات" : "Occasions"}</h4><div class="pdp-intelligence-chips">${importedOccasions.map((item)=>`<span>${escapeHTML(ar ? item.ar : item.en)}</span>`).join("")}</div></article>` : ""}
+    </div></section>`;
 }
 
 function productIngredientsMarkup(product) {
@@ -5309,13 +5297,55 @@ function productPublicDetailsMarkup(product) {
   const ar = state.lang === "ar";
   const shortDescription = localizedText(product.descriptionAr, product.descriptionEn) || product.description || "";
   const fullDescription = localizedText(product.fullDescriptionAr, product.fullDescriptionEn);
+  const listText = (arabicValues, englishValues, fallback = []) => {
+    const preferred = ar ? arabicValues : englishValues;
+    const secondary = ar ? englishValues : arabicValues;
+    const values = [preferred, secondary, fallback].find((items) => Array.isArray(items) && items.filter(Boolean).length) || [];
+    return [...new Set(values.map((value) => String(value || "").trim()).filter(Boolean))].join(ar ? "، " : ", ");
+  };
+  const categoryLabels = { perfume:["عطر","Perfume"], skincare:["العناية بالبشرة","Skincare"], haircare:["العناية بالشعر","Hair care"], bodycare:["العناية بالجسم","Body care"], incense:["بخور","Incense"], home:["عطر منزلي","Home fragrance"], gifts:["هدية","Gift"] };
+  const genderLabels = { men:["للرجال","For men"], women:["للنساء","For women"], unisex:["للجنسين","Unisex"] };
+  const projectionLabels = { intimate:["هادئ","Intimate"], soft:["ناعم","Soft"], moderate:["متوسط","Moderate"], strong:["قوي","Strong"], enormous:["قوي جدًا","Enormous"] };
+  const dynamic = product.dynamicAttributes && typeof product.dynamicAttributes === "object" ? product.dynamicAttributes : {};
+  const longevityHours = product.performance?.longevityHours ?? product.performance?.longevity;
+  const longevityDescription = localizedText(product.performance?.longevityAr, product.performance?.longevityEn);
+  const longevityHoursText = longevityHours !== undefined && longevityHours !== null && longevityHours !== ""
+    ? `${formatNumber(longevityHours)} ${ar ? "ساعة" : "hours"}` : "";
+  const projectionCode = String(product.performance?.projection || "").toLowerCase();
+  const projection = localizedText(product.performance?.projectionAr, product.performance?.projectionEn)
+    || projectionLabels[projectionCode]?.[ar ? 0 : 1] || product.performance?.projection || "";
+  const type = localizedText(product.typeAr, product.typeEn) || product.type || categoryLabels[product.category]?.[ar ? 0 : 1] || product.category;
   const details = [
+    [ar ? "نوع المنتج" : "Product type", type],
+    [ar ? "الجنس" : "Gender", genderLabels[catalogGender(product)]?.[ar ? 0 : 1]],
     [ar ? "العائلة العطرية" : "Fragrance family", localizedText(product.fragranceFamilyAr || product.familyAr, product.fragranceFamilyEn || product.familyEn) || (product.families || []).join(" · ")],
     [ar ? "سنة الإصدار" : "Release year", product.releaseYear],
     [ar ? "بلد المنشأ" : "Country of origin", localizedText(product.originCountryAr, product.originCountryEn) || product.originCountry],
     [ar ? "صانع العطر" : "Perfumer", product.perfumer || (product.perfumers || []).join(" · ")],
     [ar ? "التركيز" : "Concentration", localizedText(product.concentrationAr, product.concentrationEn) || product.concentration],
-    [ar ? "الحجم" : "Size", product.size || product.sizes?.[0]]
+    [ar ? "الحجم" : "Size", product.size || product.sizes?.[0]],
+    [ar ? "وصف الثبات" : "Longevity description", longevityDescription],
+    [ar ? "الثبات بالساعات" : "Longevity in hours", longevityHoursText],
+    [ar ? "الفوحان" : "Projection", projection],
+    [ar ? "مصدر التقييم" : "Rating source", product.ratingDetails?.source],
+    [ar ? "نوع التقييم" : "Rating type", product.ratingDetails?.type ? String(product.ratingDetails.type).replaceAll("_", " ") : ""],
+    [ar ? "تقييم عملاء ORIGO" : "ORIGO customer rating", product.ratingDetails?.is_origo_customer_rating === undefined ? "" : (product.ratingDetails.is_origo_customer_rating ? (ar ? "نعم" : "Yes") : (ar ? "لا" : "No"))],
+    [ar ? "الباركود" : "Barcode", product.barcode],
+    [ar ? "الخيارات المتاحة" : "Available variants", listText([], [], product.variants)],
+    [ar ? "النوتات البارزة" : "Featured notes", listText([], [], product.featuredNotes)],
+    [ar ? "شخصية العطر" : "Fragrance character", listText(product.scentCharacterAr, product.scentCharacterEn, product.personalities)],
+    [ar ? "الطابع والمزاج" : "Mood", listText([], [], product.moods)],
+    [ar ? "التصنيفات" : "Tags", listText([], [], product.tags)],
+    [ar ? "نوع البشرة" : "Skin type", dynamic.skinType],
+    [ar ? "نوع الشعر" : "Hair type", dynamic.hairType],
+    [ar ? "الاحتياج" : "Concern", dynamic.concern],
+    [ar ? "الرائحة" : "Aroma", dynamic.aroma],
+    [ar ? "الوزن" : "Weight", dynamic.weight],
+    [ar ? "مدة الانتشار" : "Diffusion duration", dynamic.diffusionDuration],
+    [ar ? "مناسبة الهدية" : "Gift occasion", dynamic.giftOccasion],
+    [ar ? "محتويات الهدية" : "Gift contents", dynamic.giftContents],
+    [ar ? "طريقة الاستخدام" : "Usage instructions", localizedText(dynamic.usageInstructionsAr, dynamic.usageInstructionsEn)],
+    [ar ? "فيديو المنتج" : "Product video", product.videoUrl]
   ].filter(([, value]) => value !== undefined && value !== null && String(value).trim());
   if (!shortDescription && !fullDescription && !details.length) return "";
   return `<section class="pdp-public-details" aria-labelledby="pdp-public-details-title"><div class="pdp-section-heading"><span>PRODUCT DETAILS</span><h2 id="pdp-public-details-title">${ar ? "تفاصيل المنتج" : "Product details"}</h2></div>
@@ -5325,11 +5355,28 @@ function productPublicDetailsMarkup(product) {
   </section>`;
 }
 
+function productConfiguredLinksMarkup(product) {
+  const ar = state.lang === "ar";
+  const seen = new Set([product.id]);
+  const groups = [
+    ["similarProductIds", ar ? "منتجات مشابهة مختارة" : "Selected similar products", "SIMILAR"],
+    ["crossSellIds", ar ? "قد يعجبك أيضًا" : "You may also like", "RECOMMENDED"],
+    ["alternativeIds", ar ? "البدائل المختارة" : "Selected alternatives", "ALTERNATIVES"]
+  ].map(([field, title, eyebrow]) => {
+    const products = (Array.isArray(product[field]) ? product[field] : [])
+      .map((id) => getProduct(id))
+      .filter((item) => item && item.status === "published" && !seen.has(item.id));
+    products.forEach((item) => seen.add(item.id));
+    return products.length ? `<section class="pdp-recommendations pdp-configured-products"><div class="pdp-section-heading"><span>${eyebrow}</span><h2>${title}</h2></div><div class="pdp-products-row">${products.map((item) => productCardMarkup(item)).join("")}</div></section>` : "";
+  });
+  return groups.join("");
+}
+
 function productProfileAccordions(product) {
   const ar = state.lang === "ar";
   return `<section class="pdp-profile-accordions" aria-label="${ar ? "ملف العطر" : "Fragrance profile"}">
     <article class="pdp-profile-section" data-pdp-section="notes"><button type="button" data-action="pdp-profile-section" aria-expanded="false"><div><b>${ar ? "هرم النوتات" : "Note pyramid"}</b><small>${ar ? "افتتاحية · قلب · قاعدة" : "Top · heart · base"}</small></div><i>⌄</i></button><div class="pdp-profile-panel" hidden>${productNotePyramid(product) || `<div class="pdp-empty-compact">${ar ? "لم تُضف النوتات العطرية لهذا المنتج بعد." : "Fragrance notes are not available yet."}</div>`}</div></article>
-    <article class="pdp-profile-section" data-pdp-section="analysis"><button type="button" data-action="pdp-profile-section" aria-expanded="false"><div><b>${ar ? "التحليل الذكي" : "Intelligence analysis"}</b><small>${ar ? "الأكوردات · الشخصية · الوقت · المناسبات" : "Accords · character · time · occasions"}</small></div><i>⌄</i></button><div class="pdp-profile-panel" hidden>${productIntelligenceMarkup(product)}</div></article>
+    <article class="pdp-profile-section" data-pdp-section="analysis"><button type="button" data-action="pdp-profile-section" aria-expanded="false"><div><b>${ar ? "الطابع والاستخدام" : "Character and usage"}</b><small>${ar ? "الشخصية · المواسم · الوقت · المناسبات المحفوظة" : "Saved character · seasons · time · occasions"}</small></div><i>⌄</i></button><div class="pdp-profile-panel" hidden>${productIntelligenceMarkup(product)}</div></article>
     <article class="pdp-profile-section" data-pdp-section="performance"><button type="button" data-action="pdp-profile-section" aria-expanded="false"><div><b>${ar ? "أداء العطر" : "Fragrance performance"}</b><small>${ar ? "الرائحة · الثبات · الفوحان · القيمة" : "Scent · longevity · sillage · value"}</small></div><i>⌄</i></button><div class="pdp-profile-panel" hidden>${productPerformanceImagesMarkup(product)}</div></article>
   </section>`;
 }
@@ -6268,7 +6315,6 @@ function showProductDetails(product, shouldOpen = true) {
   const maximum = hasKnownStock ? Math.max(1, Math.min(10, knownStock)) : 10;
   state.activeProductQuantity = Math.min(maximum, state.activeProductQuantity);
   const sizes = Array.isArray(product.sizes) ? product.sizes.filter(Boolean) : [];
-  const related = productRelated(product);
   const recent = readStoredArray("origoRecentlyViewed").filter((id) => id !== product.id).map(getProduct).filter(Boolean).slice(0, 4);
   const description = localizedText(product.descriptionAr, product.descriptionEn) || product.description || "";
   const family = localizedText(product.fragranceFamilyAr || product.familyAr, product.fragranceFamilyEn || product.familyEn);
@@ -6301,7 +6347,7 @@ function showProductDetails(product, shouldOpen = true) {
       <section class="pdp-hero">
         <div class="pdp-gallery">
           <div class="pdp-thumbnails" aria-label="${isArabic ? "صور المنتج" : "Product media"}">${media.map((item, index) => `<button class="${index === state.activeProductImageIndex ? "active" : ""}" data-action="product-image" data-index="${index}" aria-label="${isArabic ? `الصورة ${index + 1}` : `Image ${index + 1}`}" aria-pressed="${index === state.activeProductImageIndex}"><img src="${escapeHTML(item.url)}" alt="" loading="${index ? "lazy" : "eager"}" /></button>`).join("")}</div>
-          <div class="pdp-main-image" data-action="product-zoom" role="button" tabindex="0" aria-label="${isArabic ? "فتح صورة المنتج بملء الشاشة" : "Open product image fullscreen"}"><span>${escapeHTML(isArabic ? product.badgeAr || "" : product.badgeEn || "")}</span>${media.length > 1 ? `<button type="button" class="pdp-media-arrow previous" data-action="product-image-step" data-change="-1" aria-label="${isArabic ? "الصورة السابقة" : "Previous image"}">‹</button><button type="button" class="pdp-media-arrow next" data-action="product-image-step" data-change="1" aria-label="${isArabic ? "الصورة التالية" : "Next image"}">›</button><small class="pdp-media-count" aria-live="polite">${state.activeProductImageIndex + 1} / ${media.length}</small>` : ""}<img src="${escapeHTML(activeMedia.url)}" alt="${escapeHTML(`${product.brand} ${name}`)}" draggable="false" /></div>
+          <div class="pdp-main-image" data-action="product-zoom" role="button" tabindex="0" aria-label="${isArabic ? "فتح صورة المنتج بملء الشاشة" : "Open product image fullscreen"}"><span>${escapeHTML(isArabic ? product.cardBadgeAr || product.badgeAr || "" : product.cardBadgeEn || product.badgeEn || "")}</span>${media.length > 1 ? `<button type="button" class="pdp-media-arrow previous" data-action="product-image-step" data-change="-1" aria-label="${isArabic ? "الصورة السابقة" : "Previous image"}">‹</button><button type="button" class="pdp-media-arrow next" data-action="product-image-step" data-change="1" aria-label="${isArabic ? "الصورة التالية" : "Next image"}">›</button><small class="pdp-media-count" aria-live="polite">${state.activeProductImageIndex + 1} / ${media.length}</small>` : ""}<img src="${escapeHTML(activeMedia.url)}" alt="${escapeHTML(`${product.brand} ${name}`)}" draggable="false" /></div>
         </div>
         <aside class="pdp-purchase">
           <a class="pdp-brand" href="/brands/${encodeURIComponent(normalizeOptionSearch(product.brand).replaceAll(" ","-"))}">${escapeHTML(brandName)}</a><h1 id="product-dialog-title">${escapeHTML(name)}</h1>${ratingMarkup}
@@ -6321,7 +6367,7 @@ function showProductDetails(product, shouldOpen = true) {
       ${productIngredientsMarkup(product)}
       ${productSuitabilityMarkup(product)}
       ${window.ORIGOAlternatives?.productPanel?.(product) || productFragranceRelationshipsMarkup(product)}
-      ${related.length ? `<section class="pdp-recommendations pdp-similar-fragrances"><div class="pdp-section-heading"><span>SCENT MATCH</span><h2>${isArabic ? "عطور قريبة في الرائحة" : "Similar-smelling fragrances"}</h2><p>${isArabic ? "تُحسب نسبة التقارب من نوتات كل طبقة والأكوردات وقوتها، ولا تظهر النتائج الضعيفة." : "Similarity is calculated from each note layer, accord names and their strength; weak matches are excluded."}</p></div><div class="pdp-products-row">${related.map(({ item, score }) => productCardMarkup(item, `${formatPercent(score)} ${isArabic ? "تقارب عطري" : "scent similarity"}`)).join("")}</div></section>` : ""}
+      ${productConfiguredLinksMarkup(product)}
       ${recent.length ? `<section class="pdp-recommendations recently"><div class="pdp-section-heading"><span>RECENT</span><h2>${isArabic ? "شوهد مؤخرًا" : "Recently viewed"}</h2></div><div class="pdp-products-row">${recent.map((item) => productCardMarkup(item)).join("")}</div></section>` : ""}
     </main>`;
   $("#product-dialog-content").querySelectorAll("img").forEach((image) => image.addEventListener("error", () => (image.src = PRODUCT_IMAGE_PLACEHOLDER), { once: true }));
@@ -7771,6 +7817,8 @@ function collectReviewProduct(form) {
       fetchedAt: new Date().toISOString()
     }];
   }
+  product.images = normalizeProductImages(product.images || []);
+  if (product.images.length) product.image = (product.images.find((item) => item.selected) || product.images[0]).url;
   return ORIGOCatalog.computeConfidence(applyProductArabicTranslations(product));
 }
 

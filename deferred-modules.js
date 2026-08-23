@@ -3,7 +3,7 @@
   const loaded = new Set([...document.scripts].map((script) => script.src).filter(Boolean));
   const route = location.pathname;
   const routeScripts = [
-    ["alternatives.js?v=6", /\/(?:alternatives|perfume)(?:\/|$)/],
+    ["alternatives.js?v=7", /\/(?:alternatives|perfume)(?:\/|$)/],
     ["performance-insights.js?v=2", /\/performance(?:\/|$)/],
     ["commerce.js?v=3", /\/(?:cart|checkout|payment|track(?:ing)?|orders?)(?:\/|$)/],
     ["account.js?v=3", /\/(?:account|login|register|profile)(?:\/|$)/],
@@ -82,7 +82,7 @@
     if (/product|quick-view|note/.test(action) || /[?&]product=|\/notes(?:\/|$)/.test(href)) {
       loadStyles("link[data-deferred-href]");
       loadKnowledgeResources();
-      if (/product|quick-view/.test(action) || /[?&]product=|\/perfume(?:\/|$)/.test(href)) loadScript("alternatives.js?v=6");
+      if (/product|quick-view/.test(action) || /[?&]product=|\/perfume(?:\/|$)/.test(href)) loadScript("alternatives.js?v=7");
     }
     const match = routeScripts.find((entry) => entry[1].test(href));
     if (match) loadScript(match[0], match[2]);
@@ -98,7 +98,7 @@
     if (!/open-product|quick-view|open-note|admin-notes/.test(action) && !/\/notes(?:\/|$)/.test(href)) return;
     event.preventDefault();
     event.stopImmediatePropagation();
-    Promise.all([loadKnowledgeResources(), /open-product|quick-view/.test(action) ? loadScript("alternatives.js?v=6") : Promise.resolve()]).then(() => {
+    Promise.all([loadKnowledgeResources(), /open-product|quick-view/.test(action) ? loadScript("alternatives.js?v=7") : Promise.resolve()]).then(() => {
       target.dataset.knowledgeReady = "true";
       target.click();
       delete target.dataset.knowledgeReady;

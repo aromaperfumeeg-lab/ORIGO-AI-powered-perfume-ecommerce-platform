@@ -574,6 +574,18 @@ async function readJSONBody(request) {
   return JSON.parse(json || "{}");
 }
 
+function synchronizeProductPrimaryImage(input = {}) {
+  const product = { ...input };
+  const images = (Array.isArray(product.images) ? product.images : []).filter((item) => {
+    const url = typeof item === "string" ? item : item?.url;
+    return Boolean(String(url || "").trim());
+  });
+  if (!images.length) return product;
+  const primary = images.find((item) => typeof item === "object" && item?.selected) || images[0];
+  product.image = String(typeof primary === "string" ? primary : primary.url).trim();
+  return product;
+}
+
 async function saveStorefrontImageUpload(body = {}) {
   const match = String(body.dataUrl || "").match(/^data:image\/(webp|png|jpeg);base64,([a-z0-9+/=]+)$/i);
   if (!match) {
@@ -965,7 +977,7 @@ async function handleAPI(request, response, url, origin) {
     const limit = Math.max(0, Math.min(200, Number(url.searchParams.get("limit")) || 0));
     const offset = Math.max(0, Number(url.searchParams.get("offset")) || 0);
     const total = countProducts();
-    const products = listProducts({ limit, offset });
+    const products = listProducts({ limit, offset }).map(synchronizeProductPrimaryImage);
     return jsonResponse(response, 200, { products, total, offset, limit: limit || total, hasMore: limit > 0 && offset + products.length < total }, origin, {
       "Cache-Control": "no-store, max-age=0, must-revalidate"
     });
@@ -1717,7 +1729,7 @@ async function handleAPI(request, response, url, origin) {
     const user = requireUser(request, response, origin, "catalog");
     if (!user) return;
     try {
-      const body = preparePerfumeProduct(await readJSONBody(request));
+      const body = synchronizeProductPrimaryImage(preparePerfumeProduct(await readJSONBody(request)));
       if (!String(body.nameAr || body.nameEn || "").trim()) {
         return jsonResponse(response, 400, { error: "أدخل اسم المنتج بلغة واحدة على الأقل." }, origin);
       }

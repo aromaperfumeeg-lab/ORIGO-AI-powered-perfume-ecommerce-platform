@@ -55,7 +55,7 @@ test("internal fragrance relationships resolve images through the product media 
   assert.doesNotMatch(storefront,/\bproductImage\(internal\)/);
 });
 
-test("similar-scent products require complete data and a meaningful note-and-accord score", () => {
+test("similar-scent matcher remains strict but is not injected as an automatic product suggestion", () => {
   const matcher = app.slice(app.indexOf("function fragranceMatchData"), app.indexOf("function rememberProduct"));
   assert.match(matcher,/\["top","heart","base"\]/);
   assert.match(matcher,/product\.accordProfile/);
@@ -64,7 +64,8 @@ test("similar-scent products require complete data and a meaningful note-and-acc
   assert.match(matcher,/sharedAccords/);
   assert.match(matcher,/score != null && score >= 65/);
   assert.match(matcher,/sort\(\(a,b\) => b\.score-a\.score/);
-  assert.match(app,/عطور قريبة في الرائحة/);
+  const productPage = app.slice(app.indexOf("function showProductDetails"), app.indexOf("function closeProductPage"));
+  assert.doesNotMatch(productPage,/عطور قريبة في الرائحة|Similar-smelling fragrances|productRelated\(product\)/);
 });
 
 test("internal slug resolution requires an exact published product", () => {
@@ -82,13 +83,11 @@ test("external references display only an explicitly saved image and never inven
   assert.doesNotMatch(card,/PRODUCT_IMAGE_PLACEHOLDER|price|href=/);
 });
 
-test("alternatives panel prioritizes canonical groups then calculated alternatives", () => {
+test("product alternatives panel renders only manager-saved canonical relationships", () => {
   const panel = alternatives.slice(alternatives.indexOf("function productPanel"), alternatives.indexOf("function setRoute"));
-  assert.match(panel,/canonicalRelationships/);
-  assert.match(panel,/calculatedAlternatives/);
-  assert.match(panel,/return `\$\{canonicalRelationships\}\$\{calculatedAlternatives\}`/);
-  assert.match(deferred,/alternatives\.js\?v=6/);
-  assert.match(panel,/closestKeys/);
+  assert.match(panel,/renderFragranceRelationships/);
+  assert.doesNotMatch(panel,/calculatedAlternatives|model\.payload|similarity|closestKeys/);
+  assert.match(deferred,/alternatives\.js\?v=7/);
   assert.match(app,/managesLegacyAlternatives \? previousAlternativeMatches/);
 });
 

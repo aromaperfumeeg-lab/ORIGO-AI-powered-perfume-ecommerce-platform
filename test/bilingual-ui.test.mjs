@@ -95,6 +95,17 @@ test("product details use canonical analysis and performance when artwork is abs
   assert.doesNotMatch(details, /لم تُرفع صور مؤشرات العطر بعد/);
 });
 
+test("product page renders only saved usage data without ORIGO-generated suggestions", () => {
+  const uses = app.slice(app.indexOf("function productUseCases"), app.indexOf("function accordPhotoCell"));
+  const profile = app.slice(app.indexOf("function productIntelligenceMarkup"), app.indexOf("function productIngredientsMarkup"));
+  const page = app.slice(app.indexOf("function showProductDetails"), app.indexOf("function closeProductPage"));
+  assert.doesNotMatch(uses, /product\.perfumeProfile\?\.occasions|اقتراحات فريق ORIGO|ORIGO editorial guidance/);
+  assert.doesNotMatch(profile, /savedProfile|engineVersion|Generated from the note pyramid|تحليل ORIGO الذكي/);
+  assert.match(profile, /product\.seasonScores \|\| \{\}/);
+  assert.match(profile, /product\.usageTimeScores \|\| \{\}/);
+  assert.doesNotMatch(page, /productRelated\(product\)|عطور قريبة في الرائحة|Similar-smelling fragrances/);
+});
+
 test("note pyramid shows one language and replaces missing artwork", () => {
   const pyramid = app.slice(app.indexOf("function productNotePyramid"), app.indexOf("const PRODUCT_USE_CASES"));
   assert.match(pyramid, /data-note-artwork="true"/);
@@ -106,10 +117,15 @@ test("note pyramid shows one language and replaces missing artwork", () => {
 
 test("published product details expose saved public fields without admin metadata", () => {
   const details = app.slice(app.indexOf("function productPublicDetailsMarkup"), app.indexOf("function productProfileAccordions"));
-  for (const field of ["fullDescriptionAr", "releaseYear", "originCountryAr", "perfumer"]) assert.match(details, new RegExp(field));
-  for (const privateField of ["barcode", "minimumStock", "cost", "seoKeywords"]) assert.doesNotMatch(details, new RegExp(privateField));
+  for (const field of ["fullDescriptionAr", "releaseYear", "originCountryAr", "perfumer", "typeAr", "typeEn", "barcode", "variants", "featuredNotes", "scentCharacterAr", "scentCharacterEn", "moods", "tags", "dynamicAttributes", "usageInstructionsAr", "usageInstructionsEn", "videoUrl", "longevityHours", "projectionAr", "projectionEn", "ratingDetails", "is_origo_customer_rating"]) assert.match(details, new RegExp(field));
+  for (const privateField of ["minimumStock", "cost", "reserved", "internalNotes", "seoKeywords", "seoCanonical", "seoRobots", "manualSourceUrl", "sourceLog", "perfumeBundle", "translationOverrides", "profileStatus", "profileSource"]) assert.doesNotMatch(details, new RegExp(privateField));
   assert.match(productDetail, /\.pdp-public-details/);
   assert.match(productDetail, /white-space:pre-wrap/);
+  assert.match(app, /function productConfiguredLinksMarkup\(product\)/);
+  assert.match(app, /\["similarProductIds"[\s\S]*\["crossSellIds"[\s\S]*\["alternativeIds"/);
+  assert.match(app, /product\.cardBadgeAr \|\| product\.badgeAr/);
+  assert.match(details, /"الثبات بالساعات" : "Longevity in hours"/);
+  assert.match(details, /formatNumber\(longevityHours\)/);
 });
 
 test("product metadata resolves bilingual SEO and canonical product URLs", () => {
@@ -163,6 +179,7 @@ test("footer directory centers every heading and keeps only the all-brands row i
   const withoutAllBrands = directory.replace(/<a class="footer-all-link"[\s\S]*?<\/a>/, "");
   assert.doesNotMatch(withoutAllBrands, /[♙⇄‹ⓘ▱↶♢▣◇✉◉◷✦]/);
   assert.doesNotMatch(withoutAllBrands, />\?<\/span>/);
+  assert.match(appearance, /\.origo-footer \.footer-brand-list > :where\(a,button\)\{[\s\S]*text-align:center!important;/);
 });
 
 test("brands directory uses responsive centered homepage-style cards", () => {
