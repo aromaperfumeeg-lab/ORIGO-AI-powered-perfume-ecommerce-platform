@@ -131,6 +131,13 @@ test("published product details expose saved public fields without admin metadat
   assert.match(details, /"وقت الاستخدام" : "Usage time"/);
   assert.match(details, /"عدد المقيّمين" : "Number of reviewers"/);
   assert.doesNotMatch(details, /اقتراح|suggested|recommended|Best season|أفضل فصل/);
+  assert.match(details, /pdp-detail-gates/);
+  assert.match(details, /pdp-detail-gate/);
+  assert.match(details, /"هوية المنتج" : "Product identity"/);
+  assert.match(details, /"الأداء والاستخدام" : "Performance and usage"/);
+  const accordsAt = app.indexOf("${productPublicAccordsMarkup(product)}");
+  const detailsAt = app.indexOf("${productPublicDetailsMarkup(product)}");
+  assert.ok(accordsAt >= 0 && detailsAt > accordsAt);
 });
 
 test("product metadata resolves bilingual SEO and canonical product URLs", () => {

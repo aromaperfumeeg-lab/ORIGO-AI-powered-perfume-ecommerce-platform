@@ -5330,7 +5330,7 @@ function productPublicDetailsMarkup(product) {
   )).filter(Boolean).join(ar ? "، " : ", ") || listText([], [], product.occasions);
   const ratingValue = product.reviewSummary?.average ?? product.rating;
   const reviewCount = product.reviewSummary?.count ?? product.review_count;
-  const details = [
+  const identityDetails = [
     [ar ? "نوع المنتج" : "Product type", type],
     [ar ? "الجنس" : "Gender", genderLabels[catalogGender(product)]?.[ar ? 0 : 1]],
     [ar ? "العائلة العطرية" : "Fragrance family", localizedText(product.fragranceFamilyAr || product.familyAr, product.fragranceFamilyEn || product.familyEn) || (product.families || []).join(" · ")],
@@ -5338,7 +5338,9 @@ function productPublicDetailsMarkup(product) {
     [ar ? "بلد المنشأ" : "Country of origin", localizedText(product.originCountryAr, product.originCountryEn) || product.originCountry],
     [ar ? "صانع العطر" : "Perfumer", product.perfumer || (product.perfumers || []).join(" · ")],
     [ar ? "التركيز" : "Concentration", localizedText(product.concentrationAr, product.concentrationEn) || product.concentration],
-    [ar ? "الحجم" : "Size", product.size || product.sizes?.[0]],
+    [ar ? "الحجم" : "Size", product.size || product.sizes?.[0]]
+  ];
+  const performanceDetails = [
     [ar ? "وصف الثبات" : "Longevity description", longevityDescription],
     [ar ? "الثبات بالساعات" : "Longevity in hours", longevityHoursText],
     [ar ? "الفوحان" : "Projection", projection],
@@ -5346,7 +5348,9 @@ function productPublicDetailsMarkup(product) {
     [ar ? "وقت الاستخدام" : "Usage time", usageTimeText],
     [ar ? "المناسبات" : "Occasions", occasionText],
     [ar ? "التقييم العام" : "Overall rating", ratingValue === null || ratingValue === undefined || ratingValue === "" ? "" : `${formatRating(ratingValue)} / 5`],
-    [ar ? "عدد المقيّمين" : "Number of reviewers", reviewCount === null || reviewCount === undefined || reviewCount === "" ? "" : formatNumber(reviewCount)],
+    [ar ? "عدد المقيّمين" : "Number of reviewers", reviewCount === null || reviewCount === undefined || reviewCount === "" ? "" : formatNumber(reviewCount)]
+  ];
+  const additionalDetails = [
     [ar ? "مصدر التقييم" : "Rating source", product.ratingDetails?.source],
     [ar ? "نوع التقييم" : "Rating type", product.ratingDetails?.type ? String(product.ratingDetails.type).replaceAll("_", " ") : ""],
     [ar ? "تقييم عملاء ORIGO" : "ORIGO customer rating", product.ratingDetails?.is_origo_customer_rating === undefined ? "" : (product.ratingDetails.is_origo_customer_rating ? (ar ? "نعم" : "Yes") : (ar ? "لا" : "No"))],
@@ -5366,12 +5370,17 @@ function productPublicDetailsMarkup(product) {
     [ar ? "محتويات الهدية" : "Gift contents", dynamic.giftContents],
     [ar ? "طريقة الاستخدام" : "Usage instructions", localizedText(dynamic.usageInstructionsAr, dynamic.usageInstructionsEn)],
     [ar ? "فيديو المنتج" : "Product video", product.videoUrl]
-  ].filter(([, value]) => value !== undefined && value !== null && String(value).trim());
-  if (!shortDescription && !fullDescription && !details.length) return "";
+  ];
+  const visible = (items) => items.filter(([, value]) => value !== undefined && value !== null && String(value).trim());
+  const detailGroups = [
+    { title:ar ? "هوية المنتج" : "Product identity", items:visible(identityDetails), open:true },
+    { title:ar ? "الأداء والاستخدام" : "Performance and usage", items:visible(performanceDetails), open:false },
+    { title:ar ? "معلومات إضافية" : "Additional information", items:visible(additionalDetails), open:false }
+  ].filter((group) => group.items.length);
+  if (!shortDescription && !fullDescription && !detailGroups.length) return "";
   return `<section class="pdp-public-details" aria-labelledby="pdp-public-details-title"><div class="pdp-section-heading"><span>PRODUCT DETAILS</span><h2 id="pdp-public-details-title">${ar ? "تفاصيل المنتج" : "Product details"}</h2></div>
-    ${shortDescription ? `<p class="pdp-short-description">${escapeHTML(shortDescription)}</p>` : ""}
-    ${fullDescription && fullDescription !== shortDescription ? `<p class="pdp-full-description">${escapeHTML(fullDescription)}</p>` : ""}
-    ${details.length ? `<dl>${details.map(([label, value]) => `<div><dt>${escapeHTML(label)}</dt><dd${/[0-9]/.test(String(value)) ? ` dir="ltr"` : ""}>${escapeHTML(normalizeLatinDigits(value))}</dd></div>`).join("")}</dl>` : ""}
+    ${(shortDescription || (fullDescription && fullDescription !== shortDescription)) ? `<div class="pdp-description-copy">${shortDescription ? `<p class="pdp-short-description">${escapeHTML(shortDescription)}</p>` : ""}${fullDescription && fullDescription !== shortDescription ? `<p class="pdp-full-description">${escapeHTML(fullDescription)}</p>` : ""}</div>` : ""}
+    ${detailGroups.length ? `<div class="pdp-detail-gates">${detailGroups.map((group) => `<details class="pdp-detail-gate"${group.open ? " open" : ""}><summary><b>${escapeHTML(group.title)}</b><span>${formatNumber(group.items.length)}</span><i>⌄</i></summary><dl>${group.items.map(([label, value]) => `<div><dt>${escapeHTML(label)}</dt><dd${/[0-9]/.test(String(value)) ? ` dir="ltr"` : ""}>${escapeHTML(normalizeLatinDigits(value))}</dd></div>`).join("")}</dl></details>`).join("")}</div>` : ""}
   </section>`;
 }
 
@@ -6335,8 +6344,8 @@ function showProductDetails(product, shouldOpen = true) {
           <div class="pdp-benefits"><span><i>✓</i>${isArabic ? "منتج أصلي 100%" : "100% authentic"}</span><span><i>◉</i>${isArabic ? "الدفع عند الاستلام" : "Cash on delivery"}</span></div>
         </aside>
       </section>
-      ${productPublicDetailsMarkup(product)}
       ${productPublicAccordsMarkup(product)}
+      ${productPublicDetailsMarkup(product)}
       ${productProfileAccordions(product)}
       ${productIngredientsMarkup(product)}
       ${window.ORIGOAlternatives?.productPanel?.(product) || productFragranceRelationshipsMarkup(product)}
