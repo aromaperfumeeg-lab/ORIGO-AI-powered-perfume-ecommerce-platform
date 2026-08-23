@@ -1719,7 +1719,6 @@ function adminNavMarkup() {
   const allowed = adminSections.filter((section) => section.id === "overview"
     || hasStaffPermission(sectionPermission(section.id))
     || state.user?.permissions?.includes("*"));
-  const primaryIds = new Set(["overview", "orders", "products", "inventory", "customers", "homepage", "content", "marketing", "coupons", "reports", "support", "settings"]);
   const itemMarkup = (section) => `<button data-action="admin-view" data-view="${section.id}" class="${state.adminView === section.id ? "active" : ""}">
       <i>${section.icon}</i><span>${escapeHTML(state.lang === "ar" ? section.ar : section.en)}</span>
       ${section.id === "orders" && state.adminOrders.filter((order) => order.status === "new").length ? `<b>${state.adminOrders.filter((order) => order.status === "new").length}</b>` : ""}
@@ -1733,10 +1732,7 @@ function adminNavMarkup() {
       return `${heading}${itemMarkup(section)}`;
     }).join("");
   };
-  const primary = allowed.filter((section) => primaryIds.has(section.id));
-  const secondary = allowed.filter((section) => !primaryIds.has(section.id));
-  const secondaryIsActive = secondary.some((section) => section.id === state.adminView);
-  return `${groupedMarkup(primary)}${secondary.length ? `<details class="admin-nav-more"${secondaryIsActive ? " open" : ""}><summary><i>＋</i><span>${adminCopy("المزيد من الأدوات", "More tools")}</span><b>${secondary.length}</b></summary><div>${groupedMarkup(secondary)}</div></details>` : ""}`;
+  return groupedMarkup(allowed);
 }
 
 function inventoryForProduct(product) {
@@ -7321,7 +7317,7 @@ function renderImportReview(product) {
   const relationships = fragranceRelationshipsEditorSection(product);
   const media = `<div class="product-editor-upload-row"><label class="gallery-upload"><input id="gallery-upload" type="file" accept="image/jpeg,image/png,image/webp,image/avif" multiple/><span>＋</span><div><b>${adminCopy("رفع صور المنتج","Upload product images")}</b><small>${adminCopy("حتى 10 صور؛ اختر الرئيسية ورتّب بالسحب أو الأسهم","Up to 10 images; choose primary and reorder by drag or arrows")}</small></div></label></div>${productMediaStudioMarkup(images)}`;
   const seoKeywords = bilingualSeoKeywordValues(product.seo);
-  const content = `${productArabicTranslationEditor(product)}<div class="review-grid product-content-grid">
+  const content = `<div class="review-grid product-content-grid">
     <label class="wide">${adminCopy("الوصف المختصر بالعربية","Arabic short description")}<textarea name="descriptionAr">${escapeHTML(product.descriptionAr || "")}</textarea></label>
     <label class="wide">${adminCopy("الوصف المختصر بالإنجليزية","English short description")}<textarea name="descriptionEn" dir="ltr">${escapeHTML(product.descriptionEn || "")}</textarea></label>
     <label class="wide">${adminCopy("الوصف الكامل بالعربية","Arabic full description")}<textarea name="fullDescriptionAr" rows="7">${escapeHTML(product.fullDescriptionAr || "")}</textarea></label>
