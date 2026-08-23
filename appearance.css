@@ -3757,3 +3757,8 @@ body.dark :is(#storefront-main,.product-overlay) .product-card .product-card-med
   mix-blend-mode:normal!important;
   filter:none!important;
 }
+
+/* A restrained ORIGO burgundy keyline keeps each product card defined. */
+html body :is(#storefront-main,.product-overlay) .product-card{
+  border:1px solid #7a001d!important;
+}

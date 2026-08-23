@@ -7,6 +7,8 @@ const env = await readFile(new URL("../.env.example", import.meta.url), "utf8");
 
 test("storefront uploads use persistent storage outside production releases", () => {
   assert.match(server,/process\.env\.ORIGO_UPLOAD_DIR/);
+  assert.match(server,/const IS_DEPLOYMENT_RUNTIME = process\.env\.NODE_ENV === "production"/);
+  assert.match(server,/toLowerCase\(\) === "nodejs"/);
   assert.match(server,/resolve\(dirname\(databasePath\), "uploads", "storefront"\)/);
   assert.match(server,/initializeStorefrontUploadStorage/);
   assert.match(server,/cp\(LEGACY_STOREFRONT_UPLOAD_ROOT, STOREFRONT_UPLOAD_ROOT/);

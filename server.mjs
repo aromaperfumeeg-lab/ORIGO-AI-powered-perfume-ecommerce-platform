@@ -131,7 +131,8 @@ import { buildSitemap, injectSeoIntoHtml, robotsTxt, seoForRoute } from "./seo.m
 
 const ROOT = resolve(fileURLToPath(new URL(".", import.meta.url)));
 const LEGACY_STOREFRONT_UPLOAD_ROOT = resolve(ROOT, "uploads", "storefront");
-const STOREFRONT_UPLOAD_ROOT = resolve(process.env.ORIGO_UPLOAD_DIR || (process.env.NODE_ENV === "production" ? resolve(dirname(databasePath), "uploads", "storefront") : LEGACY_STOREFRONT_UPLOAD_ROOT));
+const IS_DEPLOYMENT_RUNTIME = process.env.NODE_ENV === "production" || ROOT.split(/[\\/]/).at(-1)?.toLowerCase() === "nodejs";
+const STOREFRONT_UPLOAD_ROOT = resolve(process.env.ORIGO_UPLOAD_DIR || (IS_DEPLOYMENT_RUNTIME ? resolve(dirname(databasePath), "uploads", "storefront") : LEGACY_STOREFRONT_UPLOAD_ROOT));
 const HOST = process.env.ORIGO_HOST || "0.0.0.0";
 const PORT = Number(process.env.PORT || process.env.ORIGO_PORT || 4173);
 const OPENAI_MODEL = process.env.OPENAI_MODEL || "gpt-5.4-mini";
