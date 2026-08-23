@@ -2245,9 +2245,30 @@ function brandManagementRecords() {
 }
 
 function brandsManagementMarkup() {
-  const brands = brandManagementRecords();
-  const categories=[["العطور",128,"♙"],["العناية بالبشرة",86,"▱"],["العناية بالجسم",64,"▯"],["العناية بالشعر",52,"♧"],["البخور والعطور المنزلية",34,"⌂"],["الهدايا والمجموعات",28,"♢"]];
-  return `<section class="brands-management" dir="rtl"><div class="brands-kpis"><article><span>▱</span><div><small>إجمالي المبيعات</small><b>12,845,750</b><em>EGP</em></div></article><article><span>◇</span><div><small>إجمالي المنتجات</small><b>3,458</b><em>منتج</em></div></article><article><span>⌑</span><div><small>علامات نشطة</small><b>${brands.filter((item)=>item.active!==false).length}</b><em>نشطة</em></div></article><article><span>◇</span><div><small>إجمالي العلامات التجارية</small><b>${brands.length}</b><em>علامة</em></div></article></div><nav class="brand-department-tabs">${categories.map(([name,,icon],i)=>`<button class="${i===0?"active":""}">${icon} ${name}</button>`).join("")}</nav><div class="brands-layout"><main class="brands-table-card"><header><div><h3>العلامات التجارية في قسم العطور</h3><p>إدارة جميع العلامات التجارية الخاصة بالعطور</p></div><label>⌕<input id="brand-search" placeholder="ابحث عن علامة تجارية..."/></label><button>تصفية⌄</button><button data-action="export-brands">تصدير⌄</button></header><div class="brands-table-scroll"><table><thead><tr><th>الشعار</th><th>اسم العلامة التجارية</th><th>بلد المنشأ</th><th>مستوى السعر</th><th>عدد المنتجات</th><th>إجمالي المبيعات</th><th>الحالة</th><th>الإجراءات</th></tr></thead><tbody>${brands.map((item)=>`<tr data-brand-row data-brand-id="${escapeHTML(item.id)}" data-search="${escapeHTML(`${item.nameAr} ${item.nameEn} ${item.country}`)}"><td><div class="brand-logo ${escapeHTML(item.level)}">${item.image?`<img src="${escapeHTML(item.image)}" alt=""/>`:escapeHTML(item.nameEn)}</div></td><td><b>${escapeHTML(item.nameAr)}</b><small>${escapeHTML(item.nameEn)}</small></td><td>${escapeHTML(item.flag||"")} ${escapeHTML(item.country||"")}</td><td><span class="brand-level ${escapeHTML(item.level)}">${item.level==="luxury"?"فاخر":item.level==="high"?"مرتفع":"متوسط"}</span></td><td>${Number(item.count||0)}</td><td>${Number(item.sales||0).toLocaleString("en-US")} EGP</td><td><span class="brand-active">● ${item.active===false?"مخفية":"نشطة"}</span></td><td><button data-action="edit-brand" data-id="${escapeHTML(item.id)}" aria-label="تعديل ${escapeHTML(item.nameAr)}">✎</button><button>•••</button></td></tr>`).join("")}</tbody></table></div><footer class="brands-pagination"><span>عرض 1 إلى ${brands.length} من ${brands.length} علامة تجارية</span><div><button>السابق</button><button class="active">1</button><button>التالي</button></div><select><option>عرض 8</option><option>عرض 25</option></select></footer></main><aside class="brand-categories"><h3>الأقسام</h3>${categories.map(([name,count,icon],i)=>`<button class="${i===0?"active":""}"><i>${icon}</i><span>${name}</span><b>${count}</b></button>`).join("")}<div><b>ⓘ معلومة</b><p>كل قسم له مجموعة مستقلة من العلامات التجارية. العلامات التجارية في كل قسم لا تؤثر على الأقسام الأخرى.</p></div></aside></div></section>`;
+  const savedBrands = state.productOptions.filter((item) => item.group === "brand").map((item) => ({ ...item, value:item.slug || item.nameEn || item.nameAr }));
+  const brandRecords = new Map();
+  [...savedBrands, ...productOptionItems("brand")].forEach((item) => {
+    const key = normalizeOptionSearch(item.slug || item.value || item.nameEn || item.nameAr);
+    if (key && !brandRecords.has(key)) brandRecords.set(key, item);
+  });
+  const brands = [...brandRecords.values()];
+  const savedBySlug = new Map(savedBrands.map((item) => [item.slug, item]));
+  const productCount = (brand) => state.catalogProducts.filter((product) => normalizeOptionSearch(product.brand) === normalizeOptionSearch(brand.value || brand.nameEn || brand.nameAr)).length;
+  return `<section class="brands-management brand-library" dir="${state.lang === "ar" ? "rtl" : "ltr"}">
+    <div class="brands-kpis">
+      <article><span>⌑</span><div><small>${adminCopy("إجمالي العلامات","Total brands")}</small><b>${formatNumber(brands.length)}</b><em>${adminCopy("علامة تجارية","brands")}</em></div></article>
+      <article><span>✓</span><div><small>${adminCopy("العلامات النشطة","Active brands")}</small><b>${formatNumber(brands.filter((item) => item.active !== false).length)}</b><em>${adminCopy("تظهر في المتجر","visible in store")}</em></div></article>
+      <article><span>▧</span><div><small>${adminCopy("علامات بصور","Brands with images")}</small><b>${formatNumber(brands.filter((item) => item.image).length)}</b><em>${adminCopy("شعار محفوظ","saved logos")}</em></div></article>
+      <article><span>◇</span><div><small>${adminCopy("المنتجات المرتبطة","Linked products")}</small><b>${formatNumber(state.catalogProducts.length)}</b><em>${adminCopy("منتج","products")}</em></div></article>
+    </div>
+    <main class="brands-table-card">
+      <header><div><h3>${adminCopy("مكتبة العلامات التجارية","Brand library")}</h3><p>${adminCopy("أضف أو عدّل الاسم الثنائي والشعار المستخدمين في المنتجات والمتجر.","Add or edit the bilingual name and logo used by products and the storefront.")}</p></div><label>⌕<input id="brand-search" placeholder="${adminCopy("ابحث عن علامة تجارية...","Search brands...")}"/></label><button type="button" class="button burgundy-button" data-action="manage-product-option" data-group="brand">＋ ${adminCopy("إضافة علامة","Add brand")}</button></header>
+      <div class="brands-table-scroll"><table><thead><tr><th>${adminCopy("الصورة","Image")}</th><th>${adminCopy("الاسم بالعربية","Arabic name")}</th><th>${adminCopy("الاسم بالإنجليزية","English name")}</th><th>${adminCopy("المنتجات","Products")}</th><th>${adminCopy("الحالة","Status")}</th><th>${adminCopy("الإجراءات","Actions")}</th></tr></thead><tbody>${brands.map((item) => {
+        const saved = savedBySlug.get(item.slug);
+        return `<tr data-brand-row data-search="${escapeHTML(`${item.nameAr || ""} ${item.nameEn || ""} ${item.slug || ""}`)}"><td><div class="brand-logo">${item.image ? `<img src="${escapeHTML(item.image)}" alt="${escapeHTML(item.nameEn || item.nameAr)}"/>` : `<span>${escapeHTML((item.nameEn || item.nameAr || "ORIGO").slice(0, 2).toUpperCase())}</span>`}</div></td><td><b>${escapeHTML(item.nameAr || item.nameEn)}</b></td><td><b dir="ltr">${escapeHTML(item.nameEn || item.nameAr)}</b><small>${escapeHTML(item.slug || "")}</small></td><td>${formatNumber(productCount(item))}</td><td><span class="brand-active">● ${item.active === false ? adminCopy("مخفية","Hidden") : adminCopy("نشطة","Active")}</span></td><td><button type="button" data-action="edit-managed-product-option" data-group="brand" data-value="${escapeHTML(item.value || item.slug || item.nameEn || item.nameAr)}" aria-label="${adminCopy("تعديل","Edit")}">✎</button>${saved ? `<button type="button" data-action="delete-product-option" data-id="${saved.id}" aria-label="${adminCopy("حذف","Delete")}">×</button>` : ""}</td></tr>`;
+      }).join("")}</tbody></table></div>
+    </main>
+  </section>`;
 }
 
 function initializeBrandsManagement() { const input=$("#brand-search"); input?.addEventListener("input",()=>{const q=input.value.toLowerCase(); $$('[data-brand-row]').forEach(row=>row.hidden=!row.dataset.search.toLowerCase().includes(q));}); }
@@ -2909,7 +2930,7 @@ function renderAdminDashboard(view = state.adminView) {
     inventory: `<button class="button secondary-button" data-action="admin-export" data-report="inventory">${state.lang === "ar" ? "تصدير المخزون" : "Export inventory"} ↓</button>`,
     notes: `<button class="button burgundy-button" data-action="open-notes-admin">${state.lang === "ar" ? "إدارة قاعدة المعرفة" : "Manage knowledge base"} ＋</button>`,
     categories: `<button class="button burgundy-button" data-action="new-filter">${state.lang === "ar" ? "إضافة فلتر" : "Add filter"} ＋</button>`,
-    brands: `<button class="button secondary-button" data-action="export-brands">تصدير ↓</button><button class="button secondary-button" data-action="import-brands">استيراد علامات ↓</button><button class="button burgundy-button" data-action="create-brand">إضافة علامة تجارية ＋</button>`,
+    brands: `<button class="button burgundy-button" data-action="manage-product-option" data-group="brand">${state.lang === "ar" ? "إضافة علامة تجارية" : "Add brand"} ＋</button>`,
     content: `<button class="button secondary-button" data-action="export-banners">تصدير تقرير ↓</button><button class="button secondary-button" data-action="import-banners">استيراد بنرات ↥</button><button class="button burgundy-button" data-action="create-banner">إضافة بنر جديد ＋</button>`,
     coupons: `<button class="button secondary-button" data-action="admin-export" data-report="coupons">تصدير ↓</button><button class="button secondary-button" data-action="import-coupons">استيراد كوبونات ↓</button><button class="button burgundy-button" data-action="create-coupon">إضافة كوبون جديد ＋</button>`
   };
@@ -8333,7 +8354,8 @@ function openProductOptionDialog(holder) {
 }
 
 function populateProductOptionDialog(dialog, value = "") {
-  const item = productOptionItems(dialog.dataset.group).find((option) => normalizeOptionSearch(option.value) === normalizeOptionSearch(value));
+  const item = productOptionItems(dialog.dataset.group).find((option) => normalizeOptionSearch(option.value) === normalizeOptionSearch(value))
+    || state.productOptions.find((option) => option.group === dialog.dataset.group && normalizeOptionSearch(option.slug || option.nameEn || option.nameAr) === normalizeOptionSearch(value));
   if (!item) return;
   const form = dialog.querySelector("form");
   const note = dialog.dataset.group === "note" ? window.ORIGOFragranceNotes.find(item.slug || item.value) : null;
@@ -8552,12 +8574,17 @@ document.addEventListener("click", async (event) => {
     openProductOptionDialog(actionElement);
     return;
   }
+  if (action === "edit-managed-product-option") {
+    openProductOptionDialog(actionElement);
+    populateProductOptionDialog($("#product-option-dialog"), actionElement.dataset.value || "");
+    return;
+  }
   if (action === "delete-product-option") {
     if (!window.confirm(adminCopy("حذف هذا الخيار؟","Delete this option?"))) return;
     try {
       await api(`/api/admin/product-options/${actionElement.dataset.id}`, { method:"DELETE" });
       state.productOptions = state.productOptions.filter((item) => String(item.id) !== String(actionElement.dataset.id));
-      renderAdminDashboard("product-options");
+      renderAdminDashboard(state.adminView === "brands" ? "brands" : "product-options");
       showToast(adminCopy("تم حذف الخيار","Option deleted"));
     } catch (errorValue) { showToast(errorValue.message); }
     return;
@@ -8601,7 +8628,7 @@ document.addEventListener("click", async (event) => {
       }
       if (dialog.dataset.context === "manager") {
         dialog.close(); dialog.remove();
-        renderAdminDashboard("product-options");
+        renderAdminDashboard(state.adminView === "brands" && payload.group === "brand" ? "brands" : "product-options");
         showToast(adminCopy("تم حفظ الخيار","Option saved"));
         return;
       }
