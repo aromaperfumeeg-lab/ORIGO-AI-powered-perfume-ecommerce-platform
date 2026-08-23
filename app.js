@@ -5376,7 +5376,6 @@ function productProfileAccordions(product) {
   const ar = state.lang === "ar";
   return `<section class="pdp-profile-accordions" aria-label="${ar ? "ملف العطر" : "Fragrance profile"}">
     <article class="pdp-profile-section" data-pdp-section="notes"><button type="button" data-action="pdp-profile-section" aria-expanded="false"><div><b>${ar ? "هرم النوتات" : "Note pyramid"}</b><small>${ar ? "افتتاحية · قلب · قاعدة" : "Top · heart · base"}</small></div><i>⌄</i></button><div class="pdp-profile-panel" hidden>${productNotePyramid(product) || `<div class="pdp-empty-compact">${ar ? "لم تُضف النوتات العطرية لهذا المنتج بعد." : "Fragrance notes are not available yet."}</div>`}</div></article>
-    <article class="pdp-profile-section" data-pdp-section="analysis"><button type="button" data-action="pdp-profile-section" aria-expanded="false"><div><b>${ar ? "الطابع والاستخدام" : "Character and usage"}</b><small>${ar ? "الشخصية · المواسم · الوقت · المناسبات المحفوظة" : "Saved character · seasons · time · occasions"}</small></div><i>⌄</i></button><div class="pdp-profile-panel" hidden>${productIntelligenceMarkup(product)}</div></article>
     <article class="pdp-profile-section" data-pdp-section="performance"><button type="button" data-action="pdp-profile-section" aria-expanded="false"><div><b>${ar ? "أداء العطر" : "Fragrance performance"}</b><small>${ar ? "الرائحة · الثبات · الفوحان · القيمة" : "Scent · longevity · sillage · value"}</small></div><i>⌄</i></button><div class="pdp-profile-panel" hidden>${productPerformanceImagesMarkup(product)}</div></article>
   </section>`;
 }
@@ -5693,11 +5692,7 @@ function performanceScoreOutOfTen(value, product, kind) {
   if (Number.isFinite(numeric) && numeric > 0) {
     return Math.min(10, Math.max(0, numeric <= 5 ? numeric * 2 : numeric));
   }
-  const concentration = String(product?.concentration || "").toLowerCase();
-  if (concentration.includes("parfum") || concentration.includes("extrait")) return kind === "sillage" ? 8 : 8.5;
-  if (concentration.includes("edp") || concentration.includes("eau de parfum")) return kind === "sillage" ? 7.5 : 8;
-  if (concentration.includes("edt") || concentration.includes("eau de toilette")) return kind === "sillage" ? 6.5 : 6;
-  return 7;
+  return null;
 }
 
 function formatPerformanceScore(value) {
@@ -5706,6 +5701,7 @@ function formatPerformanceScore(value) {
 
 function performanceScoreMarkup(value, product, kind, label) {
   const score = performanceScoreOutOfTen(value, product, kind);
+  if (score == null) return "";
   const percentage = Math.round(score * 10);
   return `<span class="performance-score" role="img" aria-label="${escapeHTML(label)}: ${formatPerformanceScore(score)} ${state.lang === "ar" ? "من 10" : "out of 10"}"><span class="performance-score-track" aria-hidden="true"><i style="width:${percentage}%"></i></span><b dir="ltr">${formatPerformanceScore(score)}/10</b></span>`;
 }
@@ -5713,12 +5709,9 @@ function performanceScoreMarkup(value, product, kind, label) {
 function productPerformanceMarkup(product) {
   const performance = product.performance || {};
   const insights = product.insights || {};
-  const occasionValue = (product.occasionLabels || []).map((item) => localizedText(item?.ar || item?.name_ar, item?.en || item?.name_en)).filter(Boolean).join(" · ") || (product.occasions || []).join(" · ");
   const values = [
     ["◷", "الثبات", "Longevity", performance.longevity ?? insights.longevity, "longevity"],
-    ["◉", "الفوحان", "Sillage", performance.sillage ?? performance.projection ?? insights.sillage, "sillage"],
-    ["❧", "الموسم", "Season", (product.seasons || []).join(" · "), ""],
-    ["◇", "الاستخدام", "Occasion", occasionValue, ""]
+    ["◉", "الفوحان", "Sillage", performance.sillage ?? performance.projection ?? insights.sillage, "sillage"]
   ].filter((item) => item[3] !== undefined && item[3] !== null && item[3] !== "");
   if (!values.length) return "";
   return `<section class="pdp-performance" aria-labelledby="pdp-performance-title"><div class="pdp-section-heading"><span>EDITORIAL</span><h2 id="pdp-performance-title">${state.lang === "ar" ? "ملخص الأداء التحريري" : "Editorial performance"}</h2><p>${state.lang === "ar" ? "بيانات يقدمها فريق المنتج وليست تصويتًا مجتمعيًا." : "Product-team data, not community voting."}</p></div><div>${values.map(([icon, ar, en, value, kind]) => {
@@ -5766,16 +5759,6 @@ function productCardAuraNotes(product, isArabic = state.lang === "ar") {
       image: value?.image || (note ? window.ORIGOFragranceNotes.artwork(note) : "")
     };
   }).filter(Boolean);
-  const isKhamrah = /khamrah|خمر[ةه]/.test(ORIGOCatalog.normalize(`${product.nameAr || ""} ${product.nameEn || ""}`));
-  if (isKhamrah && notes.length < 6) {
-    resolveProductCardComponents().FALLBACK_NOTES.forEach((fallback) => {
-      if (notes.length >= 6) return;
-      const key = ORIGOCatalog.normalize(isArabic ? fallback.nameAr : fallback.nameEn);
-      if (seen.has(key) || notes.some((note) => ORIGOCatalog.normalize(note.nameEn) === ORIGOCatalog.normalize(fallback.nameEn))) return;
-      seen.add(key);
-      notes.push({ ...fallback, label: isArabic ? fallback.nameAr : fallback.nameEn });
-    });
-  }
   return notes.slice(0, 6);
 }
 
@@ -5818,13 +5801,8 @@ function resolveProductCardComponents() {
 function productCardPerformance(product, isArabic = state.lang === "ar", strict = false) {
   const performance = product.performance || product.editorialPerformance || {};
   const filterData = product.filters || {};
-  const isKhamrah = /khamrah|خمر[ةه]/.test(ORIGOCatalog.normalize(`${product.nameAr || ""} ${product.nameEn || ""}`));
-  const seasons = [...(product.seasons || []), ...(Array.isArray(filterData.season) ? filterData.season : [filterData.season])].filter(Boolean).map((item) => ORIGOCatalog.normalize(item));
-  const occasions = [...(product.usageTimes || []), ...(product.occasions || [])].map((item) => ORIGOCatalog.normalize(item));
   const genderSource = product.gender || product.forGender || filterData.gender;
   const ratingSource = product.averageRating ?? product.ratingAverage ?? product.rating;
-  const winter = seasons.some((item) => /winter|شتاء|شتوي/.test(item));
-  const evening = isKhamrah || occasions.some((item) => /night|evening|مساء|ليل|سهرة/.test(item));
   const normalizeScore = (value, fallback = 5) => {
     const numeric = Number(value);
     if (!Number.isFinite(numeric)) return fallback;
@@ -5846,7 +5824,7 @@ function productCardPerformance(product, isArabic = state.lang === "ar", strict 
   };
   const projectionPercentage = percentage(sillageSource, 85);
   const longevityPercentage = percentage(longevitySource, 92);
-  const longevityHours = isKhamrah ? Math.max(10, Math.round(Number(longevitySource) || 10)) : (Number(longevitySource) > 5 ? Math.round(Number(longevitySource)) : 10);
+  const longevityHours = Number.isFinite(Number(longevitySource)) ? Math.max(0, Number(longevitySource)) : null;
   const sillageValue = sillage >= 4 ? (isArabic ? "قوي" : "Strong") : sillage === 3 ? (isArabic ? "متوسط" : "Moderate") : (isArabic ? "هادئ" : "Soft");
   const rawGender = ORIGOCatalog.normalize(genderSource || "");
   const genderValue = /women|female|نسائ/.test(rawGender)
@@ -5857,10 +5835,8 @@ function productCardPerformance(product, isArabic = state.lang === "ar", strict 
   const numericRating = Number(ratingSource);
   const metrics = [
     { id: "projection", available: sillageSource !== undefined && sillageSource !== null && sillageSource !== "", icon: "≋", title: isArabic ? "الفوحان" : "Sillage", value: isArabic ? `فوحان ${sillageValue}` : `${sillageValue} sillage`, detail: `${sillageRatingLabel}/5`, score: sillageRating, percentage: projectionPercentage, color: "#E76F9A" },
-    { id: "longevity", available: longevitySource !== undefined && longevitySource !== null && longevitySource !== "", icon: "◷", title: isArabic ? "الثبات" : "Longevity", value: isArabic ? "ثبات طويل" : "Long lasting", detail: isArabic ? `${longevityHours}+ ساعات` : `${longevityHours}+ hours`, score: longevity, percentage: longevityPercentage, color: "#568FE8" },
-    { id: "occasion", available: occasions.length > 0, icon: "✦", title: isArabic ? "المناسبة" : "Occasion", value: evening ? (isArabic ? "السهرات" : "Nights out") : (isArabic ? "يومي" : "Everyday"), detail: evening ? (isArabic ? "للمناسبات" : "For occasions") : (isArabic ? "استخدام مرن" : "Versatile wear"), score: evening ? 5 : 4, percentage: evening ? 88 : 80, color: "#42B5B2" },
-    { id: "season", available: seasons.length > 0, icon: "❄", title: isArabic ? "الفصل" : "Season", value: winter ? (isArabic ? "شتوي" : "Winter") : (isArabic ? "كل الفصول" : "All season"), detail: isArabic ? "أفضل فصل" : "Best season", score: winter ? 5 : 4, percentage: winter ? 95 : 82, color: "#8C6DE8" },
-    { id: "gender", available: Boolean(genderSource), icon: "♢", title: isArabic ? "الفئة" : "Gender", value: genderValue, detail: isArabic ? "الفئة المقترحة" : "Suggested audience", score: 4, percentage: 80, color: "#D49A45" },
+    { id: "longevity", available: longevityHours != null, icon: "◷", title: isArabic ? "الثبات" : "Longevity", value: isArabic ? "الثبات المدخل" : "Saved longevity", detail: isArabic ? `${formatNumber(longevityHours)} ساعة` : `${formatNumber(longevityHours)} hours`, score: longevity, percentage: longevityPercentage, color: "#568FE8" },
+    { id: "gender", available: Boolean(genderSource), icon: "♢", title: isArabic ? "الفئة" : "Gender", value: genderValue, detail: isArabic ? "التصنيف المحفوظ" : "Saved classification", score: 4, percentage: 80, color: "#D49A45" },
     { id: "rating", available: Number.isFinite(numericRating) && numericRating > 0, icon: "★", title: isArabic ? "التقييم" : "Rating", value: Number.isFinite(numericRating) ? numericRating.toFixed(1) : "—", detail: isArabic ? "من 5" : "out of 5", score: numericRating || 0, percentage: Number.isFinite(numericRating) ? Math.round(Math.min(5, numericRating) * 20) : 0, color: "#C8942E" }
   ];
   return strict ? metrics.filter((metric) => metric.available) : metrics;
@@ -5957,32 +5933,12 @@ function productCardDetailsMarkup(product, isArabic) {
   const fragranceId = `card-fragrance-${safeId}-${serial}`;
   const noteGroups = productCardNoteGroups(product, isArabic);
   const accords = productCardAccordData(product, isArabic);
-  const seasons = (product.seasons || []).map((item) => ORIGOCatalog.normalize(item));
-  const seasonItems = [
-    ["spring", "ربيع", "Spring", "♧"], ["summer", "صيف", "Summer", "☼"],
-    ["autumn", "خريف", "Autumn", "❧"], ["winter", "شتاء", "Winter", "❄"]
-  ];
-  const usageLabels = {
-    day: ["نهار", "Day"], morning: ["صباح", "Morning"], evening: ["مساء", "Evening"], night: ["ليل", "Night"],
-    daily: ["يومي", "Daily"], work: ["عمل", "Work"], formal: ["رسمي", "Formal"], romantic: ["رومانسي", "Romantic"],
-    occasions: ["مناسبات", "Occasions"], casual: ["لقاءات", "Casual"], travel: ["سفر", "Travel"]
-  };
-  const usageTimes = [...new Set((product.usageTimes || []).map((item) => ORIGOCatalog.normalize(item)).filter(Boolean))].map((item) => (usageLabels[item] || [item,item])[isArabic ? 0 : 1]);
-  const importedOccasions = (product.occasionLabels || []).map((item) => localizedText(item?.ar || item?.name_ar, item?.en || item?.name_en, isArabic ? "ar" : "en")).filter(Boolean);
-  const legacyOccasions = importedOccasions.length ? [] : (product.occasions || []).map((item) => { const key = ORIGOCatalog.normalize(item); return (usageLabels[key] || [item,item])[isArabic ? 0 : 1]; });
-  const usage = [...new Set([...usageTimes, ...importedOccasions, ...legacyOccasions])];
   const hours = product.performanceInsights?.editorialDetails || product.editorialDetails || product.performance?.editorialDetails || {};
   const explicitHours = Number(hours.longevityHours ?? hours.longevityMaxHours ?? hours.longevityMinHours);
   const hasHours = Number.isFinite(explicitHours) && explicitHours >= 0;
-  const rawLongevity = Number(product.performance?.longevity ?? product.performance?.longevityScore ?? product.filters?.longevity ?? product.insights?.longevity);
-  const longevityScore = Number.isFinite(rawLongevity) ? Math.max(0, Math.min(10, rawLongevity <= 5 ? rawLongevity * 2 : rawLongevity)) : NaN;
-  const estimatedHours = Number.isFinite(longevityScore)
-    ? longevityScore >= 9 ? 12 : longevityScore >= 8 ? 10 : longevityScore >= 7 ? 8 : longevityScore >= 6 ? 7 : longevityScore >= 4 ? 5 : 3
-    : null;
-  const estimatedHoursLabel = estimatedHours ? `${estimatedHours}${isArabic ? " ساعات" : " hours"}` : (isArabic ? "غير محدد" : "Not specified");
   const hoursLabel = hasHours
     ? `${explicitHours}${isArabic ? " ساعات" : " hours"}`
-    : estimatedHoursLabel;
+    : (isArabic ? "غير محدد" : "Not specified");
   const notesMarkup = noteGroups.length ? noteGroups.map((group) => `<div class="card-note-level"><strong>${escapeHTML(group.label)}</strong><div class="card-note-scroll" data-inner-horizontal-scroll>${group.items.map((note) => `<span>${note.image ? `<img src="${escapeHTML(note.image)}" alt="" width="46" height="46" loading="lazy"/>` : `<i aria-hidden="true">✦</i>`}<b>${escapeHTML(note.label)}</b></span>`).join("")}</div></div>`).join("") : `<p class="product-card-panel-empty">${isArabic ? "لم تُضف نوتات لهذا المنتج بعد." : "No notes have been added for this product."}</p>`;
   const accordsMarkup = accords.length ? `<div class="card-accord-list">${accords.map((accord) => `<div style="--accord:${escapeHTML(accord.color)}"><span><i></i><b>${escapeHTML(accord.label)}</b>${accord.strength != null ? `<em>${accord.strength}%</em>` : ""}</span>${accord.strength != null ? `<small><i style="width:${accord.strength}%"></i></small>` : ""}</div>`).join("")}</div>` : `<p class="product-card-panel-empty">${isArabic ? "لم تُضف أكوردات لهذا المنتج بعد." : "No accords have been added for this product."}</p>`;
   return `<div class="product-card-accordion-actions" aria-label="${isArabic ? "تفاصيل المنتج" : "Product details"}">
@@ -5995,8 +5951,6 @@ function productCardDetailsMarkup(product, isArabic) {
           <article><i aria-hidden="true">◷</i><span><b>${isArabic ? "الثبات" : "Longevity"}</b><small data-performance-hours data-fallback="${escapeHTML(hoursLabel)}" data-state="${hasHours ? "ready" : "idle"}">${escapeHTML(hoursLabel)}</small></span></article>
           <article><i aria-hidden="true">≋</i><span><b>${isArabic ? "الفوحان" : "Projection"}</b><small data-performance-projection>${escapeHTML(productCardProjectionLabel(product, isArabic))}</small></span></article>
         </div>
-        <div class="card-performance-block"><b>${isArabic ? "المواسم" : "Seasons"}</b><div class="card-season-grid">${seasonItems.map(([id, ar, en, icon]) => `<span class="${seasons.some((value) => value.includes(id) || (id === "autumn" && /خريف/.test(value)) || (id === "winter" && /شتاء/.test(value)) || (id === "summer" && /صيف/.test(value)) || (id === "spring" && /ربيع/.test(value))) ? "active" : ""}"><i>${icon}</i>${isArabic ? ar : en}</span>`).join("")}</div></div>
-        <div class="card-performance-block"><b>${isArabic ? "الأوقات والمناسبات" : "Times and occasions"}</b><div class="card-usage-tags">${usage.length ? usage.map((item) => `<span>${escapeHTML(item)}</span>`).join("") : `<span>${isArabic ? "غير محدد" : "Not specified"}</span>`}</div></div>
       </section>
       <section id="${fragranceId}" data-card-panel="fragrance" aria-hidden="true" hidden>
         <div class="card-fragrance-tabs" role="tablist"><button type="button" role="tab" data-card-fragrance-tab="notes" aria-selected="true">${isArabic ? "النوتات" : "Notes"}</button><button type="button" role="tab" data-card-fragrance-tab="accords" aria-selected="false">${isArabic ? "الأكوردات" : "Accords"}</button></div>
@@ -6365,10 +6319,7 @@ function showProductDetails(product, shouldOpen = true) {
       ${productPublicAccordsMarkup(product)}
       ${productProfileAccordions(product)}
       ${productIngredientsMarkup(product)}
-      ${productSuitabilityMarkup(product)}
       ${window.ORIGOAlternatives?.productPanel?.(product) || productFragranceRelationshipsMarkup(product)}
-      ${productConfiguredLinksMarkup(product)}
-      ${recent.length ? `<section class="pdp-recommendations recently"><div class="pdp-section-heading"><span>RECENT</span><h2>${isArabic ? "شوهد مؤخرًا" : "Recently viewed"}</h2></div><div class="pdp-products-row">${recent.map((item) => productCardMarkup(item)).join("")}</div></section>` : ""}
     </main>`;
   $("#product-dialog-content").querySelectorAll("img").forEach((image) => image.addEventListener("error", () => (image.src = PRODUCT_IMAGE_PLACEHOLDER), { once: true }));
   bindProductGallerySwipe();
@@ -7928,6 +7879,7 @@ async function optimizeProductOptionArtwork(file) {
 async function handleGalleryUpload(input) {
   const form = input.closest("#import-review-form");
   const draft = collectReviewProduct(form);
+  const savedProductExists = state.catalogProducts.some((product) => String(product.id) === String(draft.id));
   const files = [...input.files].slice(0, Math.max(0, 10 - (draft.images || []).length));
   if (!files.length) {
     productEditorStatus(form, "error", adminCopy("تعذر إضافة الصور", "Could not add images"), adminCopy("اختر صورة صالحة، والحد الأقصى 10 صور للمنتج.", "Choose a valid image; the maximum is 10 product images."), input);
@@ -7944,10 +7896,29 @@ async function handleGalleryUpload(input) {
       }
       return { id:`product-image-${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`, url, provider:"Manager gallery", fileName:file.name, selected:false };
     }));
+    const hasDurableImage = (draft.images || []).some((image) => {
+      const url = String(typeof image === "string" ? image : image?.url || "");
+      return url && !url.includes("/uploads/storefront/product/") && !url.startsWith("data:");
+    });
+    if (!hasDurableImage && uploaded[0]) {
+      draft.images = (draft.images || []).map((image) => typeof image === "string" ? image : { ...image, selected:false });
+      uploaded[0].selected = true;
+    }
     draft.images = normalizeProductImages([...draft.images, ...uploaded]);
+    if (state.serverAvailable && savedProductExists) {
+      const result = await api(`/api/admin/products/${encodeURIComponent(draft.id)}/images`, {
+        method:"POST",
+        body:JSON.stringify({ images:draft.images })
+      });
+      const saved = result?.product || draft;
+      draft.images = normalizeProductImages(saved.images || draft.images);
+      draft.image = saved.image || draft.images.find((image) => image.selected)?.url || draft.images[0]?.url || draft.image;
+      const index = state.catalogProducts.findIndex((product) => String(product.id) === String(draft.id));
+      if (index >= 0) state.catalogProducts.splice(index, 1, { ...state.catalogProducts[index], ...saved });
+    }
     state.activeImportDraft = draft;
     renderImportReview(draft);
-    productEditorStatus($("#import-review-form"), "success", adminCopy("تم رفع الصور", "Images uploaded"), adminCopy(`تمت إضافة ${uploaded.length} صورة مع الاسم والترتيب والصورة الرئيسية.`, `${uploaded.length} images were added with filename, order, and primary-image selection.`));
+    productEditorStatus($("#import-review-form"), "success", adminCopy("تم رفع الصور وحفظها", "Images uploaded and saved"), adminCopy(`تمت إضافة ${uploaded.length} صورة وحفظها لتظهر على جميع الأجهزة.`, `${uploaded.length} images were added and saved for every device.`));
     showToast(adminCopy(`تمت إضافة ${uploaded.length} صورة من المعرض`, `${uploaded.length} gallery images added`));
   } catch (error) {
     console.error("[ORIGO PRODUCT IMAGE]", error);

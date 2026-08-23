@@ -1752,6 +1752,28 @@ async function handleAPI(request, response, url, origin) {
     }
   }
 
+  const adminProductImagesMatch = url.pathname.match(/^\/api\/admin\/products\/([^/]+)\/images$/);
+  if (adminProductImagesMatch && request.method === "POST") {
+    const user = requireUser(request, response, origin, "catalog");
+    if (!user) return;
+    const id = decodeURIComponent(adminProductImagesMatch[1]);
+    const existing = listProducts({ includeHidden: true }).find((item) => item.id === id);
+    if (!existing) return jsonResponse(response, 404, { error: "المنتج غير موجود." }, origin);
+    try {
+      const body = await readJSONBody(request);
+      const images = (Array.isArray(body.images) ? body.images : []).slice(0, 10).filter((item) => {
+        const imageUrl = typeof item === "string" ? item : item?.url;
+        return /^(?:\/media\/|https?:\/\/)/i.test(String(imageUrl || "").trim());
+      });
+      if (!images.length) return jsonResponse(response, 400, { error: "لم تصل صور صالحة للمنتج." }, origin);
+      const product = upsertProduct(synchronizeProductPrimaryImage({ ...existing, images }));
+      recordActivity(user.id, "product_images_saved", "product", id, { images: images.length });
+      return jsonResponse(response, 200, { product }, origin);
+    } catch (error) {
+      return jsonResponse(response, 400, { error: `تعذر حفظ صور المنتج: ${error.message}` }, origin);
+    }
+  }
+
   const perfumeReanalysisMatch = url.pathname.match(/^\/api\/admin\/products\/([^/]+)\/perfume-profile\/reanalyze$/);
   if (perfumeReanalysisMatch && request.method === "POST") {
     const user = requireUser(request, response, origin, "catalog");

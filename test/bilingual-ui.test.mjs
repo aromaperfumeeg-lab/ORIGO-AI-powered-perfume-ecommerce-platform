@@ -78,32 +78,30 @@ test("product editor exposes and persists missing Arabic product-data translatio
   assert.match(app,/accordProfile/);
 });
 
-test("uses, fragrance family and notes follow the active storefront language with fallback", () => {
+test("fragrance family and notes follow the active storefront language with fallback", () => {
   assert.match(app,/return localizedText\(note\?\.nameAr, note\?\.nameEn\)/);
   assert.match(app,/return localizedText\(family\?\.nameAr, family\?\.nameEn\)/);
-  assert.match(app,/Array\.isArray\(product\.occasionLabels\)/);
-  assert.match(app,/localizedText\(item\?\.ar \|\| item\?\.name_ar, item\?\.en \|\| item\?\.name_en/);
-  assert.match(app,/const importedOccasions = \(product\.occasionLabels \|\| \[\]\)/);
 });
 
-test("product details use canonical analysis and performance when artwork is absent", () => {
+test("product details use saved performance when artwork is absent", () => {
   const details = app.slice(app.indexOf("function productNoteGroups"), app.indexOf("function productIngredientsMarkup"));
-  assert.match(details, /seasonScores \|\| \{\}/);
-  assert.match(details, /usageTimeScores \|\| \{\}/);
-  assert.match(details, /occasionLabels \|\| \[\]/);
   assert.match(details, /productPerformanceMarkup\(product\)/);
   assert.doesNotMatch(details, /لم تُرفع صور مؤشرات العطر بعد/);
 });
 
-test("product page renders only saved usage data without ORIGO-generated suggestions", () => {
-  const uses = app.slice(app.indexOf("function productUseCases"), app.indexOf("function accordPhotoCell"));
-  const profile = app.slice(app.indexOf("function productIntelligenceMarkup"), app.indexOf("function productIngredientsMarkup"));
+test("product page does not render ORIGO usage, occasion or longevity suggestions", () => {
   const page = app.slice(app.indexOf("function showProductDetails"), app.indexOf("function closeProductPage"));
-  assert.doesNotMatch(uses, /product\.perfumeProfile\?\.occasions|اقتراحات فريق ORIGO|ORIGO editorial guidance/);
-  assert.doesNotMatch(profile, /savedProfile|engineVersion|Generated from the note pyramid|تحليل ORIGO الذكي/);
-  assert.match(profile, /product\.seasonScores \|\| \{\}/);
-  assert.match(profile, /product\.usageTimeScores \|\| \{\}/);
-  assert.doesNotMatch(page, /productRelated\(product\)|عطور قريبة في الرائحة|Similar-smelling fragrances/);
+  const profile = app.slice(app.indexOf("function productProfileAccordions"), app.indexOf("async function persistNotesState"));
+  const cards = app.slice(app.indexOf("function productCardDetailsMarkup"), app.indexOf("function productCardMarkup"));
+  assert.doesNotMatch(page, /productSuitabilityMarkup\(product\)|productRelated\(product\)|عطور قريبة في الرائحة|Similar-smelling fragrances/);
+  assert.doesNotMatch(profile, /productIntelligenceMarkup\(product\)|Character and usage|الطابع والاستخدام/);
+  assert.doesNotMatch(cards, /estimatedHours|Times and occasions|الأوقات والمناسبات|card-season-grid/);
+  assert.doesNotMatch(page, /productConfiguredLinksMarkup\(product\)|Recently viewed|شوهد مؤخرًا/);
+  const performance = app.slice(app.indexOf("function productPerformanceMarkup"), app.indexOf("function productCardGenderLabel"));
+  const cardPerformance = app.slice(app.indexOf("function productCardPerformance"), app.indexOf("let productCardRenderSerial"));
+  assert.doesNotMatch(performance, /occasionLabels|product\.seasons|Occasion|Season/);
+  assert.doesNotMatch(cardPerformance, /id: "occasion"|id: "season"|Suggested audience|الفئة المقترحة|isKhamrah/);
+  assert.doesNotMatch(app.slice(app.indexOf("function productCardAuraNotes"), app.indexOf("function resolveProductCardComponents")), /FALLBACK_NOTES/);
 });
 
 test("note pyramid shows one language and replaces missing artwork", () => {
