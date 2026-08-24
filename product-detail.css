@@ -485,3 +485,22 @@ body:not(.dark) .pdp-page :where(.pdp-purchase,.pdp-public-accords,.pdp-public-d
 body.dark .pdp-usage-visuals article,html[data-theme="dark"] .pdp-usage-visuals article{background:#292b2f;border-color:rgba(255,255,255,.15)}
 body.dark .pdp-usage-visuals article>span,body.dark .pdp-usage-visuals article>b,html[data-theme="dark"] .pdp-usage-visuals article>span,html[data-theme="dark"] .pdp-usage-visuals article>b{color:#fff;text-shadow:0 1px 2px #000}
 @media(max-width:700px){.pdp-usage-visuals{grid-template-columns:1fr}.pdp-usage-visuals article{height:32px}.pdp-season-visual>div{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* Product information groups: one compact fact per row inside a clear grid. */
+.pdp-page .pdp-public-details .pdp-detail-gate dl,
+.pdp-page .pdp-public-details .pdp-detail-gate[open] dl{
+  grid-template-columns:1fr!important;
+  gap:4px!important;
+}
+.pdp-page .pdp-public-details .pdp-detail-gate dl>div{
+  width:100%;padding:7px 10px!important;display:grid!important;
+  grid-template-columns:minmax(92px,34%) minmax(0,1fr)!important;
+  align-items:center!important;gap:10px!important;
+}
+.pdp-page .pdp-public-details .pdp-detail-gate dt{margin:0!important;font-size:9px!important;line-height:1.35!important}
+.pdp-page .pdp-public-details .pdp-detail-gate dd{margin:0!important;font-size:10px!important;line-height:1.45!important;text-align:end!important}
+.pdp-page .pdp-public-details .pdp-detail-gate dd.pdp-detail-tags{justify-content:flex-end!important}
+@media(max-width:430px){
+  .pdp-page .pdp-public-details .pdp-detail-gate dl{grid-template-columns:1fr!important}
+  .pdp-page .pdp-public-details .pdp-detail-gate dl>div{grid-template-columns:minmax(82px,36%) minmax(0,1fr)!important}
+}

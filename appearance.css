@@ -3742,15 +3742,16 @@ html body .product-overlay .origo-exact-product-card .product-card-top-actions .
 /* Mobile product density switch shared by every storefront product gallery. */
 .mobile-product-view-control{display:none}
 @media(max-width:700px){
-  .mobile-product-view-control{position:fixed;z-index:285;inset-inline-end:12px;bottom:78px;display:grid;grid-template-columns:1fr 1fr;gap:3px;padding:3px;border:1px solid rgba(121,0,32,.35);border-radius:10px;background:#fff;box-shadow:0 8px 22px rgba(0,0,0,.16)}
+  .mobile-product-view-control{position:static;z-index:auto;flex:0 0 auto;display:grid;grid-template-columns:1fr 1fr;gap:3px;margin-inline-start:auto;padding:3px;border:1px solid rgba(121,0,32,.35);border-radius:10px;background:#fff;box-shadow:none}
   .mobile-product-view-control button{width:37px;height:34px;padding:0;display:grid;grid-template-columns:auto auto;place-content:center;gap:3px;border:0;border-radius:7px;color:#6c6265;background:transparent;font:800 10px/1 Arial,sans-serif}
   .mobile-product-view-control button i{font-size:15px;font-style:normal}.mobile-product-view-control button.active{color:#fff;background:#790020}
   body.dark .mobile-product-view-control{border-color:#5a5d63;background:#2d3034}.mobile-product-view-control[hidden]{display:none!important}
-  body:not(:has(#storefront-main :is(.product-card,.perfume-product-card,.pdp-related-card))) .mobile-product-view-control{display:none!important}
-  html[data-product-card-view="one"] #storefront-main :is(.catalog-product-grid,.pdp-products-row,.note-products-grid){display:grid!important;grid-template-columns:1fr!important;gap:10px!important;overflow:visible!important}
-  html[data-product-card-view="two"] #storefront-main :is(.catalog-product-grid,.pdp-products-row,.note-products-grid){display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;overflow:visible!important}
-  html[data-product-card-view="one"] #storefront-main :is(.catalog-product-grid,.pdp-products-row,.note-products-grid) > :is(.product-card,.perfume-product-card,.pdp-related-card){width:100%!important;max-width:none!important;min-width:0!important;flex:none!important}
-  html[data-product-card-view="two"] #storefront-main :is(.catalog-product-grid,.pdp-products-row,.note-products-grid) > :is(.product-card,.perfume-product-card,.pdp-related-card){width:100%!important;max-width:none!important;min-width:0!important;flex:none!important}
+  html[data-product-card-view="one"] #storefront-main :is(.catalog-product-grid,.pdp-products-row,.note-products-grid,.home-product-row-track){display:grid!important;grid-template-columns:1fr!important;gap:10px!important;overflow:visible!important}
+  html[data-product-card-view="two"] #storefront-main :is(.catalog-product-grid,.pdp-products-row,.note-products-grid,.home-product-row-track){display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;overflow:visible!important}
+  html[data-product-card-view="one"] #storefront-main :is(.catalog-product-grid,.pdp-products-row,.note-products-grid,.home-product-row-track) > :is(.product-card,.perfume-product-card,.pdp-related-card){width:100%!important;max-width:none!important;min-width:0!important;flex:none!important}
+  html[data-product-card-view="two"] #storefront-main :is(.catalog-product-grid,.pdp-products-row,.note-products-grid,.home-product-row-track) > :is(.product-card,.perfume-product-card,.pdp-related-card){width:100%!important;max-width:none!important;min-width:0!important;flex:none!important}
+  #home .home-section-head,.catalog-title-area,.pdp-recommendations .pdp-section-heading{display:flex!important;align-items:center!important;flex-wrap:wrap!important;gap:8px!important}
+  #home .home-section-head .mobile-product-view-control,.pdp-recommendations .mobile-product-view-control{order:3}
 }
 
 /* Transparent product photography: isolate the bottle and box on pure black in dark mode. */
@@ -4061,9 +4062,9 @@ html body :is(#storefront-main,.product-overlay) .product-card .exact-card-actio
   animation:none!important;
 }
 #home :is(.home-brand-directory,.home-benefits-directory){background:#fff!important}
-#home .home-brand-directory .brand-marquee-set>button{padding:0!important}
+#home .home-brand-directory .brand-marquee-set>button{padding:8px!important}
 #home .home-brand-directory .brand-marquee-set>button>img{
-  width:116%!important;height:116%!important;max-width:none!important;
+  width:100%!important;height:100%!important;max-width:100%!important;
   object-fit:contain!important;mix-blend-mode:normal!important;
 }
 #home .home-benefits-directory .benefit-marquee-item{
@@ -4081,7 +4082,7 @@ html body :is(#storefront-main,.product-overlay) .product-card .exact-card-actio
 #home .home-section-head>a,
 #home .home-section-head>a>span:first-child{
   color:var(--burgundy,#790020)!important;
-  font-size:clamp(20px,2.1vw,27px)!important;
+  font-size:clamp(13px,1.1vw,16px)!important;
   font-weight:800!important;
   line-height:1.15!important;
 }
@@ -4089,20 +4090,38 @@ html body :is(#storefront-main,.product-overlay) .product-card .exact-card-actio
 #home .home-gender-card :is(.gender-card-copy,.gender-button-icon){
   color:#790020!important;background:#fff!important;border-color:#790020!important;
 }
-#home .home-gender-card{border:1.5px solid #790020!important;box-shadow:none!important}
-#home .gender-button-icon svg{width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+#home .home-gender-card:is(.gender-men,.gender-women,.gender-unisex){
+  --gender-edge:#790020!important;--gender-edge-soft:#790020!important;--gender-edge-glow:transparent!important;
+  min-height:76px!important;padding:12px 22px!important;display:flex!important;align-items:center!important;justify-content:center!important;
+  gap:clamp(20px,3vw,34px)!important;border:1.5px solid #790020!important;background:#fff!important;background-image:none!important;box-shadow:none!important;
+}
+#home .home-gender-card:is(.gender-men,.gender-women,.gender-unisex)::before,
+#home .home-gender-card:is(.gender-men,.gender-women,.gender-unisex)::after{display:none!important;content:none!important;background:none!important}
+#home .home-gender-card:is(.gender-men,.gender-women,.gender-unisex) .gender-card-copy{
+  min-height:0!important;padding:0!important;display:block!important;color:#790020!important;background:transparent!important;border:0!important;
+}
+#home .home-gender-card:is(.gender-men,.gender-women,.gender-unisex) .gender-card-copy b{color:inherit!important}
+#home .home-gender-card:is(.gender-men,.gender-women,.gender-unisex) .gender-button-icon{
+  flex:0 0 auto!important;width:38px!important;height:38px!important;display:grid!important;place-items:center!important;color:#790020!important;background:transparent!important;border:0!important;
+}
+#home .gender-button-icon svg{width:30px;height:30px;fill:none;stroke:currentColor!important;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 :where(body.dark,html[data-theme="dark"] body) #home :is(.home-brand-directory,.home-benefits-directory,.home-gender-section){background:#202225!important}
 :where(body.dark,html[data-theme="dark"] body) #home :is(h1,h2,h3,h4,h5,h6,.home-section-head a,.home-section-head a span){color:#fff!important}
 :where(body.dark,html[data-theme="dark"] body) #home .home-benefits-directory .benefit-marquee-item{background:#202225!important;color:#fff!important}
 :where(body.dark,html[data-theme="dark"] body) #home .home-benefits-directory .benefit-marquee-item :is(b,small,svg){color:#fff!important;stroke:#fff!important}
-:where(body.dark,html[data-theme="dark"] body) #home .home-gender-card,
-:where(body.dark,html[data-theme="dark"] body) #home .home-gender-card :is(.gender-card-copy,.gender-button-icon){
+:where(body.dark,html[data-theme="dark"] body) #home .home-gender-card:is(.gender-men,.gender-women,.gender-unisex){
   color:#fff!important;background:#292b2f!important;border-color:#fff!important;
+}
+:where(body.dark,html[data-theme="dark"] body) #home .home-gender-card:is(.gender-men,.gender-women,.gender-unisex) :is(.gender-card-copy,.gender-card-copy b,.gender-button-icon){
+  color:#fff!important;background:transparent!important;border-color:transparent!important;
 }
 :where(body.dark,html[data-theme="dark"] body) .home-rail-dots i{background:#686b70}
 :where(body.dark,html[data-theme="dark"] body) .home-rail-dots i.active{background:#fff}
 @media(max-width:640px){
-  #home .home-brand-directory .brand-marquee-set>button>img{width:122%!important;height:122%!important}
-  #home .home-section-head>a,#home .home-section-head>a>span:first-child{font-size:20px!important}
+  #home .home-brand-directory .brand-marquee-set>button{padding:4px!important}
+  #home .home-brand-directory .brand-marquee-set>button>img{width:105%!important;height:105%!important;max-width:105%!important}
+  #home .home-section-head>a,#home .home-section-head>a>span:first-child{font-size:13px!important}
+  #home .home-gender-card:is(.gender-men,.gender-women,.gender-unisex){min-height:66px!important;padding:10px 8px!important;gap:16px!important}
+  #home .home-gender-card:is(.gender-men,.gender-women,.gender-unisex) .gender-button-icon{width:30px!important;height:30px!important}
   #home .gender-button-icon svg{width:24px;height:24px}
 }

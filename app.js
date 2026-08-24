@@ -3501,7 +3501,7 @@ function renderBrandCarousel(query = "") {
   const mobile = matchMedia("(max-width: 700px)").matches;
   const brands = catalogNames.map((brand) => [brand, counts.get(brand) || 0])
     .filter(([brand]) => !normalized || ORIGOCatalog.normalize(brand).includes(normalized));
-  const visibleBrands = !normalized ? brands.slice(0, 12) : brands;
+  const visibleBrands = brands;
   const brandOptions = productOptionItems("brand");
   const items = visibleBrands.map(([brand, count]) => {
     const option = brandOptions.find((item) => [item.value,item.nameAr,item.nameEn].some((value) => normalizeOptionSearch(value) === normalizeOptionSearch(brand)));
@@ -3717,11 +3717,12 @@ function renderConfiguredHomeProductRows() {
     const products = homeProductRowProducts(row);
     if (!products.length) return "";
     return `<section class="home-configured-product-row" data-home-product-source="${escapeHTML(row.source)}"${row.brand ? ` data-home-product-brand="${escapeHTML(row.brand)}"` : ""}>
-      <div class="home-section-head">${homeProductRowViewAll(row)}<div class="ornament-heading"><h2>${escapeHTML(homeProductRowTitle(row))}</h2></div></div>
+      <div class="home-section-head">${homeProductRowViewAll(row)}<div class="ornament-heading"><h2>${escapeHTML(homeProductRowTitle(row))}</h2></div>${mobileProductViewControlMarkup()}</div>
       <div class="home-products-wrap"><button class="home-product-row-arrow previous" type="button" data-home-product-row-direction="-1" aria-label="${state.lang === "ar" ? "المنتجات السابقة" : "Previous products"}">${state.lang === "ar" ? "›" : "‹"}</button><div class="product-grid home-product-row-track" data-mobile-product-rail>${products.map((product, index) => productCardMarkup(product, { context: "grid", delay: Math.min(index * 35, 175) })).join("")}</div><button class="home-product-row-arrow next" type="button" data-home-product-row-direction="1" aria-label="${state.lang === "ar" ? "المنتجات التالية" : "Next products"}">${state.lang === "ar" ? "‹" : "›"}</button></div>
     </section>`;
   }).join("");
   $$(".home-configured-product-row", holder).forEach(bindConfiguredHomeProductRow);
+  setMobileProductColumns(document.documentElement.dataset.productCardView === "one" ? "1" : "2", false);
   if (matchMedia("(max-width: 700px)").matches) $$('[data-mobile-product-rail]', holder).forEach((rail) => bindHorizontalRail(rail));
 }
 
@@ -4826,19 +4827,22 @@ function noteLabel(note) {
 }
 
 const MOBILE_PRODUCT_COLUMNS_KEY = "origoMobileProductColumns";
+function mobileProductViewControlMarkup() {
+  return `<div class="mobile-product-view-control" role="group" aria-label="${state.lang === "ar" ? "عدد المنتجات في الصف" : "Products per row"}"><button type="button" data-action="mobile-product-columns" data-columns="1" aria-pressed="false"><i aria-hidden="true">▭</i><span>1</span></button><button type="button" data-action="mobile-product-columns" data-columns="2" aria-pressed="true"><i aria-hidden="true">▥</i><span>2</span></button></div>`;
+}
 function setMobileProductColumns(value, persistValue = true) {
   const columns = String(value) === "1" ? "one" : "two";
   document.documentElement.dataset.productCardView = columns;
   if (persistValue) localStorage.setItem(MOBILE_PRODUCT_COLUMNS_KEY, columns);
   const ar = state.lang === "ar";
-  const control = $("#mobile-product-view-control");
-  if (!control) return;
-  control.setAttribute("aria-label", ar ? "عدد المنتجات في الصف" : "Products per row");
-  control.querySelectorAll("[data-columns]").forEach((button) => {
-    const active = (button.dataset.columns === "1") === (columns === "one");
-    button.classList.toggle("active", active);
-    button.setAttribute("aria-pressed", String(active));
-    button.title = ar ? `عرض ${button.dataset.columns === "1" ? "منتج واحد" : "منتجين"} في الصف` : `Show ${button.dataset.columns} product${button.dataset.columns === "1" ? "" : "s"} per row`;
+  $$(".mobile-product-view-control").forEach((control) => {
+    control.setAttribute("aria-label", ar ? "عدد المنتجات في الصف" : "Products per row");
+    control.querySelectorAll("[data-columns]").forEach((button) => {
+      const active = (button.dataset.columns === "1") === (columns === "one");
+      button.classList.toggle("active", active);
+      button.setAttribute("aria-pressed", String(active));
+      button.title = ar ? `عرض ${button.dataset.columns === "1" ? "منتج واحد" : "منتجين"} في الصف` : `Show ${button.dataset.columns} product${button.dataset.columns === "1" ? "" : "s"} per row`;
+    });
   });
 }
 
@@ -5505,7 +5509,7 @@ function productConfiguredLinksMarkup(product) {
       .map((id) => getProduct(id))
       .filter((item) => item && item.status === "published" && !seen.has(item.id));
     products.forEach((item) => seen.add(item.id));
-    return products.length ? `<section class="pdp-recommendations pdp-configured-products"><div class="pdp-section-heading"><span>${eyebrow}</span><h2>${title}</h2></div><div class="pdp-products-row">${products.map((item) => productCardMarkup(item)).join("")}</div></section>` : "";
+    return products.length ? `<section class="pdp-recommendations pdp-configured-products"><div class="pdp-section-heading"><span>${eyebrow}</span><h2>${title}</h2>${mobileProductViewControlMarkup()}</div><div class="pdp-products-row">${products.map((item) => productCardMarkup(item)).join("")}</div></section>` : "";
   });
   return groups.join("");
 }
@@ -6458,6 +6462,7 @@ function showProductDetails(product, shouldOpen = true) {
       ${productIngredientsMarkup(product)}
       ${window.ORIGOAlternatives?.productPanel?.(product) || productFragranceRelationshipsMarkup(product)}
     </main>`;
+  setMobileProductColumns(document.documentElement.dataset.productCardView === "one" ? "1" : "2", false);
   $("#product-dialog-content").querySelectorAll("img").forEach((image) => image.addEventListener("error", () => (image.src = PRODUCT_IMAGE_PLACEHOLDER), { once: true }));
   bindProductGallerySwipe();
   rememberProduct(product.id);

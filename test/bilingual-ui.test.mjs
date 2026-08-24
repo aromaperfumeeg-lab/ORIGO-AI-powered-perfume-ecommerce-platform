@@ -55,6 +55,10 @@ test("brand and benefit rails expose swipe pagination dots", () => {
   assert.match(index, /id="home-benefit-dots"/);
   assert.match(app, /function renderHomeRailDots/);
   assert.match(appearance, /\.home-rail-dots i\.active/);
+  const brands = app.slice(app.indexOf("function renderBrandCarousel"), app.indexOf("function renderHomeBenefitsMarquee"));
+  assert.match(brands, /const visibleBrands = brands;/);
+  assert.doesNotMatch(brands, /brands\.slice\(0,\s*12\)/);
+  assert.match(appearance, /brand-marquee-set>button>img\{\s*width:100%!important;height:100%!important/);
 });
 
 test("homepage directories avoid glass compositing and use unified gender controls", () => {
@@ -62,7 +66,9 @@ test("homepage directories avoid glass compositing and use unified gender contro
   assert.match(appearance, /-webkit-backdrop-filter:none!important;\s*backdrop-filter:none!important/);
   assert.match(index, /class="gender-button-icon"[^>]*><svg viewBox="0 0 24 24">/);
   assert.doesNotMatch(index, />[♂♀⚥]</u);
-  assert.match(appearance, /\.home-gender-card\{border:1\.5px solid #790020!important/);
+  assert.match(appearance, /\.home-gender-card:is\(\.gender-men,\.gender-women,\.gender-unisex\)\{[\s\S]{0,420}gap:clamp\(20px,3vw,34px\)!important;[\s\S]{0,180}border:1\.5px solid #790020!important/);
+  assert.match(appearance, /--gender-edge:#790020!important;--gender-edge-soft:#790020!important/);
+  assert.match(appearance, /\.gender-card-copy b,\.gender-button-icon\)\{\s*color:#fff!important;background:transparent!important/);
   assert.match(appearance, /html\[data-theme="dark"\] body\) #home :is\(h1,h2,h3,h4,h5,h6/);
 });
 
@@ -281,12 +287,21 @@ test("brands directory uses responsive centered homepage-style cards", () => {
 
 test("mobile storefront exposes a persistent one-or-two product layout control", async () => {
   const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
-  assert.match(html, /id="mobile-product-view-control"/);
+  assert.match(html, /catalog-title-area[\s\S]{0,500}mobile-product-view-control/);
   assert.match(html, /data-columns="1"/);
   assert.match(html, /data-columns="2"/);
   assert.match(app, /origoMobileProductColumns/);
   assert.match(app, /documentElement\.dataset\.productCardView/);
+  assert.match(app, /function mobileProductViewControlMarkup/);
+  assert.match(app, /home-section-head[\s\S]{0,260}mobileProductViewControlMarkup\(\)/);
   assert.match(appearance, /data-product-card-view="one"/);
   assert.match(appearance, /data-product-card-view="two"/);
-  assert.match(appearance, /\.catalog-product-grid,\.pdp-products-row,\.note-products-grid/);
+  assert.match(appearance, /\.catalog-product-grid,\.pdp-products-row,\.note-products-grid,\.home-product-row-track/);
+  assert.match(appearance, /\.mobile-product-view-control\{position:static/);
+});
+
+test("product detail facts render as one compact row per item", () => {
+  assert.match(productDetail, /Product information groups: one compact fact per row/);
+  assert.match(productDetail, /\.pdp-detail-gate dl,[\s\S]{0,180}grid-template-columns:1fr!important/);
+  assert.match(productDetail, /grid-template-columns:minmax\(92px,34%\) minmax\(0,1fr\)!important/);
 });
