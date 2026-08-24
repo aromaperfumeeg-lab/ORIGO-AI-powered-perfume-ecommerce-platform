@@ -979,7 +979,7 @@ async function handleAPI(request, response, url, origin) {
     const total = countProducts();
     const products = listProducts({ limit, offset }).map(synchronizeProductPrimaryImage);
     return jsonResponse(response, 200, { products, total, offset, limit: limit || total, hasMore: limit > 0 && offset + products.length < total }, origin, {
-      "Cache-Control": "no-store, max-age=0, must-revalidate"
+      "Cache-Control": "public, max-age=15, stale-while-revalidate=60"
     });
   }
 
