@@ -54,7 +54,13 @@ test("brand and benefit rails expose swipe pagination dots", () => {
   assert.match(index, /id="home-brand-dots"/);
   assert.match(index, /id="home-benefit-dots"/);
   assert.match(app, /function renderHomeRailDots/);
+  assert.match(app, /function bindHomeBrandPagination/);
+  assert.match(app, /track\.scrollWidth - track\.clientWidth/);
+  assert.match(app, /track\.id === "home-brand-carousel-track" \? track\.clientWidth/);
   assert.match(appearance, /\.home-rail-dots i\.active/);
+  assert.match(appearance, /Four brands per mobile swipe/);
+  assert.match(appearance, /brand-marquee-set>button\{flex:0 0 calc\(\(100vw - 60px\)\/4\)!important/);
+  assert.match(appearance, /button:nth-child\(4n \+ 1\)\{scroll-snap-align:start/);
   const brands = app.slice(app.indexOf("function renderBrandCarousel"), app.indexOf("function renderHomeBenefitsMarquee"));
   assert.match(brands, /const visibleBrands = brands;/);
   assert.doesNotMatch(brands, /brands\.slice\(0,\s*12\)/);
@@ -296,8 +302,14 @@ test("mobile storefront exposes a persistent one-or-two product layout control",
   assert.match(app, /home-section-head[\s\S]{0,260}mobileProductViewControlMarkup\(\)/);
   assert.match(appearance, /data-product-card-view="one"/);
   assert.match(appearance, /data-product-card-view="two"/);
-  assert.match(appearance, /\.catalog-product-grid,\.pdp-products-row,\.note-products-grid,\.home-product-row-track/);
+  assert.match(appearance, /\.catalog-product-grid,\.pdp-products-row,\.note-products-grid/);
+  assert.match(appearance, /#home \.home-product-row-track\{display:flex!important;overflow-x:auto!important/);
   assert.match(appearance, /\.mobile-product-view-control\{position:static/);
+  assert.match(appearance, /grid-template-columns:1fr auto 1fr!important/);
+  assert.match(app, /if \(action === "mobile-product-columns"\) \{\s*setMobileProductColumns/);
+  const dragStart = app.slice(app.indexOf('document.addEventListener("dragstart"'), app.indexOf('document.addEventListener("dragover"'));
+  assert.doesNotMatch(dragStart, /mobile-product-columns/);
+  assert.match(html, /<rect x="5" y="5" width="14" height="14"/);
 });
 
 test("product detail facts render as one compact row per item", () => {

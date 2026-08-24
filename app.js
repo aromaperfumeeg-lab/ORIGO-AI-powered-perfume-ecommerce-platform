@@ -3515,6 +3515,7 @@ function renderBrandCarousel(query = "") {
     bindBrandMarquee(track);
   });
   renderHomeRailDots("#home-brand-dots", visibleBrands.length, mobile ? 4 : 6);
+  bindHomeBrandPagination($("#home-brand-carousel-track"), "#home-brand-dots");
 }
 
 function renderHomeRailDots(selector, itemCount, pageSize) {
@@ -3523,6 +3524,22 @@ function renderHomeRailDots(selector, itemCount, pageSize) {
   const count = Math.max(1, Math.ceil(itemCount / Math.max(1, pageSize)));
   dots.innerHTML = Array.from({ length:count }, (_, index) => `<i${index === 0 ? ' class="active"' : ""}></i>`).join("");
   dots.hidden = itemCount <= pageSize;
+}
+
+function bindHomeBrandPagination(track, dotsSelector) {
+  const dots = $(dotsSelector);
+  if (!track || !dots || track.dataset.paginationBound === "true") return;
+  track.dataset.paginationBound = "true";
+  const update = () => {
+    const indicators = [...dots.children];
+    if (!indicators.length) return;
+    const maximum = Math.max(1, track.scrollWidth - track.clientWidth);
+    const progress = Math.min(1, Math.abs(track.scrollLeft) / maximum);
+    const active = Math.min(indicators.length - 1, Math.round(progress * (indicators.length - 1)));
+    indicators.forEach((dot, index) => dot.classList.toggle("active", index === active));
+  };
+  track.addEventListener("scroll", update, { passive:true });
+  requestAnimationFrame(update);
 }
 
 function renderHomeBenefitsMarquee() {
@@ -4828,7 +4845,9 @@ function noteLabel(note) {
 
 const MOBILE_PRODUCT_COLUMNS_KEY = "origoMobileProductColumns";
 function mobileProductViewControlMarkup() {
-  return `<div class="mobile-product-view-control" role="group" aria-label="${state.lang === "ar" ? "عدد المنتجات في الصف" : "Products per row"}"><button type="button" data-action="mobile-product-columns" data-columns="1" aria-pressed="false"><i aria-hidden="true">▭</i><span>1</span></button><button type="button" data-action="mobile-product-columns" data-columns="2" aria-pressed="true"><i aria-hidden="true">▥</i><span>2</span></button></div>`;
+  const square = `<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="5" width="14" height="14" rx="1.5"/></svg>`;
+  const squares = `<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="8" height="14" rx="1.5"/><rect x="13" y="5" width="8" height="14" rx="1.5"/></svg>`;
+  return `<div class="mobile-product-view-control" role="group" aria-label="${state.lang === "ar" ? "عدد المنتجات في الصف" : "Products per row"}"><button type="button" data-action="mobile-product-columns" data-columns="1" aria-pressed="false">${square}<span>1</span></button><button type="button" data-action="mobile-product-columns" data-columns="2" aria-pressed="true">${squares}<span>2</span></button></div>`;
 }
 function setMobileProductColumns(value, persistValue = true) {
   const columns = String(value) === "1" ? "one" : "two";
@@ -8559,6 +8578,10 @@ document.addEventListener("click", async (event) => {
     return;
   }
   const action = actionElement.dataset.action;
+  if (action === "mobile-product-columns") {
+    setMobileProductColumns(actionElement.dataset.columns);
+    return;
+  }
   if (action === "save-catalog-product") {
     await safelySaveCatalogProduct(actionElement.closest("#import-review-form"), actionElement.value || "draft");
     return;
@@ -8567,7 +8590,8 @@ document.addEventListener("click", async (event) => {
     const track = actionElement.closest(".home-brand-directory,.home-benefits-directory")?.querySelector(".brand-carousel-track,.benefit-carousel-track");
     if (track) {
       const direction = Number(actionElement.dataset.direction) || 1;
-      track.scrollBy({ left: direction * Math.max(240, track.clientWidth * .65), behavior: "smooth" });
+      const pageStep = track.id === "home-brand-carousel-track" ? track.clientWidth : Math.max(240, track.clientWidth * .65);
+      track.scrollBy({ left: direction * pageStep, behavior: "smooth" });
     }
   }
   if (action === "parse-perfume-bundle") {
@@ -10918,7 +10942,6 @@ document.addEventListener("dragstart", (event) => {
     if (event.dataTransfer) event.dataTransfer.effectAllowed = "move";
     return;
   }
-  if (action === "mobile-product-columns") setMobileProductColumns(actionElement.dataset.columns);
   const thumbnail = event.target.closest?.("[data-studio-thumbnail]");
   if (!thumbnail) return;
   draggedProductImageIndex = Number(thumbnail.dataset.studioThumbnail);
@@ -11372,6 +11395,7 @@ window.addEventListener("popstate", (event) => {
 function bindBrandMarquee(brandTrack) {
   if (!brandTrack || brandTrack.dataset.dragBound === "true") return;
   brandTrack.dataset.dragBound = "true";
+  if (brandTrack.id === "home-brand-carousel-track" && matchMedia("(max-width: 700px)").matches) return;
   let brandDragging = false;
   let brandMoved = false;
   let brandStartX = 0;
