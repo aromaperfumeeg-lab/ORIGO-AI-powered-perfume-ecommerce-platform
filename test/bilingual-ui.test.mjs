@@ -7,6 +7,7 @@ const finderI18n = await readFile(new URL("../fragrance-finder-i18n.js", import.
 const appearance = await readFile(new URL("../appearance.css", import.meta.url), "utf8");
 const styles = await readFile(new URL("../styles.css", import.meta.url), "utf8");
 const productDetail = await readFile(new URL("../product-detail.css", import.meta.url), "utf8");
+const index = await readFile(new URL("../index.html", import.meta.url), "utf8");
 const performance = app.slice(app.indexOf("function perfumePerformanceEditorSection"), app.indexOf("const PRODUCT_PROFILE_IMAGE_FIELDS"));
 
 test("dark mode uses a black background behind product imagery", () => {
@@ -35,6 +36,34 @@ test("light mode uses a white background behind transparent product imagery", ()
   assert.match(styles,/html\[data-theme="light"\] \.product-image \{\s*background: #fff/);
   assert.match(productDetail,/html\[data-theme="light"\] \.pdp-main-image/);
   assert.match(productDetail,/\.pdp-thumbnails button\{background:#fff\}/);
+});
+
+test("homepage benefits use one admin source and transparent vector icons", () => {
+  const admin = app.slice(app.indexOf("const benefitMarkup ="), app.indexOf("const categoryIconMarkup ="));
+  const homeBenefits = app.slice(app.indexOf("function renderHomeBenefitsMarquee"), app.indexOf("function renderHomeNavigation"));
+  assert.doesNotMatch(admin, /homeBenefitIconMarkup|data-benefit-icon-upload|data-home-benefit-icon-upload/);
+  assert.doesNotMatch(app, /const homeBenefitIconMarkup/);
+  assert.match(app, /data-action="add-store-benefit"/);
+  assert.match(admin, /الرمز التعبيري الشفاف|Transparent expressive icon/);
+  assert.match(homeBenefits, /footerBenefitIcon\(benefit\.icon, benefit\.colors\)/);
+  assert.doesNotMatch(homeBenefits, /benefit\.image|<img/);
+  assert.match(app, /image: ""/);
+});
+
+test("brand and benefit rails expose swipe pagination dots", () => {
+  assert.match(index, /id="home-brand-dots"/);
+  assert.match(index, /id="home-benefit-dots"/);
+  assert.match(app, /function renderHomeRailDots/);
+  assert.match(appearance, /\.home-rail-dots i\.active/);
+});
+
+test("homepage directories avoid glass compositing and use unified gender controls", () => {
+  assert.match(appearance, /Lightweight homepage directories: solid surfaces, no glass\/blur compositing/);
+  assert.match(appearance, /-webkit-backdrop-filter:none!important;\s*backdrop-filter:none!important/);
+  assert.match(index, /class="gender-button-icon"[^>]*><svg viewBox="0 0 24 24">/);
+  assert.doesNotMatch(index, />[♂♀⚥]</u);
+  assert.match(appearance, /\.home-gender-card\{border:1\.5px solid #790020!important/);
+  assert.match(appearance, /html\[data-theme="dark"\] body\) #home :is\(h1,h2,h3,h4,h5,h6/);
 });
 
 test("season and time controls use inline decorative SVG instead of emoji", () => {
@@ -122,7 +151,7 @@ test("published product details expose saved public fields without admin metadat
   assert.match(app, /function productConfiguredLinksMarkup\(product\)/);
   assert.match(app, /\["similarProductIds"[\s\S]*\["crossSellIds"[\s\S]*\["alternativeIds"/);
   assert.match(app, /product\.cardBadgeAr \|\| product\.badgeAr/);
-  assert.match(details, /"الثبات بالساعات" : "Longevity in hours"/);
+  assert.match(details, /"الثبات بالساعات والفوحان" : "Longevity in hours and projection"/);
   assert.match(details, /formatNumber\(longevityHours\)/);
   assert.match(details, /product\.seasonScores/);
   assert.match(details, /product\.usageTimeScores/);
@@ -133,11 +162,50 @@ test("published product details expose saved public fields without admin metadat
   assert.doesNotMatch(details, /اقتراح|suggested|recommended|Best season|أفضل فصل/);
   assert.match(details, /pdp-detail-gates/);
   assert.match(details, /pdp-detail-gate/);
+  assert.match(details, /pdp-usage-visuals/);
+  assert.match(details, /pdp-time-visual/);
+  assert.match(details, /pdp-season-visual/);
+  assert.match(details, /--usage-score:/);
+  assert.match(details, /formatPercent\(item\.value\)/);
   assert.match(details, /"هوية المنتج" : "Product identity"/);
   assert.match(details, /"الأداء والاستخدام" : "Performance and usage"/);
   const accordsAt = app.indexOf("${productPublicAccordsMarkup(product)}");
   const detailsAt = app.indexOf("${productPublicDetailsMarkup(product)}");
   assert.ok(accordsAt >= 0 && detailsAt > accordsAt);
+});
+
+test("product description is collapsible and product identity is rendered once", () => {
+  const details = app.slice(app.indexOf("function productPublicDetailsMarkup"), app.indexOf("function productConfiguredLinksMarkup"));
+  assert.match(details, /وصف المنتج/);
+  assert.match(details, /عرض المزيد/);
+  assert.match(details, /pdp-description-more/);
+  assert.match(details, /pdp-identity-strip/);
+  assert.equal((details.match(/هوية المنتج/g) || []).length, 1);
+  assert.doesNotMatch(details, /title:ar \? "هوية المنتج"/);
+});
+
+test("Arabic product identity resolves canonical gender and common fragrance-family labels", () => {
+  assert.match(app, /unisex:"للجنسين"/);
+  assert.match(app, /"oriental vanilla":\["شرقي فانيليا","Oriental Vanilla"\]/);
+  assert.match(app, /typeLooksLikeGender/);
+});
+
+test("occasions and fragrance character render as localized compact tags", () => {
+  const details = app.slice(app.indexOf("function productPublicDetailsMarkup"), app.indexOf("function productConfiguredLinksMarkup"));
+  assert.match(details, /"evening-events":\["فعاليات مسائية","Evening events"\]/);
+  assert.match(details, /warm:\["دافئ","Warm"\]/);
+  assert.match(details, /class="pdp-detail-tags"/);
+  assert.match(productDetail, /\.pdp-public-details \.pdp-detail-tags/);
+  assert.doesNotMatch(details, /`\$\{formatRating\(ratingValue\)\} \/ 5`/);
+});
+
+test("top performance strip replaces the duplicate editorial performance panel", () => {
+  const details = app.slice(app.indexOf("function productPublicDetailsMarkup"), app.indexOf("function productConfiguredLinksMarkup"));
+  const profile = app.slice(app.indexOf("function productProfileAccordions"), app.indexOf("async function persistNotesState"));
+  assert.match(details, /pdp-performance-strip/);
+  assert.match(details, /الثبات بالساعات والفوحان/);
+  assert.match(productDetail, /\.pdp-performance-strip/);
+  assert.doesNotMatch(profile, /data-pdp-section="performance"|ملخص الأداء التحريري|Fragrance performance/);
 });
 
 test("product metadata resolves bilingual SEO and canonical product URLs", () => {
@@ -194,8 +262,31 @@ test("footer directory centers every heading and keeps only the all-brands row i
   assert.match(appearance, /\.origo-footer \.footer-brand-list > :where\(a,button\)\{[\s\S]*text-align:center!important;/);
 });
 
+test("brand labels follow the storefront language and newsletter keeps its arrow", async () => {
+  const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
+  const footer = await readFile(new URL("../footer.css", import.meta.url), "utf8");
+  assert.match(app, /function localizedBrandLabel\(brand\)/);
+  assert.match(app, /"afnan perfumes":"أفنان للعطور"/);
+  assert.match(app, /BRAND_ARABIC_LABELS\[normalizeOptionSearch\(brand\)\]/);
+  assert.match(html, /<i aria-hidden="true">←<\/i>/);
+  assert.match(footer, /newsletter-form \.footer-email-field>button>i\{display:block!important;visibility:visible!important;opacity:1!important/);
+  assert.match(footer, /footer-directory>section\{padding:16px!important;border:1px solid #d9dce1/);
+});
+
 test("brands directory uses responsive centered homepage-style cards", () => {
   assert.match(appearance, /\.brands-page-grid > a\{[\s\S]*grid-template-rows:110px auto;[\s\S]*border-radius:18px;/);
   assert.match(appearance, /\.brands-page-grid > a > b\{[\s\S]*place-items:center;[\s\S]*text-align:center!important;/);
   assert.match(appearance, /@media\(max-width:600px\)\{[\s\S]*\.brands-page-grid\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\)!important/);
+});
+
+test("mobile storefront exposes a persistent one-or-two product layout control", async () => {
+  const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
+  assert.match(html, /id="mobile-product-view-control"/);
+  assert.match(html, /data-columns="1"/);
+  assert.match(html, /data-columns="2"/);
+  assert.match(app, /origoMobileProductColumns/);
+  assert.match(app, /documentElement\.dataset\.productCardView/);
+  assert.match(appearance, /data-product-card-view="one"/);
+  assert.match(appearance, /data-product-card-view="two"/);
+  assert.match(appearance, /\.catalog-product-grid,\.pdp-products-row,\.note-products-grid/);
 });

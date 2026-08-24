@@ -3739,6 +3739,20 @@ html body .product-overlay .origo-exact-product-card .product-card-top-actions .
 .percentage-score-fields{margin-top:16px;padding:14px;border:1px solid color-mix(in srgb,var(--burgundy,#7a001d) 16%,transparent);border-radius:14px}.percentage-score-fields legend{padding:0 8px;font-weight:700}.season-percentage-grid,.time-percentage-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.time-percentage-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.percentage-score-card{display:grid;gap:12px;min-width:0;padding:13px;border:1px solid color-mix(in srgb,var(--burgundy,#7a001d) 11%,transparent);background:color-mix(in srgb,var(--paper,#fff) 96%,var(--burgundy,#7a001d));border-radius:13px}.percentage-score-head{display:grid;grid-template-columns:42px minmax(0,1fr) auto;align-items:center;gap:9px}.percentage-score-icon{width:42px;height:42px;display:grid;place-items:center;border-radius:11px;color:var(--burgundy,#7a001d);background:color-mix(in srgb,var(--burgundy,#7a001d) 7%,#fff);font-style:normal}.percentage-score-icon svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.percentage-score-autumn .percentage-score-icon{background:#faf5ed}.percentage-score-spring .percentage-score-icon{background:#fbf1f3}.percentage-score-winter .percentage-score-icon{background:#f1f5f7}.percentage-score-summer .percentage-score-icon,.percentage-score-day .percentage-score-icon{background:#fbf6e9}.percentage-score-night .percentage-score-icon{background:#f4f1f6}.percentage-score-copy{display:grid;min-width:0;line-height:1.25}.percentage-score-copy b{font-size:.9rem}.percentage-score-copy small{margin-top:2px;color:var(--muted,#756a6d);font:500 .72rem/1.2 Arial,sans-serif;direction:ltr;unicode-bidi:isolate}.percentage-score-card output{color:var(--burgundy,#7a001d);font:800 .95rem/1 Arial,sans-serif;direction:ltr;unicode-bidi:isolate}.percentage-score-card input[type="range"]{width:100%;min-width:0;accent-color:var(--burgundy,#7a001d);background:linear-gradient(to right,var(--burgundy,#7a001d) var(--percentage),color-mix(in srgb,var(--burgundy,#7a001d) 12%,transparent) var(--percentage));height:6px;border-radius:999px}@media(max-width:980px){.season-percentage-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:760px){.season-percentage-grid,.time-percentage-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:390px){.season-percentage-grid,.time-percentage-grid{grid-template-columns:1fr}}
 .product-price,.pdp-price,.checkout-total,.cart-count,.wishlist-count,.percentage-score-card output,.accord-admin-item output,.performance-score,.finder-results strong,.admin-metric b,.ops-data-table td,.ops-id,input[type="number"],input[type="tel"]{font-variant-numeric:tabular-nums;unicode-bidi:isolate}
 
+/* Mobile product density switch shared by every storefront product gallery. */
+.mobile-product-view-control{display:none}
+@media(max-width:700px){
+  .mobile-product-view-control{position:fixed;z-index:285;inset-inline-end:12px;bottom:78px;display:grid;grid-template-columns:1fr 1fr;gap:3px;padding:3px;border:1px solid rgba(121,0,32,.35);border-radius:10px;background:#fff;box-shadow:0 8px 22px rgba(0,0,0,.16)}
+  .mobile-product-view-control button{width:37px;height:34px;padding:0;display:grid;grid-template-columns:auto auto;place-content:center;gap:3px;border:0;border-radius:7px;color:#6c6265;background:transparent;font:800 10px/1 Arial,sans-serif}
+  .mobile-product-view-control button i{font-size:15px;font-style:normal}.mobile-product-view-control button.active{color:#fff;background:#790020}
+  body.dark .mobile-product-view-control{border-color:#5a5d63;background:#2d3034}.mobile-product-view-control[hidden]{display:none!important}
+  body:not(:has(#storefront-main :is(.product-card,.perfume-product-card,.pdp-related-card))) .mobile-product-view-control{display:none!important}
+  html[data-product-card-view="one"] #storefront-main :is(.catalog-product-grid,.pdp-products-row,.note-products-grid){display:grid!important;grid-template-columns:1fr!important;gap:10px!important;overflow:visible!important}
+  html[data-product-card-view="two"] #storefront-main :is(.catalog-product-grid,.pdp-products-row,.note-products-grid){display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;overflow:visible!important}
+  html[data-product-card-view="one"] #storefront-main :is(.catalog-product-grid,.pdp-products-row,.note-products-grid) > :is(.product-card,.perfume-product-card,.pdp-related-card){width:100%!important;max-width:none!important;min-width:0!important;flex:none!important}
+  html[data-product-card-view="two"] #storefront-main :is(.catalog-product-grid,.pdp-products-row,.note-products-grid) > :is(.product-card,.perfume-product-card,.pdp-related-card){width:100%!important;max-width:none!important;min-width:0!important;flex:none!important}
+}
+
 /* Transparent product photography: isolate the bottle and box on pure black in dark mode. */
 html[data-theme="dark"] body :is(#storefront-main,.product-overlay) .product-card .product-image,
 html[data-theme="dark"] body :is(#storefront-main,.product-overlay) .product-card .product-card-media-link,
@@ -4032,4 +4046,63 @@ html body :is(#storefront-main,.product-overlay) .product-card .exact-card-actio
   .brands-page-grid > a{min-height:145px;padding:12px 8px;grid-template-rows:82px auto;border-radius:14px}
   .brands-page-grid > a > img{height:82px!important}
   .brands-page-grid > a > b{font-size:12px}
+}
+
+/* Lightweight homepage directories: solid surfaces, no glass/blur compositing. */
+#home :is(.home-brand-directory,.home-benefits-directory,.home-gender-section),
+#home :is(.home-brand-directory,.home-benefits-directory) :is(.marquee-item,.benefit-icon,.origo-lux-icon-medallion),
+#home .home-gender-card,
+#home .home-gender-card::before,
+#home .home-gender-card::after{
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+  filter:none!important;
+  background-image:none!important;
+  animation:none!important;
+}
+#home :is(.home-brand-directory,.home-benefits-directory){background:#fff!important}
+#home .home-brand-directory .brand-marquee-set>button{padding:0!important}
+#home .home-brand-directory .brand-marquee-set>button>img{
+  width:116%!important;height:116%!important;max-width:none!important;
+  object-fit:contain!important;mix-blend-mode:normal!important;
+}
+#home .home-benefits-directory .benefit-marquee-item{
+  background:#fff!important;border:0!important;box-shadow:none!important;
+}
+#home .home-benefits-directory .benefit-marquee-item .benefit-icon,
+#home .home-benefits-directory .origo-lux-icon-medallion{
+  background:transparent!important;box-shadow:none!important;
+}
+#home .home-benefits-directory .origo-lux-icon-medallion svg{background:transparent!important}
+.home-rail-dots{min-height:14px;display:flex;align-items:center;justify-content:center;gap:6px;margin:2px auto 0}
+.home-rail-dots[hidden]{display:none!important}
+.home-rail-dots i{width:6px;height:6px;border-radius:50%;background:#c8c8c8}
+.home-rail-dots i.active{width:18px;border-radius:20px;background:var(--burgundy,#790020)}
+#home .home-section-head>a,
+#home .home-section-head>a>span:first-child{
+  color:var(--burgundy,#790020)!important;
+  font-size:clamp(20px,2.1vw,27px)!important;
+  font-weight:800!important;
+  line-height:1.15!important;
+}
+#home .home-gender-card,
+#home .home-gender-card :is(.gender-card-copy,.gender-button-icon){
+  color:#790020!important;background:#fff!important;border-color:#790020!important;
+}
+#home .home-gender-card{border:1.5px solid #790020!important;box-shadow:none!important}
+#home .gender-button-icon svg{width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+:where(body.dark,html[data-theme="dark"] body) #home :is(.home-brand-directory,.home-benefits-directory,.home-gender-section){background:#202225!important}
+:where(body.dark,html[data-theme="dark"] body) #home :is(h1,h2,h3,h4,h5,h6,.home-section-head a,.home-section-head a span){color:#fff!important}
+:where(body.dark,html[data-theme="dark"] body) #home .home-benefits-directory .benefit-marquee-item{background:#202225!important;color:#fff!important}
+:where(body.dark,html[data-theme="dark"] body) #home .home-benefits-directory .benefit-marquee-item :is(b,small,svg){color:#fff!important;stroke:#fff!important}
+:where(body.dark,html[data-theme="dark"] body) #home .home-gender-card,
+:where(body.dark,html[data-theme="dark"] body) #home .home-gender-card :is(.gender-card-copy,.gender-button-icon){
+  color:#fff!important;background:#292b2f!important;border-color:#fff!important;
+}
+:where(body.dark,html[data-theme="dark"] body) .home-rail-dots i{background:#686b70}
+:where(body.dark,html[data-theme="dark"] body) .home-rail-dots i.active{background:#fff}
+@media(max-width:640px){
+  #home .home-brand-directory .brand-marquee-set>button>img{width:122%!important;height:122%!important}
+  #home .home-section-head>a,#home .home-section-head>a>span:first-child{font-size:20px!important}
+  #home .gender-button-icon svg{width:24px;height:24px}
 }

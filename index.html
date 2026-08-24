@@ -29,9 +29,9 @@
     <link rel="stylesheet" href="styles.css?v=66" />
     <link rel="stylesheet" href="home.css?v=83" />
   <link rel="stylesheet" href="components/product-card/storefront-product-card.css?v=5" />
-    <link rel="stylesheet" data-deferred-href="product-detail.css?v=41" />
+    <link rel="stylesheet" data-deferred-href="product-detail.css?v=45" />
     <link rel="stylesheet" data-route="catalog" data-route-href="catalog.css?v=4" />
-    <link rel="stylesheet" data-idle-href="footer.css?v=27" />
+    <link rel="stylesheet" data-idle-href="footer.css?v=28" />
     <link rel="stylesheet" data-route="commerce" data-route-href="commerce.css?v=1" />
     <link rel="stylesheet" data-route="account" data-route-href="account.css?v=3" />
     <link rel="stylesheet" href="fragrance-finder.css?v=2" data-route="finder" />
@@ -46,10 +46,14 @@
     <link rel="stylesheet" data-idle-href="dark-theme.css?v=14" />
     <link rel="stylesheet" href="origo-identity.css?v=20" />
     <link rel="stylesheet" href="no-effects.css?v=2" />
-    <link rel="stylesheet" href="appearance.css?v=100" />
+    <link rel="stylesheet" href="appearance.css?v=102" />
   </head>
   <body>
     <div class="announcement" aria-hidden="true"></div>
+    <div class="mobile-product-view-control" id="mobile-product-view-control" role="group" aria-label="عدد المنتجات في الصف">
+      <button type="button" data-action="mobile-product-columns" data-columns="1" aria-pressed="false"><i aria-hidden="true">▭</i><span>1</span></button>
+      <button type="button" data-action="mobile-product-columns" data-columns="2" aria-pressed="true"><i aria-hidden="true">▥</i><span>2</span></button>
+    </div>
 
     <header class="site-header" id="top">
       <div class="header-main">
@@ -203,12 +207,12 @@
 
         <section class="home-brand-directory" aria-labelledby="home-brands-title">
           <div class="home-section-head"><a href="/brands" data-action="open-brands-page"><span data-i18n="viewAll">عرض الكل</span> <span>‹</span></a><div class="ornament-heading"><span aria-hidden="true"></span><h2 id="home-brands-title" data-i18n="navBrands">العلامات التجارية</h2><span aria-hidden="true"></span></div></div>
-          <div class="brand-carousel-track" id="home-brand-carousel-track" data-brand-marquee aria-live="off"></div><button class="drag-strip-hint drag-strip-hint--start" type="button" data-action="drag-strip-scroll" data-direction="-1" aria-label="تحريك العلامات إلى اليسار">‹</button><button class="drag-strip-hint drag-strip-hint--end" type="button" data-action="drag-strip-scroll" data-direction="1" aria-label="تحريك العلامات إلى اليمين">›</button>
+          <div class="brand-carousel-track" id="home-brand-carousel-track" data-brand-marquee aria-live="off"></div><button class="drag-strip-hint drag-strip-hint--start" type="button" data-action="drag-strip-scroll" data-direction="-1" aria-label="تحريك العلامات إلى اليسار">‹</button><button class="drag-strip-hint drag-strip-hint--end" type="button" data-action="drag-strip-scroll" data-direction="1" aria-label="تحريك العلامات إلى اليمين">›</button><div class="home-rail-dots" id="home-brand-dots" aria-hidden="true"></div>
         </section>
 
         <section class="home-benefits-directory" aria-labelledby="home-benefits-title">
           <div class="home-section-head"><a href="/benefits" data-action="open-benefits-page"><span data-i18n="viewAll">عرض الكل</span> <span>‹</span></a><div class="ornament-heading"><span aria-hidden="true"></span><h2 id="home-benefits-title">مميزاتنا</h2><span aria-hidden="true"></span></div></div>
-          <div class="benefit-carousel-track" id="home-benefits-track" data-benefit-marquee aria-live="off"></div><button class="drag-strip-hint drag-strip-hint--start" type="button" data-action="drag-strip-scroll" data-direction="-1" aria-label="تحريك المزايا إلى اليسار">‹</button><button class="drag-strip-hint drag-strip-hint--end" type="button" data-action="drag-strip-scroll" data-direction="1" aria-label="تحريك المزايا إلى اليمين">›</button>
+          <div class="benefit-carousel-track" id="home-benefits-track" data-benefit-marquee aria-live="off"></div><button class="drag-strip-hint drag-strip-hint--start" type="button" data-action="drag-strip-scroll" data-direction="-1" aria-label="تحريك المزايا إلى اليسار">‹</button><button class="drag-strip-hint drag-strip-hint--end" type="button" data-action="drag-strip-scroll" data-direction="1" aria-label="تحريك المزايا إلى اليمين">›</button><div class="home-rail-dots" id="home-benefit-dots" aria-hidden="true"></div>
         </section>
 
         <section class="home-gender-section" aria-labelledby="home-gender-title">
@@ -219,13 +223,13 @@
           </div>
           <div class="home-gender-grid home-gender-slider" aria-label="تسوّق حسب الجنس">
             <a class="home-gender-card gender-men" href="/perfumes?quick=men" data-action="home-gender-filter" data-gender="men">
-              <span class="gender-button-icon" aria-hidden="true">♂</span><span class="gender-card-copy"><b>للرجال</b></span>
+              <span class="gender-button-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="9" cy="15" r="5"/><path d="M13 11 20 4m-5 0h5v5"/></svg></span><span class="gender-card-copy"><b>للرجال</b></span>
             </a>
             <a class="home-gender-card gender-women" href="/perfumes?quick=women" data-action="home-gender-filter" data-gender="women">
-              <span class="gender-button-icon" aria-hidden="true">♀</span><span class="gender-card-copy"><b>للنساء</b></span>
+              <span class="gender-button-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="5"/><path d="M12 14v7m-3-3h6"/></svg></span><span class="gender-card-copy"><b>للنساء</b></span>
             </a>
             <a class="home-gender-card gender-unisex" href="/perfumes?quick=unisex" data-action="home-gender-filter" data-gender="unisex">
-              <span class="gender-button-icon" aria-hidden="true">⚥</span><span class="gender-card-copy"><b>للجنسين</b></span>
+              <span class="gender-button-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="10" cy="14" r="5"/><path d="M14 10 20 4m-5 0h5v5M10 19v3m-3-1.5h6"/></svg></span><span class="gender-card-copy"><b>للجنسين</b></span>
             </a>
           </div>
         </section>
@@ -624,7 +628,7 @@
             <h2 id="footer-newsletter-title">اشترك في نشرتنا البريدية</h2><p id="footer-newsletter-copy">كن أول من يعرف عن العروض والمنتجات الجديدة</p>
             <form id="newsletter-form" novalidate>
               <label for="footer-email" class="sr-only">البريد الإلكتروني</label>
-              <div class="footer-email-field"><input id="footer-email" name="email" type="email" autocomplete="email" required placeholder="أدخل بريدك الإلكتروني" /><button type="submit"><span>اشترك الآن</span></button></div>
+              <div class="footer-email-field"><input id="footer-email" name="email" type="email" autocomplete="email" required placeholder="أدخل بريدك الإلكتروني" /><button type="submit"><span>اشترك الآن</span><i aria-hidden="true">←</i></button></div>
               <small id="newsletter-status" aria-live="polite"></small>
             </form>
           </div>
@@ -971,7 +975,7 @@
     <script defer src="fragrance-finder-engine.js?v=2"></script>
     <script defer src="fragrance-finder-i18n.js?v=2"></script>
     <script defer src="fragrance-finder.js?v=3"></script>
-    <script defer src="app.js?v=253"></script>
+    <script defer src="app.js?v=258"></script>
     <script defer src="components/product-card/storefront-product-card.js?v=3"></script>
     <script defer src="deferred-modules.js?v=12"></script>
   </body>

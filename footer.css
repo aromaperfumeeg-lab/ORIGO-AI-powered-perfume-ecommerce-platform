@@ -209,6 +209,16 @@ body.dark .benefit-faqs summary{color:#f7efea}body.dark .benefit-faqs details{bo
   .origo-footer .footer-social-column .footer-newsletter{margin-top:12px;padding-top:12px!important}
 }
 
+/* Clear footer containers and a permanently visible newsletter arrow. */
+.origo-footer .footer-directory{gap:12px!important}
+.origo-footer .footer-directory>section{padding:16px!important;border:1px solid #d9dce1!important;border-radius:12px!important;background:#fff!important}
+.origo-footer .footer-directory>section+section{border-inline-start:1px solid #d9dce1!important}
+.origo-footer .footer-column>a,.origo-footer .footer-column>button,.origo-footer .footer-brand-list>button,.origo-footer .footer-brand-list>a{border-color:#d5d8dd!important;background:#fff!important;box-shadow:0 2px 7px rgba(20,20,25,.035)!important}
+.origo-footer #newsletter-form .footer-email-field{border:1.5px solid #c9cdd3!important;border-radius:12px!important;background:#fff!important;box-shadow:0 4px 14px rgba(20,20,25,.06)!important}
+.origo-footer #newsletter-form .footer-email-field>button>i{display:block!important;visibility:visible!important;opacity:1!important}
+body.dark .origo-footer .footer-directory>section,body.dark .origo-footer .footer-column>a,body.dark .origo-footer .footer-column>button,body.dark .origo-footer .footer-brand-list>button,body.dark .origo-footer .footer-brand-list>a,body.dark .origo-footer #newsletter-form .footer-email-field{border-color:#565a61!important;background:#303338!important;color:#fff!important}
+@media(max-width:640px){.origo-footer .footer-directory{gap:9px!important;padding-inline:8px!important}.origo-footer .footer-directory>section{padding:12px 9px!important;border-radius:10px!important}}
+
 /* Soft glass language for public page names and footer details. */
 body:not(.dark) :is(.catalog-breadcrumb,.notes-breadcrumb,.brands-page-breadcrumb,.benefit-breadcrumb,.alt-breadcrumb,.pdp-breadcrumb){
   box-sizing:border-box;width:min(100%,1480px);min-height:46px;margin-inline:auto;padding:9px 16px!important;
