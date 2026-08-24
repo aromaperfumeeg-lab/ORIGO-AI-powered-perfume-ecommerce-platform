@@ -40,6 +40,15 @@ html{max-width:100%}
   .home-hero-copy h1{font-size:clamp(44px,3.7vw,58px)}
 }
 
+/* Visible, compact homepage introduction for customers and search engines. */
+.home-seo-intro{width:min(calc(100% - 32px),980px);margin:16px auto 10px;padding:16px 20px;text-align:center;border:1px solid rgba(121,0,32,.16);border-radius:12px;background:#fff}
+.home-seo-intro h1{margin:0;color:#65001e;font-size:clamp(20px,2.3vw,30px);line-height:1.35}
+.home-seo-intro p{max-width:760px;margin:8px auto;color:#4f484a;font-size:13px;line-height:1.8}
+.home-seo-intro a{display:inline-flex;min-height:38px;margin-top:3px;padding:8px 18px;align-items:center;justify-content:center;border:1px solid #790020;border-radius:8px;color:#fff;background:#790020;font-size:13px;font-weight:800;text-decoration:none}
+body.dark .home-seo-intro,html[data-theme="dark"] .home-seo-intro{border-color:#4b4e53;background:#202225}
+body.dark .home-seo-intro :is(h1,p),html[data-theme="dark"] .home-seo-intro :is(h1,p){color:#fff}
+@media(max-width:640px){.home-seo-intro{width:calc(100% - 20px);margin-block:10px 6px;padding:12px}.home-seo-intro h1{font-size:18px}.home-seo-intro p{font-size:11px;line-height:1.7}.home-seo-intro a{min-height:36px;font-size:12px}}
+
 /* Compact homepage product card: the bottle remains the dominant element. */
 #home :is(.home-new-arrivals,.home-best-sellers) .product-card{
   position:relative;

@@ -3405,6 +3405,9 @@ function localizeStaticStorefront() {
   setText(".home-new-arrivals .home-section-head>a span:first-child", "عرض باقي المنتجات الحديثة", "View all new arrivals");
   setText("#home-benefits-title", "مميزاتنا", "Our benefits");
   setText("#home-gender-title", "تسوّق حسب الجنس", "Shop by gender");
+  setText("#home-seo-title", "ORIGO Scents | أوريجو سينتس - متجر العطور الأصلية في مصر", "ORIGO Scents | Original Perfume Store in Egypt");
+  setText("#home-seo-copy", "يوفر ORIGO Scents عطورًا أصلية 100% للرجال والنساء وللجنسين من علامات تجارية متنوعة مع الأسعار والتوفر داخل مصر.", "ORIGO Scents offers 100% original perfumes for men, women and everyone from a wide range of brands, with prices and availability in Egypt.");
+  setText("#home-original-perfumes-link", "تسوق العطور الأصلية", "Shop original perfumes");
   renderHomeBenefitsMarquee();
   const genderCards = [
     ["للرجال", "عطور تعكس القوة والأناقة والثقة", "Men", "Fragrances of strength, elegance, and confidence"],
@@ -4372,7 +4375,9 @@ function catalogActiveCount() {
 
 function renderCatalogChrome(total) {
   const isArabic = state.lang === "ar";
-  const title = state.catalogQuery ? (isArabic ? `نتائج البحث عن “${state.catalogQuery}”` : `Search results for “${state.catalogQuery}”`) : state.storefrontCategory === "perfume" ? (isArabic ? "العطور" : "Perfumes") : (isArabic ? "جميع المنتجات" : "All products");
+  const landingTitles = { original:["عطور أصلية 100% في مصر","Original Perfumes in Egypt"], men:["عطور رجالية أصلية","Original Perfumes for Men"], women:["عطور نسائية أصلية","Original Perfumes for Women"], unisex:["عطور أصلية للجنسين","Original Unisex Perfumes"], edp:["عطور EDP أصلية","Original EDP Perfumes"], edt:["عطور EDT أصلية","Original EDT Perfumes"] };
+  const landingTitle = landingTitles[state.seoCatalogLanding];
+  const title = state.catalogQuery ? (isArabic ? `نتائج البحث عن “${state.catalogQuery}”` : `Search results for “${state.catalogQuery}”`) : landingTitle ? landingTitle[isArabic ? 0 : 1] : state.storefrontCategory === "perfume" ? (isArabic ? "العطور" : "Perfumes") : (isArabic ? "جميع المنتجات" : "All products");
   $("#catalog-title").textContent = title;
   $("#catalog-result-count").textContent = `${total} ${isArabic ? (total === 1 ? "منتج" : "منتجًا") : total === 1 ? "product" : "products"}`;
   $("#catalog-breadcrumb").innerHTML = `<button data-action="catalog-home">${isArabic ? "الرئيسية" : "Home"}</button><span>‹</span><button data-action="catalog-clear-all">${isArabic ? "العطور" : "Perfumes"}</button>${state.catalogQuery ? `<span>‹</span><b>${escapeHTML(state.catalogQuery)}</b>` : ""}`;
@@ -4391,6 +4396,19 @@ function renderCatalogChrome(total) {
   $("#catalog-mobile-filter-count").textContent = `${isArabic ? "الفلاتر" : "Filters"}${count ? ` (${count})` : ""}`;
   $("#catalog-mobile-show-results").textContent = `${isArabic ? "عرض" : "Show"} ${total} ${isArabic ? "منتجًا" : "products"}`;
   $("#catalog-search-input").value = state.catalogQuery;
+  updateCatalogRouteMeta(total, title);
+}
+
+function updateCatalogRouteMeta(total, visibleTitle) {
+  const original = state.seoCatalogLanding === "original";
+  const searching = Boolean(state.catalogQuery) || location.pathname.startsWith("/search");
+  document.title = original ? (state.lang === "ar" ? "عطور أصلية 100% في مصر | ORIGO Scents - أوريجو سينتس" : "Original Perfumes in Egypt | ORIGO Scents") : searching ? `${visibleTitle} | ORIGO Scents` : `${visibleTitle} في مصر | ORIGO Scents`;
+  const description = original ? (state.lang === "ar" ? "تسوق عطورًا أصلية 100% للرجال والنساء وللجنسين من أشهر العلامات، مع الأسعار والتوفر والتوصيل داخل مصر لدى ORIGO Scents." : "Shop 100% original perfumes for men, women and everyone from leading brands, with prices, availability and delivery across Egypt at ORIGO Scents.") : (state.lang === "ar" ? `اكتشف ${visibleTitle} المتوفرة لدى ORIGO Scents مع الأسعار والتوفر داخل مصر.` : `Explore ${visibleTitle} available at ORIGO Scents with current prices and availability in Egypt.`);
+  let meta = document.querySelector('meta[name="description"]'); if (!meta) { meta=document.createElement("meta"); meta.name="description"; document.head.append(meta); } meta.content=description;
+  let canonical = document.querySelector('link[rel="canonical"]'); if (!canonical) { canonical=document.createElement("link"); canonical.rel="canonical"; document.head.append(canonical); } canonical.href=new URL(searching?"/perfumes":location.pathname,location.origin).href;
+  let robots = document.querySelector('meta[name="robots"]'); if (!robots) { robots=document.createElement("meta"); robots.name="robots"; document.head.append(robots); } robots.content=searching||(original&&!total)?"noindex,follow":"index,follow";
+  document.querySelector("#catalog-route-structured-data")?.remove();
+  if (original) { const schema=document.createElement("script"); schema.id="catalog-route-structured-data"; schema.type="application/ld+json"; schema.textContent=JSON.stringify({"@context":"https://schema.org","@type":"BreadcrumbList",itemListElement:[{"@type":"ListItem",position:1,name:state.lang==="ar"?"الرئيسية":"Home",item:new URL("/",location.origin).href},{"@type":"ListItem",position:2,name:state.lang==="ar"?"العطور":"Perfumes",item:new URL("/perfumes",location.origin).href},{"@type":"ListItem",position:3,name:visibleTitle,item:new URL("/perfumes/original",location.origin).href}]}); document.head.append(schema); }
 }
 
 function renderCatalog({ skeleton = true } = {}) {
@@ -4496,6 +4514,7 @@ function handleCatalogRoute({ replace = false } = {}) {
   }
   readCatalogURL();
   state.seoCatalogLanding = landingMatch?.[1]?.toLowerCase() || "";
+  if (state.seoCatalogLanding === "original") state.catalogQuickFilter = "all";
   if (["men","women","unisex","edp","edt"].includes(state.seoCatalogLanding)) state.catalogQuickFilter = ["edp","edt"].includes(state.seoCatalogLanding) ? state.seoCatalogLanding.toUpperCase() : state.seoCatalogLanding;
   if (["winter","autumn","spring","summer"].includes(state.seoCatalogLanding)) state.catalogFilters.season=[state.seoCatalogLanding];
   if (brandMatch) {
@@ -4971,12 +4990,18 @@ function updateNotesMeta(note = null) {
 }
 
 function restoreStoreMeta() {
-  document.title = state.lang === "ar" ? "ORIGO | أصل الحكاية العطرية" : "ORIGO | The origin of scent";
+  document.title = state.lang === "ar" ? "ORIGO Scents | أوريجو سينتس - عطور أصلية 100% في مصر" : "ORIGO Scents | 100% Original Perfumes in Egypt";
   const meta = document.querySelector('meta[name="description"]');
-  if (meta) meta.content = defaultMetaDescription;
-  document.querySelector('link[rel="canonical"]')?.remove();
+  if (meta) meta.content = state.lang === "ar" ? "اكتشف ORIGO Scents، أوريجو سينتس، متجر عطور أصلية 100% في مصر يوفر عطورًا رجالية ونسائية وللجنسين." : "Discover ORIGO Scents for 100% original men's, women's and unisex perfumes in Egypt.";
+  let canonical = document.querySelector('link[rel="canonical"]');
+  if (!canonical) { canonical = document.createElement("link"); canonical.rel = "canonical"; document.head.append(canonical); }
+  canonical.href = new URL("/", location.origin).href;
+  let robots = document.querySelector('meta[name="robots"]');
+  if (!robots) { robots = document.createElement("meta"); robots.name = "robots"; document.head.append(robots); }
+  robots.content = "index,follow";
   document.querySelector('meta[data-product-robots="true"]')?.remove();
   document.querySelector("#notes-structured-data")?.remove();
+  document.querySelector("#catalog-route-structured-data")?.remove();
 }
 
 function renderNotesLibrary() {
