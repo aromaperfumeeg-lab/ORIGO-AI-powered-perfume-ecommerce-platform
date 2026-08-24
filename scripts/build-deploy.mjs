@@ -58,7 +58,8 @@ const productionPackage = {
     start: "node server.mjs",
     "admin:reset-password": "node scripts/reset-admin-password.mjs --confirm-reset"
   },
-  dependencies: sourcePackage.dependencies
+  dependencies: sourcePackage.dependencies,
+  devDependencies: sourcePackage.devDependencies
 };
 await writeFile(join(stage, "package.json"), `${JSON.stringify(productionPackage, null, 2)}\n`);
 await writeFile(join(stage, "DEPLOYMENT.txt"), [
