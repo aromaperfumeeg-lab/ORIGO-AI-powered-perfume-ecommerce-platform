@@ -42,7 +42,7 @@ test("public alternatives UI never offers the reference fragrance for purchase",
   assert.match(script, /data-alt="add" data-product="\$\{esc\(item\.product\.id\)\}/);
   assert.doesNotMatch(script, /data-alt="add" data-product="\$\{esc\(item\.reference\.id\)\}/);
   assert.match(script, /data-alt="product"/);
-  assert.match(html, /id="home-alternative-search"/);
+  assert.match(html, /id="alternatives-page"/);
   assert.match(html, /href="\/alternatives"/);
   assert.match(server, /\/api\/admin\/alternatives/);
   assert.match(script, /\/alternatives\/compare/);
