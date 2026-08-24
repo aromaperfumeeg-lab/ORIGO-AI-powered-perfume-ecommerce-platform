@@ -4148,3 +4148,17 @@ html body :is(#storefront-main,.product-overlay) .product-card .exact-card-actio
   #home .home-brand-directory .brand-marquee-set>button{flex:0 0 calc((100vw - 60px)/4)!important;scroll-snap-align:none}
   #home .home-brand-directory .brand-marquee-set>button:nth-child(4n + 1){scroll-snap-align:start;scroll-snap-stop:always}
 }
+/* Mobile readability and touch-target baseline. */
+@media (max-width: 640px) {
+  :is(.product-card,.home-benefit-card,.home-brand-card,.footer-directory,.store-bottom-nav,.mobile-menu-panel) :is(button,a,label,small,b,span) {
+    font-size:max(11px,1em);
+  }
+  .product-card :is(.product-brand,.product-card-type,.product-rating small,.product-card-notes b) { font-size:11px!important; }
+  .product-card .exact-card-product-name :is(a,button) { font-size:14px!important;line-height:1.45; }
+  .store-bottom-nav b { font-size:11px!important; }
+  :is(.header-icon-button,.mobile-menu-toggle,.card-action-button,.card-favorite-button,.card-compare-button,.card-add-button,.pdp-actions button,.pdp-quantity button,.home-carousel-arrow,.drag-strip-hint,.catalog-mobile-toolbar button,.footer-directory a,.newsletter button) {
+    min-width:44px!important;
+    min-height:44px!important;
+  }
+  .home-hero-dots button,.card-image-dots button { min-width:44px!important;min-height:44px!important;background-clip:content-box!important;padding:18px!important; }
+}

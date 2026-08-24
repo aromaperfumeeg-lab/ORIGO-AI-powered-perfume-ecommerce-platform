@@ -1,0 +1,4 @@
+@import url("admin-media.css?v=1");
+@import url("notes-admin-fixes.css?v=2");
+
+/* Product editor runtime styles are loaded only when the editor is requested. */

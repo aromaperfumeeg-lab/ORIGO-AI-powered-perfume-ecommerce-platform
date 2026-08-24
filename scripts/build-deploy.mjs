@@ -12,7 +12,8 @@ const includeUploads = process.env.DEPLOY_INCLUDE_UPLOADS === "1";
 
 const rootFiles = [
   ".env.example", "index.html", "package.json", "pnpm-lock.yaml", "server.mjs", "db.mjs",
-  "portable-database.mjs", "external-integrations.mjs", "scripts/reset-admin-password.mjs"
+  "portable-database.mjs", "external-integrations.mjs", "storefront-media.mjs", "seo.mjs",
+  "commerce-service.mjs", "performance-service.mjs", "scripts/reset-admin-password.mjs"
 ];
 
 async function copyFile(relativePath) {
@@ -42,6 +43,8 @@ for (const entry of await readdir(root, { withFileTypes: true })) {
   if (extension === ".css" || extension === ".js") await copyFile(entry.name);
 }
 if (await stat(join(root, "assets")).catch(() => null)) await copyTree("assets");
+if (await stat(join(root, "lib")).catch(() => null)) await copyTree("lib");
+if (await stat(join(root, "chunks")).catch(() => null)) await copyTree("chunks");
 if (includeUploads && await stat(join(root, "uploads")).catch(() => null)) await copyTree("uploads");
 if (includeData && await stat(join(root, "data", "origo.db")).catch(() => null)) await copyFile("data/origo.db");
 

@@ -1539,20 +1539,25 @@ async function hydrateServer() {
         await pushCart().catch(() => {});
       }
       localStorage.setItem("origoCartUserId", String(state.user.id));
-      if (isStaffUser()) await loadAdminCatalog().catch(() => []);
+      if (isStaffUser()) await window.ORIGORuntime?.load("admin").then(() => loadAdminCatalog()).catch(() => []);
     } else if (cartOwner) {
       state.cart = [];
       localStorage.removeItem("origoCartUserId");
     }
     localStorage.setItem("origoCart", JSON.stringify(state.cart));
-    renderDynamicFilters();
-    renderHomeNavigation();
-    renderHomeHero();
-    renderBrandCarousel();
+    const directProductRoute = /^\/perfume\/[^/]+\/?$/i.test(location.pathname);
+    if (!directProductRoute) {
+      renderDynamicFilters();
+      renderHomeNavigation();
+      renderHomeHero();
+      renderBrandCarousel();
+    }
     renderSiteFooter();
     applyStoreIdentity();
-    renderProducts($(".chip.active")?.dataset.filter || "all");
-    renderHomepageCommerce();
+    if (!directProductRoute) {
+      renderProducts($(".chip.active")?.dataset.filter || "all");
+      renderHomepageCommerce();
+    }
     renderCart();
     renderWishlist();
     updateAccountIndicator();
@@ -1562,15 +1567,18 @@ async function hydrateServer() {
     handleCatalogRoute({ replace: true });
     handleProductRoute();
     await handleAdminOrderRoute();
-    scheduleStorefrontIdle(() => hydrateDeferredStorefront(Number(catalog.total || state.products.length)), 1800);
+    if (!directProductRoute) scheduleStorefrontIdle(() => hydrateDeferredStorefront(Number(catalog.total || state.products.length)), 1800);
   } catch {
     state.serverAvailable = false;
     updateAccountIndicator();
-    renderHomeNavigation();
-    renderHomeHero();
-    renderBrandCarousel();
-    renderProducts($(".chip.active")?.dataset.filter || "all");
-    renderHomepageCommerce();
+    const directProductRoute = /^\/perfume\/[^/]+\/?$/i.test(location.pathname);
+    if (!directProductRoute) {
+      renderHomeNavigation();
+      renderHomeHero();
+      renderBrandCarousel();
+      renderProducts($(".chip.active")?.dataset.filter || "all");
+      renderHomepageCommerce();
+    }
     renderSiteFooter();
     applyStoreIdentity();
     handleBenefitRoute({ replace: true });
@@ -1859,6 +1867,7 @@ function startAdminOrderPolling() {
 }
 
 async function handleAdminOrderRoute() {
+  if (/^\/admin(?:\/|$)/.test(location.pathname)) await window.ORIGORuntime?.load("admin");
   const match = location.pathname.match(/^\/admin\/orders(?:\/([^/]+))?\/?$/i);
   if (!match) return false;
   if (!isStaffUser()) {
@@ -2500,12 +2509,12 @@ function settingsMarkup() {
       <div class="review-grid"><label>${ar ? "زر الإجراء AR" : "Arabic CTA"}<input name="${prefix}.ctaLabelAr" value="${escapeHTML(benefit.ctaLabelAr)}"/></label><label>${ar ? "زر الإجراء EN" : "English CTA"}<input name="${prefix}.ctaLabelEn" value="${escapeHTML(benefit.ctaLabelEn)}"/></label><label>${ar ? "رابط الإجراء" : "CTA URL"}<input name="${prefix}.ctaUrl" value="${escapeHTML(benefit.ctaUrl)}" dir="ltr"/></label></div>
     </article>`;
   }).join("");
-  const categoryIconMarkup = [...ORIGO_HOME_CATEGORIES, ["offers", "العروض", "Offers", "٪"]].map(([key, arName, enName, fallback]) => `<label class="store-icon-upload"><span>${escapeHTML(ar ? arName : enName)}</span><span class="store-icon-preview" id="category-icon-preview-${key}">${settings.categoryIcons[key] ? `<img src="${escapeHTML(settings.categoryIcons[key])}" alt=""/>` : fallback}</span><input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" data-category-icon-upload="${key}"/></label>`).join("");
+  const categoryIconMarkup = [...ORIGO_HOME_CATEGORIES, ["offers", "العروض", "Offers", "٪"]].map(([key, arName, enName, fallback]) => `<label class="store-icon-upload"><span>${escapeHTML(ar ? arName : enName)}</span><span class="store-icon-preview" id="category-icon-preview-${key}">${settings.categoryIcons[key] ? `<img src="${escapeHTML(settings.categoryIcons[key])}" alt=""/>` : fallback}</span><input type="file" accept="image/png,image/jpeg,image/webp,image/avif" data-category-icon-upload="${key}"/></label>`).join("");
   return `<form class="admin-settings-form" id="admin-settings-form"><section><div class="review-section-head"><span>01</span><div><b>${ar ? "هوية المتجر والشعار المركزي" : "Store identity & central logo"}</b><small>${ar ? "يتغير الشعار في الهيدر والقائمة والفوتر من هنا." : "One source updates header, menu, and footer."}</small></div></div>
     <div class="review-grid"><label>${ar ? "اسم المتجر" : "Store name"}<input name="storeName" value="${escapeHTML(settings.storeName)}" /></label>
     <label>${ar ? "العملة" : "Currency"}<select name="currency">${selectOptions([["EGP","EGP"],["USD","USD"],["SAR","SAR"]], settings.currency)}</select></label>
     <label>${ar ? "الضريبة %" : "Tax rate %"}<input name="taxRate" type="number" min="0" max="100" value="${settings.taxRate}" /></label></div>
-    <div class="store-logo-settings">${logoFields.map(([key, arLabel, enLabel]) => `<label class="store-logo-field"><span>${ar ? arLabel : enLabel}</span><img id="store-logo-preview-${key}" src="${escapeHTML(settings.logos[key])}" alt=""/><input name="logo${key[0].toUpperCase()}${key.slice(1)}" value="${escapeHTML(settings.logos[key])}" dir="ltr"/><input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" data-logo-upload="${key}"/></label>`).join("")}</div></section>
+    <div class="store-logo-settings">${logoFields.map(([key, arLabel, enLabel]) => `<label class="store-logo-field"><span>${ar ? arLabel : enLabel}</span><img id="store-logo-preview-${key}" src="${escapeHTML(settings.logos[key])}" alt=""/><input name="logo${key[0].toUpperCase()}${key.slice(1)}" value="${escapeHTML(settings.logos[key])}" dir="ltr"/><input type="file" accept="image/png,image/jpeg,image/webp,image/avif" data-logo-upload="${key}"/></label>`).join("")}</div></section>
     <section class="appearance-settings"><input type="hidden" name="appearance.layoutTuningVersion" value="2"/><div class="review-section-head"><span>02</span><div><b>${ar ? "مظهر المتجر العام" : "Global store appearance"}</b><small>${ar ? "تحكم مركزي في الخطوط والصور والأيقونات والبطاقات مع معاينة فورية." : "Central control for typography, images, icons, and cards with live preview."}</small></div></div>
       <div class="appearance-balance-studio">
         <label class="appearance-master-switch"><input type="checkbox" name="appearance.balancedLayoutEnabled" ${appearance.balancedLayoutEnabled !== false ? "checked" : ""}/><span class="appearance-switch-track" aria-hidden="true"><i></i></span><span><b>${ar ? "التوازن الذكي للمساحات والنصوص" : "Smart spacing and text balance"}</b><small>${ar ? "يضبط المسافات والمربعات والصور تلقائيًا، ويضمن نصوصًا واضحة في المتجر ولوحة التحكم." : "Automatically balances spacing, cards, and images while keeping storefront and admin text readable."}</small></span></label>
@@ -2949,7 +2958,7 @@ function renderAdminDashboard(view = state.adminView) {
     notes: notesViewMarkup,
     accounting: accountingMarkup,
     reports: reportsMarkup,
-    settings: storeSettingsDashboardMarkup
+    settings: () => storeSettingsDashboardMarkup()
     ,"ui-states": systemStatesMarkup
   };
   const dashboardContent = $("#admin-dashboard-content");
@@ -4627,6 +4636,23 @@ function getProduct(id) {
   return state.products.find((product) => product.id === id);
 }
 
+const productDetailRequests = new Map();
+
+async function hydrateProductDetails(product) {
+  if (!product || product.detailLoaded !== false || !state.serverAvailable) return product;
+  if (!productDetailRequests.has(product.id)) {
+    productDetailRequests.set(product.id, api(`/api/products/${encodeURIComponent(product.id)}`)
+      .then((payload) => {
+        const detailed = serverProduct(payload.product);
+        const index = state.products.findIndex((item) => item.id === product.id);
+        if (index >= 0) state.products[index] = detailed;
+        return detailed;
+      })
+      .finally(() => productDetailRequests.delete(product.id)));
+  }
+  return productDetailRequests.get(product.id);
+}
+
 function addToCart(product, quantity = 1) {
   if (!product) return;
   const requested = Math.max(1, Math.min(10, Number(quantity) || 1));
@@ -6211,13 +6237,13 @@ function productCardMarkup(product, options = {}) {
         <button class="card-action-button card-favorite-button${saved ? " active" : ""}"${interactive ? ` data-action="toggle-wishlist"` : disabled} aria-label="${escapeHTML(favoriteLabel)}" aria-pressed="${saved}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/></svg></button>
         <button class="card-action-button card-compare-button${compared ? " active" : ""}"${interactive ? ` data-action="toggle-product-compare"` : disabled} aria-label="${escapeHTML(compareLabel)}" aria-pressed="${compared}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h12m0 0-3-3m3 3-3 3M17 17H5m0 0 3 3m-3-3 3-3"/></svg></button>
       </div>
-      <button type="button" class="product-card-media-link"${interactive ? ` data-action="open-product" data-id="${escapeHTML(product.id)}"` : disabled} aria-label="${escapeHTML(isArabic ? `عرض ${name}` : `View ${name}`)}">${hasProductImage
+      <a class="product-card-media-link" href="/perfume/${encodeURIComponent(product.slug || product.id)}"${interactive ? ` data-action="open-product" data-id="${escapeHTML(product.id)}"` : ` tabindex="-1" aria-disabled="true"`} aria-label="${escapeHTML(isArabic ? `عرض ${name}` : `View ${name}`)}">${hasProductImage
         ? `<img src="${escapeHTML(mainImage)}" alt="${escapeHTML(`${localizedProductBrand(product)} ${name}`)}" width="640" height="700" loading="lazy" decoding="async" draggable="false" />`
-        : `<span class="product-image-missing" role="img" aria-label="${escapeHTML(isArabic ? "صورة المنتج غير متاحة" : "Product image unavailable")}"><i aria-hidden="true">◇</i><small>${isArabic ? "الصورة غير متاحة" : "Image unavailable"}</small></span>`}</button>
+        : `<span class="product-image-missing" role="img" aria-label="${escapeHTML(isArabic ? "صورة المنتج غير متاحة" : "Product image unavailable")}"><i aria-hidden="true">◇</i><small>${isArabic ? "الصورة غير متاحة" : "Image unavailable"}</small></span>`}</a>
     </div>
     <div class="product-info">
       <div class="exact-card-heading"><div class="product-brand" dir="auto">${escapeHTML(localizedProductBrand(product))}</div>${ratingSummary.rating == null ? "" : `<span class="exact-card-rating"><b aria-hidden="true">★</b><span>${formatNumber(ratingSummary.rating, { maximumFractionDigits:2 })}</span>${ratingSummary.count == null ? "" : `<small>(${formatNumber(ratingSummary.count)})</small>`}</span>`}</div>
-      <h3 class="exact-card-product-name${productNameSizeClass}"><button type="button"${interactive ? ` data-action="open-product" data-id="${escapeHTML(product.id)}"` : disabled}>${escapeHTML(name || (isArabic ? "منتج جديد" : "New product"))}</button></h3>
+      <h3 class="exact-card-product-name${productNameSizeClass}"><a href="/perfume/${encodeURIComponent(product.slug || product.id)}"${interactive ? ` data-action="open-product" data-id="${escapeHTML(product.id)}"` : ` tabindex="-1" aria-disabled="true"`}>${escapeHTML(name || (isArabic ? "منتج جديد" : "New product"))}</a></h3>
       <div class="product-bottom">
         <div class="exact-card-prices"><b class="product-price">${formatPrice(price)}</b>${oldPrice > price ? `<del>${formatPrice(oldPrice)}</del>` : ""}</div>
         <div class="exact-card-actions">
@@ -6441,6 +6467,11 @@ function bindProductGallerySwipe() {
 
 function showProductDetails(product, shouldOpen = true) {
   if (!product) return;
+  if (product.detailLoaded === false) {
+    hydrateProductDetails(product).then((detailed) => {
+      if (detailed && state.activeProductId === product.id) showProductDetails(detailed, false);
+    }).catch(() => {});
+  }
   const changedProduct = state.activeProductId !== product.id;
   state.activeProductId = product.id;
   if (changedProduct) {
@@ -6501,7 +6532,7 @@ function showProductDetails(product, shouldOpen = true) {
           <div class="pdp-price-row"><div class="pdp-price"><b>${formatPrice(product.price)}</b>${product.oldPrice ? `<del>${formatPrice(product.oldPrice)}</del>` : ""}${discount ? `<em>-${discount}%</em>` : ""}<small>${taxRate ? (isArabic ? `شامل ضريبة القيمة المضافة ${taxRate}%` : `VAT ${taxRate}% included`) : ""}</small></div></div>
           ${sizes[0] ? `<p class="pdp-fixed-size">${isArabic ? "الحجم" : "Size"}: <b><bdi dir="ltr">${escapeHTML(formatProductSize(sizes[0]))}</bdi></b></p>` : ""}
           ${available ? `<div class="pdp-stock available"><i></i><span>${isArabic ? "متوفر للطلب" : "Available to order"}</span></div>
-          <div class="pdp-purchase-controls"><div class="pdp-buy-row"><div class="pdp-quantity"><span>${isArabic ? "الكمية" : "Quantity"}</span><div><button data-action="detail-quantity" data-change="-1" aria-label="${isArabic ? "تقليل الكمية" : "Decrease quantity"}">−</button><b>${state.activeProductQuantity}</b><button data-action="detail-quantity" data-change="1" aria-label="${isArabic ? "زيادة الكمية" : "Increase quantity"}">＋</button></div></div><button class="pdp-price-add" data-action="product-detail-add" data-id="${escapeHTML(product.id)}"><span aria-hidden="true">🛒</span><b>${translations[state.lang].addToBag}</b></button></div>
+          <div class="pdp-purchase-controls"><div class="pdp-buy-row"><div class="pdp-quantity"><span>${isArabic ? "الكمية" : "Quantity"}</span><div><button data-action="detail-quantity" data-change="-1" aria-label="${isArabic ? "تقليل الكمية" : "Decrease quantity"}">−</button><b>${state.activeProductQuantity}</b><button data-action="detail-quantity" data-change="1" aria-label="${isArabic ? "زيادة الكمية" : "Increase quantity"}">＋</button></div></div><button class="pdp-price-add" data-action="product-detail-add" data-id="${escapeHTML(product.id)}"><span aria-hidden="true">${luxuryIcon("bag")}</span><b>${translations[state.lang].addToBag}</b></button></div>
           <div class="pdp-actions pdp-secondary-actions"><button class="pdp-favorite ${isSaved ? "active" : ""}" data-action="quick-view-wishlist" data-id="${escapeHTML(product.id)}"><span>${isSaved ? "♥" : "♡"}</span>${isSaved ? (isArabic ? "محفوظ في المفضلة" : "Saved") : (isArabic ? "أضف إلى المفضلة" : "Add to wishlist")}</button><button class="pdp-compare ${state.comparison.includes(product.id) ? "active" : ""}" data-action="toggle-product-compare" data-id="${escapeHTML(product.id)}" aria-pressed="${state.comparison.includes(product.id)}"><span>⚖</span>${isArabic ? "مقارنة" : "Compare"}</button></div></div>` : `${restockMarkup}
           <div class="pdp-actions pdp-unavailable-actions"><button class="pdp-favorite ${isSaved ? "active" : ""}" data-action="quick-view-wishlist" data-id="${escapeHTML(product.id)}"><span>${isSaved ? "♥" : "♡"}</span>${isArabic ? "المفضلة" : "Wishlist"}</button><button class="pdp-compare ${state.comparison.includes(product.id) ? "active" : ""}" data-action="toggle-product-compare" data-id="${escapeHTML(product.id)}" aria-pressed="${state.comparison.includes(product.id)}"><span>⚖</span>${isArabic ? "مقارنة" : "Compare"}</button></div>`}
           <div class="pdp-benefits"><span><i>✓</i>${isArabic ? "منتج أصلي 100%" : "100% authentic"}</span><span><i>◉</i>${isArabic ? "الدفع عند الاستلام" : "Cash on delivery"}</span></div>
@@ -8011,27 +8042,33 @@ async function optimizeGalleryImage(file) {
     paint();
     result = canvas.toDataURL(outputType, quality);
   }
-  while (result.length > 620_000 && quality > .48) {
+  const encodedImageBytes = (value) => {
+    const base64 = String(value || "").split(",")[1] || "";
+    return Math.max(0, Math.floor(base64.length * 3 / 4) - (base64.endsWith("==") ? 2 : base64.endsWith("=") ? 1 : 0));
+  };
+  while (encodedImageBytes(result) > 100 * 1024 && quality > .35) {
     quality -= .07;
     result = canvas.toDataURL(outputType, quality);
   }
-  while (result.length > 620_000 && canvas.width > 720) {
-    canvas.width = Math.max(720, Math.round(canvas.width * .84));
-    canvas.height = Math.max(360, Math.round(canvas.height * .84));
+  while (encodedImageBytes(result) > 100 * 1024 && canvas.width > 480) {
+    const nextWidth = Math.max(480, Math.round(canvas.width * .84));
+    const nextHeight = Math.max(270, Math.round(canvas.height * (nextWidth / canvas.width)));
+    canvas.width = nextWidth;
+    canvas.height = nextHeight;
     paint();
-    quality = .68;
+    quality = .62;
     result = canvas.toDataURL(outputType, quality);
   }
+  if (encodedImageBytes(result) > 100 * 1024) throw new Error(adminCopy("تعذر ضغط الصورة إلى أقل من 100 KB دون إتلافها. اختر صورة أبسط.", "The image could not be reduced below 100 KB without damage. Choose a simpler image."));
   if (result === "data:,") throw new Error(adminCopy("فشل تحويل الصورة. جرّب صورة أصغر.", "Image conversion failed. Try a smaller image."));
   return result;
 }
 
 async function uploadStorefrontImage(file, folder = "hero") {
   const dataUrl = await optimizeGalleryImage(file);
-  // Store optimized managed artwork with the workspace. Filesystem upload URLs
-  // can disappear after a restart or deployment; this payload persists across
-  // reloads and is available to every device through storefront settings.
-  return dataUrl;
+  if (!state.serverAvailable) throw new Error(adminCopy("يلزم الاتصال بالخادم لحفظ الصورة بصورة دائمة.", "A server connection is required to store this image permanently."));
+  const stored = await api("/api/admin/uploads/storefront-image", { method:"POST", body:JSON.stringify({ folder, dataUrl }) });
+  return stored.url;
 }
 
 async function optimizeProductOptionArtwork(file) {
@@ -9673,6 +9710,8 @@ document.addEventListener("click", async (event) => {
   if (action === "card-image") setCardImage(actionElement.dataset.id, Number(actionElement.dataset.change || 0));
   if (action === "card-image-index") setCardImage(actionElement.dataset.id, Number(actionElement.dataset.index || 0), true);
   if (action === "open-product") {
+    if (actionElement.matches("a[href]") && (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0)) return;
+    event.preventDefault();
     const dialog = actionElement.closest("dialog");
     if (dialog?.open && typeof dialog.close === "function") dialog.close();
     showProductDetails(getProduct(actionElement.dataset.id));
@@ -11160,58 +11199,56 @@ document.addEventListener("change", async (event) => {
   if (event.target.matches("[data-logo-upload]")) {
     const file = event.target.files?.[0];
     if (!file) return;
-    if (file.size > 350_000) {
-      event.target.value = "";
-      showToast(adminCopy("ملف الشعار أكبر من 350 KB", "Logo file exceeds 350 KB"));
-      return;
-    }
     const key = event.target.dataset.logoUpload;
-    const reader = new FileReader();
-    reader.addEventListener("load", () => {
-      state.pendingStoreLogos[key] = String(reader.result || "");
+    try {
+      state.pendingStoreLogos[key] = await uploadStorefrontImage(file, "settings");
       const preview = $(`#store-logo-preview-${key}`);
       if (preview) preview.src = state.pendingStoreLogos[key];
-    }, { once: true });
-    reader.readAsDataURL(file);
+    } catch (error) {
+      event.target.value = "";
+      showToast(error.message, "error");
+    }
     return;
   }
   if (event.target.matches("[data-benefit-icon-upload]")) {
     const file = event.target.files?.[0];
     if (!file) return;
-    if (!/^image\/(png|jpeg|webp|svg\+xml)$/.test(file.type) || file.size > 350_000) {
+    if (!/^image\/(png|jpeg|webp|avif)$/.test(file.type) || file.size > 15 * 1024 * 1024) {
       event.target.value = "";
-      showToast(adminCopy("اختر صورة صالحة لا تتجاوز 350 KB", "Choose a valid image up to 350 KB"));
+      showToast(adminCopy("اختر صورة صالحة لا تتجاوز 15 MB", "Choose a valid image up to 15 MB"));
       return;
     }
     const id = event.target.dataset.benefitIconUpload;
-    const reader = new FileReader();
-    reader.addEventListener("load", () => {
-      state.pendingBenefitIcons[id] = String(reader.result || "");
+    try {
+      state.pendingBenefitIcons[id] = await uploadStorefrontImage(file, "settings");
       const preview = $(`#benefit-icon-preview-${CSS.escape(id)}`);
       if (preview) preview.src = state.pendingBenefitIcons[id];
-    }, { once: true });
-    reader.readAsDataURL(file);
+    } catch (error) {
+      event.target.value = "";
+      showToast(error.message, "error");
+    }
     return;
   }
   if (event.target.matches("[data-category-icon-upload], [data-home-benefit-icon-upload]")) {
     const file = event.target.files?.[0];
     if (!file) return;
-    if (!/^image\/(png|jpeg|webp|svg\+xml)$/.test(file.type) || file.size > 350_000) {
+    if (!/^image\/(png|jpeg|webp|avif)$/.test(file.type) || file.size > 15 * 1024 * 1024) {
       event.target.value = "";
-      showToast(adminCopy("اختر صورة صالحة لا تتجاوز 350 KB", "Choose a valid image up to 350 KB"));
+      showToast(adminCopy("اختر صورة صالحة لا تتجاوز 15 MB", "Choose a valid image up to 15 MB"));
       return;
     }
     const isCategory = event.target.matches("[data-category-icon-upload]");
     const key = isCategory ? event.target.dataset.categoryIconUpload : event.target.dataset.homeBenefitIconUpload;
     const pending = isCategory ? state.pendingCategoryIcons : state.pendingHomeBenefitIcons;
     const previewId = `${isCategory ? "category" : "home-benefit"}-icon-preview-${key}`;
-    const reader = new FileReader();
-    reader.addEventListener("load", () => {
-      pending[key] = String(reader.result || "");
+    try {
+      pending[key] = await uploadStorefrontImage(file, "settings");
       const preview = $(`#${CSS.escape(previewId)}`);
       if (preview) preview.innerHTML = `<img src="${escapeHTML(pending[key])}" alt=""/>`;
-    }, { once: true });
-    reader.readAsDataURL(file);
+    } catch (error) {
+      event.target.value = "";
+      showToast(error.message, "error");
+    }
     return;
   }
   if (event.target.matches("[data-catalog-filter]")) {
@@ -11673,6 +11710,7 @@ window.ORIGOStore = {
   escapeHTML
 };
 checkoutFormMarkup = $("#checkout-overlay .checkout-grid").innerHTML;
+const directProductRoute = /^\/perfume\/[^/]+\/?$/i.test(location.pathname);
 setupTheme();
 saveNavigationSnapshot();
 updateLanguage();
@@ -11684,12 +11722,14 @@ handleBenefitsRoute({ replace: true });
 handleNotesRoute({ replace: true });
 handleBrandsRoute({ replace: true });
 handleCatalogRoute({ replace: true });
-renderHomeNavigation();
-renderHomeHero();
-renderBrandCarousel();
-renderProducts($(".chip.active")?.dataset.filter || "all");
+if (!directProductRoute) {
+  renderHomeNavigation();
+  renderHomeHero();
+  renderBrandCarousel();
+  renderProducts($(".chip.active")?.dataset.filter || "all");
+}
 initializeMobileProductColumns();
-renderHomepageCommerce();
+if (!directProductRoute) renderHomepageCommerce();
 normalizeRenderedLatinDigits(document);
 latinDigitObserver.observe(document.documentElement, { childList:true, subtree:true });
 observeReveals();

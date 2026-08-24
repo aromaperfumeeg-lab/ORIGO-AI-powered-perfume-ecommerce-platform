@@ -97,7 +97,7 @@ test("production preserves the existing database, skips demo seed, and reset is 
 test("health readiness and login survive restart without replacing the admin password", async () => {
   const directory = await mkdtemp(join(tmpdir(), "origo-production-http-"));
   const database = join(directory, "server.db");
-  const port = 4187;
+  const port = 4188;
   let server;
   try {
     server = await startTestServer({ database, password: "InitialHttpPassword123!", port });

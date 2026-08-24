@@ -1,6 +1,9 @@
-const CACHE_VERSION = "origo-static-v87";
+const CACHE_VERSION = "origo-static-v88";
 const APP_SHELL = [
-  "/styles.css?v=54", "/home.css?v=83", "/shell.css?v=17",
+  "/chunks/styles.min.css?v=1", "/chunks/home.min.css?v=1", "/chunks/shell.min.css?v=1",
+  "/chunks/home-gender-slider.min.css?v=1", "/chunks/origo-identity.min.css?v=1",
+  "/chunks/no-effects.min.css?v=1", "/chunks/appearance.min.css?v=1",
+  "/runtime-loader.js?v=1", "/chunks/storefront-core.min.js?v=1",
   "/appearance.css?v=86", "/origo-identity.css?v=20", "/no-effects.css?v=2",
   "/catalog-providers.js?v=6", "/app.min.js?v=202", "/deferred-modules.js?v=9",
   "/assets/origo-logo.svg", "/assets/product-image-placeholder.svg"
