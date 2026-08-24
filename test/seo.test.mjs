@@ -1,8 +1,10 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import {readFile} from "node:fs/promises";
 import {buildBreadcrumbStructuredData,buildCanonicalUrl,buildCategorySeo,buildHomepageStructuredData,buildImageAlt,buildProductSeo,buildProductStructuredData,buildSitemap,injectSeoIntoHtml,robotsTxt,seoForRoute} from "../seo.mjs";
 
 const product={id:"p1",slug:"asad-bourbon",status:"published",category:"perfume",nameAr:"أسد بوربون",nameEn:"Asad Bourbon",brandAr:"لطافة",brandEn:"Lattafa",brand:"Lattafa",size:"100 ml",concentration:"EDP",price:1500,sku:"ASAD-100",barcode:"1234567890123",inventory:{quantity:2},images:[{url:"/asad.webp"}],seasonScores:{winter:100,summer:25},usageTimeScores:{day:60,night:100},gender:"men",updatedAt:"2026-08-21T00:00:00Z",reviewSummary:{average:4.5,count:3}};
+const afnanProduct={...product,id:"p2",slug:"afnan-9pm",nameAr:"أفنان 9 بي إم",nameEn:"Afnan 9 PM",brandAr:"أفنان",brandEn:"Afnan",brand:"Afnan",sku:"AFNAN-9PM",barcode:"1234567890124"};
 
 test("product SEO is unique, deterministic and manual values win",()=>{const fallback=buildProductSeo(product);assert.match(fallback.title,/أسد بوربون/);assert.match(fallback.title,/لطافة/);assert.equal(fallback.canonical,"https://origoscents.com/perfume/asad-bourbon");const manual=buildProductSeo({...product,seo:{title:"Manual title",description:"Manual description"}});assert.equal(manual.title,"Manual title");assert.equal(manual.description,"Manual description")});
 test("canonical URLs discard queries and duplicate metadata is removed",()=>{assert.equal(buildCanonicalUrl("/perfumes/winter?sort=price"),"https://origoscents.com/perfumes/winter");const html=injectSeoIntoHtml('<html><head><title>Old</title><meta name="description" content="old"><link rel="canonical" href="old"><meta property="og:title" content="old"></head></html>',seoForRoute("/perfume/asad-bourbon",[product]));assert.equal((html.match(/rel="canonical"/g)||[]).length,1);assert.match(html,/name="robots" content="index,follow"/)});
@@ -46,4 +48,17 @@ test("private commerce routes remain noindex and product schemas stay truthful",
   const data=buildProductStructuredData({...product,barcode:"not-a-gtin",reviewSummary:{average:4.5,count:0}});
   assert.equal(data.gtin,undefined);assert.equal(data.aggregateRating,undefined);assert.match(data.name,/أسد بوربون/);assert.match(data.name,/Asad Bourbon/);
   const productSeo=seoForRoute("/perfume/asad-bourbon",[product]);assert.ok(productSeo.jsonLd.some(item=>item["@type"]==="Product"));assert.ok(productSeo.jsonLd.some(item=>item["@type"]==="BreadcrumbList"));
+});
+
+test("brand SEO is dynamic across multiple published brands",async()=>{
+  const products=[product,afnanProduct];
+  const lattafa=seoForRoute("/brands/lattafa",products),afnan=seoForRoute("/brands/afnan",products),missing=seoForRoute("/brands/missing-brand",products);
+  assert.equal(lattafa.canonical,"https://origoscents.com/brands/lattafa");
+  assert.equal(afnan.canonical,"https://origoscents.com/brands/afnan");
+  assert.notEqual(lattafa.title,afnan.title);assert.match(lattafa.title,/لطافة/);assert.match(afnan.title,/أفنان/);
+  assert.equal(lattafa.robots,"index,follow");assert.equal(afnan.robots,"index,follow");assert.equal(missing.robots,"noindex,follow");
+  assert.ok(lattafa.jsonLd.some(item=>item["@type"]==="BreadcrumbList"));assert.ok(afnan.jsonLd.some(item=>item["@type"]==="ItemList"));
+  const sitemap=buildSitemap(products);assert.match(sitemap,/\/brands\/lattafa/);assert.match(sitemap,/\/brands\/afnan/);assert.doesNotMatch(sitemap,/missing-brand/);
+  const source=await readFile(new URL("../seo.mjs",import.meta.url),"utf8"),generalBrandCode=source.slice(source.indexOf("export function buildBrandSeo"),source.indexOf("export function buildCategorySeo"));
+  assert.doesNotMatch(generalBrandCode,/Lattafa/i);
 });

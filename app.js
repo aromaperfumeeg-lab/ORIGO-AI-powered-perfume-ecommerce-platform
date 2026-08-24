@@ -4377,10 +4377,11 @@ function renderCatalogChrome(total) {
   const isArabic = state.lang === "ar";
   const landingTitles = { original:["عطور أصلية 100% في مصر","Original Perfumes in Egypt"], men:["عطور رجالية أصلية","Original Perfumes for Men"], women:["عطور نسائية أصلية","Original Perfumes for Women"], unisex:["عطور أصلية للجنسين","Original Unisex Perfumes"], edp:["عطور EDP أصلية","Original EDP Perfumes"], edt:["عطور EDT أصلية","Original EDT Perfumes"] };
   const landingTitle = landingTitles[state.seoCatalogLanding];
-  const title = state.catalogQuery ? (isArabic ? `نتائج البحث عن “${state.catalogQuery}”` : `Search results for “${state.catalogQuery}”`) : landingTitle ? landingTitle[isArabic ? 0 : 1] : state.storefrontCategory === "perfume" ? (isArabic ? "العطور" : "Perfumes") : (isArabic ? "جميع المنتجات" : "All products");
+  const brandTitle = state.seoCatalogBrand ? (isArabic ? `عطور ${state.seoCatalogBrand.ar || state.seoCatalogBrand.en} الأصلية` : `${state.seoCatalogBrand.en || state.seoCatalogBrand.ar} Original Perfumes`) : "";
+  const title = state.catalogQuery ? (isArabic ? `نتائج البحث عن “${state.catalogQuery}”` : `Search results for “${state.catalogQuery}”`) : brandTitle || (landingTitle ? landingTitle[isArabic ? 0 : 1] : state.storefrontCategory === "perfume" ? (isArabic ? "العطور" : "Perfumes") : (isArabic ? "جميع المنتجات" : "All products"));
   $("#catalog-title").textContent = title;
   $("#catalog-result-count").textContent = `${total} ${isArabic ? (total === 1 ? "منتج" : "منتجًا") : total === 1 ? "product" : "products"}`;
-  $("#catalog-breadcrumb").innerHTML = `<button data-action="catalog-home">${isArabic ? "الرئيسية" : "Home"}</button><span>‹</span><button data-action="catalog-clear-all">${isArabic ? "العطور" : "Perfumes"}</button>${state.catalogQuery ? `<span>‹</span><b>${escapeHTML(state.catalogQuery)}</b>` : ""}`;
+  $("#catalog-breadcrumb").innerHTML = `<button data-action="catalog-home">${isArabic ? "الرئيسية" : "Home"}</button><span>‹</span>${state.seoCatalogBrand ? `<a href="/brands" data-action="open-brands-page">${isArabic ? "العلامات التجارية" : "Brands"}</a><span>‹</span><b>${escapeHTML(state.seoCatalogBrand[isArabic ? "ar" : "en"] || state.seoCatalogBrand.en || state.seoCatalogBrand.ar)}</b>` : `<button data-action="catalog-clear-all">${isArabic ? "العطور" : "Perfumes"}</button>${state.catalogQuery ? `<span>‹</span><b>${escapeHTML(state.catalogQuery)}</b>` : ""}`}`;
   $("#catalog-quick-filters").innerHTML = catalogQuickFilters.map(([value, ar, en, icon]) => `<button data-action="catalog-quick-filter" data-value="${value}" class="${state.catalogQuickFilter === value ? "active" : ""}" role="tab" aria-selected="${state.catalogQuickFilter === value}">${isArabic ? ar : en}${icon ? `<i>${icon}</i>` : ""}</button>`).join("");
   const filterLabels = [];
   Object.entries(state.catalogFilters).forEach(([key, value]) => {
@@ -4401,14 +4402,16 @@ function renderCatalogChrome(total) {
 
 function updateCatalogRouteMeta(total, visibleTitle) {
   const original = state.seoCatalogLanding === "original";
+  const brand = state.seoCatalogBrand;
   const searching = Boolean(state.catalogQuery) || location.pathname.startsWith("/search");
-  document.title = original ? (state.lang === "ar" ? "عطور أصلية 100% في مصر | ORIGO Scents - أوريجو سينتس" : "Original Perfumes in Egypt | ORIGO Scents") : searching ? `${visibleTitle} | ORIGO Scents` : `${visibleTitle} في مصر | ORIGO Scents`;
-  const description = original ? (state.lang === "ar" ? "تسوق عطورًا أصلية 100% للرجال والنساء وللجنسين من أشهر العلامات، مع الأسعار والتوفر والتوصيل داخل مصر لدى ORIGO Scents." : "Shop 100% original perfumes for men, women and everyone from leading brands, with prices, availability and delivery across Egypt at ORIGO Scents.") : (state.lang === "ar" ? `اكتشف ${visibleTitle} المتوفرة لدى ORIGO Scents مع الأسعار والتوفر داخل مصر.` : `Explore ${visibleTitle} available at ORIGO Scents with current prices and availability in Egypt.`);
+  const bilingualBrandTitle = brand && brand.ar && brand.en && brand.ar !== brand.en ? `عطور ${brand.ar} الأصلية | ${brand.en} Perfumes Egypt | ORIGO Scents` : "";
+  document.title = brand ? (state.lang === "ar" ? bilingualBrandTitle || `عطور ${brand.ar || brand.en} الأصلية في مصر | ORIGO Scents` : `${brand.en || brand.ar} Original Perfumes Egypt | ORIGO Scents`) : original ? (state.lang === "ar" ? "عطور أصلية 100% في مصر | ORIGO Scents - أوريجو سينتس" : "Original Perfumes in Egypt | ORIGO Scents") : searching ? `${visibleTitle} | ORIGO Scents` : `${visibleTitle} في مصر | ORIGO Scents`;
+  const description = brand ? (state.lang === "ar" ? `تسوق عطور ${brand.ar || brand.en} الأصلية في مصر من ORIGO Scents. اكتشف المنتجات المتوفرة والأسعار والنوتات والثبات والفوحان والتوصيل داخل مصر.` : `Shop original ${brand.en || brand.ar} perfumes at ORIGO Scents with available products, prices, notes, longevity, projection and delivery across Egypt.`) : original ? (state.lang === "ar" ? "تسوق عطورًا أصلية 100% للرجال والنساء وللجنسين من أشهر العلامات، مع الأسعار والتوفر والتوصيل داخل مصر لدى ORIGO Scents." : "Shop 100% original perfumes for men, women and everyone from leading brands, with prices, availability and delivery across Egypt at ORIGO Scents.") : (state.lang === "ar" ? `اكتشف ${visibleTitle} المتوفرة لدى ORIGO Scents مع الأسعار والتوفر داخل مصر.` : `Explore ${visibleTitle} available at ORIGO Scents with current prices and availability in Egypt.`);
   let meta = document.querySelector('meta[name="description"]'); if (!meta) { meta=document.createElement("meta"); meta.name="description"; document.head.append(meta); } meta.content=description;
   let canonical = document.querySelector('link[rel="canonical"]'); if (!canonical) { canonical=document.createElement("link"); canonical.rel="canonical"; document.head.append(canonical); } canonical.href=new URL(searching?"/perfumes":location.pathname,location.origin).href;
   let robots = document.querySelector('meta[name="robots"]'); if (!robots) { robots=document.createElement("meta"); robots.name="robots"; document.head.append(robots); } robots.content=searching||(original&&!total)?"noindex,follow":"index,follow";
   document.querySelector("#catalog-route-structured-data")?.remove();
-  if (original) { const schema=document.createElement("script"); schema.id="catalog-route-structured-data"; schema.type="application/ld+json"; schema.textContent=JSON.stringify({"@context":"https://schema.org","@type":"BreadcrumbList",itemListElement:[{"@type":"ListItem",position:1,name:state.lang==="ar"?"الرئيسية":"Home",item:new URL("/",location.origin).href},{"@type":"ListItem",position:2,name:state.lang==="ar"?"العطور":"Perfumes",item:new URL("/perfumes",location.origin).href},{"@type":"ListItem",position:3,name:visibleTitle,item:new URL("/perfumes/original",location.origin).href}]}); document.head.append(schema); }
+  if (original || brand) { const schema=document.createElement("script"); schema.id="catalog-route-structured-data"; schema.type="application/ld+json"; schema.textContent=JSON.stringify({"@context":"https://schema.org","@type":"BreadcrumbList",itemListElement:brand?[{"@type":"ListItem",position:1,name:state.lang==="ar"?"الرئيسية":"Home",item:new URL("/",location.origin).href},{"@type":"ListItem",position:2,name:state.lang==="ar"?"العلامات التجارية":"Brands",item:new URL("/brands",location.origin).href},{"@type":"ListItem",position:3,name:brand[state.lang]||brand.en||brand.ar,item:location.href}]:[{"@type":"ListItem",position:1,name:state.lang==="ar"?"الرئيسية":"Home",item:new URL("/",location.origin).href},{"@type":"ListItem",position:2,name:state.lang==="ar"?"العطور":"Perfumes",item:new URL("/perfumes",location.origin).href},{"@type":"ListItem",position:3,name:visibleTitle,item:new URL("/perfumes/original",location.origin).href}]}); document.head.append(schema); }
 }
 
 function renderCatalog({ skeleton = true } = {}) {
@@ -4519,8 +4522,12 @@ function handleCatalogRoute({ replace = false } = {}) {
   if (["winter","autumn","spring","summer"].includes(state.seoCatalogLanding)) state.catalogFilters.season=[state.seoCatalogLanding];
   if (brandMatch) {
     const wanted=brandMatch[1];
-    const brand=state.products.map((product)=>product.brand).find((value)=>normalizeOptionSearch(value).replaceAll(" ","-")===wanted);
+    const brandProduct=state.products.find((product)=>[product.brandEn,product.brand,product.brandAr].filter(Boolean).some((value)=>normalizeOptionSearch(value).replaceAll(" ","-")===wanted));
+    const brand=brandProduct?.brand || brandProduct?.brandEn || brandProduct?.brandAr;
     state.catalogFilters.brand=brand?[brand]:[];
+    state.seoCatalogBrand={ ar:brandProduct?.brandAr || "", en:brandProduct?.brandEn || brandProduct?.brand || "" };
+  } else {
+    state.seoCatalogBrand=null;
   }
   document.body.classList.remove("notes-route", "benefit-route", "brands-route");
   document.body.classList.add("catalog-route");
@@ -4538,12 +4545,12 @@ function renderBrandsPage() {
   const root = $("#brands-page-content");
   if (!root) return;
   const optionMap = new Map(productOptionItems("brand").map((item) => [ORIGOCatalog.normalize(item.value || item.nameEn || item.nameAr), item]));
-  const names = [...new Set([...ORIGO_PERFUME_BRANDS, ...state.products.map((product) => product.brand).filter(Boolean)])];
+  const names = [...new Set(state.products.filter((product) => product.status === "published" && product.deleted !== true && (product.category || "perfume") === "perfume").map((product) => product.brandEn || product.brand || product.brandAr).filter(Boolean))];
   root.innerHTML = `<nav class="brands-page-breadcrumb"><button data-action="catalog-home">${state.lang === "ar" ? "الرئيسية" : "Home"}</button><span>‹</span><b>${state.lang === "ar" ? "العلامات التجارية" : "Brands"}</b></nav>
     <header><span>${state.lang === "ar" ? "دليل ORIGO" : "ORIGO directory"}</span><h1 id="brands-page-title">${state.lang === "ar" ? "العلامات التجارية" : "Fragrance brands"}</h1><p>${state.lang === "ar" ? "اختر العلامة لعرض جميع منتجاتها." : "Choose a brand to see all its products."}</p></header>
     <div class="brands-page-grid">${names.map((brand) => {
       const option = optionMap.get(ORIGOCatalog.normalize(brand));
-      const fallback = state.products.find((product) => ORIGOCatalog.normalize(product.brand) === ORIGOCatalog.normalize(brand));
+      const fallback = state.products.find((product) => [product.brandEn,product.brand,product.brandAr].filter(Boolean).some((name) => ORIGOCatalog.normalize(name) === ORIGOCatalog.normalize(brand)));
       const image = option?.image || option?.logo || fallback?.brandLogo || origoBrandLogo(brand);
        const label = localizedBrandLabel(brand);
        return `<a href="/brands/${encodeURIComponent(normalizeOptionSearch(brand).replaceAll(" ","-"))}" data-action="brand-search" data-query="${escapeHTML(brand)}">${image ? `<img src="${escapeHTML(image)}" alt="${escapeHTML(label)}" loading="lazy"/>` : `<span>${escapeHTML(brand.split(/\s+/).map((part) => part[0]).join("").slice(0,3).toUpperCase())}</span>`}<b>${escapeHTML(label)}</b></a>`;
@@ -4866,7 +4873,7 @@ const MOBILE_PRODUCT_COLUMNS_KEY = "origoMobileProductColumns";
 function mobileProductViewControlMarkup() {
   const square = `<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="5" width="14" height="14" rx="1.5"/></svg>`;
   const squares = `<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="8" height="14" rx="1.5"/><rect x="13" y="5" width="8" height="14" rx="1.5"/></svg>`;
-  return `<div class="mobile-product-view-control" role="group" aria-label="${state.lang === "ar" ? "عدد المنتجات في الصف" : "Products per row"}"><button type="button" data-action="mobile-product-columns" data-columns="1" aria-pressed="false">${square}<span>1</span></button><button type="button" data-action="mobile-product-columns" data-columns="2" aria-pressed="true">${squares}<span>2</span></button></div>`;
+  return `<div class="mobile-product-view-control" role="group" aria-label="${state.lang === "ar" ? "عدد المنتجات في الصف" : "Products per row"}"><button type="button" data-action="mobile-product-columns" data-columns="1" aria-pressed="false">${square}</button><button type="button" data-action="mobile-product-columns" data-columns="2" aria-pressed="true">${squares}</button></div>`;
 }
 function setMobileProductColumns(value, persistValue = true) {
   const columns = String(value) === "1" ? "one" : "two";
@@ -6482,7 +6489,7 @@ function showProductDetails(product, shouldOpen = true) {
 
   $("#product-dialog-content").innerHTML = `
     <main class="pdp-page" aria-labelledby="product-dialog-title">
-      <nav class="pdp-breadcrumb" aria-label="${isArabic ? "مسار الصفحة" : "Breadcrumb"}"><a href="/" data-action="catalog-home">${isArabic ? "الرئيسية" : "Home"}</a><i>‹</i><a href="/perfumes" data-action="product-breadcrumb-catalog">${isArabic ? "العطور" : "Perfumes"}</a><i>‹</i><a href="/perfumes?brand=${encodeURIComponent(product.brand)}" data-action="product-breadcrumb-catalog" data-brand="${escapeHTML(product.brand)}">${escapeHTML(product.brand)}</a><i>‹</i><b>${escapeHTML(name)}</b></nav>
+      <nav class="pdp-breadcrumb" aria-label="${isArabic ? "مسار الصفحة" : "Breadcrumb"}"><a href="/" data-action="catalog-home">${isArabic ? "الرئيسية" : "Home"}</a><i>‹</i><a href="/perfumes" data-action="product-breadcrumb-catalog">${isArabic ? "العطور" : "Perfumes"}</a><i>‹</i><a href="/brands/${encodeURIComponent(normalizeOptionSearch(product.brandEn || product.brand || product.brandAr).replaceAll(" ","-"))}">${escapeHTML(brandName)}</a><i>‹</i><b>${escapeHTML(name)}</b></nav>
       <section class="pdp-hero">
         <div class="pdp-gallery">
           <div class="pdp-thumbnails" aria-label="${isArabic ? "صور المنتج" : "Product media"}">${media.map((item, index) => `<button class="${index === state.activeProductImageIndex ? "active" : ""}" data-action="product-image" data-index="${index}" aria-label="${isArabic ? `الصورة ${index + 1}` : `Image ${index + 1}`}" aria-pressed="${index === state.activeProductImageIndex}"><img src="${escapeHTML(item.url)}" alt="" loading="${index ? "lazy" : "eager"}" /></button>`).join("")}</div>
@@ -11420,7 +11427,6 @@ window.addEventListener("popstate", (event) => {
 function bindBrandMarquee(brandTrack) {
   if (!brandTrack || brandTrack.dataset.dragBound === "true") return;
   brandTrack.dataset.dragBound = "true";
-  if (brandTrack.id === "home-brand-carousel-track" && matchMedia("(max-width: 700px)").matches) return;
   let brandDragging = false;
   let brandMoved = false;
   let brandStartX = 0;
@@ -11498,7 +11504,10 @@ function bindBrandMarquee(brandTrack) {
       brandMoved = true;
       event.preventDefault();
     }
-    if (!moveAnimationBy(delta, brandAnimationStartTime)) brandTrack.scrollLeft = brandStartScroll - delta;
+    if (!moveAnimationBy(delta, brandAnimationStartTime)) {
+      const rtl = getComputedStyle(brandTrack).direction === "rtl";
+      brandTrack.scrollLeft = brandStartScroll + (rtl ? delta : -delta);
+    }
   });
   const stopBrandDrag = (event) => {
     if (!brandDragging) return;

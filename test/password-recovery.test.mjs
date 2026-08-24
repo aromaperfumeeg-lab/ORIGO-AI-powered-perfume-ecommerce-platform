@@ -34,12 +34,12 @@ test("recovery UI supports three channels and password visibility without exposi
     readFile(new URL("external-integrations.mjs", root), "utf8")
   ]);
   assert.match(app, /data-action="toggle-password"/);
-  assert.match(app, /value="email"/);
-  assert.match(app, /value="whatsapp"/);
-  assert.match(app, /value="sms"/);
+  assert.match(app, /passwordRecoveryChannels:\s*\{\s*email:\s*true,\s*whatsapp:\s*true,\s*sms:\s*true\s*\}/);
+  assert.match(app, /resetChannels:\s*\{\s*email:\s*false,\s*whatsapp:\s*false,\s*sms:\s*false\s*\}/);
+  assert.match(app, /\/api\/auth\/password-reset\/channels/);
   assert.match(server, /\/api\/auth\/password-reset\/request/);
   assert.match(server, /\/api\/auth\/password-reset\/confirm/);
-  assert.match(integrations, /RESEND_API_KEY/);
+  assert.match(integrations, /SMTP_HOST/);
   assert.match(integrations, /TWILIO_ACCOUNT_SID/);
   assert.doesNotMatch(server, /console\.log\([^\n]*(body\.password|body\.email|body\.identifier|process\.env\.ORIGO_ADMIN)/i);
 });

@@ -805,7 +805,7 @@ const storefrontFixtureIds = [
   "demo-xerjoff-naxos", "demo-initio-oud-for-greatness"
 ];
 const storefrontFixtureMarks = storefrontFixtureIds.map(() => "?").join(",");
-if (!IS_PRODUCTION) db.prepare(`DELETE FROM products WHERE id IN (${storefrontFixtureMarks})`).run(...storefrontFixtureIds);
+if (!IS_PRODUCTION && process.env.NODE_ENV !== "test") db.prepare(`DELETE FROM products WHERE id IN (${storefrontFixtureMarks})`).run(...storefrontFixtureIds);
 
 const seedReferencePerfumes = [
   {

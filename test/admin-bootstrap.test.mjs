@@ -79,7 +79,8 @@ test("login uses the same relative API route as the server and health exposes no
   ]);
   assert.match(app, /api\(`\/api\/auth\/\$\{mode\}`/);
   assert.match(server, /url\.pathname === "\/api\/auth\/login"/);
-  assert.match(server, /adminConfigured: adminConfiguredFromEnvironment\(\)/);
+  assert.match(server, /const adminConfigured = adminConfiguredFromEnvironment\(\)/);
+  assert.match(server, /adminConfigured,/);
   assert.doesNotMatch(app, /fetch\(["'`]https?:\/\/(localhost|127\.0\.0\.1)/);
   assert.doesNotMatch(server, /console\.log\([^\n]*(ORIGO_ADMIN_EMAIL|ORIGO_ADMIN_PASSWORD)[^\n]*process\.env/);
 });

@@ -10,7 +10,7 @@ test("shared header has separated commerce, brand, and preference zones", async 
   assert.match(html, /class="header-commerce-actions"/);
   assert.match(html, /class="header-preference-actions"/);
   assert.equal((html.match(/class="header-search"/g) || []).length, 1);
-  assert.match(html, /shell\.css\?v=4/);
+  assert.match(html, /shell\.css\?v=17/);
 });
 
 test("layout shell is balanced and defines one responsive content system", async () => {
@@ -72,7 +72,7 @@ test("checkout and account route teardown cannot hide another active page", asyn
 
 test("homepage rails separate manual drag from brand autoplay", async () => {
   const [html, app, home] = await Promise.all([source("index.html"), source("app.js"), source("home.css")]);
-  assert.equal((html.match(/data-horizontal-rail/g) || []).length, 5);
+  assert.equal((html.match(/data-horizontal-rail/g) || []).length, 1);
   assert.equal((html.match(/data-brand-marquee/g) || []).length, 1);
   assert.match(home, /\.horizontal-rail\{[^}]*overflow-x:auto/);
   assert.match(home, /scroll-snap-type:x mandatory/);
@@ -87,7 +87,8 @@ test("public cards expose one size label without variant selectors", async () =>
   const [app, cards] = await Promise.all([source("app.js"), source("product-card.css")]);
   assert.doesNotMatch(app, /class="product-card-variants"/);
   assert.doesNotMatch(app, /class="pdp-sizes"/);
-  assert.match(app, /class="product-card-size"/);
+  assert.match(app, /const sizeLabel =/);
+  assert.match(app, /class="pdp-fixed-size"/);
   assert.doesNotMatch(app, /متوفر — \$\{knownStock\}|\$\{knownStock\} in stock/);
   assert.match(cards, /grid-template-columns:repeat\(2,minmax\(0,1fr\)\)!important/);
   assert.match(cards, /product-card-primary\{object-fit:contain/);
