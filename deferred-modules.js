@@ -6,7 +6,8 @@
     ["alternatives.js?v=7", /\/(?:alternatives|perfume)(?:\/|$)/],
     ["performance-insights.js?v=2", /\/performance(?:\/|$)/],
     ["commerce.js?v=3", /\/(?:cart|checkout|payment|track(?:ing)?|orders?)(?:\/|$)/],
-    ["account.js?v=3", /\/(?:account|login|register|profile)(?:\/|$)/]
+    ["account.js?v=3", /\/(?:account|login|register|profile)(?:\/|$)/],
+    ["fragrance-finder.js?v=1", /\/fragrance-finder(?:\/|$)/, true]
   ];
   const routeStyles = [
     ["catalog", /^\/(?:perfumes|search|brands)(?:\/|$)/],
@@ -50,14 +51,6 @@
       .reduce((chain, placeholder) => chain.then(() => loadScript(placeholder.dataset.knowledgeSrc)), Promise.resolve())
       .then(() => window.dispatchEvent(new Event("origo:knowledge-ready")));
     return knowledgePromise;
-  }
-
-  let finderPromise;
-  function loadFinderResources() {
-    if (finderPromise) return finderPromise;
-    finderPromise = [...document.querySelectorAll("script[data-finder-src]")]
-      .reduce((chain, placeholder) => chain.then(() => loadScript(placeholder.dataset.finderSrc)), Promise.resolve());
-    return finderPromise;
   }
 
   function loadAdminResources() {
@@ -113,22 +106,6 @@
   }, true);
 
   document.addEventListener("click", (event) => {
-    const target = event.target.closest("[data-action],a[href]");
-    if (!target || target.dataset.finderReady === "true") return;
-    const action = target.dataset.action || "";
-    const href = target.getAttribute("href") || "";
-    if (!/fragrance-finder|open-finder/.test(`${action} ${href}`)) return;
-    event.preventDefault();
-    event.stopImmediatePropagation();
-    loadStyles('link[data-route="finder"]');
-    loadFinderResources().then(() => {
-      target.dataset.finderReady = "true";
-      target.click();
-      delete target.dataset.finderReady;
-    });
-  }, true);
-
-  document.addEventListener("click", (event) => {
     const action = event.target.closest("[data-action]")?.dataset.action || "";
     if (/admin|product-studio/.test(action)) loadAdminResources();
     if (/product|quick-view/.test(action)) loadStyles("link[data-deferred-href]");
@@ -142,7 +119,6 @@
     idle(loadIdleScripts, 2600);
     idle(() => navigator.serviceWorker?.register("/sw.js").catch(() => {}), 6500);
   };
-  if (/^\/fragrance-finder(?:\/|$)/.test(route)) loadFinderResources();
   if (new URL(location.href).searchParams.has("product") || /^\/notes(?:\/|$)/.test(route)) loadKnowledgeResources();
   if (document.readyState === "complete") afterLoad();
   else addEventListener("load", afterLoad, { once:true });

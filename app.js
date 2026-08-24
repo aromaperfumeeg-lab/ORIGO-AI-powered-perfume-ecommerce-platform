@@ -1510,23 +1510,16 @@ async function hydrateServer() {
   const localCart = [...state.cart];
   const cartOwner = localStorage.getItem("origoCartUserId");
   const authRevisionAtStart = state.authRevision;
-  const sessionRequest = api("/api/session").catch(() => ({ user:null, cart:[] }));
-  const settingsRequest = api("/api/storefront-settings").catch(() => ({ settings:{} }));
   try {
-    const catalog = await api("/api/products?offset=0&limit=24");
-    state.serverAvailable = true;
-    if (Array.isArray(catalog.products)) state.products = catalog.products.map(serverProduct);
-
-    // Products are the critical first-paint data. Do not make the storefront
-    // wait for account/session work before showing the catalog.
-    renderBrandCarousel();
-    renderProducts($(".chip.active")?.dataset.filter || "all");
-    renderHomepageCommerce();
-    handleCatalogRoute({ replace:true });
-    handleProductRoute();
-    scheduleStorefrontIdle(() => hydrateDeferredStorefront(Number(catalog.total || state.products.length)), 900);
-
-    const [session, storefrontSettings] = await Promise.all([sessionRequest, settingsRequest]);
+    const results = await Promise.allSettled([
+      api("/api/products?offset=0&limit=24"),
+      api("/api/session"),
+      api("/api/storefront-settings")
+    ]);
+    const valueAt = (index, fallback) => results[index]?.status === "fulfilled" ? results[index].value : fallback;
+    const catalog = valueAt(0, { products:state.products });
+    const session = valueAt(1, { user:null, cart:[] });
+    const storefrontSettings = valueAt(2, { settings:{} });
     const localSettings = state.adminWorkspace.settings || {};
     const serverSettings = storefrontSettings.settings || {};
     state.adminWorkspace.settings = mergeStoreSettings({
@@ -1535,6 +1528,8 @@ async function hydrateServer() {
       homeMedia:Array.isArray(serverSettings.homeMedia) && serverSettings.homeMedia.length ? serverSettings.homeMedia : (localSettings.homeMedia || []),
       homeProductRows:Array.isArray(serverSettings.homeProductRows) && serverSettings.homeProductRows.length ? serverSettings.homeProductRows : (localSettings.homeProductRows || [])
     });
+    state.serverAvailable = results[0]?.status === "fulfilled";
+    if (Array.isArray(catalog.products)) state.products = catalog.products.map(serverProduct);
     if (state.authRevision === authRevisionAtStart) state.user = session.user || null;
     if (state.user) {
       if (cartOwner === String(state.user.id)) {
@@ -1567,6 +1562,7 @@ async function hydrateServer() {
     handleCatalogRoute({ replace: true });
     handleProductRoute();
     await handleAdminOrderRoute();
+    scheduleStorefrontIdle(() => hydrateDeferredStorefront(Number(catalog.total || state.products.length)), 1800);
   } catch {
     state.serverAvailable = false;
     updateAccountIndicator();
