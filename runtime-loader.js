@@ -3,10 +3,10 @@
   const promises = new Map();
   const cssPromises = new Map();
   const assets = {
-    admin:["chunks/admin-runtime.min.js?v=1"],
-    productEditor:["chunks/product-editor-runtime.min.js?v=1"],
-    storefrontSettings:["chunks/storefront-settings-runtime.min.js?v=1"],
-    finder:["fragrance-finder-engine.js?v=2","fragrance-finder-i18n.js?v=3","fragrance-finder.js?v=4"]
+    admin:["chunks/admin-runtime.min.js?v=4"],
+    productEditor:["chunks/product-editor-runtime.min.js?v=4"],
+    storefrontSettings:["chunks/storefront-settings-runtime.min.js?v=5"],
+    finder:["fragrance-finder-engine.js?v=2","fragrance-finder-i18n.js?v=3","fragrance-finder.js?v=5"]
   };
 
   function script(src) {
@@ -46,9 +46,9 @@
       }
     }
     if (name === "admin") await style("admin-ui-fixes.css?v=6");
-    if (name === "productEditor") await style("product-editor-runtime.css?v=1");
-    if (name === "storefrontSettings") await style("storefront-settings-runtime.css?v=1");
-    if (name === "finder") await style("fragrance-finder.css?v=2");
+    if (name === "productEditor") await style("product-editor-runtime.css?v=4");
+    if (name === "storefrontSettings") await style("storefront-settings-runtime.css?v=4");
+    if (name === "finder") await style("fragrance-finder.css?v=3");
     for (const src of assets[name] || []) await script(src);
   }
 
@@ -61,7 +61,7 @@
     const href = target.getAttribute("href") || "";
     let runtime = "";
     if (/fragrance-finder|open-finder|find-matches/.test(`${action} ${href}`)) runtime = "finder";
-    else if (/product-studio|catalog-product|save-catalog|admin-studio|smart-select/.test(action)) runtime = "productEditor";
+    else if ((action === "admin-view" && target.dataset.view === "products") || /product-studio|catalog-product|save-catalog|admin-studio|smart-select/.test(action)) runtime = "productEditor";
     else if (/admin-view/.test(action) && target.dataset.view === "settings") runtime = "storefrontSettings";
     else if (/admin/.test(action) || /^\/admin(?:\/|$)/.test(href)) runtime = "admin";
     if (!runtime) return;

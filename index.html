@@ -3,11 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <base href="/" />
-    <script>
-      if (window.location.protocol === "file:") {
-        window.location.replace("http://127.0.0.1:4173/");
-      }
-    </script>
+    <script src="protocol-guard.js?v=1"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#6d0d24" />
     <meta
@@ -26,26 +22,26 @@
     <meta name="twitter:card" content="summary_large_image" />
     <title>ORIGO Scents | أوريجو سينتس - عطور أصلية 100% في مصر</title>
     <!-- ORIGO_INITIAL_HERO_PRELOAD -->
-    <link rel="stylesheet" href="chunks/styles.min.css?v=1" />
-    <link rel="stylesheet" href="chunks/home.min.css?v=1" />
+    <link rel="stylesheet" href="chunks/styles.min.css?v=4" />
+    <link rel="stylesheet" href="chunks/home.min.css?v=4" />
     <link rel="stylesheet" data-deferred-href="product-detail.css?v=46" />
     <link rel="stylesheet" data-route="catalog" data-route-href="catalog.css?v=4" />
     <link rel="stylesheet" data-idle-href="footer.css?v=28" />
     <link rel="stylesheet" data-route="commerce" data-route-href="commerce.css?v=1" />
     <link rel="stylesheet" data-route="account" data-route-href="account.css?v=3" />
-    <link rel="stylesheet" data-route="finder" data-route-href="fragrance-finder.css?v=2" />
+    <link rel="stylesheet" data-route="finder" data-route-href="fragrance-finder.css?v=3" />
     <link rel="stylesheet" data-route="alternatives" data-route-href="alternatives.css?v=2" />
     <link rel="stylesheet" data-route="performance" data-route-href="performance-insights.css?v=3" />
-<link rel="stylesheet" href="chunks/shell.min.css?v=1" />
+<link rel="stylesheet" href="chunks/shell.min.css?v=4" />
   <link rel="stylesheet" data-deferred-href="product-reference-card.css?v=9" />
-    <link rel="stylesheet" href="chunks/home-gender-slider.min.css?v=1" />
+    <link rel="stylesheet" href="chunks/home-gender-slider.min.css?v=4" />
     <script defer src="home-brand-navigation.js?v=1"></script>
     <link rel="stylesheet" data-admin-href="admin-ui-fixes.css?v=6" />
     <link rel="stylesheet" data-admin-href="notes-admin-fixes.css?v=2" />
     <link rel="stylesheet" data-idle-href="dark-theme.css?v=14" />
-    <link rel="stylesheet" href="chunks/origo-identity.min.css?v=1" />
-    <link rel="stylesheet" href="chunks/no-effects.min.css?v=1" />
-    <link rel="stylesheet" href="chunks/appearance.min.css?v=1" />
+    <link rel="stylesheet" href="chunks/origo-identity.min.css?v=4" />
+    <link rel="stylesheet" href="chunks/no-effects.min.css?v=4" />
+    <link rel="stylesheet" href="chunks/appearance.min.css?v=5" />
   </head>
   <body>
     <div class="announcement" aria-hidden="true"></div>
@@ -703,7 +699,7 @@
         <button type="button" class="product-image-lightbox-close" data-action="close-image-lightbox" aria-label="إغلاق الصورة">×</button>
       </div>
       <div class="product-image-lightbox-stage" id="product-image-lightbox-stage">
-        <img id="product-image-lightbox-image" alt="" draggable="false"/>
+        <img id="product-image-lightbox-image" src="assets/product-image-placeholder.svg" alt="" draggable="false"/>
       </div>
       <p class="product-image-lightbox-help">استخدم إصبعين للتكبير، واسحب الصورة لتحريكها</p>
     </div>
@@ -975,8 +971,8 @@
     <script defer src="catalog-providers.js?v=6"></script>
     <script data-idle-src="external-tracking.js?v=1"></script>
     <script data-admin-src="perfume-bundle.js?v=9"></script>
-    <script defer src="runtime-loader.js?v=1"></script>
-    <script defer src="chunks/storefront-core.min.js?v=1"></script>
+    <script defer src="runtime-loader.js?v=7"></script>
+    <script defer src="chunks/storefront-core.min.js?v=11"></script>
     <script defer src="deferred-modules.js?v=12"></script>
   </body>
 </html>

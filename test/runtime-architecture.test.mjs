@@ -7,8 +7,8 @@ const read = (path) => readFile(new URL(path, import.meta.url), "utf8");
 
 test("home loads production storefront core without admin editor or finder runtimes", async () => {
   const [html, loader, core] = await Promise.all([read("../index.html"), read("../runtime-loader.js"), read("../chunks/storefront-core.min.js")]);
-  assert.match(html, /chunks\/storefront-core\.min\.js\?v=1/);
-  assert.match(html, /runtime-loader\.js\?v=1/);
+  assert.match(html, /chunks\/storefront-core\.min\.js\?v=11/);
+  assert.match(html, /runtime-loader\.js\?v=7/);
   assert.doesNotMatch(html, /<script[^>]+(?:admin-runtime|product-editor-runtime|storefront-settings-runtime|fragrance-finder-(?:engine|i18n)|fragrance-finder\.js)/);
   assert.doesNotMatch(core, /function settingsMarkup\(|function renderImportReview\(|function overviewMarkup\(/);
   assert.match(loader, /const promises = new Map\(\)/);
@@ -30,13 +30,23 @@ test("runtime chunks and their CSS exist and Hostinger copies the chunks tree", 
 });
 
 test("product cards use valid semantic links and finder never emits an empty image source", async () => {
-  const [app, finder] = await Promise.all([read("../app.js"), read("../fragrance-finder.js")]);
+  const [app, finder, html] = await Promise.all([read("../app.js"), read("../fragrance-finder.js"), read("../index.html")]);
   const card = app.slice(app.indexOf("function productCardMarkup"), app.indexOf("function setCardImage"));
   assert.match(card, /<a class="product-card-media-link" href="\/perfume\//);
   assert.match(card, /exact-card-product-name[\s\S]+<a href="\/perfume\//);
   assert.doesNotMatch(card, /<button[^>]+product-card-media-link/);
   assert.match(finder, /p\.image\|\|"assets\/product-image-placeholder\.svg"/);
   assert.doesNotMatch(finder, /<img src="\$\{esc\(p\.image\)\}"/);
+  assert.doesNotMatch(`${html}\n${app}\n${finder}`, /<img[^>]+src=["']\s*["']/i);
+  assert.match(html, /product-image-lightbox-image" src="assets\/product-image-placeholder\.svg"/);
+});
+
+test("service worker cache manifest matches every versioned initial runtime asset", async () => {
+  const [html, worker] = await Promise.all([read("../index.html"), read("../sw.js")]);
+  const initial = [...html.matchAll(/(?:src|href)="((?:runtime-loader|chunks\/)[^"]+\?v=\d+)"/g)].map((match) => match[1]);
+  for (const asset of initial) assert.match(worker, new RegExp(asset.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+  assert.match(worker, /origo-static-v\d+/);
+  assert.doesNotMatch(html, /<script(?:\s[^>]*)?>\s*(?!<\/script>)/);
 });
 
 test("initial asset budgets keep admin and finder out of storefront", async () => {

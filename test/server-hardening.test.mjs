@@ -42,6 +42,7 @@ test("routes, security headers, body limits, and pruned product HTML are hardene
   }
   const productResponse = await fetch(`http://127.0.0.1:${port}${productPath}`, { headers:{ "x-forwarded-proto":"https" } });
   assert.match(productResponse.headers.get("content-security-policy") || "", /object-src 'none'/);
+  assert.doesNotMatch(productResponse.headers.get("content-security-policy") || "", /script-src[^;]*unsafe-inline/);
   assert.equal(productResponse.headers.get("strict-transport-security"), "max-age=15552000");
   const html = await productResponse.text();
   assert.match(html, /data-route-pruned="product"/);
@@ -50,4 +51,14 @@ test("routes, security headers, body limits, and pruned product HTML are hardene
   assert.equal(local.headers.get("strict-transport-security"), null);
   const oversized = await fetch(`http://127.0.0.1:${port}/api/auth/login`, { method:"POST", headers:{ "content-type":"application/json" }, body:JSON.stringify({ value:"x".repeat(70 * 1024) }) });
   assert.equal(oversized.status, 413);
+  for (const [path, size] of [
+    ["/api/account/profile", 270 * 1024],
+    ["/api/admin/storefront-settings", 270 * 1024],
+    ["/api/admin/uploads/storefront-image", 190 * 1024],
+    ["/api/catalog/save-product", 12 * 1024 * 1024 + 1024]
+  ]) {
+    const response = await fetch(`http://127.0.0.1:${port}${path}`, { method:"POST", headers:{ "content-type":"application/json" }, body:JSON.stringify({ value:"x".repeat(size) }) });
+    assert.equal(response.status, 413, path);
+    assert.match(await response.text(), /Payload Too Large|حجم الطلب/i);
+  }
 });

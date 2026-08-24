@@ -2212,7 +2212,9 @@ async function serveStatic(request, response, url) {
     const isServiceWorker = cleanPath === "sw.js";
     const etag = `W/"${info.size.toString(16)}-${Math.floor(info.mtimeMs).toString(16)}"`;
     const headers = {
-      "Cache-Control": isHtml || isServiceWorker
+      "Cache-Control": process.env.NODE_ENV !== "production"
+        ? "no-store"
+        : isHtml || isServiceWorker
         ? "no-cache"
         : isPersistentUpload
           ? "public, max-age=31536000, immutable"
@@ -2279,7 +2281,7 @@ const server = createServer(async (request, response) => {
   }
 
   const url = new URL(request.url || "/", `http://${request.headers.host || `${HOST}:${PORT}`}`);
-  response.setHeader("Content-Security-Policy", "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'");
+  response.setHeader("Content-Security-Policy", "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'");
   if (process.env.NODE_ENV === "production" && requestUsesHTTPS(request)) response.setHeader("Strict-Transport-Security", "max-age=15552000");
   if (request.method === "OPTIONS") {
     response.writeHead(204, {

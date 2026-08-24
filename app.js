@@ -3344,7 +3344,7 @@ function updateLanguage() {
   renderSiteFooter();
   renderCart();
   renderWishlist();
-  renderCatalogList();
+  if (typeof renderCatalogList === "function") renderCatalogList();
   setMobileProductColumns(document.documentElement.dataset.productCardView === "one" ? "1" : "2", false);
   updateAccountIndicator();
   if ($("#account-overlay").classList.contains("open")) {
@@ -3352,7 +3352,7 @@ function updateLanguage() {
     else renderAuth($("#auth-form")?.dataset.mode || "login");
   }
   if ($("#checkout-overlay").classList.contains("open") && state.user && state.cart.length) renderCheckout();
-  if ($("#admin-orders-overlay").classList.contains("open")) $("#admin-orders-list").innerHTML = renderOrders(state.adminOrders, true);
+  if ($("#admin-orders-overlay")?.classList.contains("open")) $("#admin-orders-list").innerHTML = renderOrders(state.adminOrders, true);
   if (state.globalSearchQuery) renderSearchSuggestions(state.globalSearchQuery);
   if ($("#product-overlay").classList.contains("open") && state.activeProductId) {
     showProductDetails(getProduct(state.activeProductId), false);
@@ -3362,8 +3362,8 @@ function updateLanguage() {
   renderSiteFooter();
   if (document.body.classList.contains("benefit-route")) handleBenefitRoute({ replace: true });
   if (document.body.classList.contains("benefits-route")) handleBenefitsRoute({ replace: true });
-  if ($("#notes-admin-overlay").classList.contains("open")) renderNotesAdmin();
-  if ($("#admin-overlay").classList.contains("open")) renderAdminDashboard(state.adminView);
+  if ($("#notes-admin-overlay")?.classList.contains("open")) renderNotesAdmin();
+  if ($("#admin-overlay")?.classList.contains("open")) renderAdminDashboard(state.adminView);
   applyHomepageRailSettings();
 }
 
@@ -3514,7 +3514,7 @@ function renderBrandCarousel(query = "") {
   const brands = catalogNames.map((brand) => [brand, counts.get(brand) || 0])
     .filter(([brand]) => !normalized || ORIGOCatalog.normalize(brand).includes(normalized));
   const visibleBrands = brands;
-  const brandOptions = productOptionItems("brand");
+  const brandOptions = state.productOptions.filter((item) => item.group === "brand" && item.active !== false);
   const items = visibleBrands.map(([brand, count]) => {
     const option = brandOptions.find((item) => [item.value,item.nameAr,item.nameEn].some((value) => normalizeOptionSearch(value) === normalizeOptionSearch(brand)));
     const logo = option?.image || origoBrandLogo(brand);
@@ -4184,6 +4184,7 @@ function navigateBenefit(slug) {
 
 function renderProducts(filter = "all") {
   const grid = $("#product-grid");
+  if (!grid) return;
   const search = ORIGOCatalog.normalize(state.storefrontSearchQuery);
   const perfumeOnly = mergeStoreSettings(state.adminWorkspace.settings || {}).perfumeOnlyMode !== false;
   const visibleProducts = state.products
@@ -6766,6 +6767,9 @@ function toggleMobileMenu(force) {
   syncBodyLock();
 }
 
+const dialogReturnFocus = new WeakMap();
+const dialogFocusable = (root) => [...root.querySelectorAll('a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])')].filter((element) => element.offsetParent !== null);
+
 function openOverlay(id) {
   $$(".overlay.open").forEach((overlay) => {
     overlay.classList.remove("open");
@@ -6774,6 +6778,8 @@ function openOverlay(id) {
   closeDrawers();
   toggleMobileMenu(false);
   const overlay = $(id);
+  if (!overlay) return;
+  dialogReturnFocus.set(overlay, document.activeElement);
   overlay.classList.add("open");
   overlay.setAttribute("aria-hidden", "false");
   syncBodyLock();
@@ -6781,9 +6787,13 @@ function openOverlay(id) {
 }
 
 function closeOverlay(overlay) {
+  if (!overlay) return;
   overlay.classList.remove("open");
   overlay.setAttribute("aria-hidden", "true");
   syncBodyLock();
+  const returnTarget = dialogReturnFocus.get(overlay);
+  if (returnTarget?.isConnected) returnTarget.focus({ preventScroll:true });
+  dialogReturnFocus.delete(overlay);
 }
 
 function toggleDrawer(id, force) {
@@ -8516,6 +8526,17 @@ document.addEventListener("pointerup", (event) => {
   else if (Math.abs(deltaX) < 8 && Math.abs(deltaY) < 8 && !window.ORIGOPerfumeAura?.handleTap(event, media)) showProductDetails(getProduct(productId));
 });
 document.addEventListener("keydown", (event) => {
+  if (event.key === "Tab") {
+    const activeDialog = $(".overlay.open, .drawer.open");
+    if (activeDialog) {
+      const focusable = dialogFocusable(activeDialog);
+      if (focusable.length) {
+        const first = focusable[0], last = focusable[focusable.length - 1];
+        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+      }
+    }
+  }
   if (event.target.matches("[data-smart-search]")) {
     const menu = event.target.closest(".smart-select-menu");
     const options = [...menu.querySelectorAll("[role='option']:not([hidden])")];

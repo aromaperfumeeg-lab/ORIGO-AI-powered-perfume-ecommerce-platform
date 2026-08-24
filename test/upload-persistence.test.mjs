@@ -14,7 +14,7 @@ test("storefront uploads use persistent storage outside production releases", ()
   assert.match(server,/resolve\(dirname\(databasePath\), "uploads", "storefront"\)/);
   assert.match(server,/initializeStorefrontUploadStorage/);
   assert.match(server,/cp\(LEGACY_STOREFRONT_UPLOAD_ROOT, STOREFRONT_UPLOAD_ROOT/);
-  assert.match(env,/ORIGO_UPLOAD_DIR=\/home\/USER\/origo-data\/uploads\/storefront/);
+  assert.match(env,/ORIGO_UPLOAD_DIR=\/home\/u271356790\/domains\/origoscents\.com\/\.origo-data\/uploads\/storefront/);
   assert.match(deploy,/"storefront-media\.mjs"/);
 });
 
@@ -35,4 +35,10 @@ test("new storefront media is retained as persistent files while legacy database
   assert.match(server, /return `\/uploads\/storefront\/\$\{folder\}\/\$\{filename\}`/);
   assert.match(server, /const mediaMatch = url\.pathname\.match/);
   assert.match(server, /max-age=31536000, immutable/);
+});
+
+test("production package excludes databases, uploads, env files, and secrets by default", () => {
+  assert.match(deploy, /const includeData = process\.env\.DEPLOY_INCLUDE_DATA === "1"/);
+  assert.match(deploy, /const includeUploads = process\.env\.DEPLOY_INCLUDE_UPLOADS === "1"/);
+  assert.doesNotMatch(deploy.match(/const rootFiles = \[[\s\S]*?\];/)?.[0] || "", /(?:\.env"|\.db"|uploads)/);
 });

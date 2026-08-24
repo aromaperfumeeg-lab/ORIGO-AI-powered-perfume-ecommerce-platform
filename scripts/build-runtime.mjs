@@ -14,14 +14,15 @@ const groups = {
 const boundaries = {
   admin:[source.indexOf("async function loadAdminCatalog"), source.indexOf("function passwordFieldMarkup")],
   "storefront-settings":[source.indexOf("function settingsMarkup"), source.indexOf("function openSystemModal")],
-  "product-editor":[source.indexOf("const adminCopy"), source.indexOf("function observeReveals")]
+  "product-editor":[source.indexOf("const csv ="), source.indexOf("function observeReveals")]
 };
 for (const [name, [start, end]] of Object.entries(boundaries)) {
   if (start < 0 || end <= start) throw new Error(`Unable to locate ${name} runtime boundaries`);
 }
 
 function targetFor(position, name = "") {
-  if (name === "handleAdminOrderRoute") return "";
+  if (["handleAdminOrderRoute", "normalizeOptionSearch", "applyHomepageRailSettings", "perfumeResolvedAccords", "seoKeywordValues", "systemStatesMarkup"].includes(name)) return "";
+  if (source.slice(position, position + 80).startsWith("const ORIGO_ACCORD_LIBRARY")) return "";
   if (position >= boundaries["storefront-settings"][0] && position < boundaries["storefront-settings"][1]) return "storefront-settings";
   if (position >= boundaries.admin[0] && position < boundaries.admin[1]) return "admin";
   if (position >= boundaries["product-editor"][0] && position < boundaries["product-editor"][1]) return "product-editor";
