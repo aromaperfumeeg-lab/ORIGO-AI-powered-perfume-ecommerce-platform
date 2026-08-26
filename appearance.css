@@ -4132,10 +4132,14 @@ html body :is(#storefront-main,.product-overlay) .product-card .exact-card-actio
     animation:origoAnnouncementTicker 20s linear infinite!important;
     will-change:transform;
   }
+  html[dir="rtl"] body:not(.admin-mode) .announcement>span{
+    animation-name:origoAnnouncementTickerRtl!important;
+  }
   body:not(.admin-mode) .announcement:hover>span{
     animation-play-state:paused!important;
   }
 }
+@keyframes origoAnnouncementTickerRtl{to{transform:translateX(100%)}}
 @media(max-width:640px) and (prefers-reduced-motion:no-preference){
   body:not(.admin-mode) .announcement>span{animation-duration:14s!important}
 }
