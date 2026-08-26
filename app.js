@@ -1159,6 +1159,13 @@ const state = {
   adminStaff: [],
   activeAdminOrderId: null,
   adminOrderStatusFilter: "all",
+  adminOrderQuery: "",
+  adminOrderSourceFilter: "all",
+  adminOrderCollectionFilter: "all",
+  adminOrderSort: "newest",
+  adminOrderPagination: { page: 1, pageSize: 25, total: 0, pages: 1 },
+  adminOrderSummary: { statuses: {}, todayTotal: 0, monthTotal: 0, pendingCollectionTotal: 0, pendingCollectionCount: 0 },
+  adminOrderNotifications: { items: [], unread: 0 },
   serverAvailable: false,
   pendingAction: "",
   publicIntegrations: {},
@@ -1514,12 +1521,14 @@ async function hydrateServer() {
     const results = await Promise.allSettled([
       api("/api/products?offset=0&limit=24"),
       api("/api/session"),
-      api("/api/storefront-settings")
+      api("/api/storefront-settings"),
+      api("/api/brand-options")
     ]);
     const valueAt = (index, fallback) => results[index]?.status === "fulfilled" ? results[index].value : fallback;
     const catalog = valueAt(0, { products:state.products });
     const session = valueAt(1, { user:null, cart:[] });
     const storefrontSettings = valueAt(2, { settings:{} });
+    const brandOptions = valueAt(3, { options:[] });
     const localSettings = state.adminWorkspace.settings || {};
     const serverSettings = storefrontSettings.settings || {};
     state.adminWorkspace.settings = mergeStoreSettings({
@@ -1530,6 +1539,10 @@ async function hydrateServer() {
     });
     state.serverAvailable = results[0]?.status === "fulfilled";
     if (Array.isArray(catalog.products)) state.products = catalog.products.map(serverProduct);
+    if (Array.isArray(brandOptions.options)) state.productOptions = [
+      ...state.productOptions.filter((item) => item.group !== "brand"),
+      ...brandOptions.options
+    ];
     if (state.authRevision === authRevisionAtStart) state.user = session.user || null;
     if (state.user) {
       if (cartOwner === String(state.user.id)) {
@@ -1539,20 +1552,25 @@ async function hydrateServer() {
         await pushCart().catch(() => {});
       }
       localStorage.setItem("origoCartUserId", String(state.user.id));
-      if (isStaffUser()) await loadAdminCatalog().catch(() => []);
+      if (isStaffUser()) await window.ORIGORuntime?.load("admin").then(() => loadAdminCatalog()).catch(() => []);
     } else if (cartOwner) {
       state.cart = [];
       localStorage.removeItem("origoCartUserId");
     }
     localStorage.setItem("origoCart", JSON.stringify(state.cart));
-    renderDynamicFilters();
-    renderHomeNavigation();
-    renderHomeHero();
-    renderBrandCarousel();
+    const directProductRoute = /^\/perfume\/[^/]+\/?$/i.test(location.pathname);
+    if (!directProductRoute) {
+      renderDynamicFilters();
+      renderHomeNavigation();
+      renderHomeHero();
+      renderBrandCarousel();
+    }
     renderSiteFooter();
     applyStoreIdentity();
-    renderProducts($(".chip.active")?.dataset.filter || "all");
-    renderHomepageCommerce();
+    if (!directProductRoute) {
+      renderProducts($(".chip.active")?.dataset.filter || "all");
+      renderHomepageCommerce();
+    }
     renderCart();
     renderWishlist();
     updateAccountIndicator();
@@ -1562,15 +1580,18 @@ async function hydrateServer() {
     handleCatalogRoute({ replace: true });
     handleProductRoute();
     await handleAdminOrderRoute();
-    scheduleStorefrontIdle(() => hydrateDeferredStorefront(Number(catalog.total || state.products.length)), 1800);
+    if (!directProductRoute) scheduleStorefrontIdle(() => hydrateDeferredStorefront(Number(catalog.total || state.products.length)), 1800);
   } catch {
     state.serverAvailable = false;
     updateAccountIndicator();
-    renderHomeNavigation();
-    renderHomeHero();
-    renderBrandCarousel();
-    renderProducts($(".chip.active")?.dataset.filter || "all");
-    renderHomepageCommerce();
+    const directProductRoute = /^\/perfume\/[^/]+\/?$/i.test(location.pathname);
+    if (!directProductRoute) {
+      renderHomeNavigation();
+      renderHomeHero();
+      renderBrandCarousel();
+      renderProducts($(".chip.active")?.dataset.filter || "all");
+      renderHomepageCommerce();
+    }
     renderSiteFooter();
     applyStoreIdentity();
     handleBenefitRoute({ replace: true });
@@ -1701,9 +1722,9 @@ function adminStatusLabel(status) {
     pending: ["بانتظار المراجعة", "Pending"], open: ["مفتوح", "Open"], waiting: ["بانتظار العميل", "Waiting"],
     received: ["تم الاستلام", "Received"], in_transit: ["في الطريق", "In transit"],
     low: ["منخفض", "Low"], healthy: ["جيد", "Healthy"], draft: ["مسودة", "Draft"],
-    new: ["طلب جديد", "New order"], processing: ["قيد التجهيز", "Processing"],
+    new: ["طلب جديد", "New order"], awaiting_confirmation: ["بانتظار التأكيد", "Awaiting confirmation"], confirmed: ["تم التأكيد", "Confirmed"], processing: ["جاري التجهيز", "Processing"],
     ready_to_ship: ["جاهز للشحن", "Ready to ship"], shipped: ["تم الشحن", "Shipped"],
-    out_for_delivery: ["خرج للتسليم", "Out for delivery"], delivered: ["تم التسليم", "Delivered"],
+    handed_to_carrier: ["لدى شركة الشحن", "Handed to carrier"], out_for_delivery: ["قيد التوصيل", "Out for delivery"], delivered: ["تم التسليم", "Delivered"], awaiting_customer: ["بانتظار العميل", "Awaiting customer"], delivery_failed: ["فشل التسليم", "Delivery failed"],
     completed: ["مكتمل", "Completed"], cancelled: ["ملغي", "Cancelled"], returned: ["مرتجع", "Returned"]
   };
   return (labels[status] || [status, status])[state.lang === "ar" ? 0 : 1];
@@ -1719,9 +1740,10 @@ function adminNavMarkup() {
   const allowed = adminSections.filter((section) => section.id === "overview"
     || hasStaffPermission(sectionPermission(section.id))
     || state.user?.permissions?.includes("*"));
+  const newOrderCount = state.adminOrders.filter((order) => ["new", "received"].includes(order.status)).length;
   const itemMarkup = (section) => `<button data-action="admin-view" data-view="${section.id}" class="${state.adminView === section.id ? "active" : ""}">
       <i>${section.icon}</i><span>${escapeHTML(state.lang === "ar" ? section.ar : section.en)}</span>
-      ${section.id === "orders" && state.adminOrders.filter((order) => order.status === "new").length ? `<b>${state.adminOrders.filter((order) => order.status === "new").length}</b>` : ""}
+      ${section.id === "orders" && newOrderCount ? `<b>${newOrderCount}</b>` : ""}
       ${section.id === "inventory" ? `<b>${lowStockProducts().length}</b>` : ""}</button>`;
   const groupedMarkup = (sections) => {
     let lastGroup = "";
@@ -1768,6 +1790,24 @@ function customerRows() {
   return [...customers.values()];
 }
 
+function adminOrdersApiUrl() {
+  const params = new URLSearchParams({ page:String(state.adminOrderPagination.page || 1), pageSize:String(state.adminOrderPagination.pageSize || 25), sort:state.adminOrderSort || "newest" });
+  if (state.adminOrderQuery) params.set("q", state.adminOrderQuery);
+  if (state.adminOrderStatusFilter !== "all") params.set("status", state.adminOrderStatusFilter);
+  if (state.adminOrderSourceFilter !== "all") params.set("source", state.adminOrderSourceFilter);
+  if (state.adminOrderCollectionFilter !== "all") params.set("collectionStatus", state.adminOrderCollectionFilter);
+  return `/api/admin/orders?${params}`;
+}
+
+async function refreshAdminOrders() {
+  const result = await api(adminOrdersApiUrl());
+  state.adminOrders = result.orders || [];
+  state.adminOrderPagination = result.pagination || state.adminOrderPagination;
+  state.adminOrderSummary = result.summary || state.adminOrderSummary;
+  state.knownAdminOrderIds = new Set(state.adminOrders.map((order) => Number(order.id)));
+  renderAdminDashboard("orders");
+}
+
 async function loadAdminDashboardData() {
   try {
     await loadAdminCatalog();
@@ -1776,7 +1816,7 @@ async function loadAdminDashboardData() {
   }
   try {
     const [ordersResult, workspaceResult, staffResult, integrationsResult, alternativesResult] = await Promise.all([
-      hasStaffPermission("orders:view") ? api("/api/admin/orders") : Promise.resolve({ orders: [] }),
+      hasStaffPermission("orders:view") ? api(adminOrdersApiUrl()) : Promise.resolve({ orders: [] }),
       api("/api/admin/workspace"),
       hasStaffPermission("users") ? api("/api/admin/staff") : Promise.resolve({ staff: [] }),
       hasStaffPermission("settings") ? api("/api/admin/integrations") : Promise.resolve({ integrations: {} }),
@@ -1788,6 +1828,8 @@ async function loadAdminDashboardData() {
       ? nextOrders.filter((order) => !state.knownAdminOrderIds.has(Number(order.id)))
       : [];
     state.adminOrders = nextOrders;
+    state.adminOrderPagination = ordersResult.pagination || state.adminOrderPagination;
+    state.adminOrderSummary = ordersResult.summary || state.adminOrderSummary;
     state.knownAdminOrderIds = nextIds;
     if (workspaceResult.state && Object.keys(workspaceResult.state).length) {
       state.adminWorkspace = {
@@ -1842,11 +1884,13 @@ function startAdminOrderPolling() {
   window.setInterval(async () => {
     if (!$("#admin-overlay")?.classList.contains("open") || !state.user) return;
     try {
-      const result = await api("/api/admin/orders");
+      const result = await api(adminOrdersApiUrl());
       const previousIds = state.knownAdminOrderIds || new Set();
       const nextOrders = result.orders || [];
       const added = nextOrders.filter((order) => !previousIds.has(Number(order.id)));
       state.adminOrders = nextOrders;
+      state.adminOrderPagination = result.pagination || state.adminOrderPagination;
+      state.adminOrderSummary = result.summary || state.adminOrderSummary;
       state.knownAdminOrderIds = new Set(nextOrders.map((order) => Number(order.id)));
       updateAdminNotificationBadge();
       if (added.length && mergeStoreSettings(state.adminWorkspace.settings || {}).newOrderNotifications !== false) {
@@ -1855,10 +1899,11 @@ function startAdminOrderPolling() {
         if (state.adminView === "orders") renderAdminDashboard("orders");
       }
     } catch {}
-  }, 20_000);
+  }, 60_000);
 }
 
 async function handleAdminOrderRoute() {
+  if (/^\/admin(?:\/|$)/.test(location.pathname)) await window.ORIGORuntime?.load("admin");
   const match = location.pathname.match(/^\/admin\/orders(?:\/([^/]+))?\/?$/i);
   if (!match) return false;
   if (!isStaffUser()) {
@@ -1899,13 +1944,15 @@ function adminMetric(icon, label, value, trend = "", tone = "") {
 
 function orderStatusSummary() {
   const statuses = [
-    ["all", "الكل", "All"], ["new", "جديد", "New"], ["processing", "قيد التجهيز", "Processing"], ["shipped", "تم الشحن", "Shipped"],
-    ["completed", "مكتمل", "Completed"], ["cancelled", "ملغي", "Cancelled"]
+    ["all", "كل الطلبات", "All orders"], ["received", "جديد", "New"], ["awaiting_confirmation", "تحتاج تأكيد", "Needs confirmation"],
+    ["processing", "جاري التجهيز", "Processing"], ["ready_to_ship", "جاهز للشحن", "Ready to ship"], ["shipped", "تم الشحن", "Shipped"],
+    ["delivered", "تم التسليم", "Delivered"], ["cancelled", "ملغي", "Cancelled"], ["returned", "مرتجع", "Returned"], ["delivery_failed", "فشل التسليم", "Delivery failed"]
   ];
+  const counts = state.adminOrderSummary.statuses || {};
   return statuses.map(([value, ar, en]) => {
-    const count = value === "all" ? state.adminOrders.length : state.adminOrders.filter((order) => order.status === value).length;
+    const count = value === "all" ? state.adminOrderPagination.total : Number(counts[value] || 0);
     return `<button type="button" data-action="admin-order-filter" data-status="${value}" class="${state.adminOrderStatusFilter === value ? "active" : ""}" aria-pressed="${state.adminOrderStatusFilter === value}"><i class="${value}"></i><span><b>${count}</b><small>${state.lang === "ar" ? ar : en}</small></span><strong>→</strong></button>`;
-  }).join("");
+  }).join("") + `<article class="admin-order-money-stat"><small>${adminCopy("التحصيل المعلق", "Pending collection")}</small><b>${formatPrice(state.adminOrderSummary.pendingCollectionTotal || 0)}</b><span>${formatNumber(state.adminOrderSummary.pendingCollectionCount || 0)} ${adminCopy("طلب", "orders")}</span></article><article class="admin-order-money-stat"><small>${adminCopy("طلبات اليوم", "Today's orders")}</small><b>${formatPrice(state.adminOrderSummary.todayTotal || 0)}</b></article><article class="admin-order-money-stat"><small>${adminCopy("طلبات الشهر", "This month")}</small><b>${formatPrice(state.adminOrderSummary.monthTotal || 0)}</b></article>`;
 }
 
 function bestSellingRows() {
@@ -2006,15 +2053,24 @@ function ordersViewMarkup() {
   const headers = state.lang === "ar"
     ? ["الطلب", "العميل", "المنتجات", "الإجمالي", "الحالة", "التاريخ", "الإجراءات"]
     : ["Order", "Customer", "Products", "Total", "Status", "Date", "Actions"];
-  const filteredOrders = state.adminOrderStatusFilter === "all" ? state.adminOrders : state.adminOrders.filter((order) => order.status === state.adminOrderStatusFilter);
-  const rows = filteredOrders.map((order) => `<tr><td><button class="table-action" data-action="open-order-details" data-id="${order.id}" dir="ltr">${escapeHTML(order.orderNumber)} ↗</button></td>
-    <td><b>${escapeHTML(order.customerName)}</b><small>${escapeHTML(order.phone)}</small></td>
+  const rows = state.adminOrders.map((order) => `<tr class="priority-${escapeHTML(order.priority || "normal")}${order.firstViewedAt ? "" : " is-unread"}"><td><input type="checkbox" data-order-select value="${order.id}" aria-label="${adminCopy("تحديد الطلب", "Select order")}"/></td><td><button class="table-action" data-action="open-order-details" data-id="${order.id}" dir="ltr">${escapeHTML(order.orderNumber)} ↗</button><small>${escapeHTML(order.orderSource || "storefront")}</small></td>
+    <td><b>${escapeHTML(order.customerName)}</b><small dir="ltr">${escapeHTML(order.phone)}</small></td>
     <td>${(order.items || []).reduce((sum, item) => sum + Number(item.quantity), 0)}</td><td><b>${formatPrice(order.total)}</b></td>
     <td><select data-action="order-status" data-id="${order.id}">${orderStatusOptions(order.status)}</select></td>
     <td><small>${new Date(order.createdAt).toLocaleDateString(state.lang === "ar" ? "ar-EG-u-nu-latn" : "en-US")}</small></td>
-    <td><button type="button" class="secondary-button compact-button" data-action="open-order-details" data-id="${order.id}">${state.lang === "ar" ? "عرض التفاصيل" : "View details"}</button></td></tr>`);
+    <td><span class="admin-table-actions"><button type="button" class="secondary-button compact-button" data-action="open-order-details" data-id="${order.id}">${state.lang === "ar" ? "عرض" : "View"}</button><button type="button" class="table-action" data-action="quick-order-status" data-id="${order.id}" data-status="${order.status === "awaiting_confirmation" || order.status === "new" || order.status === "received" ? "confirmed" : order.status === "confirmed" ? "processing" : order.status === "processing" ? "ready_to_ship" : order.status === "ready_to_ship" ? "shipped" : order.status === "shipped" ? "delivered" : order.status}">${adminCopy("الإجراء التالي", "Next action")}</button><a class="table-action" href="tel:${escapeHTML(order.phone)}">${adminCopy("اتصال", "Call")}</a><a class="table-action" href="https://wa.me/${escapeHTML(String(order.phone).replace(/\D/g,""))}" target="_blank" rel="noopener">WhatsApp</a><button type="button" class="table-action" data-action="archive-order" data-id="${order.id}">${adminCopy("أرشفة", "Archive")}</button></span></td></tr>`);
   const activeOrder = state.adminOrders.find((order) => Number(order.id) === Number(state.activeAdminOrderId));
-  return `${activeOrder ? orderDetailsMarkup(activeOrder) : ""}<div class="admin-workflow-strip">${orderStatusSummary()}</div>${adminTable(headers, rows, state.lang === "ar" ? "لا توجد طلبات بعد" : "No orders yet")}`;
+  const pagination = state.adminOrderPagination;
+  return `${activeOrder ? orderDetailsMarkup(activeOrder) : ""}<header class="order-center-head"><div><h2>${adminCopy("مركز إدارة الطلبات", "Order Management Center")}</h2><p>${adminCopy("تابع التأكيد والتجهيز والشحن والتحصيل من مكان واحد.", "Track confirmation, fulfilment, shipping and collection in one place.")}</p></div><button type="button" class="button burgundy-button" data-action="create-manual-order">${adminCopy("+ إنشاء طلب", "+ Create order")}</button></header><div class="admin-workflow-strip">${orderStatusSummary()}</div><form class="order-center-filters" id="admin-order-search-form"><input type="search" name="q" value="${escapeHTML(state.adminOrderQuery)}" placeholder="${adminCopy("رقم الطلب، العميل، الهاتف، المنتج، SKU، الشحنة أو العنوان", "Order, customer, phone, product, SKU, tracking or address")}"/><select name="source">${selectOptions([["all",adminCopy("كل المصادر","All sources")],["storefront",adminCopy("المتجر الإلكتروني","Storefront")],["phone",adminCopy("مكالمة هاتفية","Phone")],["whatsapp","WhatsApp"],["instagram","Instagram"],["facebook","Facebook"],["tiktok","TikTok"],["walk_in",adminCopy("زيارة مباشرة","Walk-in")],["representative",adminCopy("مندوب","Representative")],["other",adminCopy("أخرى","Other")]],state.adminOrderSourceFilter)}</select><select name="collectionStatus">${selectOptions([["all",adminCopy("كل حالات التحصيل","All collection states")],["uncollected",adminCopy("غير محصل","Uncollected")],["collected_from_customer",adminCopy("محصل من العميل","Collected")],["with_carrier",adminCopy("لدى شركة الشحن","With carrier")],["transferred",adminCopy("تم التحويل","Transferred")],["short",adminCopy("نقص تحصيل","Collection short")],["returned",adminCopy("مرتجع","Returned")]],state.adminOrderCollectionFilter)}</select><select name="sort">${selectOptions([["newest",adminCopy("الأحدث","Newest")],["oldest",adminCopy("الأقدم","Oldest")],["highest",adminCopy("الأعلى قيمة","Highest value")],["lowest",adminCopy("الأقل قيمة","Lowest value")],["updated",adminCopy("الأحدث تحديثًا","Recently updated")],["priority",adminCopy("الأولوية","Priority")],["delayed",adminCopy("المتأخرة","Delayed")]],state.adminOrderSort)}</select><button class="secondary-button" type="submit">${adminCopy("بحث وتصفية", "Search and filter")}</button></form><div class="order-bulk-bar"><button type="button" data-action="bulk-order-status" data-status="processing">${adminCopy("بدء التجهيز للمحدد", "Process selected")}</button><button type="button" data-action="bulk-order-archive">${adminCopy("أرشفة المحدد", "Archive selected")}</button><button type="button" data-action="admin-export" data-report="orders">${adminCopy("تصدير النتائج", "Export results")}</button></div>${adminTable([adminCopy("تحديد","Select"),...headers], rows, state.lang === "ar" ? "لا توجد طلبات مطابقة" : "No matching orders")}<footer class="order-center-pagination"><span>${formatNumber(pagination.total)} ${adminCopy("طلب", "orders")}</span><button type="button" data-action="orders-page" data-page="${Math.max(1,pagination.page-1)}"${pagination.page<=1?" disabled":""}>${adminCopy("السابق", "Previous")}</button><b>${formatNumber(pagination.page)} / ${formatNumber(pagination.pages)}</b><button type="button" data-action="orders-page" data-page="${Math.min(pagination.pages,pagination.page+1)}"${pagination.page>=pagination.pages?" disabled":""}>${adminCopy("التالي", "Next")}</button></footer>`;
+}
+
+function manualOrderItemMarkup(index = 0) {
+  return `<div class="manual-order-item" data-manual-order-item><select name="itemProduct.${index}" required><option value="">${adminCopy("اختر المنتج", "Select product")}</option>${state.products.map((product)=>`<option value="${escapeHTML(product.id)}" data-price="${Number(product.price||0)}">${escapeHTML(state.lang==="ar"?product.nameAr:product.nameEn||product.nameAr)} · ${formatPrice(product.price)}</option>`).join("")}</select><input type="number" name="itemQuantity.${index}" min="1" max="100" value="1" aria-label="${adminCopy("الكمية", "Quantity")}"/><input type="number" name="itemPrice.${index}" min="0" step="0.01" placeholder="${adminCopy("السعر الافتراضي", "Default price")}" aria-label="${adminCopy("سعر الوحدة", "Unit price")}"/><input type="number" name="itemDiscount.${index}" min="0" step="0.01" value="0" aria-label="${adminCopy("الخصم", "Discount")}"/><button type="button" data-action="remove-manual-order-item" aria-label="${adminCopy("حذف المنتج", "Remove product")}">×</button></div>`;
+}
+
+function manualOrderMarkup() {
+  const ar=state.lang==="ar";
+  return `<form id="manual-order-form" class="admin-modal-form manual-order-form"><header><div><small>QUICK ORDER</small><h3>${ar?"إنشاء طلب أثناء المكالمة":"Create quick order"}</h3><p>${ar?"أنشئ مسودة أو أكد الطلب دون مغادرة صفحة الطلبات.":"Save a draft or confirm the order without leaving the order center."}</p></div><button type="button" data-action="close-admin-editor" aria-label="${ar?"إغلاق":"Close"}">×</button></header><section class="review-grid"><label>${ar?"مصدر الطلب":"Order source"}<select name="orderSource">${selectOptions([["phone",ar?"مكالمة هاتفية":"Phone"],["whatsapp","WhatsApp"],["instagram","Instagram"],["facebook","Facebook"],["tiktok","TikTok"],["walk_in",ar?"زيارة مباشرة":"Walk-in"],["representative",ar?"مندوب":"Representative"],["other",ar?"أخرى":"Other"]],"phone")}</select></label><label>${ar?"الأولوية":"Priority"}<select name="priority">${selectOptions([["normal",ar?"عادية":"Normal"],["high",ar?"عالية":"High"],["urgent",ar?"عاجلة":"Urgent"]],"normal")}</select></label><label>${ar?"اسم العميل":"Customer name"}<input name="customerName" required minlength="2"/></label><label>${ar?"الهاتف":"Phone"}<input name="phone" required dir="ltr" inputmode="tel" placeholder="01xxxxxxxxx"/></label><label>${ar?"هاتف إضافي":"Extra phone"}<input name="extraPhone" dir="ltr" inputmode="tel"/></label><label>${ar?"المحافظة":"Governorate"}<input name="governorate"/></label><label>${ar?"المدينة / المنطقة":"City / area"}<input name="city"/></label><label class="wide">${ar?"العنوان":"Address"}<textarea name="address" rows="2"></textarea></label></section><section class="manual-order-items"><header><h4>${ar?"المنتجات":"Products"}</h4><button type="button" data-action="add-manual-order-item">${ar?"+ إضافة منتج":"+ Add product"}</button></header><div id="manual-order-items">${manualOrderItemMarkup(0)}</div></section><section class="review-grid"><label>${ar?"تكلفة الشحن":"Shipping fee"}<input type="number" min="0" step="0.01" name="shippingTotal" value="0"/></label><label>${ar?"طريقة الدفع":"Payment method"}<select name="paymentMethod"><option value="cod">${ar?"الدفع عند الاستلام":"Cash on delivery"}</option></select></label><label class="wide">${ar?"ملاحظات العميل":"Customer notes"}<textarea name="customerNotes" rows="2"></textarea></label><label class="wide">${ar?"ملاحظات داخلية":"Internal notes"}<textarea name="internalNotes" rows="2"></textarea></label></section><footer><button type="submit" class="secondary-button" name="intent" value="draft">${ar?"حفظ كمسودة":"Save draft"}</button><button type="submit" class="button burgundy-button" name="intent" value="confirm">${ar?"تأكيد وإنشاء الطلب":"Confirm and create"}</button></footer></form>`;
 }
 
 function orderDetailsMarkup(order) {
@@ -2026,7 +2082,8 @@ function orderDetailsMarkup(order) {
   ];
   return `<form id="admin-order-details-form" class="admin-order-detail">
     <input type="hidden" name="id" value="${order.id}" />
-    <header><div><span class="eyebrow">ORDER ${escapeHTML(order.orderNumber)}</span><h3>${escapeHTML(order.customerName)}</h3></div>
+    <input type="hidden" name="rowVersion" value="${order.rowVersion || 1}" />
+    <header><div><span class="eyebrow">ORDER ${escapeHTML(order.orderNumber)}</span><h3>${escapeHTML(order.customerName)}</h3><small>${escapeHTML(order.orderSource || "storefront")} · ${new Date(order.createdAt).toLocaleString(ar ? "ar-EG-u-nu-latn" : "en-US")}</small></div>
       <div><button type="button" class="secondary-button compact-button" data-action="print-order" data-id="${order.id}" data-kind="invoice">${ar ? "طباعة فاتورة" : "Print invoice"}</button>
       <button type="button" class="secondary-button compact-button" data-action="print-order" data-id="${order.id}" data-kind="label">${ar ? "بوليصة شحن" : "Shipping label"}</button>
       ${state.integrationStatus.bosta?.configured ? `<button type="button" class="secondary-button compact-button" data-action="create-bosta-shipment" data-id="${order.id}">${ar ? "إنشاء شحنة Bosta" : "Create Bosta shipment"}</button>` : ""}
@@ -2035,12 +2092,19 @@ function orderDetailsMarkup(order) {
     <section class="review-grid">
       <label>${ar ? "حالة الطلب" : "Order status"}<select name="status">${orderStatusOptions(order.status)}</select></label>
       <label>${ar ? "حالة الدفع" : "Payment status"}<select name="paymentStatus">${selectOptions(paymentOptions, order.paymentStatus || "pending")}</select></label>
+      <label>${ar ? "حالة التحصيل" : "Collection status"}<select name="collectionStatus">${selectOptions([["uncollected",ar?"لم يتم التحصيل":"Uncollected"],["collected_from_customer",ar?"تم التحصيل من العميل":"Collected from customer"],["with_carrier",ar?"لدى شركة الشحن":"With carrier"],["transferred",ar?"تم التحويل للمتجر":"Transferred"],["short",ar?"نقص في التحصيل":"Collection short"],["returned",ar?"مرتجع":"Returned"]],order.collectionStatus || "uncollected")}</select></label>
+      <label>${ar ? "المبلغ المدفوع" : "Amount paid"}<input type="number" min="0" max="${Number(order.total || 0)}" step="0.01" name="amountPaid" value="${Number(order.amountPaid || 0)}"/></label>
+      <label>${ar ? "الأولوية" : "Priority"}<select name="priority">${selectOptions([["normal",ar?"عادية":"Normal"],["high",ar?"عالية":"High"],["urgent",ar?"عاجلة":"Urgent"]],order.priority || "normal")}</select></label>
+      <label>${ar ? "الموظف المسؤول" : "Assigned to"}<select name="assignedTo"><option value="">${ar?"غير معيّن":"Unassigned"}</option>${state.adminStaff.map((staff)=>`<option value="${staff.id}"${Number(staff.id)===Number(order.assignedTo)?" selected":""}>${escapeHTML(staff.name)}</option>`).join("")}</select></label>
       <label>${ar ? "شركة الشحن" : "Carrier"}<input name="shippingCarrier" value="${escapeHTML(order.shippingCarrier || "")}" /></label>
       <label>${ar ? "رقم التتبع" : "Tracking number"}<input name="trackingNumber" value="${escapeHTML(order.trackingNumber || "")}" /></label>
+      <label>${ar ? "الوسوم — مفصولة بفاصلة" : "Tags — comma separated"}<input name="tags" value="${escapeHTML((order.tags || []).join(", "))}" /></label>
     </section>
+    <section class="admin-order-customer"><div><h4>${ar?"بيانات العميل":"Customer"}</h4><b>${escapeHTML(order.customerName)}</b><a href="tel:${escapeHTML(order.phone)}" dir="ltr">${escapeHTML(order.phone)}</a>${order.extraPhone?`<a href="tel:${escapeHTML(order.extraPhone)}" dir="ltr">${escapeHTML(order.extraPhone)}</a>`:""}<p>${escapeHTML([order.governorate,order.city,order.address].filter(Boolean).join("، "))}</p></div><div><h4>${ar?"الحساب":"Financials"}</h4><span>${ar?"إجمالي المنتجات":"Subtotal"}<b>${formatPrice(order.subtotal)}</b></span><span>${ar?"الخصم":"Discount"}<b>${formatPrice(Number(order.productDiscount||0)+Number(order.couponDiscount||0))}</b></span><span>${ar?"الشحن":"Shipping"}<b>${formatPrice(order.shipping||order.shippingTotal||0)}</b></span><span>${ar?"الإجمالي":"Total"}<b>${formatPrice(order.total)}</b></span><span>${ar?"المتبقي":"Remaining"}<b>${formatPrice(order.remainingAmount ?? order.total)}</b></span></div></section>
     <label>${ar ? "ملاحظات داخلية" : "Internal notes"}<textarea name="internalNotes" rows="3">${escapeHTML(order.internalNotes || "")}</textarea></label>
     <div class="admin-order-items">${(order.items || []).map((item) => `<span><b>${item.quantity}× ${escapeHTML(item.productName)}</b><i>${formatPrice(item.lineTotal)}</i></span>`).join("")}</div>
-    <div class="admin-order-timeline">${(order.timeline || []).map((event) => `<span><i></i><b>${escapeHTML(event.status || event.type)}</b><small>${escapeHTML(event.createdAt || "")}</small></span>`).join("")}</div>
+    <div class="admin-order-timeline">${(order.timeline || []).map((event) => `<span><i></i><b>${escapeHTML(ar ? event.titleAr || adminStatusLabel(event.status) : event.titleEn || adminStatusLabel(event.status))}${event.actorName ? ` — ${escapeHTML(event.actorName)}` : ""}</b><small>${escapeHTML(event.createdAt || "")}</small></span>`).join("")}</div>
+    <section class="admin-order-notes"><h4>${ar?"الملاحظات":"Notes"}</h4>${(order.orderNotes||[]).map((note)=>`<article><b>${note.type==="internal"?(ar?"داخلية":"Internal"):(ar?"للعميل":"Customer")}</b><p>${escapeHTML(note.note)}</p><small>${escapeHTML(note.actorName||"")} · ${escapeHTML(note.createdAt||"")}</small></article>`).join("")}<div><select id="new-order-note-type"><option value="internal">${ar?"ملاحظة داخلية":"Internal note"}</option><option value="customer">${ar?"ملاحظة عميل":"Customer note"}</option></select><textarea id="new-order-note" rows="2" placeholder="${ar?"أضف ملاحظة…":"Add a note…"}"></textarea><button type="button" data-action="add-order-note" data-id="${order.id}">${ar?"إضافة":"Add"}</button></div></section>
     <footer><strong>${formatPrice(order.total)}</strong><button class="button burgundy-button" type="submit">${ar ? "حفظ تفاصيل الطلب" : "Save order details"}</button></footer>
   </form>`;
 }
@@ -2500,12 +2564,12 @@ function settingsMarkup() {
       <div class="review-grid"><label>${ar ? "زر الإجراء AR" : "Arabic CTA"}<input name="${prefix}.ctaLabelAr" value="${escapeHTML(benefit.ctaLabelAr)}"/></label><label>${ar ? "زر الإجراء EN" : "English CTA"}<input name="${prefix}.ctaLabelEn" value="${escapeHTML(benefit.ctaLabelEn)}"/></label><label>${ar ? "رابط الإجراء" : "CTA URL"}<input name="${prefix}.ctaUrl" value="${escapeHTML(benefit.ctaUrl)}" dir="ltr"/></label></div>
     </article>`;
   }).join("");
-  const categoryIconMarkup = [...ORIGO_HOME_CATEGORIES, ["offers", "العروض", "Offers", "٪"]].map(([key, arName, enName, fallback]) => `<label class="store-icon-upload"><span>${escapeHTML(ar ? arName : enName)}</span><span class="store-icon-preview" id="category-icon-preview-${key}">${settings.categoryIcons[key] ? `<img src="${escapeHTML(settings.categoryIcons[key])}" alt=""/>` : fallback}</span><input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" data-category-icon-upload="${key}"/></label>`).join("");
+  const categoryIconMarkup = [...ORIGO_HOME_CATEGORIES, ["offers", "العروض", "Offers", "٪"]].map(([key, arName, enName, fallback]) => `<label class="store-icon-upload"><span>${escapeHTML(ar ? arName : enName)}</span><span class="store-icon-preview" id="category-icon-preview-${key}">${settings.categoryIcons[key] ? `<img src="${escapeHTML(settings.categoryIcons[key])}" alt=""/>` : fallback}</span><input type="file" accept="image/png,image/jpeg,image/webp,image/avif" data-category-icon-upload="${key}"/></label>`).join("");
   return `<form class="admin-settings-form" id="admin-settings-form"><section><div class="review-section-head"><span>01</span><div><b>${ar ? "هوية المتجر والشعار المركزي" : "Store identity & central logo"}</b><small>${ar ? "يتغير الشعار في الهيدر والقائمة والفوتر من هنا." : "One source updates header, menu, and footer."}</small></div></div>
     <div class="review-grid"><label>${ar ? "اسم المتجر" : "Store name"}<input name="storeName" value="${escapeHTML(settings.storeName)}" /></label>
     <label>${ar ? "العملة" : "Currency"}<select name="currency">${selectOptions([["EGP","EGP"],["USD","USD"],["SAR","SAR"]], settings.currency)}</select></label>
     <label>${ar ? "الضريبة %" : "Tax rate %"}<input name="taxRate" type="number" min="0" max="100" value="${settings.taxRate}" /></label></div>
-    <div class="store-logo-settings">${logoFields.map(([key, arLabel, enLabel]) => `<label class="store-logo-field"><span>${ar ? arLabel : enLabel}</span><img id="store-logo-preview-${key}" src="${escapeHTML(settings.logos[key])}" alt=""/><input name="logo${key[0].toUpperCase()}${key.slice(1)}" value="${escapeHTML(settings.logos[key])}" dir="ltr"/><input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" data-logo-upload="${key}"/></label>`).join("")}</div></section>
+    <div class="store-logo-settings">${logoFields.map(([key, arLabel, enLabel]) => `<label class="store-logo-field"><span>${ar ? arLabel : enLabel}</span><img id="store-logo-preview-${key}" src="${escapeHTML(settings.logos[key])}" alt=""/><input name="logo${key[0].toUpperCase()}${key.slice(1)}" value="${escapeHTML(settings.logos[key])}" dir="ltr"/><input type="file" accept="image/png,image/jpeg,image/webp,image/avif" data-logo-upload="${key}"/></label>`).join("")}</div></section>
     <section class="appearance-settings"><input type="hidden" name="appearance.layoutTuningVersion" value="2"/><div class="review-section-head"><span>02</span><div><b>${ar ? "مظهر المتجر العام" : "Global store appearance"}</b><small>${ar ? "تحكم مركزي في الخطوط والصور والأيقونات والبطاقات مع معاينة فورية." : "Central control for typography, images, icons, and cards with live preview."}</small></div></div>
       <div class="appearance-balance-studio">
         <label class="appearance-master-switch"><input type="checkbox" name="appearance.balancedLayoutEnabled" ${appearance.balancedLayoutEnabled !== false ? "checked" : ""}/><span class="appearance-switch-track" aria-hidden="true"><i></i></span><span><b>${ar ? "التوازن الذكي للمساحات والنصوص" : "Smart spacing and text balance"}</b><small>${ar ? "يضبط المسافات والمربعات والصور تلقائيًا، ويضمن نصوصًا واضحة في المتجر ولوحة التحكم." : "Automatically balances spacing, cards, and images while keeping storefront and admin text readable."}</small></span></label>
@@ -2907,7 +2971,6 @@ function applyHomepageRailSettings() {
     element.setAttribute("aria-label", state.lang === "ar" ? settings[key]?.titleAr || "" : settings[key]?.titleEn || "");
   });
   document.documentElement.style.setProperty("--brand-marquee-duration", `${Math.max(12, Math.min(120, Number(settings.brands?.speed || 34)))}s`);
-  document.documentElement.style.setProperty("--benefit-marquee-duration", `${Math.max(6, Math.min(120, Number(settings.benefits?.speed || 18)))}s`);
 }
 
 function renderAdminDashboard(view = state.adminView) {
@@ -2949,7 +3012,7 @@ function renderAdminDashboard(view = state.adminView) {
     notes: notesViewMarkup,
     accounting: accountingMarkup,
     reports: reportsMarkup,
-    settings: storeSettingsDashboardMarkup
+    settings: () => storeSettingsDashboardMarkup()
     ,"ui-states": systemStatesMarkup
   };
   const dashboardContent = $("#admin-dashboard-content");
@@ -3193,14 +3256,21 @@ function openAccount(mode = "login", pendingAction = "") {
 }
 
 const orderStatuses = {
+  draft: ["مسودة", "Draft"],
+  new: ["جديد", "New"],
   received: ["تم استلام الطلب", "Order received"],
-  processing: ["قيد التجهيز", "Processing"],
+  awaiting_confirmation: ["بانتظار التأكيد", "Awaiting confirmation"],
+  confirmed: ["تم التأكيد", "Confirmed"],
+  processing: ["جاري التجهيز", "Processing"],
   ready_to_ship: ["جاهز للشحن", "Ready to ship"],
+  handed_to_carrier: ["تم تسليمه لشركة الشحن", "Handed to carrier"],
   shipped: ["تم الشحن", "Shipped"],
-  out_for_delivery: ["خرج للتسليم", "Out for delivery"],
+  out_for_delivery: ["قيد التوصيل", "Out for delivery"],
   delivered: ["تم التسليم", "Delivered"],
+  awaiting_customer: ["بانتظار العميل", "Awaiting customer"],
   cancelled: ["تم إلغاء الطلب", "Cancelled"],
-  returned: ["تم إرجاع الطلب", "Returned"]
+  returned: ["تم إرجاع الطلب", "Returned"],
+  delivery_failed: ["فشل التسليم", "Delivery failed"]
 };
 
 function orderStatusLabel(status) {
@@ -3335,7 +3405,7 @@ function updateLanguage() {
   renderSiteFooter();
   renderCart();
   renderWishlist();
-  renderCatalogList();
+  if (typeof renderCatalogList === "function") renderCatalogList();
   setMobileProductColumns(document.documentElement.dataset.productCardView === "one" ? "1" : "2", false);
   updateAccountIndicator();
   if ($("#account-overlay").classList.contains("open")) {
@@ -3343,7 +3413,7 @@ function updateLanguage() {
     else renderAuth($("#auth-form")?.dataset.mode || "login");
   }
   if ($("#checkout-overlay").classList.contains("open") && state.user && state.cart.length) renderCheckout();
-  if ($("#admin-orders-overlay").classList.contains("open")) $("#admin-orders-list").innerHTML = renderOrders(state.adminOrders, true);
+  if ($("#admin-orders-overlay")?.classList.contains("open")) $("#admin-orders-list").innerHTML = renderOrders(state.adminOrders, true);
   if (state.globalSearchQuery) renderSearchSuggestions(state.globalSearchQuery);
   if ($("#product-overlay").classList.contains("open") && state.activeProductId) {
     showProductDetails(getProduct(state.activeProductId), false);
@@ -3353,8 +3423,8 @@ function updateLanguage() {
   renderSiteFooter();
   if (document.body.classList.contains("benefit-route")) handleBenefitRoute({ replace: true });
   if (document.body.classList.contains("benefits-route")) handleBenefitsRoute({ replace: true });
-  if ($("#notes-admin-overlay").classList.contains("open")) renderNotesAdmin();
-  if ($("#admin-overlay").classList.contains("open")) renderAdminDashboard(state.adminView);
+  if ($("#notes-admin-overlay")?.classList.contains("open")) renderNotesAdmin();
+  if ($("#admin-overlay")?.classList.contains("open")) renderAdminDashboard(state.adminView);
   applyHomepageRailSettings();
 }
 
@@ -3408,7 +3478,7 @@ function localizeStaticStorefront() {
   setText("#home-seo-title", "ORIGO Scents | أوريجو سينتس - متجر العطور الأصلية في مصر", "ORIGO Scents | Original Perfume Store in Egypt");
   setText("#home-seo-copy", "يوفر ORIGO Scents عطورًا أصلية 100% للرجال والنساء وللجنسين من علامات تجارية متنوعة مع الأسعار والتوفر داخل مصر.", "ORIGO Scents offers 100% original perfumes for men, women and everyone from a wide range of brands, with prices and availability in Egypt.");
   setText("#home-original-perfumes-link", "تسوق العطور الأصلية", "Shop original perfumes");
-  renderHomeBenefitsMarquee();
+  renderHomeBenefitsCurtain();
   const genderCards = [
     ["للرجال", "عطور تعكس القوة والأناقة والثقة", "Men", "Fragrances of strength, elegance, and confidence"],
     ["للنساء", "عطور تمنحك الجمال والجاذبية", "Women", "Fragrances of beauty and allure"],
@@ -3505,16 +3575,17 @@ function renderBrandCarousel(query = "") {
   const brands = catalogNames.map((brand) => [brand, counts.get(brand) || 0])
     .filter(([brand]) => !normalized || ORIGOCatalog.normalize(brand).includes(normalized));
   const visibleBrands = brands;
-  const brandOptions = productOptionItems("brand");
+  const brandOptions = state.productOptions.filter((item) => item.group === "brand" && item.active !== false);
   const items = visibleBrands.map(([brand, count]) => {
-    const option = brandOptions.find((item) => [item.value,item.nameAr,item.nameEn].some((value) => normalizeOptionSearch(value) === normalizeOptionSearch(brand)));
+    const option = brandOptions.find((item) => [item.value,item.slug,item.nameAr,item.nameEn].some((value) => normalizeOptionSearch(value) === normalizeOptionSearch(brand)));
     const logo = option?.image || origoBrandLogo(brand);
     const artwork = logo ? `<img src="${escapeHTML(logo)}" alt="" loading="lazy"/>` : `<span aria-hidden="true">${escapeHTML(brand.slice(0, 2).toUpperCase())}</span>`;
     const label = localizedBrandLabel(brand);
     return `<button class="marquee-item" data-action="brand-search" data-query="${escapeHTML(brand)}" aria-label="${escapeHTML(`${state.lang === "ar" ? "عرض منتجات" : "View products by"} ${label}`)}">${artwork}<b>${escapeHTML(label)}</b></button>`;
   }).join("");
   $$("#brand-carousel-track, #home-brand-carousel-track").forEach((track) => {
-    track.innerHTML = items ? `<div class="brand-marquee-content"><div class="brand-marquee-set">${items}</div></div>` : "";
+    const duplicateItems = items.replaceAll("<button ", "<button tabindex=\"-1\" aria-hidden=\"true\" ");
+    track.innerHTML = items ? `<div class="brand-marquee-content"><div class="brand-marquee-set">${items}</div><div class="brand-marquee-set" aria-hidden="true">${duplicateItems}</div></div>` : "";
     bindBrandMarquee(track);
   });
   renderHomeRailDots("#home-brand-dots", visibleBrands.length, mobile ? 4 : 6);
@@ -3545,18 +3616,28 @@ function bindHomeBrandPagination(track, dotsSelector) {
   requestAnimationFrame(update);
 }
 
-function renderHomeBenefitsMarquee() {
+function renderHomeBenefitsCurtain() {
   const track = $("#home-benefits-track");
   if (!track) return;
-  const benefits = activeFooterBenefits();
-  const items = benefits.map((benefit) => {
-    const title = state.lang === "ar" ? benefit.titleAr : benefit.titleEn;
-    const short = state.lang === "ar" ? benefit.shortAr : benefit.shortEn;
-    return `<a class="marquee-item benefit-marquee-item" href="/benefits/${escapeHTML(benefit.slug)}" data-action="benefit-link" data-slug="${escapeHTML(benefit.slug)}"><span class="benefit-icon">${footerBenefitIcon(benefit.icon, benefit.colors)}</span><b>${escapeHTML(title)}</b><small>${escapeHTML(short || "")}</small></a>`;
+  const available = new Map(activeFooterBenefits().map((benefit) => [benefit.slug, benefit]));
+  const benefits = [
+    ["shipping", "شحن سريع", "Fast shipping", "توصيل سريع خلال 2–3 أيام عمل", "Fast delivery within 2–3 business days", "customer-service"],
+    ["returns", "استرجاع سهل", "Easy returns", "استرجاع واستبدال خلال 14 يوم", "Returns and exchanges within 14 days", "easy-returns"],
+    ["authentic", "منتجات أصلية 100%", "100% authentic products", "منتجات أصلية وموثوقة", "Authentic, trusted products", ""],
+    ["support", "خدمة عملاء 24/7", "24/7 customer service", "خدمة عملاء على مدار الساعة", "Customer service around the clock", "customer-service"],
+    ["cod", "دفع آمن", "Secure payment", "بوابات دفع آمنة ومشفرة", "Secure, encrypted payment gateways", ""],
+    ["prices", "أسعار منافسة", "Competitive prices", "قيمة ممتازة مقابل الجودة", "Excellent value for quality", ""],
+    ["gift", "تغليف فاخر", "Luxury wrapping", "تغليف أنيق وجاهز للإهداء", "Elegant, gift-ready wrapping", "luxury-gift-wrap"],
+    ["samples", "عينات عطور", "Perfume samples", "عينات مختارة مع الطلبات", "Selected samples with orders", "perfume-samples"]
+  ];
+  track.innerHTML = benefits.map(([icon, titleAr, titleEn, shortAr, shortEn, slug]) => {
+    const target = slug && available.has(slug) ? slug : "";
+    const title = state.lang === "ar" ? titleAr : titleEn;
+    const short = state.lang === "ar" ? shortAr : shortEn;
+    return `<button class="benefits-curtain-item" type="button"${target ? ` data-action="benefit-link" data-slug="${escapeHTML(target)}"` : " disabled"}><span class="benefit-icon">${footerBenefitIcon(icon)}</span><span class="benefits-curtain-copy"><b>${escapeHTML(title)}</b><small>${escapeHTML(short)}</small></span>${target ? `<span class="benefits-curtain-link" aria-hidden="true">${luxuryIcon("chevron")}</span>` : ""}</button>`;
   }).join("");
-  track.innerHTML = items ? `<div class="brand-marquee-content benefit-marquee-content"><div class="brand-marquee-set benefit-marquee-set">${items}</div></div>` : "";
-  bindBrandMarquee(track);
-  renderHomeRailDots("#home-benefit-dots", benefits.length, matchMedia("(max-width: 700px)").matches ? 4 : 6);
+  const trigger = $("[data-action='toggle-benefits-curtain']");
+  if (trigger) trigger.querySelector("#home-benefits-title").textContent = state.lang === "ar" ? "مميزاتنا" : "Our benefits";
 }
 
 function renderHomeNavigation() {
@@ -3747,7 +3828,7 @@ function renderConfiguredHomeProductRows() {
 }
 
 function renderHomepageCommerce() {
-  renderHomeBenefitsMarquee();
+  renderHomeBenefitsCurtain();
   renderConfiguredHomeProductRows();
   observeReveals();
 }
@@ -4175,6 +4256,7 @@ function navigateBenefit(slug) {
 
 function renderProducts(filter = "all") {
   const grid = $("#product-grid");
+  if (!grid) return;
   const search = ORIGOCatalog.normalize(state.storefrontSearchQuery);
   const perfumeOnly = mergeStoreSettings(state.adminWorkspace.settings || {}).perfumeOnlyMode !== false;
   const visibleProducts = state.products
@@ -4625,6 +4707,23 @@ function toggleCatalogFilters(force) {
 
 function getProduct(id) {
   return state.products.find((product) => product.id === id);
+}
+
+const productDetailRequests = new Map();
+
+async function hydrateProductDetails(product) {
+  if (!product || product.detailLoaded !== false || !state.serverAvailable) return product;
+  if (!productDetailRequests.has(product.id)) {
+    productDetailRequests.set(product.id, api(`/api/products/${encodeURIComponent(product.id)}`)
+      .then((payload) => {
+        const detailed = serverProduct(payload.product);
+        const index = state.products.findIndex((item) => item.id === product.id);
+        if (index >= 0) state.products[index] = detailed;
+        return detailed;
+      })
+      .finally(() => productDetailRequests.delete(product.id)));
+  }
+  return productDetailRequests.get(product.id);
 }
 
 function addToCart(product, quantity = 1) {
@@ -6211,13 +6310,13 @@ function productCardMarkup(product, options = {}) {
         <button class="card-action-button card-favorite-button${saved ? " active" : ""}"${interactive ? ` data-action="toggle-wishlist"` : disabled} aria-label="${escapeHTML(favoriteLabel)}" aria-pressed="${saved}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/></svg></button>
         <button class="card-action-button card-compare-button${compared ? " active" : ""}"${interactive ? ` data-action="toggle-product-compare"` : disabled} aria-label="${escapeHTML(compareLabel)}" aria-pressed="${compared}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h12m0 0-3-3m3 3-3 3M17 17H5m0 0 3 3m-3-3 3-3"/></svg></button>
       </div>
-      <button type="button" class="product-card-media-link"${interactive ? ` data-action="open-product" data-id="${escapeHTML(product.id)}"` : disabled} aria-label="${escapeHTML(isArabic ? `عرض ${name}` : `View ${name}`)}">${hasProductImage
+      <a class="product-card-media-link" href="/perfume/${encodeURIComponent(product.slug || product.id)}"${interactive ? ` data-action="open-product" data-id="${escapeHTML(product.id)}"` : ` tabindex="-1" aria-disabled="true"`} aria-label="${escapeHTML(isArabic ? `عرض ${name}` : `View ${name}`)}">${hasProductImage
         ? `<img src="${escapeHTML(mainImage)}" alt="${escapeHTML(`${localizedProductBrand(product)} ${name}`)}" width="640" height="700" loading="lazy" decoding="async" draggable="false" />`
-        : `<span class="product-image-missing" role="img" aria-label="${escapeHTML(isArabic ? "صورة المنتج غير متاحة" : "Product image unavailable")}"><i aria-hidden="true">◇</i><small>${isArabic ? "الصورة غير متاحة" : "Image unavailable"}</small></span>`}</button>
+        : `<span class="product-image-missing" role="img" aria-label="${escapeHTML(isArabic ? "صورة المنتج غير متاحة" : "Product image unavailable")}"><i aria-hidden="true">◇</i><small>${isArabic ? "الصورة غير متاحة" : "Image unavailable"}</small></span>`}</a>
     </div>
     <div class="product-info">
       <div class="exact-card-heading"><div class="product-brand" dir="auto">${escapeHTML(localizedProductBrand(product))}</div>${ratingSummary.rating == null ? "" : `<span class="exact-card-rating"><b aria-hidden="true">★</b><span>${formatNumber(ratingSummary.rating, { maximumFractionDigits:2 })}</span>${ratingSummary.count == null ? "" : `<small>(${formatNumber(ratingSummary.count)})</small>`}</span>`}</div>
-      <h3 class="exact-card-product-name${productNameSizeClass}"><button type="button"${interactive ? ` data-action="open-product" data-id="${escapeHTML(product.id)}"` : disabled}>${escapeHTML(name || (isArabic ? "منتج جديد" : "New product"))}</button></h3>
+      <h3 class="exact-card-product-name${productNameSizeClass}"><a href="/perfume/${encodeURIComponent(product.slug || product.id)}"${interactive ? ` data-action="open-product" data-id="${escapeHTML(product.id)}"` : ` tabindex="-1" aria-disabled="true"`}>${escapeHTML(name || (isArabic ? "منتج جديد" : "New product"))}</a></h3>
       <div class="product-bottom">
         <div class="exact-card-prices"><b class="product-price">${formatPrice(price)}</b>${oldPrice > price ? `<del>${formatPrice(oldPrice)}</del>` : ""}</div>
         <div class="exact-card-actions">
@@ -6441,6 +6540,11 @@ function bindProductGallerySwipe() {
 
 function showProductDetails(product, shouldOpen = true) {
   if (!product) return;
+  if (product.detailLoaded === false) {
+    hydrateProductDetails(product).then((detailed) => {
+      if (detailed && state.activeProductId === product.id) showProductDetails(detailed, false);
+    }).catch(() => {});
+  }
   const changedProduct = state.activeProductId !== product.id;
   state.activeProductId = product.id;
   if (changedProduct) {
@@ -6501,7 +6605,7 @@ function showProductDetails(product, shouldOpen = true) {
           <div class="pdp-price-row"><div class="pdp-price"><b>${formatPrice(product.price)}</b>${product.oldPrice ? `<del>${formatPrice(product.oldPrice)}</del>` : ""}${discount ? `<em>-${discount}%</em>` : ""}<small>${taxRate ? (isArabic ? `شامل ضريبة القيمة المضافة ${taxRate}%` : `VAT ${taxRate}% included`) : ""}</small></div></div>
           ${sizes[0] ? `<p class="pdp-fixed-size">${isArabic ? "الحجم" : "Size"}: <b><bdi dir="ltr">${escapeHTML(formatProductSize(sizes[0]))}</bdi></b></p>` : ""}
           ${available ? `<div class="pdp-stock available"><i></i><span>${isArabic ? "متوفر للطلب" : "Available to order"}</span></div>
-          <div class="pdp-purchase-controls"><div class="pdp-buy-row"><div class="pdp-quantity"><span>${isArabic ? "الكمية" : "Quantity"}</span><div><button data-action="detail-quantity" data-change="-1" aria-label="${isArabic ? "تقليل الكمية" : "Decrease quantity"}">−</button><b>${state.activeProductQuantity}</b><button data-action="detail-quantity" data-change="1" aria-label="${isArabic ? "زيادة الكمية" : "Increase quantity"}">＋</button></div></div><button class="pdp-price-add" data-action="product-detail-add" data-id="${escapeHTML(product.id)}"><span aria-hidden="true">🛒</span><b>${translations[state.lang].addToBag}</b></button></div>
+          <div class="pdp-purchase-controls"><div class="pdp-buy-row"><div class="pdp-quantity"><span>${isArabic ? "الكمية" : "Quantity"}</span><div><button data-action="detail-quantity" data-change="-1" aria-label="${isArabic ? "تقليل الكمية" : "Decrease quantity"}">−</button><b>${state.activeProductQuantity}</b><button data-action="detail-quantity" data-change="1" aria-label="${isArabic ? "زيادة الكمية" : "Increase quantity"}">＋</button></div></div><button class="pdp-price-add" data-action="product-detail-add" data-id="${escapeHTML(product.id)}"><span aria-hidden="true">${luxuryIcon("bag")}</span><b>${translations[state.lang].addToBag}</b></button></div>
           <div class="pdp-actions pdp-secondary-actions"><button class="pdp-favorite ${isSaved ? "active" : ""}" data-action="quick-view-wishlist" data-id="${escapeHTML(product.id)}"><span>${isSaved ? "♥" : "♡"}</span>${isSaved ? (isArabic ? "محفوظ في المفضلة" : "Saved") : (isArabic ? "أضف إلى المفضلة" : "Add to wishlist")}</button><button class="pdp-compare ${state.comparison.includes(product.id) ? "active" : ""}" data-action="toggle-product-compare" data-id="${escapeHTML(product.id)}" aria-pressed="${state.comparison.includes(product.id)}"><span>⚖</span>${isArabic ? "مقارنة" : "Compare"}</button></div></div>` : `${restockMarkup}
           <div class="pdp-actions pdp-unavailable-actions"><button class="pdp-favorite ${isSaved ? "active" : ""}" data-action="quick-view-wishlist" data-id="${escapeHTML(product.id)}"><span>${isSaved ? "♥" : "♡"}</span>${isArabic ? "المفضلة" : "Wishlist"}</button><button class="pdp-compare ${state.comparison.includes(product.id) ? "active" : ""}" data-action="toggle-product-compare" data-id="${escapeHTML(product.id)}" aria-pressed="${state.comparison.includes(product.id)}"><span>⚖</span>${isArabic ? "مقارنة" : "Compare"}</button></div>`}
           <div class="pdp-benefits"><span><i>✓</i>${isArabic ? "منتج أصلي 100%" : "100% authentic"}</span><span><i>◉</i>${isArabic ? "الدفع عند الاستلام" : "Cash on delivery"}</span></div>
@@ -6735,6 +6839,9 @@ function toggleMobileMenu(force) {
   syncBodyLock();
 }
 
+const dialogReturnFocus = new WeakMap();
+const dialogFocusable = (root) => [...root.querySelectorAll('a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])')].filter((element) => element.offsetParent !== null);
+
 function openOverlay(id) {
   $$(".overlay.open").forEach((overlay) => {
     overlay.classList.remove("open");
@@ -6743,6 +6850,8 @@ function openOverlay(id) {
   closeDrawers();
   toggleMobileMenu(false);
   const overlay = $(id);
+  if (!overlay) return;
+  dialogReturnFocus.set(overlay, document.activeElement);
   overlay.classList.add("open");
   overlay.setAttribute("aria-hidden", "false");
   syncBodyLock();
@@ -6750,9 +6859,13 @@ function openOverlay(id) {
 }
 
 function closeOverlay(overlay) {
+  if (!overlay) return;
   overlay.classList.remove("open");
   overlay.setAttribute("aria-hidden", "true");
   syncBodyLock();
+  const returnTarget = dialogReturnFocus.get(overlay);
+  if (returnTarget?.isConnected) returnTarget.focus({ preventScroll:true });
+  dialogReturnFocus.delete(overlay);
 }
 
 function toggleDrawer(id, force) {
@@ -8011,27 +8124,33 @@ async function optimizeGalleryImage(file) {
     paint();
     result = canvas.toDataURL(outputType, quality);
   }
-  while (result.length > 620_000 && quality > .48) {
+  const encodedImageBytes = (value) => {
+    const base64 = String(value || "").split(",")[1] || "";
+    return Math.max(0, Math.floor(base64.length * 3 / 4) - (base64.endsWith("==") ? 2 : base64.endsWith("=") ? 1 : 0));
+  };
+  while (encodedImageBytes(result) > 100 * 1024 && quality > .35) {
     quality -= .07;
     result = canvas.toDataURL(outputType, quality);
   }
-  while (result.length > 620_000 && canvas.width > 720) {
-    canvas.width = Math.max(720, Math.round(canvas.width * .84));
-    canvas.height = Math.max(360, Math.round(canvas.height * .84));
+  while (encodedImageBytes(result) > 100 * 1024 && canvas.width > 480) {
+    const nextWidth = Math.max(480, Math.round(canvas.width * .84));
+    const nextHeight = Math.max(270, Math.round(canvas.height * (nextWidth / canvas.width)));
+    canvas.width = nextWidth;
+    canvas.height = nextHeight;
     paint();
-    quality = .68;
+    quality = .62;
     result = canvas.toDataURL(outputType, quality);
   }
+  if (encodedImageBytes(result) > 100 * 1024) throw new Error(adminCopy("تعذر ضغط الصورة إلى أقل من 100 KB دون إتلافها. اختر صورة أبسط.", "The image could not be reduced below 100 KB without damage. Choose a simpler image."));
   if (result === "data:,") throw new Error(adminCopy("فشل تحويل الصورة. جرّب صورة أصغر.", "Image conversion failed. Try a smaller image."));
   return result;
 }
 
 async function uploadStorefrontImage(file, folder = "hero") {
   const dataUrl = await optimizeGalleryImage(file);
-  // Store optimized managed artwork with the workspace. Filesystem upload URLs
-  // can disappear after a restart or deployment; this payload persists across
-  // reloads and is available to every device through storefront settings.
-  return dataUrl;
+  if (!state.serverAvailable) throw new Error(adminCopy("يلزم الاتصال بالخادم لحفظ الصورة بصورة دائمة.", "A server connection is required to store this image permanently."));
+  const stored = await api("/api/admin/uploads/storefront-image", { method:"POST", body:JSON.stringify({ folder, dataUrl }) });
+  return stored.url;
 }
 
 async function optimizeProductOptionArtwork(file) {
@@ -8479,6 +8598,17 @@ document.addEventListener("pointerup", (event) => {
   else if (Math.abs(deltaX) < 8 && Math.abs(deltaY) < 8 && !window.ORIGOPerfumeAura?.handleTap(event, media)) showProductDetails(getProduct(productId));
 });
 document.addEventListener("keydown", (event) => {
+  if (event.key === "Tab") {
+    const activeDialog = $(".overlay.open, .drawer.open");
+    if (activeDialog) {
+      const focusable = dialogFocusable(activeDialog);
+      if (focusable.length) {
+        const first = focusable[0], last = focusable[focusable.length - 1];
+        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+      }
+    }
+  }
   if (event.target.matches("[data-smart-search]")) {
     const menu = event.target.closest(".smart-select-menu");
     const options = [...menu.querySelectorAll("[role='option']:not([hidden])")];
@@ -8619,12 +8749,19 @@ document.addEventListener("click", async (event) => {
     return;
   }
   if (action === "drag-strip-scroll") {
-    const track = actionElement.closest(".home-brand-directory,.home-benefits-directory")?.querySelector(".brand-carousel-track,.benefit-carousel-track");
+    const track = actionElement.closest(".home-brand-directory")?.querySelector(".brand-carousel-track");
     if (track) {
       const direction = Number(actionElement.dataset.direction) || 1;
       const pageStep = track.id === "home-brand-carousel-track" ? track.clientWidth : Math.max(240, track.clientWidth * .65);
       track.scrollBy({ left: direction * pageStep, behavior: "smooth" });
     }
+  }
+  if (action === "toggle-benefits-curtain") {
+    const curtain = $("#home-benefits-curtain");
+    const expanded = actionElement.getAttribute("aria-expanded") === "true";
+    actionElement.setAttribute("aria-expanded", String(!expanded));
+    curtain?.setAttribute("aria-hidden", String(expanded));
+    return;
   }
   if (action === "parse-perfume-bundle") {
     const form = actionElement.closest("#import-review-form");
@@ -9206,8 +9343,46 @@ document.addEventListener("click", async (event) => {
   }
   if (action === "admin-order-filter") {
     state.adminOrderStatusFilter = actionElement.dataset.status || "all";
+    state.adminOrderPagination.page = 1;
     state.activeAdminOrderId = null;
+    await refreshAdminOrders();
+  }
+  if (action === "orders-page") {
+    state.adminOrderPagination.page = Number(actionElement.dataset.page || 1);
+    await refreshAdminOrders();
+  }
+  if (action === "create-manual-order") openAdminEditorModal(manualOrderMarkup(), "[name='phone']");
+  if (action === "add-manual-order-item") {
+    const list = $("#manual-order-items");
+    if (list) list.insertAdjacentHTML("beforeend", manualOrderItemMarkup(list.children.length));
+  }
+  if (action === "remove-manual-order-item") {
+    const item = actionElement.closest("[data-manual-order-item]");
+    if ($$("[data-manual-order-item]", item?.parentElement).length > 1) item?.remove();
+  }
+  if (action === "quick-order-status") {
+    const result = await api(`/api/admin/orders/${actionElement.dataset.id}/status`, { method:"POST", body:JSON.stringify({ status:actionElement.dataset.status }) });
+    state.adminOrders = state.adminOrders.map((order)=>Number(order.id)===Number(result.order.id)?result.order:order);
     renderAdminDashboard("orders");
+    showToast(adminCopy("تم تنفيذ الإجراء التالي", "Order advanced"));
+  }
+  if (action === "archive-order") {
+    const result = await api(`/api/admin/orders/${actionElement.dataset.id}/archive`, { method:"POST", body:"{}" });
+    state.adminOrders = state.adminOrders.filter((order)=>Number(order.id)!==Number(result.order.id));
+    renderAdminDashboard("orders");
+    showToast(adminCopy("تمت أرشفة الطلب", "Order archived"));
+  }
+  if (action === "add-order-note") {
+    const result = await api(`/api/admin/orders/${actionElement.dataset.id}/notes`, { method:"POST", body:JSON.stringify({ type:$("#new-order-note-type")?.value, note:$("#new-order-note")?.value }) });
+    state.adminOrders = state.adminOrders.map((order)=>Number(order.id)===Number(result.order.id)?result.order:order);
+    renderAdminDashboard("orders");
+  }
+  if (action === "bulk-order-status" || action === "bulk-order-archive") {
+    const ids=$$("[data-order-select]:checked").map((input)=>Number(input.value));
+    if(!ids.length){showToast(adminCopy("حدد طلبًا واحدًا على الأقل", "Select at least one order"));return;}
+    if(!confirm(adminCopy(`تنفيذ الإجراء على ${ids.length} طلب؟`,`Apply this action to ${ids.length} orders?`)))return;
+    for(const id of ids) await api(action==="bulk-order-archive"?`/api/admin/orders/${id}/archive`:`/api/admin/orders/${id}/status`,{method:"POST",body:JSON.stringify(action==="bulk-order-status"?{status:actionElement.dataset.status}:{})});
+    await refreshAdminOrders();
   }
   if (action === "toggle-banner") {
     const banner = (state.adminWorkspace.banners || []).find((item) => item.id === actionElement.dataset.id);
@@ -9477,7 +9652,12 @@ document.addEventListener("click", async (event) => {
   }
   if (action === "open-order-details") {
     state.activeAdminOrderId = Number(actionElement.dataset.id);
-    const order = state.adminOrders.find((item) => Number(item.id) === state.activeAdminOrderId);
+    let order = state.adminOrders.find((item) => Number(item.id) === state.activeAdminOrderId);
+    try {
+      const result = await api(`/api/admin/orders/${state.activeAdminOrderId}/viewed`, { method:"POST", body:"{}" });
+      order = result.order || order;
+      state.adminOrders = state.adminOrders.map((item)=>Number(item.id)===state.activeAdminOrderId?order:item);
+    } catch {}
     if (order) history.pushState({ adminView: "orders", orderId: order.id }, "", `/admin/orders/${encodeURIComponent(order.orderNumber || order.id)}`);
     renderAdminDashboard("orders");
   }
@@ -9673,6 +9853,8 @@ document.addEventListener("click", async (event) => {
   if (action === "card-image") setCardImage(actionElement.dataset.id, Number(actionElement.dataset.change || 0));
   if (action === "card-image-index") setCardImage(actionElement.dataset.id, Number(actionElement.dataset.index || 0), true);
   if (action === "open-product") {
+    if (actionElement.matches("a[href]") && (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0)) return;
+    event.preventDefault();
     const dialog = actionElement.closest("dialog");
     if (dialog?.open && typeof dialog.close === "function") dialog.close();
     showProductDetails(getProduct(actionElement.dataset.id));
@@ -10118,6 +10300,24 @@ document.addEventListener("submit", async (event) => {
     }
     return;
   }
+  if (event.target.id === "admin-order-search-form") {
+    const data = new FormData(event.target);
+    state.adminOrderQuery = String(data.get("q") || "").trim();
+    state.adminOrderSourceFilter = String(data.get("source") || "all");
+    state.adminOrderCollectionFilter = String(data.get("collectionStatus") || "all");
+    state.adminOrderSort = String(data.get("sort") || "newest");
+    state.adminOrderPagination.page = 1;
+    await refreshAdminOrders();
+    return;
+  }
+  if (event.target.id === "manual-order-form") {
+    const form=event.target,data=new FormData(form),items=$$("[data-manual-order-item]",form).map((row)=>{const product=row.querySelector("select")?.value;return product?{productId:product,quantity:Number(row.querySelector("[name^='itemQuantity']")?.value||1),unitPrice:row.querySelector("[name^='itemPrice']")?.value||undefined,discount:Number(row.querySelector("[name^='itemDiscount']")?.value||0)}:null;}).filter(Boolean);
+    try {
+      const result=await api("/api/admin/orders",{method:"POST",body:JSON.stringify({draft:event.submitter?.value==="draft",orderSource:data.get("orderSource"),priority:data.get("priority"),customerName:data.get("customerName"),phone:data.get("phone"),extraPhone:data.get("extraPhone"),governorate:data.get("governorate"),city:data.get("city"),address:data.get("address"),shippingTotal:Number(data.get("shippingTotal")||0),paymentMethod:data.get("paymentMethod"),customerNotes:data.get("customerNotes"),internalNotes:data.get("internalNotes"),items})});
+      closeAdminEditorModal();state.adminOrderStatusFilter="all";state.adminOrderPagination.page=1;await refreshAdminOrders();state.activeAdminOrderId=result.order.id;renderAdminDashboard("orders");showToast(event.submitter?.value==="draft"?adminCopy("تم حفظ المسودة","Draft saved"):adminCopy("تم إنشاء الطلب","Order created"));
+    } catch(error){showToast(error.message);}
+    return;
+  }
   if (event.target.id === "admin-order-details-form") {
     const data = new FormData(event.target);
     try {
@@ -10125,7 +10325,13 @@ document.addEventListener("submit", async (event) => {
         method: "POST",
         body: JSON.stringify({
           status: String(data.get("status") || "new"),
+          rowVersion: Number(data.get("rowVersion") || 1),
           paymentStatus: String(data.get("paymentStatus") || "pending"),
+          collectionStatus: String(data.get("collectionStatus") || "uncollected"),
+          amountPaid: Number(data.get("amountPaid") || 0),
+          priority: String(data.get("priority") || "normal"),
+          assignedTo: data.get("assignedTo") ? Number(data.get("assignedTo")) : null,
+          tags: String(data.get("tags") || "").split(",").map((tag) => tag.trim()).filter(Boolean),
           shippingCarrier: String(data.get("shippingCarrier") || "").trim(),
           trackingNumber: String(data.get("trackingNumber") || "").trim(),
           internalNotes: String(data.get("internalNotes") || "").trim()
@@ -11137,7 +11343,9 @@ document.addEventListener("change", async (event) => {
     if (status) status.textContent = adminCopy("جارٍ ضغط الصورة وتجهيزها…", "Optimizing artwork…");
     if (saveButton) saveButton.disabled = true;
     try {
-      const value = await optimizeProductOptionArtwork(file);
+      const value = dialog.dataset.group === "brand" && file.type !== "image/svg+xml"
+        ? await uploadStorefrontImage(file, "brand")
+        : await optimizeProductOptionArtwork(file);
       dialog.querySelector("[name='image']").value = value;
       const preview = dialog.querySelector(".option-image-preview");
       preview.hidden = false;
@@ -11160,58 +11368,56 @@ document.addEventListener("change", async (event) => {
   if (event.target.matches("[data-logo-upload]")) {
     const file = event.target.files?.[0];
     if (!file) return;
-    if (file.size > 350_000) {
-      event.target.value = "";
-      showToast(adminCopy("ملف الشعار أكبر من 350 KB", "Logo file exceeds 350 KB"));
-      return;
-    }
     const key = event.target.dataset.logoUpload;
-    const reader = new FileReader();
-    reader.addEventListener("load", () => {
-      state.pendingStoreLogos[key] = String(reader.result || "");
+    try {
+      state.pendingStoreLogos[key] = await uploadStorefrontImage(file, "settings");
       const preview = $(`#store-logo-preview-${key}`);
       if (preview) preview.src = state.pendingStoreLogos[key];
-    }, { once: true });
-    reader.readAsDataURL(file);
+    } catch (error) {
+      event.target.value = "";
+      showToast(error.message, "error");
+    }
     return;
   }
   if (event.target.matches("[data-benefit-icon-upload]")) {
     const file = event.target.files?.[0];
     if (!file) return;
-    if (!/^image\/(png|jpeg|webp|svg\+xml)$/.test(file.type) || file.size > 350_000) {
+    if (!/^image\/(png|jpeg|webp|avif)$/.test(file.type) || file.size > 15 * 1024 * 1024) {
       event.target.value = "";
-      showToast(adminCopy("اختر صورة صالحة لا تتجاوز 350 KB", "Choose a valid image up to 350 KB"));
+      showToast(adminCopy("اختر صورة صالحة لا تتجاوز 15 MB", "Choose a valid image up to 15 MB"));
       return;
     }
     const id = event.target.dataset.benefitIconUpload;
-    const reader = new FileReader();
-    reader.addEventListener("load", () => {
-      state.pendingBenefitIcons[id] = String(reader.result || "");
+    try {
+      state.pendingBenefitIcons[id] = await uploadStorefrontImage(file, "settings");
       const preview = $(`#benefit-icon-preview-${CSS.escape(id)}`);
       if (preview) preview.src = state.pendingBenefitIcons[id];
-    }, { once: true });
-    reader.readAsDataURL(file);
+    } catch (error) {
+      event.target.value = "";
+      showToast(error.message, "error");
+    }
     return;
   }
   if (event.target.matches("[data-category-icon-upload], [data-home-benefit-icon-upload]")) {
     const file = event.target.files?.[0];
     if (!file) return;
-    if (!/^image\/(png|jpeg|webp|svg\+xml)$/.test(file.type) || file.size > 350_000) {
+    if (!/^image\/(png|jpeg|webp|avif)$/.test(file.type) || file.size > 15 * 1024 * 1024) {
       event.target.value = "";
-      showToast(adminCopy("اختر صورة صالحة لا تتجاوز 350 KB", "Choose a valid image up to 350 KB"));
+      showToast(adminCopy("اختر صورة صالحة لا تتجاوز 15 MB", "Choose a valid image up to 15 MB"));
       return;
     }
     const isCategory = event.target.matches("[data-category-icon-upload]");
     const key = isCategory ? event.target.dataset.categoryIconUpload : event.target.dataset.homeBenefitIconUpload;
     const pending = isCategory ? state.pendingCategoryIcons : state.pendingHomeBenefitIcons;
     const previewId = `${isCategory ? "category" : "home-benefit"}-icon-preview-${key}`;
-    const reader = new FileReader();
-    reader.addEventListener("load", () => {
-      pending[key] = String(reader.result || "");
+    try {
+      pending[key] = await uploadStorefrontImage(file, "settings");
       const preview = $(`#${CSS.escape(previewId)}`);
       if (preview) preview.innerHTML = `<img src="${escapeHTML(pending[key])}" alt=""/>`;
-    }, { once: true });
-    reader.readAsDataURL(file);
+    } catch (error) {
+      event.target.value = "";
+      showToast(error.message, "error");
+    }
     return;
   }
   if (event.target.matches("[data-catalog-filter]")) {
@@ -11618,7 +11824,7 @@ function bindHorizontalRail(rail) {
   }, true);
 }
 
-$$("[data-brand-marquee], [data-benefit-marquee]").forEach(bindBrandMarquee);
+$$("[data-brand-marquee]").forEach(bindBrandMarquee);
 $$('[data-horizontal-rail]').forEach(bindHorizontalRail);
 
 const backToTopButton = $("#back-to-top");
@@ -11673,6 +11879,7 @@ window.ORIGOStore = {
   escapeHTML
 };
 checkoutFormMarkup = $("#checkout-overlay .checkout-grid").innerHTML;
+const directProductRoute = /^\/perfume\/[^/]+\/?$/i.test(location.pathname);
 setupTheme();
 saveNavigationSnapshot();
 updateLanguage();
@@ -11684,12 +11891,14 @@ handleBenefitsRoute({ replace: true });
 handleNotesRoute({ replace: true });
 handleBrandsRoute({ replace: true });
 handleCatalogRoute({ replace: true });
-renderHomeNavigation();
-renderHomeHero();
-renderBrandCarousel();
-renderProducts($(".chip.active")?.dataset.filter || "all");
+if (!directProductRoute) {
+  renderHomeNavigation();
+  renderHomeHero();
+  renderBrandCarousel();
+  renderProducts($(".chip.active")?.dataset.filter || "all");
+}
 initializeMobileProductColumns();
-renderHomepageCommerce();
+if (!directProductRoute) renderHomepageCommerce();
 normalizeRenderedLatinDigits(document);
 latinDigitObserver.observe(document.documentElement, { childList:true, subtree:true });
 observeReveals();

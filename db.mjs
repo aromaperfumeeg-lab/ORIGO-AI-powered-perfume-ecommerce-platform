@@ -1293,14 +1293,31 @@ export function userFromSession(token) {
   return publicUser(row);
 }
 
-export function listProducts({ includeHidden = false, limit = 0, offset = 0 } = {}) {
+export function listProducts({ includeHidden = false, limit = 0, offset = 0, summary = false } = {}) {
   const safeLimit = Math.max(0, Math.min(200, Number(limit) || 0));
   const safeOffset = Math.max(0, Number(offset) || 0);
   const pagination = safeLimit ? ` LIMIT ${safeLimit} OFFSET ${safeOffset}` : "";
   const rows = includeHidden
     ? db.prepare(`SELECT * FROM products ORDER BY created_at DESC${pagination}`).all()
     : db.prepare(`SELECT * FROM products WHERE status = 'published' ORDER BY created_at, id${pagination}`).all();
-  return rows.map((row) => productFromRow(row, includeHidden));
+  return rows.map((row) => {
+    const product = productFromRow(row, includeHidden);
+    if (!summary || includeHidden) return product;
+    return {
+      ...product,
+      noteLibrary: undefined,
+      noteRefs: Array.isArray(product.noteRefs)
+        ? product.noteRefs.map(({ image: _image, ...note }) => note)
+        : [],
+      detailLoaded: false
+    };
+  });
+}
+
+export function getPublishedProduct(productId) {
+  const row = db.prepare("SELECT * FROM products WHERE id = ? AND status = 'published'").get(clean(productId, 200));
+  const product = productFromRow(row, false);
+  return product ? { ...product, detailLoaded: true } : null;
 }
 
 export function countProducts({ includeHidden = false } = {}) {

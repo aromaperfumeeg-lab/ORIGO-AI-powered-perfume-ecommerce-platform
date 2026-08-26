@@ -5,6 +5,7 @@ import { readFile } from "node:fs/promises";
 const app = await readFile(new URL("../app.js", import.meta.url), "utf8");
 const finderI18n = await readFile(new URL("../fragrance-finder-i18n.js", import.meta.url), "utf8");
 const appearance = await readFile(new URL("../appearance.css", import.meta.url), "utf8");
+const noEffects = await readFile(new URL("../no-effects.css", import.meta.url), "utf8");
 const styles = await readFile(new URL("../styles.css", import.meta.url), "utf8");
 const productDetail = await readFile(new URL("../product-detail.css", import.meta.url), "utf8");
 const index = await readFile(new URL("../index.html", import.meta.url), "utf8");
@@ -40,19 +41,19 @@ test("light mode uses a white background behind transparent product imagery", ()
 
 test("homepage benefits use one admin source and transparent vector icons", () => {
   const admin = app.slice(app.indexOf("const benefitMarkup ="), app.indexOf("const categoryIconMarkup ="));
-  const homeBenefits = app.slice(app.indexOf("function renderHomeBenefitsMarquee"), app.indexOf("function renderHomeNavigation"));
+  const homeBenefits = app.slice(app.indexOf("function renderHomeBenefitsCurtain"), app.indexOf("function renderHomeNavigation"));
   assert.doesNotMatch(admin, /homeBenefitIconMarkup|data-benefit-icon-upload|data-home-benefit-icon-upload/);
   assert.doesNotMatch(app, /const homeBenefitIconMarkup/);
   assert.match(app, /data-action="add-store-benefit"/);
   assert.match(admin, /الرمز التعبيري الشفاف|Transparent expressive icon/);
-  assert.match(homeBenefits, /footerBenefitIcon\(benefit\.icon, benefit\.colors\)/);
+  assert.match(homeBenefits, /footerBenefitIcon\(icon\)/);
   assert.doesNotMatch(homeBenefits, /benefit\.image|<img/);
   assert.match(app, /image: ""/);
 });
 
-test("brand and benefit rails expose swipe pagination dots", () => {
+test("brand rail keeps pagination while benefits use an accessible curtain", () => {
   assert.match(index, /id="home-brand-dots"/);
-  assert.match(index, /id="home-benefit-dots"/);
+  assert.match(index, /id="home-benefits-curtain"/);
   assert.match(app, /function renderHomeRailDots/);
   assert.match(app, /function bindHomeBrandPagination/);
   assert.match(app, /track\.scrollWidth - track\.clientWidth/);
@@ -61,10 +62,31 @@ test("brand and benefit rails expose swipe pagination dots", () => {
   assert.match(appearance, /Four brands per mobile swipe/);
   assert.match(appearance, /brand-marquee-set>button\{flex:0 0 calc\(\(100vw - 60px\)\/4\)!important/);
   assert.match(appearance, /button:nth-child\(4n \+ 1\)\{scroll-snap-align:start/);
-  const brands = app.slice(app.indexOf("function renderBrandCarousel"), app.indexOf("function renderHomeBenefitsMarquee"));
+  const brands = app.slice(app.indexOf("function renderBrandCarousel"), app.indexOf("function renderHomeBenefitsCurtain"));
   assert.match(brands, /const visibleBrands = brands;/);
   assert.doesNotMatch(brands, /brands\.slice\(0,\s*12\)/);
   assert.match(appearance, /brand-marquee-set>button>img\{\s*width:100%!important;height:100%!important/);
+});
+
+test("saved brand artwork is loaded by the public storefront and matched by slug", () => {
+  assert.match(app, /api\("\/api\/brand-options"\)/);
+  assert.match(app, /Array\.isArray\(brandOptions\.options\)/);
+  assert.match(app, /\[item\.value,item\.slug,item\.nameAr,item\.nameEn\]/);
+  assert.match(app, /uploadStorefrontImage\(file, "brand"\)/);
+});
+
+test("brand marquee restores its seamless autoplay and interaction controls", () => {
+  assert.match(app, /brand-marquee-set\">\$\{items\}<\/div><div class="brand-marquee-set" aria-hidden="true">\$\{duplicateItems\}/);
+  assert.match(appearance, /animation:origoBrandMarquee var\(--brand-marquee-duration,34s\) linear infinite!important/);
+  assert.match(appearance, /animation-name:origoBrandMarqueeRtl!important/);
+  assert.match(appearance, /animation-play-state:paused!important/);
+});
+
+test("announcement ticker above the header keeps its continuous motion", () => {
+  assert.match(app, /announcement\.innerHTML = `<span[\s\S]*aria-hidden="true"/);
+  assert.match(appearance, /animation:origoAnnouncementTicker 20s linear infinite!important/);
+  assert.match(appearance, /\.announcement:hover>span\{\s*animation-play-state:paused!important/);
+  assert.doesNotMatch(noEffects, /:is\([^)]*announcement>span/);
 });
 
 test("homepage directories avoid glass compositing and use unified gender controls", () => {

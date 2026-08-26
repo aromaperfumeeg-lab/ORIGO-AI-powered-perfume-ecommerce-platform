@@ -10,7 +10,7 @@ test("shared header has separated commerce, brand, and preference zones", async 
   assert.match(html, /class="header-commerce-actions"/);
   assert.match(html, /class="header-preference-actions"/);
   assert.equal((html.match(/class="header-search"/g) || []).length, 1);
-  assert.match(html, /shell\.css\?v=17/);
+  assert.match(html, /chunks\/shell\.min\.css\?v=4/);
 });
 
 test("layout shell is balanced and defines one responsive content system", async () => {

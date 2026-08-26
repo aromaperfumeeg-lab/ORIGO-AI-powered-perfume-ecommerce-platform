@@ -13,7 +13,7 @@ body:not(.admin-mode) *,body:not(.admin-mode) *::before,body:not(.admin-mode) *:
 body:not(.admin-mode) :is(a,button,[data-action],.product-card,.marquee-item,.benefit-marquee-item,.home-gender-card,.category-card,.brand-card,.pdp-profile-section>button):is(:hover,:focus-visible,:active){
   transform:none!important;
 }
-body:not(.admin-mode) :is(.brand-marquee-content,.benefit-marquee-content,.announcement>span){
+body:not(.admin-mode) .benefit-marquee-content{
   animation:none!important;
   transform:none!important;
 }

@@ -213,6 +213,39 @@ db.exec(`
     read_at TEXT,
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
   );
+  CREATE TABLE IF NOT EXISTS admin_order_notifications (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    order_id INTEGER REFERENCES orders(id) ON DELETE CASCADE,
+    type TEXT NOT NULL,
+    title_ar TEXT NOT NULL,
+    title_en TEXT NOT NULL DEFAULT '',
+    body_ar TEXT NOT NULL DEFAULT '',
+    body_en TEXT NOT NULL DEFAULT '',
+    read_at TEXT,
+    read_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  );
+  CREATE TABLE IF NOT EXISTS order_notes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    order_id INTEGER NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
+    note_type TEXT NOT NULL DEFAULT 'internal' CHECK(note_type IN ('internal','customer')),
+    note TEXT NOT NULL,
+    created_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  );
+  CREATE TABLE IF NOT EXISTS order_audit_log (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    order_id INTEGER NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
+    actor_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    action TEXT NOT NULL,
+    old_value_json TEXT NOT NULL DEFAULT '{}',
+    new_value_json TEXT NOT NULL DEFAULT '{}',
+    reason TEXT NOT NULL DEFAULT '',
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  );
+  CREATE INDEX IF NOT EXISTS idx_admin_order_notifications_unread ON admin_order_notifications(read_at,created_at DESC);
+  CREATE INDEX IF NOT EXISTS idx_order_notes_order ON order_notes(order_id,created_at DESC);
+  CREATE INDEX IF NOT EXISTS idx_order_audit_order ON order_audit_log(order_id,created_at DESC);
   CREATE TABLE IF NOT EXISTS customer_wishlist (
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     product_id TEXT NOT NULL REFERENCES products(id) ON DELETE CASCADE,
@@ -264,7 +297,26 @@ addColumns("orders", [
   ["delivery_window_start", "TEXT"],
   ["delivery_window_end", "TEXT"],
   ["access_token_hash", "TEXT NOT NULL DEFAULT ''"],
-  ["loyalty_awarded", "INTEGER NOT NULL DEFAULT 0"]
+  ["loyalty_awarded", "INTEGER NOT NULL DEFAULT 0"],
+  ["order_source", "TEXT NOT NULL DEFAULT 'storefront'"],
+  ["priority", "TEXT NOT NULL DEFAULT 'normal'"],
+  ["assigned_to", "INTEGER"],
+  ["collection_status", "TEXT NOT NULL DEFAULT 'uncollected'"],
+  ["extra_phone", "TEXT NOT NULL DEFAULT ''"],
+  ["city", "TEXT NOT NULL DEFAULT ''"],
+  ["additional_fees", "REAL NOT NULL DEFAULT 0"],
+  ["amount_paid", "REAL NOT NULL DEFAULT 0"],
+  ["tags_json", "TEXT NOT NULL DEFAULT '[]'"],
+  ["first_viewed_at", "TEXT"],
+  ["first_viewed_by", "INTEGER"],
+  ["confirmed_by", "INTEGER"],
+  ["inventory_state", "TEXT NOT NULL DEFAULT 'deducted'"],
+  ["archived_at", "TEXT"],
+  ["archived_by", "INTEGER"],
+  ["deleted_at", "TEXT"],
+  ["deleted_by", "INTEGER"],
+  ["delete_reason", "TEXT NOT NULL DEFAULT ''"],
+  ["row_version", "INTEGER NOT NULL DEFAULT 1"]
 ]);
 addColumns("users", [["avatar_url", "TEXT NOT NULL DEFAULT ''"]]);
 addColumns("order_items", [
@@ -464,11 +516,15 @@ function guestUser(owner, customer) {
 
 function orderNumber() { return `OR-${new Date().getUTCFullYear()}-${String(Date.now()).slice(-6)}${randomBytes(1).toString("hex").toUpperCase()}`; }
 const statusTitles = {
-  received:["تم استلام الطلب","Order received"], processing:["قيد التجهيز","Processing"], ready_to_ship:["جاهز للشحن","Ready to ship"],
-  shipped:["تم الشحن","Shipped"], out_for_delivery:["خرج للتسليم","Out for delivery"], delivered:["تم التسليم","Delivered"],
-  cancelled:["تم إلغاء الطلب","Cancelled"], returned:["تم إرجاع الطلب","Returned"]
+  draft:["مسودة","Draft"], new:["طلب جديد","New order"], received:["تم استلام الطلب","Order received"],
+  awaiting_confirmation:["بانتظار التأكيد","Awaiting confirmation"], confirmed:["تم تأكيد الطلب","Confirmed"],
+  processing:["جاري التجهيز","Processing"], ready_to_ship:["جاهز للشحن","Ready to ship"],
+  handed_to_carrier:["تم تسليمه لشركة الشحن","Handed to carrier"], shipped:["تم الشحن","Shipped"],
+  out_for_delivery:["قيد التوصيل","Out for delivery"], delivered:["تم التسليم","Delivered"],
+  awaiting_customer:["بانتظار العميل","Awaiting customer"], cancelled:["تم إلغاء الطلب","Cancelled"],
+  returned:["تم إرجاع الطلب","Returned"], delivery_failed:["فشل التسليم","Delivery failed"]
 };
-const coarseStatus = (status) => ({received:"new",processing:"processing",ready_to_ship:"processing",shipped:"shipped",out_for_delivery:"shipped",delivered:"completed",cancelled:"cancelled",returned:"cancelled"}[status] || "new");
+const coarseStatus = (status) => ({draft:"new",new:"new",received:"new",awaiting_confirmation:"new",confirmed:"new",processing:"processing",ready_to_ship:"processing",handed_to_carrier:"shipped",shipped:"shipped",out_for_delivery:"shipped",awaiting_customer:"shipped",delivery_failed:"shipped",delivered:"completed",cancelled:"cancelled",returned:"cancelled"}[status] || "new");
 
 function mapOrder(row, includeAccess = false) {
   if (!row) return null;
@@ -476,14 +532,17 @@ function mapOrder(row, includeAccess = false) {
     id:Number(item.id), productId:item.product_id, productName:item.product_name, sku:item.sku, image:item.image || "", size:item.size || "", concentration:item.concentration || "",
     unitPrice:number(item.unit_price), originalUnitPrice:number(item.original_unit_price || item.unit_price), discountTotal:number(item.discount_total), quantity:Number(item.quantity), lineTotal:number(item.line_total), snapshot:json(item.snapshot_json,{})
   }));
-  const timeline = db.prepare("SELECT id,event_type type,status,title_ar titleAr,title_en titleEn,note,created_at createdAt,metadata_json metadataJson FROM order_events WHERE order_id=? AND event_type IN ('order_created','status_changed') ORDER BY id").all(Number(row.id)).map((event) => ({...event,id:Number(event.id),metadata:json(event.metadataJson,{})}));
+  const timeline = db.prepare(`SELECT e.id,e.event_type type,e.status,e.title_ar titleAr,e.title_en titleEn,e.note,e.created_at createdAt,e.metadata_json metadataJson,u.name actorName FROM order_events e LEFT JOIN users u ON u.id=e.created_by WHERE e.order_id=? ORDER BY e.id`).all(Number(row.id)).map((event) => ({...event,id:Number(event.id),metadata:json(event.metadataJson,{})}));
+  const audit = db.prepare(`SELECT a.id,a.action,a.old_value_json oldValueJson,a.new_value_json newValueJson,a.reason,a.created_at createdAt,u.name actorName FROM order_audit_log a LEFT JOIN users u ON u.id=a.actor_id WHERE a.order_id=? ORDER BY a.id DESC`).all(Number(row.id)).map((event) => ({...event,id:Number(event.id),oldValue:json(event.oldValueJson,{}),newValue:json(event.newValueJson,{})}));
+  const orderNotes = db.prepare(`SELECT n.id,n.note_type type,n.note,n.created_at createdAt,u.name actorName FROM order_notes n LEFT JOIN users u ON u.id=n.created_by WHERE n.order_id=? ORDER BY n.id DESC`).all(Number(row.id)).map((note) => ({...note,id:Number(note.id)}));
   const address = json(row.address_snapshot_json, {});
   return { id:Number(row.id),orderNumber:row.order_number,userId:Number(row.user_id),customerName:row.customer_name,email:row.email||"",phone:row.phone,address:row.address,governorate:row.governorate,areaId:row.area_id==null?null:Number(row.area_id),addressSnapshot:address,notes:row.notes,
     paymentMethod:row.payment_method_code||row.payment_provider||"cod",paymentProvider:row.payment_provider||"cod",paymentStatus:row.payment_status||"pending",status:row.workflow_status||row.status,
     subtotal:number(row.subtotal),productDiscount:number(row.product_discount_total),couponCode:row.coupon_code||"",couponDiscount:number(row.coupon_discount_total),shipping:number(row.shipping_total),total:number(row.total),loyaltyPoints:Number(row.loyalty_points||0),
-    carrierName:row.shipping_carrier||"",carrierCode:row.carrier_code||"",trackingNumber:row.tracking_number||"",trackingUrl:row.tracking_url||"",shippedAt:row.shipped_at,deliveredAt:row.delivered_at,
+    carrierName:row.shipping_carrier||"",shippingCarrier:row.shipping_carrier||"",carrierCode:row.carrier_code||"",trackingNumber:row.tracking_number||"",trackingUrl:row.tracking_url||"",shippedAt:row.shipped_at,deliveredAt:row.delivered_at,
     estimatedDeliveryFrom:row.estimated_delivery_from,estimatedDeliveryTo:row.estimated_delivery_to,courierName:row.courier_name||"",courierPhone:row.courier_phone||"",deliveryWindowStart:row.delivery_window_start,deliveryWindowEnd:row.delivery_window_end,
-    createdAt:row.created_at,updatedAt:row.updated_at,items,timeline,access:includeAccess ? true : undefined };
+    orderSource:row.order_source||"storefront",priority:row.priority||"normal",assignedTo:row.assigned_to==null?null:Number(row.assigned_to),collectionStatus:row.collection_status||"uncollected",extraPhone:row.extra_phone||"",city:row.city||"",additionalFees:number(row.additional_fees),amountPaid:number(row.amount_paid),remainingAmount:Math.max(0,number(row.total)-number(row.amount_paid)),tags:json(row.tags_json,[]),firstViewedAt:row.first_viewed_at,firstViewedBy:row.first_viewed_by==null?null:Number(row.first_viewed_by),confirmedBy:row.confirmed_by==null?null:Number(row.confirmed_by),inventoryState:row.inventory_state||"deducted",archivedAt:row.archived_at,deletedAt:row.deleted_at,rowVersion:Number(row.row_version||1),
+    createdAt:row.created_at,updatedAt:row.updated_at,items,timeline,audit,orderNotes,access:includeAccess ? true : undefined };
 }
 
 export function createCommerceOrder(owner, input = {}) {
@@ -505,6 +564,7 @@ export function createCommerceOrder(owner, input = {}) {
     const insert=db.prepare("INSERT INTO order_items(order_id,product_id,product_name,sku,unit_price,original_unit_price,discount_total,quantity,line_total,image,size,concentration,snapshot_json) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)");
     for(const item of quote.items){insert.run(result.lastInsertRowid,item.productId,item.nameAr,item.sku,item.unitPrice,item.originalUnitPrice,item.productDiscount,item.quantity,item.lineTotal,item.image,item.size,item.concentration,JSON.stringify(item));if(db.prepare("SELECT track_inventory FROM products WHERE id=?").get(item.productId).track_inventory)db.prepare("UPDATE products SET stock_quantity=stock_quantity-?,updated_at=CURRENT_TIMESTAMP WHERE id=?").run(item.quantity,item.productId);}
     const titles=statusTitles.received;db.prepare("INSERT INTO order_events(order_id,event_type,status,title_ar,title_en,note,created_by,metadata_json) VALUES(?,'order_created','received',?,?,?,?,?)").run(result.lastInsertRowid,titles[0],titles[1],"Order created",owner.userId||null,"{}");
+    db.prepare("INSERT INTO admin_order_notifications(order_id,type,title_ar,title_en,body_ar,body_en) VALUES(?,'new_order','طلب جديد','New order',?,?)").run(result.lastInsertRowid,`وصل طلب جديد من ${firstName} ${lastName}.`,`A new order arrived from ${firstName} ${lastName}.`);
     if(quote.couponCode)db.prepare("UPDATE coupons SET used_count=used_count+1,updated_at=CURRENT_TIMESTAMP WHERE code=? COLLATE NOCASE").run(quote.couponCode);
     const [column,value]=cartWhere(owner);db.prepare(`DELETE FROM ${cartTable(owner)} WHERE ${column}=?`).run(value);
     if(input.saveAddress&&owner.userId){if(input.makeDefault)db.prepare("UPDATE saved_addresses SET is_default=0 WHERE user_id=?").run(owner.userId);db.prepare("INSERT INTO saved_addresses(user_id,label,first_name,last_name,phone,email,governorate_id,area_id,street_address,building,floor,apartment,landmark,is_default) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)").run(owner.userId,clean(input.addressLabel,40)||"المنزل",firstName,lastName,phone,email,Number(input.governorateId),Number(area.id),street,addressSnapshot.building,addressSnapshot.floor,addressSnapshot.apartment,addressSnapshot.landmark,input.makeDefault?1:0);}
@@ -518,16 +578,107 @@ export function getCommerceOrder(orderNumberValue, access = {}) {
   return authorized?mapOrder(row,true):null;
 }
 
+export function listManagedOrders(input = {}) {
+  const pageSize=Math.max(1,Math.min(100,Math.floor(number(input.pageSize,25))));
+  const page=Math.max(1,Math.floor(number(input.page,1))),where=[],params=[];
+  const exact=(column,value,allowed=null)=>{const cleaned=clean(value,80);if(cleaned&&cleaned!=="all"&&(!allowed||allowed.has(cleaned))){where.push(`${column}=?`);params.push(cleaned);}};
+  exact("o.workflow_status",input.status,new Set(Object.keys(statusTitles)));
+  exact("o.order_source",input.source);
+  exact("o.payment_method_code",input.paymentMethod);
+  exact("o.payment_status",input.paymentStatus);
+  exact("o.collection_status",input.collectionStatus);
+  exact("o.shipping_carrier",input.carrier);
+  exact("o.governorate",input.governorate);
+  if(input.assignedTo){where.push("o.assigned_to=?");params.push(Number(input.assignedTo));}
+  if(input.tag){where.push("o.tags_json LIKE ?");params.push(`%${clean(input.tag,40).replaceAll("%","")}%`);}
+  if(input.archived==="true")where.push("o.archived_at IS NOT NULL");else where.push("o.archived_at IS NULL");
+  if(input.deleted==="true")where.push("o.deleted_at IS NOT NULL");else where.push("o.deleted_at IS NULL");
+  const query=clean(input.q,160);if(query){const like=`%${query.replaceAll("%","").replaceAll("_","")}%`;where.push(`(o.order_number LIKE ? OR o.customer_name LIKE ? OR o.phone LIKE ? OR o.extra_phone LIKE ? OR o.address LIKE ? OR o.governorate LIKE ? OR o.tracking_number LIKE ? OR EXISTS(SELECT 1 FROM order_items oi WHERE oi.order_id=o.id AND (oi.product_name LIKE ? OR oi.sku LIKE ?)))`);params.push(...Array(9).fill(like));}
+  if(input.dateFrom){where.push("date(o.created_at)>=date(?)");params.push(clean(input.dateFrom,20));}
+  if(input.dateTo){where.push("date(o.created_at)<=date(?)");params.push(clean(input.dateTo,20));}
+  const clause=where.length?`WHERE ${where.join(" AND ")}`:"";
+  const ordering={oldest:"o.created_at ASC",highest:"o.total DESC",lowest:"o.total ASC",updated:"o.updated_at DESC",priority:"CASE o.priority WHEN 'urgent' THEN 0 WHEN 'high' THEN 1 ELSE 2 END,o.updated_at DESC",delayed:"o.updated_at ASC"}[input.sort]||"o.created_at DESC";
+  const total=Number(db.prepare(`SELECT COUNT(*) count FROM orders o ${clause}`).get(...params).count||0);
+  const rows=db.prepare(`SELECT o.* FROM orders o ${clause} ORDER BY ${ordering} LIMIT ? OFFSET ?`).all(...params,pageSize,(page-1)*pageSize);
+  const summaryRows=db.prepare(`SELECT workflow_status status,COUNT(*) count,COALESCE(SUM(total),0) total FROM orders WHERE deleted_at IS NULL GROUP BY workflow_status`).all();
+  const today=db.prepare("SELECT COALESCE(SUM(total),0) total FROM orders WHERE deleted_at IS NULL AND workflow_status<>'draft' AND date(created_at)=date('now','localtime')").get();
+  const month=db.prepare("SELECT COALESCE(SUM(total),0) total FROM orders WHERE deleted_at IS NULL AND workflow_status<>'draft' AND strftime('%Y-%m',created_at)=strftime('%Y-%m','now','localtime')").get();
+  const pendingCollection=db.prepare("SELECT COALESCE(SUM(total-amount_paid),0) total,COUNT(*) count FROM orders WHERE deleted_at IS NULL AND collection_status NOT IN ('transferred','returned') AND workflow_status NOT IN ('draft','cancelled','returned')").get();
+  return {orders:rows.map((row)=>mapOrder(row)),pagination:{page,pageSize,total,pages:Math.max(1,Math.ceil(total/pageSize))},summary:{statuses:Object.fromEntries(summaryRows.map((row)=>[row.status,Number(row.count)])),todayTotal:number(today.total),monthTotal:number(month.total),pendingCollectionTotal:number(pendingCollection.total),pendingCollectionCount:Number(pendingCollection.count)}};
+}
+
+export function createManualOrder(input = {}, actorId = null) {
+  const draft=input.draft===true,status=draft?"draft":"confirmed",source=clean(input.orderSource,40)||"phone";
+  const customerName=clean(input.customerName,100),phone=normalizeEgyptPhone(input.phone),address=clean(input.address,500);
+  if(customerName.length<2)throw Object.assign(new Error("أدخل اسم العميل."),{code:"INVALID_NAME"});
+  if(!draft&&address.length<5)throw Object.assign(new Error("أدخل عنوان العميل."),{code:"INVALID_ADDRESS"});
+  const requested=Array.isArray(input.items)?input.items:[];if(!requested.length)throw Object.assign(new Error("أضف منتجًا واحدًا على الأقل."),{code:"EMPTY_ORDER"});
+  const items=requested.map((item)=>{const product=db.prepare("SELECT * FROM products WHERE id=?").get(clean(item.productId,120));if(!product)throw Object.assign(new Error("أحد المنتجات غير موجود."),{code:"PRODUCT_NOT_FOUND"});const quantity=Math.max(1,Math.min(100,Math.floor(number(item.quantity,1)))),unitPrice=Math.max(0,number(item.unitPrice,product.price)),discount=Math.max(0,number(item.discount));if(!draft&&product.track_inventory&&Number(product.stock_quantity)-Number(product.reserved_quantity)<quantity)throw Object.assign(new Error(`الكمية غير متاحة من ${product.name_ar}.`),{code:"OUT_OF_STOCK"});return{product,quantity,unitPrice,discount,lineTotal:Math.max(0,unitPrice*quantity-discount)};});
+  const subtotal=items.reduce((sum,item)=>sum+item.unitPrice*item.quantity,0),discount=items.reduce((sum,item)=>sum+item.discount,0),shipping=Math.max(0,number(input.shippingTotal)),fees=Math.max(0,number(input.additionalFees)),total=Math.max(0,subtotal-discount+shipping+fees);
+  db.exec("BEGIN IMMEDIATE");try{
+    const result=db.prepare(`INSERT INTO orders(order_number,user_id,customer_name,email,phone,extra_phone,address,governorate,city,notes,payment_method,payment_provider,payment_method_code,status,workflow_status,payment_status,subtotal,product_discount_total,shipping_total,additional_fees,total,order_source,priority,assigned_to,collection_status,inventory_state,tags_json,internal_notes,confirmed_by) VALUES(?,NULL,?,?,?,?,?,?,?,?,?,'cod',?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).run(orderNumber(),customerName,clean(input.email,254),phone,clean(input.extraPhone,30),address,clean(input.governorate,100),clean(input.city,100),clean(input.customerNotes,1000),clean(input.paymentMethod,30)||"cod",clean(input.paymentMethod,30)||"cod",coarseStatus(status),status,draft?"pending":clean(input.paymentStatus,40)||"pending",subtotal,discount,shipping,fees,total,source,["normal","high","urgent"].includes(input.priority)?input.priority:"normal",input.assignedTo?Number(input.assignedTo):null,clean(input.collectionStatus,40)||"uncollected",draft?"none":"deducted",JSON.stringify(Array.isArray(input.tags)?input.tags.slice(0,20):[]),clean(input.internalNotes,4000),draft?null:actorId);
+    const insert=db.prepare("INSERT INTO order_items(order_id,product_id,product_name,sku,unit_price,original_unit_price,discount_total,quantity,line_total,image,size,concentration,snapshot_json) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)");
+    for(const item of items){insert.run(result.lastInsertRowid,item.product.id,item.product.name_ar,item.product.sku,item.unitPrice,item.unitPrice,item.discount,item.quantity,item.lineTotal,item.product.image,"",item.product.concentration,JSON.stringify({manual:true}));if(!draft&&item.product.track_inventory)db.prepare("UPDATE products SET stock_quantity=stock_quantity-?,updated_at=CURRENT_TIMESTAMP WHERE id=?").run(item.quantity,item.product.id);}
+    const titles=statusTitles[status];db.prepare("INSERT INTO order_events(order_id,event_type,status,title_ar,title_en,note,created_by,metadata_json) VALUES(?,'order_created',?,?,?,?,?,?)").run(result.lastInsertRowid,status,titles[0],titles[1],draft?"Manual draft created":"Manual order created",actorId,JSON.stringify({source}));
+    db.prepare("INSERT INTO order_audit_log(order_id,actor_id,action,new_value_json) VALUES(?,?,'manual_order_created',?)").run(result.lastInsertRowid,actorId,JSON.stringify({status,source,total}));
+    if(!draft)db.prepare("INSERT INTO admin_order_notifications(order_id,type,title_ar,title_en,body_ar,body_en) VALUES(?,'new_order','طلب يدوي جديد','New manual order',?,?)").run(result.lastInsertRowid,`تم إنشاء طلب من ${customerName} عبر ${source}.`,`An order for ${customerName} was created via ${source}.`);
+    db.exec("COMMIT");return mapOrder(db.prepare("SELECT * FROM orders WHERE id=?").get(result.lastInsertRowid));
+  }catch(error){db.exec("ROLLBACK");throw error;}
+}
+
+export function markOrderViewed(orderId, actorId) {
+  const current=db.prepare("SELECT first_viewed_at FROM orders WHERE id=?").get(Number(orderId));if(!current)return null;
+  if(!current.first_viewed_at){db.prepare("UPDATE orders SET first_viewed_at=CURRENT_TIMESTAMP,first_viewed_by=? WHERE id=?").run(actorId,Number(orderId));db.prepare("INSERT INTO order_events(order_id,event_type,status,title_ar,title_en,note,created_by) SELECT id,'viewed',workflow_status,'تم فتح الطلب','Order opened','',? FROM orders WHERE id=?").run(actorId,Number(orderId));}
+  db.prepare("UPDATE admin_order_notifications SET read_at=COALESCE(read_at,CURRENT_TIMESTAMP),read_by=COALESCE(read_by,?) WHERE order_id=?").run(actorId,Number(orderId));
+  return mapOrder(db.prepare("SELECT * FROM orders WHERE id=?").get(Number(orderId)));
+}
+
+export function addOrderNote(orderId, input = {}, actorId = null) {
+  const note=clean(input.note,4000);if(!note)throw Object.assign(new Error("اكتب الملاحظة أولًا."),{code:"EMPTY_NOTE"});
+  const type=input.type==="customer"?"customer":"internal";const result=db.prepare("INSERT INTO order_notes(order_id,note_type,note,created_by) SELECT id,?,?,? FROM orders WHERE id=?").run(type,note,actorId,Number(orderId));if(!result.changes)return null;
+  db.prepare("INSERT INTO order_events(order_id,event_type,status,title_ar,title_en,note,created_by) SELECT id,'note_added',workflow_status,'تمت إضافة ملاحظة','Note added',?,? FROM orders WHERE id=?").run(note,actorId,Number(orderId));return mapOrder(db.prepare("SELECT * FROM orders WHERE id=?").get(Number(orderId)));
+}
+
+export function archiveManagedOrder(orderId, action, actorId, reason = "") {
+  const current=db.prepare("SELECT * FROM orders WHERE id=?").get(Number(orderId));if(!current)return null;
+  if(action==="trash"&&!['draft','delivered','completed','cancelled','returned','delivery_failed'].includes(current.workflow_status))throw Object.assign(new Error("لا يمكن حذف طلب نشط."),{code:"ACTIVE_ORDER"});
+  if(action==="trash"&&!['transferred','returned'].includes(current.collection_status)&&number(current.total)>number(current.amount_paid)&&!['draft','cancelled','returned'].includes(current.workflow_status))throw Object.assign(new Error("لا يمكن حذف طلب بتحصيل معلّق."),{code:"PENDING_COLLECTION"});
+  const fields={archive:"archived_at=CURRENT_TIMESTAMP,archived_by=?",restore:"archived_at=NULL,archived_by=NULL,deleted_at=NULL,deleted_by=NULL,delete_reason=''",trash:"deleted_at=CURRENT_TIMESTAMP,deleted_by=?,delete_reason=?"};if(!fields[action])throw new Error("INVALID_ARCHIVE_ACTION");
+  const args=action==="restore"?[Number(orderId)]:action==="trash"?[actorId,clean(reason,500),Number(orderId)]:[actorId,Number(orderId)];db.prepare(`UPDATE orders SET ${fields[action]},row_version=row_version+1,updated_at=CURRENT_TIMESTAMP WHERE id=?`).run(...args);
+  db.prepare("INSERT INTO order_audit_log(order_id,actor_id,action,reason) VALUES(?,?,?,?)").run(Number(orderId),actorId,action,clean(reason,500));return mapOrder(db.prepare("SELECT * FROM orders WHERE id=?").get(Number(orderId)));
+}
+
+export function adminOrderNotifications(input = {}, actorId = null) {
+  if(input.action==="read-all")db.prepare("UPDATE admin_order_notifications SET read_at=COALESCE(read_at,CURRENT_TIMESTAMP),read_by=COALESCE(read_by,?)").run(actorId);
+  else if(input.action==="read"&&input.id)db.prepare("UPDATE admin_order_notifications SET read_at=COALESCE(read_at,CURRENT_TIMESTAMP),read_by=COALESCE(read_by,?) WHERE id=?").run(actorId,Number(input.id));
+  else if(input.action==="delete"&&input.id)db.prepare("DELETE FROM admin_order_notifications WHERE id=?").run(Number(input.id));
+  const items=db.prepare("SELECT n.*,o.order_number,o.customer_name,o.total,o.order_source FROM admin_order_notifications n LEFT JOIN orders o ON o.id=n.order_id ORDER BY n.id DESC LIMIT 100").all().map((row)=>({id:Number(row.id),orderId:row.order_id==null?null:Number(row.order_id),type:row.type,titleAr:row.title_ar,titleEn:row.title_en,bodyAr:row.body_ar,bodyEn:row.body_en,readAt:row.read_at,createdAt:row.created_at,orderNumber:row.order_number,customerName:row.customer_name,total:number(row.total),orderSource:row.order_source||"storefront"}));
+  return {items,unread:items.filter((item)=>!item.readAt).length};
+}
+
 export function updateCommerceOrder(orderId, input = {}, actorId = null) {
   const current=db.prepare("SELECT * FROM orders WHERE id=?").get(Number(orderId));if(!current)return null;
   const status=clean(input.status,40)||current.workflow_status; if(!statusTitles[status])throw Object.assign(new Error("حالة الطلب غير صالحة."),{code:"INVALID_STATUS"});
+  if(input.rowVersion!=null&&Number(input.rowVersion)!==Number(current.row_version||1))throw Object.assign(new Error("تم تعديل الطلب بواسطة موظف آخر. حدّث الصفحة ثم حاول مجددًا."),{code:"ORDER_VERSION_CONFLICT"});
   const titles=statusTitles[status],changed=status!==current.workflow_status,metadata={carrierName:clean(input.carrierName??current.shipping_carrier,120),trackingNumber:clean(input.trackingNumber??current.tracking_number,160)};
   db.exec("BEGIN IMMEDIATE");try{
-    db.prepare(`UPDATE orders SET status=?,workflow_status=?,payment_status=?,shipping_carrier=?,carrier_code=?,tracking_number=?,tracking_url=?,courier_name=?,courier_phone=?,delivery_window_start=?,delivery_window_end=?,shipped_at=CASE WHEN ?='shipped' AND shipped_at IS NULL THEN CURRENT_TIMESTAMP ELSE shipped_at END,delivered_at=CASE WHEN ?='delivered' AND delivered_at IS NULL THEN CURRENT_TIMESTAMP ELSE delivered_at END,updated_at=CURRENT_TIMESTAMP WHERE id=?`).run(coarseStatus(status),status,clean(input.paymentStatus??current.payment_status,40),metadata.carrierName,clean(input.carrierCode??current.carrier_code,60),metadata.trackingNumber,clean(input.trackingUrl??current.tracking_url,1000),clean(input.courierName??current.courier_name,120),clean(input.courierPhone??current.courier_phone,40),input.deliveryWindowStart??current.delivery_window_start,input.deliveryWindowEnd??current.delivery_window_end,status,status,Number(orderId));
+    const priority=["normal","high","urgent"].includes(input.priority)?input.priority:(current.priority||"normal");
+    const collection=["uncollected","collected_from_customer","with_carrier","transferred","short","returned"].includes(input.collectionStatus)?input.collectionStatus:(current.collection_status||"uncollected");
+    const tags=Array.isArray(input.tags)?[...new Set(input.tags.map((tag)=>clean(tag,40)).filter(Boolean))].slice(0,20):json(current.tags_json,[]);
+    const assignedTo=input.assignedTo==null||input.assignedTo===""?current.assigned_to:Number(input.assignedTo);
+    const amountPaid=Math.max(0,Math.min(number(current.total),number(input.amountPaid,current.amount_paid)));
+    db.prepare(`UPDATE orders SET status=?,workflow_status=?,payment_status=?,shipping_carrier=?,carrier_code=?,tracking_number=?,tracking_url=?,courier_name=?,courier_phone=?,delivery_window_start=?,delivery_window_end=?,priority=?,assigned_to=?,collection_status=?,amount_paid=?,tags_json=?,internal_notes=?,confirmed_by=CASE WHEN ?='confirmed' AND confirmed_by IS NULL THEN ? ELSE confirmed_by END,shipped_at=CASE WHEN ? IN ('handed_to_carrier','shipped') AND shipped_at IS NULL THEN CURRENT_TIMESTAMP ELSE shipped_at END,delivered_at=CASE WHEN ?='delivered' AND delivered_at IS NULL THEN CURRENT_TIMESTAMP ELSE delivered_at END,row_version=row_version+1,updated_at=CURRENT_TIMESTAMP WHERE id=?`).run(coarseStatus(status),status,clean(input.paymentStatus??current.payment_status,40),metadata.carrierName,clean(input.carrierCode??current.carrier_code,60),metadata.trackingNumber,clean(input.trackingUrl??current.tracking_url,1000),clean(input.courierName??current.courier_name,120),clean(input.courierPhone??current.courier_phone,40),input.deliveryWindowStart??current.delivery_window_start,input.deliveryWindowEnd??current.delivery_window_end,priority,assignedTo,collection,amountPaid,JSON.stringify(tags),clean(input.internalNotes??current.internal_notes,4000),status,actorId,status,status,Number(orderId));
+    if(changed&&["cancelled","returned"].includes(status)&&current.inventory_state==="deducted"){
+      for(const item of db.prepare("SELECT product_id,quantity FROM order_items WHERE order_id=?").all(Number(orderId))){if(item.product_id)db.prepare("UPDATE products SET stock_quantity=stock_quantity+?,updated_at=CURRENT_TIMESTAMP WHERE id=? AND track_inventory=1").run(Number(item.quantity),item.product_id);}
+      db.prepare("UPDATE orders SET inventory_state='released' WHERE id=?").run(Number(orderId));
+    }
     if(changed){
       db.prepare("INSERT INTO order_events(order_id,event_type,status,title_ar,title_en,note,created_by,metadata_json) VALUES(?,'status_changed',?,?,?,?,?,?)").run(Number(orderId),status,titles[0],titles[1],clean(input.note,500),actorId,JSON.stringify(metadata));
       db.prepare("INSERT INTO customer_notifications(user_id,type,title_ar,title_en,body_ar,body_en) VALUES(?,'order',?,?,?,?)").run(Number(current.user_id),titles[0],titles[1],`تم تحديث طلبك ${current.order_number}.`,`Your order ${current.order_number} was updated.`);
     }
+    const before={status:current.workflow_status,paymentStatus:current.payment_status,priority:current.priority,assignedTo:current.assigned_to,collectionStatus:current.collection_status,amountPaid:number(current.amount_paid),tags:json(current.tags_json,[]),shippingCarrier:current.shipping_carrier,trackingNumber:current.tracking_number,internalNotes:current.internal_notes};
+    const after={status,paymentStatus:clean(input.paymentStatus??current.payment_status,40),priority,assignedTo,collectionStatus:collection,amountPaid,tags,shippingCarrier:metadata.carrierName,trackingNumber:metadata.trackingNumber,internalNotes:clean(input.internalNotes??current.internal_notes,4000)};
+    db.prepare("INSERT INTO order_audit_log(order_id,actor_id,action,old_value_json,new_value_json,reason) VALUES(?,?, 'order_updated',?,?,?)").run(Number(orderId),actorId,JSON.stringify(before),JSON.stringify(after),clean(input.reason,500));
     let feedbackToken="";if(status==="delivered"){
       const existing=db.prepare("SELECT id FROM feedback_requests WHERE order_id=?").get(Number(orderId));if(!existing){feedbackToken=randomBytes(32).toString("base64url");db.prepare("INSERT INTO feedback_requests(order_id,customer_id,token_hash,expires_at) VALUES(?,?,?,datetime('now','+90 days'))").run(Number(orderId),Number(current.user_id),hash(feedbackToken));}
       if(changed&&!current.loyalty_awarded){

@@ -1,7 +1,17 @@
 import { readFile } from "node:fs/promises";
-import { catalogKeyDifferences } from "../fragrance-finder-i18n.js";
+import { runInNewContext } from "node:vm";
 
-const differences = catalogKeyDifferences();
+const i18nSource = await readFile(new URL("../fragrance-finder-i18n.js", import.meta.url), "utf8");
+const sandbox = { window:{} };
+runInNewContext(i18nSource, sandbox);
+const catalog = sandbox.window.ORIGOFragranceFinderI18n?.catalog;
+if (!catalog?.ar || !catalog?.en) throw new Error("Fragrance finder catalogs are not exposed for validation.");
+const arabicKeys = Object.keys(catalog.ar);
+const englishKeys = Object.keys(catalog.en);
+const differences = {
+  missingInArabic:englishKeys.filter((key) => !arabicKeys.includes(key)),
+  missingInEnglish:arabicKeys.filter((key) => !englishKeys.includes(key))
+};
 if (differences.missingInArabic.length || differences.missingInEnglish.length) {
   throw new Error(`Translation catalogs differ: ${JSON.stringify(differences)}`);
 }
@@ -21,4 +31,4 @@ for (const file of visibleFiles) {
   for (const phrase of obsolete) if (source.includes(phrase)) throw new Error(`${file} contains obsolete visible label: ${phrase}`);
 }
 
-console.log(`i18n check passed: ${Object.keys((await import("../fragrance-finder-i18n.js")).fragranceFinderCatalog.ar).length} matched keys.`);
+console.log(`i18n check passed: ${arabicKeys.length} matched keys.`);

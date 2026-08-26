@@ -6,8 +6,7 @@
     ["alternatives.js?v=7", /\/(?:alternatives|perfume)(?:\/|$)/],
     ["performance-insights.js?v=2", /\/performance(?:\/|$)/],
     ["commerce.js?v=3", /\/(?:cart|checkout|payment|track(?:ing)?|orders?)(?:\/|$)/],
-    ["account.js?v=3", /\/(?:account|login|register|profile)(?:\/|$)/],
-    ["fragrance-finder.js?v=1", /\/fragrance-finder(?:\/|$)/, true]
+    ["account.js?v=3", /\/(?:account|login|register|profile)(?:\/|$)/]
   ];
   const routeStyles = [
     ["catalog", /^\/(?:perfumes|search|brands)(?:\/|$)/],

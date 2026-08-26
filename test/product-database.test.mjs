@@ -110,6 +110,25 @@ test("database migrates old users and structured notes override stale flat notes
     assert.deepEqual(reloadedRelationshipProduct.inspiration, relationshipProduct.inspiration);
     assert.deepEqual(reloadedRelationshipProduct.similarFragrances, relationshipProduct.similarFragrances);
     assert.equal(reloadedRelationshipProduct.status,"published");
+    const publicSummary = database.listProducts({ summary:true }).find((product) => product.id === relationshipProduct.id);
+    assert.equal(publicSummary.detailLoaded, false);
+    assert.equal(publicSummary.noteLibrary, undefined);
+    assert.equal(publicSummary.noteRefs.every((note) => note.image === undefined), true);
+    const publicDetails = database.getPublishedProduct(relationshipProduct.id);
+    assert.equal(publicDetails.detailLoaded, true);
+    assert.equal(publicDetails.id, relationshipProduct.id);
+    assert.equal(database.getPublishedProduct("missing-product"), null);
+    const oversizedNoteImage = `data:image/webp;base64,${"A".repeat(200_000)}`;
+    const payloadProduct = database.upsertProduct({
+      id:"public-summary-payload", nameAr:"حمولة عامة", nameEn:"Public payload", brand:"ORIGO",
+      price:1, status:"published", notes:{ topAr:["ورد"], topEn:["Rose"] },
+      noteLibrary:{ refs:[{ id:"rose", nameAr:"ورد", nameEn:"Rose", position:"top", image:oversizedNoteImage }] }
+    });
+    const fullPayloadProduct = database.getPublishedProduct(payloadProduct.id);
+    const summaryPayloadProduct = database.listProducts({ summary:true }).find((product) => product.id === payloadProduct.id);
+    assert.equal(JSON.stringify(fullPayloadProduct).length - JSON.stringify(summaryPayloadProduct).length > 300_000, true);
+    assert.equal(summaryPayloadProduct.noteRefs[0].image, undefined);
+    assert.equal(database.deleteProduct(payloadProduct.id), true);
     assert.equal(database.deleteProduct(updated.id), true);
     assert.equal(database.listProducts({ includeHidden: true }).some((product) => product.id === updated.id), false);
     database.db.close();

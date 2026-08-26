@@ -6,6 +6,11 @@ import { randomBytes } from "node:crypto";
 import { brotliCompress, constants as zlibConstants, gzip, gzipSync } from "node:zlib";
 import { promisify } from "node:util";
 import {
+  assertStorefrontSettingsBudget,
+  externalizeStorefrontSettingsMedia,
+  parseStorefrontDataImage
+} from "./storefront-media.mjs";
+import {
   ACCORD_CATALOG,
   ENGINE_VERSION as PERFUME_ENGINE_VERSION,
   analyzePerfume,
@@ -47,6 +52,7 @@ import {
   getStorefrontMedia,
   getCart,
   getOrderById,
+  getPublishedProduct,
   hashPassword,
   listAllOrders,
   listActivity,
@@ -61,7 +67,6 @@ import {
   mergeCart,
   replaceCart,
   saveFragranceNotesState,
-  saveStorefrontMedia,
   saveAdminWorkspaceState,
   setUserRole,
   syncFragranceNoteEntities,
@@ -94,9 +99,13 @@ import {
 } from "./external-integrations.mjs";
 import {
   accountDashboard,
+  addOrderNote,
+  adminOrderNotifications,
+  archiveManagedOrder,
   deleteCustomerAccount,
   checkoutSettings,
   createCommerceOrder,
+  createManualOrder,
   createMarketingInsight,
   feedbackAnalytics,
   feedbackRequestForOrder,
@@ -105,9 +114,11 @@ import {
   getFeedbackSurvey,
   getFragranceFinderSession,
   listDeliveryLocations,
+  listManagedOrders,
   loyaltyTiers,
   listSavedAddresses,
   markNotificationsRead,
+  markOrderViewed,
   quoteCheckout,
   replaceCommerceCart,
   submitFeedback,
@@ -139,8 +150,14 @@ const HOST = process.env.ORIGO_HOST || "0.0.0.0";
 const PORT = Number(process.env.PORT || process.env.ORIGO_PORT || 4173);
 const OPENAI_MODEL = process.env.OPENAI_MODEL || "gpt-5.4-mini";
 const OPENAI_API_URL = "https://api.openai.com/v1/responses";
-// Product drafts may contain fourteen optimized bilingual profile artworks.
-const MAX_BODY_BYTES = 25_000_000;
+const REQUEST_BODY_LIMITS = Object.freeze({
+  auth:64 * 1024,
+  normal:256 * 1024,
+  workspace:512 * 1024,
+  webhook:1024 * 1024,
+  product:12 * 1024 * 1024,
+  storefrontImage:180 * 1024
+});
 const SESSION_COOKIE = "origo_session";
 const GUEST_CART_COOKIE = "origo_guest_cart";
 const performanceRateLimits = new Map();
@@ -560,12 +577,26 @@ function validateCustomer(body) {
   return { customer };
 }
 
+function requestBodyLimit(pathname = "") {
+  if (/^\/api\/auth\//.test(pathname)) return REQUEST_BODY_LIMITS.auth;
+  if (pathname === "/api/admin/uploads/storefront-image") return REQUEST_BODY_LIMITS.storefrontImage;
+  if (pathname === "/api/admin/workspace") return REQUEST_BODY_LIMITS.workspace;
+  if (/^\/api\/webhooks\//.test(pathname)) return REQUEST_BODY_LIMITS.webhook;
+  if (["/api/admin/products", "/api/catalog/save-product"].includes(pathname) || /^\/api\/admin\/products\//.test(pathname)) return REQUEST_BODY_LIMITS.product;
+  return REQUEST_BODY_LIMITS.normal;
+}
+
 async function readJSONBody(request) {
   const chunks = [];
   let size = 0;
+  const maximum = Number(request.origoMaxBodyBytes || requestBodyLimit(new URL(request.url || "/", "http://localhost").pathname));
   for await (const chunk of request) {
     size += chunk.length;
-    if (size > MAX_BODY_BYTES) throw new Error("REQUEST_TOO_LARGE");
+    if (size > maximum) {
+      const error = new Error("REQUEST_TOO_LARGE");
+      error.status = 413;
+      throw error;
+    }
     chunks.push(chunk);
   }
   const raw = Buffer.concat(chunks).toString("utf8");
@@ -587,31 +618,41 @@ function synchronizeProductPrimaryImage(input = {}) {
 }
 
 async function saveStorefrontImageUpload(body = {}) {
-  const match = String(body.dataUrl || "").match(/^data:image\/(webp|png|jpeg);base64,([a-z0-9+/=]+)$/i);
-  if (!match) {
+  let image;
+  try {
+    image = parseStorefrontDataImage(body.dataUrl);
+  } catch (error) {
+    if (error.code === "STOREFRONT_IMAGE_REQUIRES_COMPRESSION") throw error;
+    image = null;
+  }
+  if (!image) {
     const error = new Error("INVALID_STOREFRONT_IMAGE");
     error.code = "INVALID_STOREFRONT_IMAGE";
     throw error;
   }
-  const bytes = Buffer.from(match[2], "base64");
-  if (!bytes.length || bytes.length > 2_500_000) {
-    const error = new Error("STOREFRONT_IMAGE_TOO_LARGE");
-    error.code = "STOREFRONT_IMAGE_TOO_LARGE";
-    throw error;
-  }
-  const folder = ["hero", "gender", "brand", "product", "relationship"].includes(String(body.folder || "")) ? String(body.folder) : "hero";
-  const extension = match[1].toLowerCase() === "jpeg" ? "jpg" : match[1].toLowerCase();
+  const folder = ["hero", "gender", "brand", "product", "relationship", "settings"].includes(String(body.folder || "")) ? String(body.folder) : "hero";
+  const mediaId = `${folder}-${Date.now().toString(36)}-${randomBytes(8).toString("hex")}`;
+  return persistStorefrontMediaFile(image, { folder, mediaId });
+}
+
+async function persistStorefrontMediaFile(image, { folder = "settings", mediaId = `settings-${image.hash.slice(0, 32)}` } = {}) {
   const directory = resolve(STOREFRONT_UPLOAD_ROOT, folder);
   if (!directory.startsWith(`${STOREFRONT_UPLOAD_ROOT}${sep}`)) throw new Error("INVALID_UPLOAD_PATH");
-  const mediaId = `${folder}-${Date.now().toString(36)}-${randomBytes(8).toString("hex")}`;
-  saveStorefrontMedia({ id: mediaId, mimeType: `image/${match[1].toLowerCase()}`, bytes });
+  const filename = `${mediaId}.${image.extension}`;
   try {
     await mkdir(directory, { recursive: true });
-    await writeFile(resolve(directory, `${mediaId}.${extension}`), bytes, { flag: "wx" });
+    await writeFile(resolve(directory, filename), image.bytes, { flag: "wx" });
   } catch (error) {
-    console.warn("[ORIGO media mirror]", error?.message || error);
+    if (error?.code !== "EEXIST") throw error;
   }
-  return `/media/${mediaId}.${extension}`;
+  return `/uploads/storefront/${folder}/${filename}`;
+}
+
+async function migrateWorkspaceStorefrontMedia(workspace = {}) {
+  const result = await externalizeStorefrontSettingsMedia(workspace.settings || {}, (image) => persistStorefrontMediaFile(image));
+  if (!result.changed) return { workspace, converted: 0 };
+  const migrated = saveAdminWorkspaceState({ ...workspace, settings: result.settings });
+  return { workspace: migrated, converted: result.converted };
 }
 
 function outputText(apiResponse) {
@@ -861,13 +902,15 @@ async function handleAPI(request, response, url, origin) {
   }
 
   if (url.pathname === "/api/storefront-settings" && request.method === "GET") {
-    const workspace = getAdminWorkspaceState();
+    const { workspace } = await migrateWorkspaceStorefrontMedia(getAdminWorkspaceState());
     const commerce = checkoutSettings();
+    const settings = {
+      ...(workspace?.settings || {}),
+      freeShippingThreshold: commerce.freeShippingThreshold
+    };
+    assertStorefrontSettingsBudget(settings);
     return jsonResponse(response, 200, {
-      settings: {
-        ...(workspace?.settings || {}),
-        freeShippingThreshold: commerce.freeShippingThreshold
-      }
+      settings
     }, origin, { "Cache-Control": "public, max-age=15, stale-while-revalidate=60" });
   }
 
@@ -880,7 +923,7 @@ async function handleAPI(request, response, url, origin) {
       recordActivity(user.id, "storefront_image_uploaded", "settings", "homepage", { folder: body.folder || "hero" });
       return jsonResponse(response, 201, { url: imageUrl }, origin);
     } catch (error) {
-      const tooLarge = error.code === "STOREFRONT_IMAGE_TOO_LARGE" || error.message === "REQUEST_TOO_LARGE";
+      const tooLarge = error.code === "STOREFRONT_IMAGE_REQUIRES_COMPRESSION" || error.message === "REQUEST_TOO_LARGE";
       return jsonResponse(response, tooLarge ? 413 : 400, {
         error: tooLarge ? "حجم الصورة أكبر من الحد المسموح." : "تعذّر حفظ الصورة على الخادم."
       }, origin);
@@ -977,9 +1020,18 @@ async function handleAPI(request, response, url, origin) {
     const limit = Math.max(0, Math.min(200, Number(url.searchParams.get("limit")) || 0));
     const offset = Math.max(0, Number(url.searchParams.get("offset")) || 0);
     const total = countProducts();
-    const products = listProducts({ limit, offset }).map(synchronizeProductPrimaryImage);
+    const products = listProducts({ limit, offset, summary: true }).map(synchronizeProductPrimaryImage);
     return jsonResponse(response, 200, { products, total, offset, limit: limit || total, hasMore: limit > 0 && offset + products.length < total }, origin, {
-      "Cache-Control": "no-store, max-age=0, must-revalidate"
+      "Cache-Control": "public, max-age=30, stale-while-revalidate=120"
+    });
+  }
+
+  const publicProductMatch = url.pathname.match(/^\/api\/products\/([^/]+)$/);
+  if (publicProductMatch && request.method === "GET") {
+    const product = getPublishedProduct(decodeURIComponent(publicProductMatch[1]));
+    if (!product) return jsonResponse(response, 404, { error: "المنتج غير موجود." }, origin);
+    return jsonResponse(response, 200, { product: synchronizeProductPrimaryImage(product) }, origin, {
+      "Cache-Control": "public, max-age=60, stale-while-revalidate=300"
     });
   }
 
@@ -1106,6 +1158,12 @@ async function handleAPI(request, response, url, origin) {
     return jsonResponse(response, 200, {
       filters: listFilterDefinitions(url.searchParams.get("category") || "")
     }, origin);
+  }
+
+  if (url.pathname === "/api/brand-options" && request.method === "GET") {
+    return jsonResponse(response, 200, {
+      options: listProductOptions("brand", false)
+    }, origin, { "Cache-Control": "public, max-age=15, stale-while-revalidate=60" });
   }
 
   if (url.pathname === "/api/admin/product-options" && request.method === "GET") {
@@ -1903,8 +1961,9 @@ async function handleAPI(request, response, url, origin) {
   if (url.pathname === "/api/admin/workspace" && request.method === "GET") {
     const user = requireUser(request, response, origin, "staff");
     if (!user) return;
+    const { workspace } = await migrateWorkspaceStorefrontMedia(getAdminWorkspaceState());
     return jsonResponse(response, 200, {
-      state: getAdminWorkspaceState(),
+      state: workspace,
       activity: listActivity(100)
     }, origin);
   }
@@ -1914,7 +1973,8 @@ async function handleAPI(request, response, url, origin) {
     if (!user) return;
     try {
       const body = await readJSONBody(request);
-      const state = saveAdminWorkspaceState(body.state);
+      const normalized = await externalizeStorefrontSettingsMedia(body.state?.settings || {}, (image) => persistStorefrontMediaFile(image));
+      const state = saveAdminWorkspaceState({ ...(body.state || {}), settings: normalized.settings });
       recordActivity(user.id, "workspace_saved", "workspace", "admin", { section: body.section || "" });
       return jsonResponse(response, 200, { state }, origin);
     } catch (error) {
@@ -1961,7 +2021,33 @@ async function handleAPI(request, response, url, origin) {
   if (url.pathname === "/api/admin/orders" && request.method === "GET") {
     const user = requireUser(request, response, origin, "orders:view");
     if (!user) return;
-    return jsonResponse(response, 200, { orders: listAllOrders() }, origin);
+    return jsonResponse(response, 200, listManagedOrders(Object.fromEntries(url.searchParams)), origin);
+  }
+
+  if (url.pathname === "/api/admin/orders" && request.method === "POST") {
+    const user = requireUser(request, response, origin, "orders");
+    if (!user) return;
+    try {
+      const body = await readJSONBody(request);
+      const order = createManualOrder(body, user.id);
+      recordActivity(user.id, body.draft ? "order_draft_created" : "manual_order_created", "order", order.id, { source: order.orderSource });
+      return jsonResponse(response, 201, { order }, origin);
+    } catch (error) {
+      return jsonResponse(response, error.code === "OUT_OF_STOCK" ? 409 : 400, { error: error.message, code: error.code || "MANUAL_ORDER_FAILED" }, origin);
+    }
+  }
+
+  if (url.pathname === "/api/admin/order-notifications" && request.method === "GET") {
+    const user = requireUser(request, response, origin, "orders:view");
+    if (!user) return;
+    return jsonResponse(response, 200, adminOrderNotifications({}, user.id), origin);
+  }
+
+  if (url.pathname === "/api/admin/order-notifications" && request.method === "POST") {
+    const user = requireUser(request, response, origin, "orders:view");
+    if (!user) return;
+    const body = await readJSONBody(request);
+    return jsonResponse(response, 200, adminOrderNotifications(body, user.id), origin);
   }
 
   if (url.pathname === "/api/admin/checkout/settings" && request.method === "GET") {
@@ -2116,6 +2202,16 @@ async function serveStatic(request, response, url) {
   const isStorefrontRoute = /^\/(?:perfumes(?:\/[a-z0-9-]+)?|perfume\/[a-z0-9-]+|brands\/[a-z0-9-]+|search)\/?$/i.test(url.pathname);
   const isCommerceRoute = /^\/(checkout|order\/[^/]+|feedback\/[^/]+|feedback-insights|account(?:\/.*)?|fragrance-finder\/[a-z-]+|alternatives(?:\/compare\/[^/]+)?)\/?$/i.test(url.pathname);
   const isAdminRoute = /^\/admin\/orders(?:\/[^/]+)?\/?$/i.test(url.pathname);
+  const publicProducts = isStorefrontRoute ? listProducts() : [];
+  const routeSlug = (value) => String(value || "").normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  const productRouteMatch = url.pathname.match(/^\/perfume\/([^/]+)\/?$/i);
+  const brandRouteMatch = url.pathname.match(/^\/brands\/([^/]+)\/?$/i);
+  const routeExists = productRouteMatch
+    ? publicProducts.some((product) => [product.slug, product.id].some((value) => String(value || "") === decodeURIComponent(productRouteMatch[1])))
+    : brandRouteMatch
+      ? publicProducts.some((product) => [product.brandEn, product.brand, product.brandAr].some((value) => routeSlug(value) === brandRouteMatch[1].toLowerCase()))
+      : true;
+  const routeStatus = routeExists ? 200 : 404;
   const pathname = decodeURIComponent(url.pathname === "/" || isNotesRoute || isBenefitRoute || isStorefrontRoute || isCommerceRoute || isAdminRoute ? "/index.html" : url.pathname);
   const uploadPrefix = "/uploads/storefront/";
   const isPersistentUpload = pathname.startsWith(uploadPrefix);
@@ -2135,26 +2231,32 @@ async function serveStatic(request, response, url) {
     const extension = extname(filePath).toLowerCase();
     const isHtml = extension === ".html";
     if (isHtml && cleanPath === "index.html") {
-      const workspace = getAdminWorkspaceState();
+      const { workspace } = await migrateWorkspaceStorefrontMedia(getAdminWorkspaceState());
       const hero = (Array.isArray(workspace?.settings?.homeMedia) ? workspace.settings.homeMedia : [])
         .filter((item) => item?.placement === "hero" && item?.url && item?.active !== false)
         .sort((a, b) => Number(a?.sortOrder || 0) - Number(b?.sortOrder || 0))[0];
       const mobileRequest = /Android|iPhone|iPad|iPod|Mobile/i.test(String(request.headers["user-agent"] || ""));
       const initialHeroUrl = mobileRequest && hero?.mobileUrl ? hero.mobileUrl : hero?.url;
       const safeHeroUrl = String(initialHeroUrl || "").replace(/["'()\\\n\r]/g, "").replace(/&/g, "&amp;").replace(/</g, "%3C").replace(/>/g, "%3E");
-      const html = data.toString("utf8")
+      let html = data.toString("utf8")
         .replace("ORIGO_INITIAL_HERO_STATE", hero ? "data-initial-hero=\"true\"" : "hidden data-initial-hero=\"false\"")
         .replace("ORIGO_INITIAL_HERO_STYLE", hero ? `style=\"background-image:url(&quot;${safeHeroUrl}&quot;)\"` : "")
         .replace("<!-- ORIGO_INITIAL_HERO_PRELOAD -->", hero ? `<link rel=\"preload\" as=\"image\" href=\"${safeHeroUrl}\" fetchpriority=\"high\" />` : "");
+      if (productRouteMatch) html = html.replace(/<div class="origo-home" id="home">[\s\S]*?<\/div>\s*<template id="retired-home-content">/, '<div class="origo-home" id="home" hidden data-route-pruned="product"></div><template id="retired-home-content">');
+      if (!routeExists) html = html.replace('<main id="storefront-main">', `<main id="storefront-main"><section class="route-not-found" role="main"><h1>404</h1><p>الصفحة المطلوبة غير موجودة.</p><a href="/">العودة إلى الرئيسية</a></section>`);
       data = Buffer.from(injectSeoIntoHtml(html, seoForRoute(url.pathname, listProducts())));
     }
     const isVersionedRuntimeAsset = [".js", ".mjs", ".css"].includes(extension) && url.searchParams.has("v");
     const isServiceWorker = cleanPath === "sw.js";
     const etag = `W/"${info.size.toString(16)}-${Math.floor(info.mtimeMs).toString(16)}"`;
     const headers = {
-      "Cache-Control": isHtml || isServiceWorker
+      "Cache-Control": process.env.NODE_ENV !== "production"
+        ? "no-store"
+        : isHtml || isServiceWorker
         ? "no-cache"
-        : isVersionedRuntimeAsset
+        : isPersistentUpload
+          ? "public, max-age=31536000, immutable"
+          : isVersionedRuntimeAsset
           ? "public, max-age=604800, immutable"
           : "public, max-age=86400",
       "Content-Type": mimeTypes[extension] || "application/octet-stream",
@@ -2170,7 +2272,7 @@ async function serveStatic(request, response, url) {
       return;
     }
     if (request.method === "HEAD") {
-      response.writeHead(200, headers).end();
+      response.writeHead(routeStatus, headers).end();
       return;
     }
 
@@ -2187,7 +2289,7 @@ async function serveStatic(request, response, url) {
       });
       const body = cachedBody || (isHtml ? compressedBody : cacheCompressedStatic(cacheKey, compressedBody));
       headers["Content-Length"] = String(body.length);
-      response.writeHead(200, headers);
+      response.writeHead(routeStatus, headers);
       response.end(body);
     } else if (canCompress && /\bgzip\b/.test(acceptedEncoding)) {
       headers["Content-Encoding"] = "gzip";
@@ -2196,11 +2298,11 @@ async function serveStatic(request, response, url) {
       const compressedBody = await promisify(gzip)(data);
       const body = cachedBody || (isHtml ? compressedBody : cacheCompressedStatic(cacheKey, compressedBody));
       headers["Content-Length"] = String(body.length);
-      response.writeHead(200, headers);
+      response.writeHead(routeStatus, headers);
       response.end(body);
     } else {
       headers["Content-Length"] = String(data.length);
-      response.writeHead(200, headers);
+      response.writeHead(routeStatus, headers);
       response.end(data);
     }
   } catch {
@@ -2217,6 +2319,8 @@ const server = createServer(async (request, response) => {
   }
 
   const url = new URL(request.url || "/", `http://${request.headers.host || `${HOST}:${PORT}`}`);
+  response.setHeader("Content-Security-Policy", "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'");
+  if (process.env.NODE_ENV === "production" && requestUsesHTTPS(request)) response.setHeader("Strict-Transport-Security", "max-age=15552000");
   if (request.method === "OPTIONS") {
     response.writeHead(204, {
       "Access-Control-Allow-Headers": "Content-Type",
@@ -2229,6 +2333,13 @@ const server = createServer(async (request, response) => {
     return;
   }
   if (url.pathname.startsWith("/api/")) {
+    const bodyLimit = requestBodyLimit(url.pathname);
+    request.origoMaxBodyBytes = bodyLimit;
+    const contentLength = Number(request.headers["content-length"] || 0);
+    if (contentLength > bodyLimit) {
+      jsonResponse(response, 413, { error:"Payload Too Large", code:"REQUEST_TOO_LARGE" }, origin);
+      return;
+    }
     try {
       await handleAPI(request, response, url, origin);
     } catch (error) {
@@ -2244,6 +2355,35 @@ const server = createServer(async (request, response) => {
   if (request.method !== "GET" && request.method !== "HEAD") {
     response.writeHead(405).end("Method not allowed");
     return;
+  }
+
+  const orderViewedMatch = url.pathname.match(/^\/api\/admin\/orders\/(\d+)\/viewed$/);
+  if (orderViewedMatch && request.method === "POST") {
+    const user = requireUser(request, response, origin, "orders:view");
+    if (!user) return;
+    const order = markOrderViewed(orderViewedMatch[1], user.id);
+    return order ? jsonResponse(response, 200, { order }, origin) : jsonResponse(response, 404, { error: "الطلب غير موجود." }, origin);
+  }
+
+  const orderNoteMatch = url.pathname.match(/^\/api\/admin\/orders\/(\d+)\/notes$/);
+  if (orderNoteMatch && request.method === "POST") {
+    const user = requireUser(request, response, origin, "orders");
+    if (!user) return;
+    try {
+      const order = addOrderNote(orderNoteMatch[1], await readJSONBody(request), user.id);
+      return order ? jsonResponse(response, 201, { order }, origin) : jsonResponse(response, 404, { error: "الطلب غير موجود." }, origin);
+    } catch (error) { return jsonResponse(response, 400, { error: error.message }, origin); }
+  }
+
+  const orderArchiveMatch = url.pathname.match(/^\/api\/admin\/orders\/(\d+)\/(archive|restore|trash)$/);
+  if (orderArchiveMatch && request.method === "POST") {
+    const user = requireUser(request, response, origin, "orders");
+    if (!user) return;
+    try {
+      const body = await readJSONBody(request);
+      const order = archiveManagedOrder(orderArchiveMatch[1], orderArchiveMatch[2], user.id, body.reason || "");
+      return order ? jsonResponse(response, 200, { order }, origin) : jsonResponse(response, 404, { error: "الطلب غير موجود." }, origin);
+    } catch (error) { return jsonResponse(response, 409, { error: error.message, code: error.code }, origin); }
   }
   const mediaMatch = url.pathname.match(/^\/media\/([a-z0-9-]{12,120})\.(?:jpe?g|png|webp)$/i);
   if (mediaMatch) {

@@ -197,8 +197,8 @@ body .product-overlay .origo-exact-product-card h3.exact-card-product-name.produ
   font-size: clamp(11px, .95vw, 15px) !important;
 }
 
-body #storefront-main .origo-exact-product-card h3.exact-card-product-name button,
-body .product-overlay .origo-exact-product-card h3.exact-card-product-name button {
+body #storefront-main .origo-exact-product-card h3.exact-card-product-name :is(a,button),
+body .product-overlay .origo-exact-product-card h3.exact-card-product-name :is(a,button) {
   overflow: visible !important;
   text-overflow: clip !important;
   white-space: normal !important;

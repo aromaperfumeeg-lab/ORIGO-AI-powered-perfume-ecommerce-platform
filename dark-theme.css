@@ -69,8 +69,8 @@ body.dark .origo-reference-product-card :is(.product-image,.product-card-media-l
   background: var(--night-surface) !important;
 }
 
-body.dark #storefront-main .origo-exact-product-card :is(.exact-card-product-name,.exact-card-product-name button,.exact-card-rating,.product-price),
-body.dark .product-overlay .origo-exact-product-card :is(.exact-card-product-name,.exact-card-product-name button,.exact-card-rating,.product-price) {
+body.dark #storefront-main .origo-exact-product-card :is(.exact-card-product-name,.exact-card-product-name a,.exact-card-product-name button,.exact-card-rating,.product-price),
+body.dark .product-overlay .origo-exact-product-card :is(.exact-card-product-name,.exact-card-product-name a,.exact-card-product-name button,.exact-card-rating,.product-price) {
   color: var(--night-text) !important;
 }
 
