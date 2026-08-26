@@ -21,7 +21,7 @@ for (const [name, [start, end]] of Object.entries(boundaries)) {
 }
 
 function targetFor(position, name = "") {
-  if (["handleAdminOrderRoute", "normalizeOptionSearch", "applyHomepageRailSettings", "perfumeResolvedAccords", "seoKeywordValues", "systemStatesMarkup"].includes(name)) return "";
+  if (["handleAdminOrderRoute", "normalizeOptionSearch", "applyHomepageRailSettings", "homeHeroTargetHref", "perfumeResolvedAccords", "seoKeywordValues", "systemStatesMarkup"].includes(name)) return "";
   if (source.slice(position, position + 80).startsWith("const ORIGO_ACCORD_LIBRARY")) return "";
   if (position >= boundaries["storefront-settings"][0] && position < boundaries["storefront-settings"][1]) return "storefront-settings";
   if (position >= boundaries.admin[0] && position < boundaries.admin[1]) return "admin";

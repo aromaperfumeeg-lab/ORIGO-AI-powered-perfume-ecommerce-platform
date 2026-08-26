@@ -85,6 +85,8 @@ test("brand marquee restores its seamless autoplay and interaction controls", ()
 test("announcement ticker above the header keeps its continuous motion", () => {
   assert.match(app, /announcement\.innerHTML = `<span[\s\S]*aria-hidden="true"/);
   assert.match(appearance, /animation:origoAnnouncementTicker 20s linear infinite!important/);
+  assert.match(appearance, /html\[dir="rtl"\][^{]+\.announcement>span\{\s*animation-name:origoAnnouncementTickerRtl!important/);
+  assert.match(appearance, /@keyframes origoAnnouncementTickerRtl\{to\{transform:translateX\(100%\)\}\}/);
   assert.match(appearance, /\.announcement:hover>span\{\s*animation-play-state:paused!important/);
   assert.doesNotMatch(noEffects, /:is\([^)]*announcement>span/);
 });
