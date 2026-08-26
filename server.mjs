@@ -99,9 +99,13 @@ import {
 } from "./external-integrations.mjs";
 import {
   accountDashboard,
+  addOrderNote,
+  adminOrderNotifications,
+  archiveManagedOrder,
   deleteCustomerAccount,
   checkoutSettings,
   createCommerceOrder,
+  createManualOrder,
   createMarketingInsight,
   feedbackAnalytics,
   feedbackRequestForOrder,
@@ -110,9 +114,11 @@ import {
   getFeedbackSurvey,
   getFragranceFinderSession,
   listDeliveryLocations,
+  listManagedOrders,
   loyaltyTiers,
   listSavedAddresses,
   markNotificationsRead,
+  markOrderViewed,
   quoteCheckout,
   replaceCommerceCart,
   submitFeedback,
@@ -2009,7 +2015,33 @@ async function handleAPI(request, response, url, origin) {
   if (url.pathname === "/api/admin/orders" && request.method === "GET") {
     const user = requireUser(request, response, origin, "orders:view");
     if (!user) return;
-    return jsonResponse(response, 200, { orders: listAllOrders() }, origin);
+    return jsonResponse(response, 200, listManagedOrders(Object.fromEntries(url.searchParams)), origin);
+  }
+
+  if (url.pathname === "/api/admin/orders" && request.method === "POST") {
+    const user = requireUser(request, response, origin, "orders");
+    if (!user) return;
+    try {
+      const body = await readJSONBody(request);
+      const order = createManualOrder(body, user.id);
+      recordActivity(user.id, body.draft ? "order_draft_created" : "manual_order_created", "order", order.id, { source: order.orderSource });
+      return jsonResponse(response, 201, { order }, origin);
+    } catch (error) {
+      return jsonResponse(response, error.code === "OUT_OF_STOCK" ? 409 : 400, { error: error.message, code: error.code || "MANUAL_ORDER_FAILED" }, origin);
+    }
+  }
+
+  if (url.pathname === "/api/admin/order-notifications" && request.method === "GET") {
+    const user = requireUser(request, response, origin, "orders:view");
+    if (!user) return;
+    return jsonResponse(response, 200, adminOrderNotifications({}, user.id), origin);
+  }
+
+  if (url.pathname === "/api/admin/order-notifications" && request.method === "POST") {
+    const user = requireUser(request, response, origin, "orders:view");
+    if (!user) return;
+    const body = await readJSONBody(request);
+    return jsonResponse(response, 200, adminOrderNotifications(body, user.id), origin);
   }
 
   if (url.pathname === "/api/admin/checkout/settings" && request.method === "GET") {
@@ -2317,6 +2349,35 @@ const server = createServer(async (request, response) => {
   if (request.method !== "GET" && request.method !== "HEAD") {
     response.writeHead(405).end("Method not allowed");
     return;
+  }
+
+  const orderViewedMatch = url.pathname.match(/^\/api\/admin\/orders\/(\d+)\/viewed$/);
+  if (orderViewedMatch && request.method === "POST") {
+    const user = requireUser(request, response, origin, "orders:view");
+    if (!user) return;
+    const order = markOrderViewed(orderViewedMatch[1], user.id);
+    return order ? jsonResponse(response, 200, { order }, origin) : jsonResponse(response, 404, { error: "الطلب غير موجود." }, origin);
+  }
+
+  const orderNoteMatch = url.pathname.match(/^\/api\/admin\/orders\/(\d+)\/notes$/);
+  if (orderNoteMatch && request.method === "POST") {
+    const user = requireUser(request, response, origin, "orders");
+    if (!user) return;
+    try {
+      const order = addOrderNote(orderNoteMatch[1], await readJSONBody(request), user.id);
+      return order ? jsonResponse(response, 201, { order }, origin) : jsonResponse(response, 404, { error: "الطلب غير موجود." }, origin);
+    } catch (error) { return jsonResponse(response, 400, { error: error.message }, origin); }
+  }
+
+  const orderArchiveMatch = url.pathname.match(/^\/api\/admin\/orders\/(\d+)\/(archive|restore|trash)$/);
+  if (orderArchiveMatch && request.method === "POST") {
+    const user = requireUser(request, response, origin, "orders");
+    if (!user) return;
+    try {
+      const body = await readJSONBody(request);
+      const order = archiveManagedOrder(orderArchiveMatch[1], orderArchiveMatch[2], user.id, body.reason || "");
+      return order ? jsonResponse(response, 200, { order }, origin) : jsonResponse(response, 404, { error: "الطلب غير موجود." }, origin);
+    } catch (error) { return jsonResponse(response, 409, { error: error.message, code: error.code }, origin); }
   }
   const mediaMatch = url.pathname.match(/^\/media\/([a-z0-9-]{12,120})\.(?:jpe?g|png|webp)$/i);
   if (mediaMatch) {

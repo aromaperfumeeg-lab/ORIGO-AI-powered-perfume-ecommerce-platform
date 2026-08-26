@@ -3,7 +3,7 @@
   const promises = new Map();
   const cssPromises = new Map();
   const assets = {
-    admin:["chunks/admin-runtime.min.js?v=4"],
+    admin:["chunks/admin-runtime.min.js?v=5"],
     productEditor:["chunks/product-editor-runtime.min.js?v=4"],
     storefrontSettings:["chunks/storefront-settings-runtime.min.js?v=5"],
     finder:["fragrance-finder-engine.js?v=2","fragrance-finder-i18n.js?v=3","fragrance-finder.js?v=5"]
@@ -45,7 +45,7 @@
         template.remove();
       }
     }
-    if (name === "admin") await style("admin-ui-fixes.css?v=6");
+    if (name === "admin") await Promise.all([style("admin-ui-fixes.css?v=6"), style("admin-order-center.css?v=1")]);
     if (name === "productEditor") await style("product-editor-runtime.css?v=4");
     if (name === "storefrontSettings") await style("storefront-settings-runtime.css?v=4");
     if (name === "finder") await style("fragrance-finder.css?v=3");

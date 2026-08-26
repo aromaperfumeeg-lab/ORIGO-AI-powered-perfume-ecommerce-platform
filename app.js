@@ -1159,6 +1159,13 @@ const state = {
   adminStaff: [],
   activeAdminOrderId: null,
   adminOrderStatusFilter: "all",
+  adminOrderQuery: "",
+  adminOrderSourceFilter: "all",
+  adminOrderCollectionFilter: "all",
+  adminOrderSort: "newest",
+  adminOrderPagination: { page: 1, pageSize: 25, total: 0, pages: 1 },
+  adminOrderSummary: { statuses: {}, todayTotal: 0, monthTotal: 0, pendingCollectionTotal: 0, pendingCollectionCount: 0 },
+  adminOrderNotifications: { items: [], unread: 0 },
   serverAvailable: false,
   pendingAction: "",
   publicIntegrations: {},
@@ -1709,9 +1716,9 @@ function adminStatusLabel(status) {
     pending: ["بانتظار المراجعة", "Pending"], open: ["مفتوح", "Open"], waiting: ["بانتظار العميل", "Waiting"],
     received: ["تم الاستلام", "Received"], in_transit: ["في الطريق", "In transit"],
     low: ["منخفض", "Low"], healthy: ["جيد", "Healthy"], draft: ["مسودة", "Draft"],
-    new: ["طلب جديد", "New order"], processing: ["قيد التجهيز", "Processing"],
+    new: ["طلب جديد", "New order"], awaiting_confirmation: ["بانتظار التأكيد", "Awaiting confirmation"], confirmed: ["تم التأكيد", "Confirmed"], processing: ["جاري التجهيز", "Processing"],
     ready_to_ship: ["جاهز للشحن", "Ready to ship"], shipped: ["تم الشحن", "Shipped"],
-    out_for_delivery: ["خرج للتسليم", "Out for delivery"], delivered: ["تم التسليم", "Delivered"],
+    handed_to_carrier: ["لدى شركة الشحن", "Handed to carrier"], out_for_delivery: ["قيد التوصيل", "Out for delivery"], delivered: ["تم التسليم", "Delivered"], awaiting_customer: ["بانتظار العميل", "Awaiting customer"], delivery_failed: ["فشل التسليم", "Delivery failed"],
     completed: ["مكتمل", "Completed"], cancelled: ["ملغي", "Cancelled"], returned: ["مرتجع", "Returned"]
   };
   return (labels[status] || [status, status])[state.lang === "ar" ? 0 : 1];
@@ -1727,9 +1734,10 @@ function adminNavMarkup() {
   const allowed = adminSections.filter((section) => section.id === "overview"
     || hasStaffPermission(sectionPermission(section.id))
     || state.user?.permissions?.includes("*"));
+  const newOrderCount = state.adminOrders.filter((order) => ["new", "received"].includes(order.status)).length;
   const itemMarkup = (section) => `<button data-action="admin-view" data-view="${section.id}" class="${state.adminView === section.id ? "active" : ""}">
       <i>${section.icon}</i><span>${escapeHTML(state.lang === "ar" ? section.ar : section.en)}</span>
-      ${section.id === "orders" && state.adminOrders.filter((order) => order.status === "new").length ? `<b>${state.adminOrders.filter((order) => order.status === "new").length}</b>` : ""}
+      ${section.id === "orders" && newOrderCount ? `<b>${newOrderCount}</b>` : ""}
       ${section.id === "inventory" ? `<b>${lowStockProducts().length}</b>` : ""}</button>`;
   const groupedMarkup = (sections) => {
     let lastGroup = "";
@@ -1776,6 +1784,24 @@ function customerRows() {
   return [...customers.values()];
 }
 
+function adminOrdersApiUrl() {
+  const params = new URLSearchParams({ page:String(state.adminOrderPagination.page || 1), pageSize:String(state.adminOrderPagination.pageSize || 25), sort:state.adminOrderSort || "newest" });
+  if (state.adminOrderQuery) params.set("q", state.adminOrderQuery);
+  if (state.adminOrderStatusFilter !== "all") params.set("status", state.adminOrderStatusFilter);
+  if (state.adminOrderSourceFilter !== "all") params.set("source", state.adminOrderSourceFilter);
+  if (state.adminOrderCollectionFilter !== "all") params.set("collectionStatus", state.adminOrderCollectionFilter);
+  return `/api/admin/orders?${params}`;
+}
+
+async function refreshAdminOrders() {
+  const result = await api(adminOrdersApiUrl());
+  state.adminOrders = result.orders || [];
+  state.adminOrderPagination = result.pagination || state.adminOrderPagination;
+  state.adminOrderSummary = result.summary || state.adminOrderSummary;
+  state.knownAdminOrderIds = new Set(state.adminOrders.map((order) => Number(order.id)));
+  renderAdminDashboard("orders");
+}
+
 async function loadAdminDashboardData() {
   try {
     await loadAdminCatalog();
@@ -1784,7 +1810,7 @@ async function loadAdminDashboardData() {
   }
   try {
     const [ordersResult, workspaceResult, staffResult, integrationsResult, alternativesResult] = await Promise.all([
-      hasStaffPermission("orders:view") ? api("/api/admin/orders") : Promise.resolve({ orders: [] }),
+      hasStaffPermission("orders:view") ? api(adminOrdersApiUrl()) : Promise.resolve({ orders: [] }),
       api("/api/admin/workspace"),
       hasStaffPermission("users") ? api("/api/admin/staff") : Promise.resolve({ staff: [] }),
       hasStaffPermission("settings") ? api("/api/admin/integrations") : Promise.resolve({ integrations: {} }),
@@ -1796,6 +1822,8 @@ async function loadAdminDashboardData() {
       ? nextOrders.filter((order) => !state.knownAdminOrderIds.has(Number(order.id)))
       : [];
     state.adminOrders = nextOrders;
+    state.adminOrderPagination = ordersResult.pagination || state.adminOrderPagination;
+    state.adminOrderSummary = ordersResult.summary || state.adminOrderSummary;
     state.knownAdminOrderIds = nextIds;
     if (workspaceResult.state && Object.keys(workspaceResult.state).length) {
       state.adminWorkspace = {
@@ -1850,11 +1878,13 @@ function startAdminOrderPolling() {
   window.setInterval(async () => {
     if (!$("#admin-overlay")?.classList.contains("open") || !state.user) return;
     try {
-      const result = await api("/api/admin/orders");
+      const result = await api(adminOrdersApiUrl());
       const previousIds = state.knownAdminOrderIds || new Set();
       const nextOrders = result.orders || [];
       const added = nextOrders.filter((order) => !previousIds.has(Number(order.id)));
       state.adminOrders = nextOrders;
+      state.adminOrderPagination = result.pagination || state.adminOrderPagination;
+      state.adminOrderSummary = result.summary || state.adminOrderSummary;
       state.knownAdminOrderIds = new Set(nextOrders.map((order) => Number(order.id)));
       updateAdminNotificationBadge();
       if (added.length && mergeStoreSettings(state.adminWorkspace.settings || {}).newOrderNotifications !== false) {
@@ -1863,7 +1893,7 @@ function startAdminOrderPolling() {
         if (state.adminView === "orders") renderAdminDashboard("orders");
       }
     } catch {}
-  }, 20_000);
+  }, 60_000);
 }
 
 async function handleAdminOrderRoute() {
@@ -1908,13 +1938,15 @@ function adminMetric(icon, label, value, trend = "", tone = "") {
 
 function orderStatusSummary() {
   const statuses = [
-    ["all", "الكل", "All"], ["new", "جديد", "New"], ["processing", "قيد التجهيز", "Processing"], ["shipped", "تم الشحن", "Shipped"],
-    ["completed", "مكتمل", "Completed"], ["cancelled", "ملغي", "Cancelled"]
+    ["all", "كل الطلبات", "All orders"], ["received", "جديد", "New"], ["awaiting_confirmation", "تحتاج تأكيد", "Needs confirmation"],
+    ["processing", "جاري التجهيز", "Processing"], ["ready_to_ship", "جاهز للشحن", "Ready to ship"], ["shipped", "تم الشحن", "Shipped"],
+    ["delivered", "تم التسليم", "Delivered"], ["cancelled", "ملغي", "Cancelled"], ["returned", "مرتجع", "Returned"], ["delivery_failed", "فشل التسليم", "Delivery failed"]
   ];
+  const counts = state.adminOrderSummary.statuses || {};
   return statuses.map(([value, ar, en]) => {
-    const count = value === "all" ? state.adminOrders.length : state.adminOrders.filter((order) => order.status === value).length;
+    const count = value === "all" ? state.adminOrderPagination.total : Number(counts[value] || 0);
     return `<button type="button" data-action="admin-order-filter" data-status="${value}" class="${state.adminOrderStatusFilter === value ? "active" : ""}" aria-pressed="${state.adminOrderStatusFilter === value}"><i class="${value}"></i><span><b>${count}</b><small>${state.lang === "ar" ? ar : en}</small></span><strong>→</strong></button>`;
-  }).join("");
+  }).join("") + `<article class="admin-order-money-stat"><small>${adminCopy("التحصيل المعلق", "Pending collection")}</small><b>${formatPrice(state.adminOrderSummary.pendingCollectionTotal || 0)}</b><span>${formatNumber(state.adminOrderSummary.pendingCollectionCount || 0)} ${adminCopy("طلب", "orders")}</span></article><article class="admin-order-money-stat"><small>${adminCopy("طلبات اليوم", "Today's orders")}</small><b>${formatPrice(state.adminOrderSummary.todayTotal || 0)}</b></article><article class="admin-order-money-stat"><small>${adminCopy("طلبات الشهر", "This month")}</small><b>${formatPrice(state.adminOrderSummary.monthTotal || 0)}</b></article>`;
 }
 
 function bestSellingRows() {
@@ -2015,15 +2047,24 @@ function ordersViewMarkup() {
   const headers = state.lang === "ar"
     ? ["الطلب", "العميل", "المنتجات", "الإجمالي", "الحالة", "التاريخ", "الإجراءات"]
     : ["Order", "Customer", "Products", "Total", "Status", "Date", "Actions"];
-  const filteredOrders = state.adminOrderStatusFilter === "all" ? state.adminOrders : state.adminOrders.filter((order) => order.status === state.adminOrderStatusFilter);
-  const rows = filteredOrders.map((order) => `<tr><td><button class="table-action" data-action="open-order-details" data-id="${order.id}" dir="ltr">${escapeHTML(order.orderNumber)} ↗</button></td>
-    <td><b>${escapeHTML(order.customerName)}</b><small>${escapeHTML(order.phone)}</small></td>
+  const rows = state.adminOrders.map((order) => `<tr class="priority-${escapeHTML(order.priority || "normal")}${order.firstViewedAt ? "" : " is-unread"}"><td><input type="checkbox" data-order-select value="${order.id}" aria-label="${adminCopy("تحديد الطلب", "Select order")}"/></td><td><button class="table-action" data-action="open-order-details" data-id="${order.id}" dir="ltr">${escapeHTML(order.orderNumber)} ↗</button><small>${escapeHTML(order.orderSource || "storefront")}</small></td>
+    <td><b>${escapeHTML(order.customerName)}</b><small dir="ltr">${escapeHTML(order.phone)}</small></td>
     <td>${(order.items || []).reduce((sum, item) => sum + Number(item.quantity), 0)}</td><td><b>${formatPrice(order.total)}</b></td>
     <td><select data-action="order-status" data-id="${order.id}">${orderStatusOptions(order.status)}</select></td>
     <td><small>${new Date(order.createdAt).toLocaleDateString(state.lang === "ar" ? "ar-EG-u-nu-latn" : "en-US")}</small></td>
-    <td><button type="button" class="secondary-button compact-button" data-action="open-order-details" data-id="${order.id}">${state.lang === "ar" ? "عرض التفاصيل" : "View details"}</button></td></tr>`);
+    <td><span class="admin-table-actions"><button type="button" class="secondary-button compact-button" data-action="open-order-details" data-id="${order.id}">${state.lang === "ar" ? "عرض" : "View"}</button><button type="button" class="table-action" data-action="quick-order-status" data-id="${order.id}" data-status="${order.status === "awaiting_confirmation" || order.status === "new" || order.status === "received" ? "confirmed" : order.status === "confirmed" ? "processing" : order.status === "processing" ? "ready_to_ship" : order.status === "ready_to_ship" ? "shipped" : order.status === "shipped" ? "delivered" : order.status}">${adminCopy("الإجراء التالي", "Next action")}</button><a class="table-action" href="tel:${escapeHTML(order.phone)}">${adminCopy("اتصال", "Call")}</a><a class="table-action" href="https://wa.me/${escapeHTML(String(order.phone).replace(/\D/g,""))}" target="_blank" rel="noopener">WhatsApp</a><button type="button" class="table-action" data-action="archive-order" data-id="${order.id}">${adminCopy("أرشفة", "Archive")}</button></span></td></tr>`);
   const activeOrder = state.adminOrders.find((order) => Number(order.id) === Number(state.activeAdminOrderId));
-  return `${activeOrder ? orderDetailsMarkup(activeOrder) : ""}<div class="admin-workflow-strip">${orderStatusSummary()}</div>${adminTable(headers, rows, state.lang === "ar" ? "لا توجد طلبات بعد" : "No orders yet")}`;
+  const pagination = state.adminOrderPagination;
+  return `${activeOrder ? orderDetailsMarkup(activeOrder) : ""}<header class="order-center-head"><div><h2>${adminCopy("مركز إدارة الطلبات", "Order Management Center")}</h2><p>${adminCopy("تابع التأكيد والتجهيز والشحن والتحصيل من مكان واحد.", "Track confirmation, fulfilment, shipping and collection in one place.")}</p></div><button type="button" class="button burgundy-button" data-action="create-manual-order">${adminCopy("+ إنشاء طلب", "+ Create order")}</button></header><div class="admin-workflow-strip">${orderStatusSummary()}</div><form class="order-center-filters" id="admin-order-search-form"><input type="search" name="q" value="${escapeHTML(state.adminOrderQuery)}" placeholder="${adminCopy("رقم الطلب، العميل، الهاتف، المنتج، SKU، الشحنة أو العنوان", "Order, customer, phone, product, SKU, tracking or address")}"/><select name="source">${selectOptions([["all",adminCopy("كل المصادر","All sources")],["storefront",adminCopy("المتجر الإلكتروني","Storefront")],["phone",adminCopy("مكالمة هاتفية","Phone")],["whatsapp","WhatsApp"],["instagram","Instagram"],["facebook","Facebook"],["tiktok","TikTok"],["walk_in",adminCopy("زيارة مباشرة","Walk-in")],["representative",adminCopy("مندوب","Representative")],["other",adminCopy("أخرى","Other")]],state.adminOrderSourceFilter)}</select><select name="collectionStatus">${selectOptions([["all",adminCopy("كل حالات التحصيل","All collection states")],["uncollected",adminCopy("غير محصل","Uncollected")],["collected_from_customer",adminCopy("محصل من العميل","Collected")],["with_carrier",adminCopy("لدى شركة الشحن","With carrier")],["transferred",adminCopy("تم التحويل","Transferred")],["short",adminCopy("نقص تحصيل","Collection short")],["returned",adminCopy("مرتجع","Returned")]],state.adminOrderCollectionFilter)}</select><select name="sort">${selectOptions([["newest",adminCopy("الأحدث","Newest")],["oldest",adminCopy("الأقدم","Oldest")],["highest",adminCopy("الأعلى قيمة","Highest value")],["lowest",adminCopy("الأقل قيمة","Lowest value")],["updated",adminCopy("الأحدث تحديثًا","Recently updated")],["priority",adminCopy("الأولوية","Priority")],["delayed",adminCopy("المتأخرة","Delayed")]],state.adminOrderSort)}</select><button class="secondary-button" type="submit">${adminCopy("بحث وتصفية", "Search and filter")}</button></form><div class="order-bulk-bar"><button type="button" data-action="bulk-order-status" data-status="processing">${adminCopy("بدء التجهيز للمحدد", "Process selected")}</button><button type="button" data-action="bulk-order-archive">${adminCopy("أرشفة المحدد", "Archive selected")}</button><button type="button" data-action="admin-export" data-report="orders">${adminCopy("تصدير النتائج", "Export results")}</button></div>${adminTable([adminCopy("تحديد","Select"),...headers], rows, state.lang === "ar" ? "لا توجد طلبات مطابقة" : "No matching orders")}<footer class="order-center-pagination"><span>${formatNumber(pagination.total)} ${adminCopy("طلب", "orders")}</span><button type="button" data-action="orders-page" data-page="${Math.max(1,pagination.page-1)}"${pagination.page<=1?" disabled":""}>${adminCopy("السابق", "Previous")}</button><b>${formatNumber(pagination.page)} / ${formatNumber(pagination.pages)}</b><button type="button" data-action="orders-page" data-page="${Math.min(pagination.pages,pagination.page+1)}"${pagination.page>=pagination.pages?" disabled":""}>${adminCopy("التالي", "Next")}</button></footer>`;
+}
+
+function manualOrderItemMarkup(index = 0) {
+  return `<div class="manual-order-item" data-manual-order-item><select name="itemProduct.${index}" required><option value="">${adminCopy("اختر المنتج", "Select product")}</option>${state.products.map((product)=>`<option value="${escapeHTML(product.id)}" data-price="${Number(product.price||0)}">${escapeHTML(state.lang==="ar"?product.nameAr:product.nameEn||product.nameAr)} · ${formatPrice(product.price)}</option>`).join("")}</select><input type="number" name="itemQuantity.${index}" min="1" max="100" value="1" aria-label="${adminCopy("الكمية", "Quantity")}"/><input type="number" name="itemPrice.${index}" min="0" step="0.01" placeholder="${adminCopy("السعر الافتراضي", "Default price")}" aria-label="${adminCopy("سعر الوحدة", "Unit price")}"/><input type="number" name="itemDiscount.${index}" min="0" step="0.01" value="0" aria-label="${adminCopy("الخصم", "Discount")}"/><button type="button" data-action="remove-manual-order-item" aria-label="${adminCopy("حذف المنتج", "Remove product")}">×</button></div>`;
+}
+
+function manualOrderMarkup() {
+  const ar=state.lang==="ar";
+  return `<form id="manual-order-form" class="admin-modal-form manual-order-form"><header><div><small>QUICK ORDER</small><h3>${ar?"إنشاء طلب أثناء المكالمة":"Create quick order"}</h3><p>${ar?"أنشئ مسودة أو أكد الطلب دون مغادرة صفحة الطلبات.":"Save a draft or confirm the order without leaving the order center."}</p></div><button type="button" data-action="close-admin-editor" aria-label="${ar?"إغلاق":"Close"}">×</button></header><section class="review-grid"><label>${ar?"مصدر الطلب":"Order source"}<select name="orderSource">${selectOptions([["phone",ar?"مكالمة هاتفية":"Phone"],["whatsapp","WhatsApp"],["instagram","Instagram"],["facebook","Facebook"],["tiktok","TikTok"],["walk_in",ar?"زيارة مباشرة":"Walk-in"],["representative",ar?"مندوب":"Representative"],["other",ar?"أخرى":"Other"]],"phone")}</select></label><label>${ar?"الأولوية":"Priority"}<select name="priority">${selectOptions([["normal",ar?"عادية":"Normal"],["high",ar?"عالية":"High"],["urgent",ar?"عاجلة":"Urgent"]],"normal")}</select></label><label>${ar?"اسم العميل":"Customer name"}<input name="customerName" required minlength="2"/></label><label>${ar?"الهاتف":"Phone"}<input name="phone" required dir="ltr" inputmode="tel" placeholder="01xxxxxxxxx"/></label><label>${ar?"هاتف إضافي":"Extra phone"}<input name="extraPhone" dir="ltr" inputmode="tel"/></label><label>${ar?"المحافظة":"Governorate"}<input name="governorate"/></label><label>${ar?"المدينة / المنطقة":"City / area"}<input name="city"/></label><label class="wide">${ar?"العنوان":"Address"}<textarea name="address" rows="2"></textarea></label></section><section class="manual-order-items"><header><h4>${ar?"المنتجات":"Products"}</h4><button type="button" data-action="add-manual-order-item">${ar?"+ إضافة منتج":"+ Add product"}</button></header><div id="manual-order-items">${manualOrderItemMarkup(0)}</div></section><section class="review-grid"><label>${ar?"تكلفة الشحن":"Shipping fee"}<input type="number" min="0" step="0.01" name="shippingTotal" value="0"/></label><label>${ar?"طريقة الدفع":"Payment method"}<select name="paymentMethod"><option value="cod">${ar?"الدفع عند الاستلام":"Cash on delivery"}</option></select></label><label class="wide">${ar?"ملاحظات العميل":"Customer notes"}<textarea name="customerNotes" rows="2"></textarea></label><label class="wide">${ar?"ملاحظات داخلية":"Internal notes"}<textarea name="internalNotes" rows="2"></textarea></label></section><footer><button type="submit" class="secondary-button" name="intent" value="draft">${ar?"حفظ كمسودة":"Save draft"}</button><button type="submit" class="button burgundy-button" name="intent" value="confirm">${ar?"تأكيد وإنشاء الطلب":"Confirm and create"}</button></footer></form>`;
 }
 
 function orderDetailsMarkup(order) {
@@ -2035,7 +2076,8 @@ function orderDetailsMarkup(order) {
   ];
   return `<form id="admin-order-details-form" class="admin-order-detail">
     <input type="hidden" name="id" value="${order.id}" />
-    <header><div><span class="eyebrow">ORDER ${escapeHTML(order.orderNumber)}</span><h3>${escapeHTML(order.customerName)}</h3></div>
+    <input type="hidden" name="rowVersion" value="${order.rowVersion || 1}" />
+    <header><div><span class="eyebrow">ORDER ${escapeHTML(order.orderNumber)}</span><h3>${escapeHTML(order.customerName)}</h3><small>${escapeHTML(order.orderSource || "storefront")} · ${new Date(order.createdAt).toLocaleString(ar ? "ar-EG-u-nu-latn" : "en-US")}</small></div>
       <div><button type="button" class="secondary-button compact-button" data-action="print-order" data-id="${order.id}" data-kind="invoice">${ar ? "طباعة فاتورة" : "Print invoice"}</button>
       <button type="button" class="secondary-button compact-button" data-action="print-order" data-id="${order.id}" data-kind="label">${ar ? "بوليصة شحن" : "Shipping label"}</button>
       ${state.integrationStatus.bosta?.configured ? `<button type="button" class="secondary-button compact-button" data-action="create-bosta-shipment" data-id="${order.id}">${ar ? "إنشاء شحنة Bosta" : "Create Bosta shipment"}</button>` : ""}
@@ -2044,12 +2086,19 @@ function orderDetailsMarkup(order) {
     <section class="review-grid">
       <label>${ar ? "حالة الطلب" : "Order status"}<select name="status">${orderStatusOptions(order.status)}</select></label>
       <label>${ar ? "حالة الدفع" : "Payment status"}<select name="paymentStatus">${selectOptions(paymentOptions, order.paymentStatus || "pending")}</select></label>
+      <label>${ar ? "حالة التحصيل" : "Collection status"}<select name="collectionStatus">${selectOptions([["uncollected",ar?"لم يتم التحصيل":"Uncollected"],["collected_from_customer",ar?"تم التحصيل من العميل":"Collected from customer"],["with_carrier",ar?"لدى شركة الشحن":"With carrier"],["transferred",ar?"تم التحويل للمتجر":"Transferred"],["short",ar?"نقص في التحصيل":"Collection short"],["returned",ar?"مرتجع":"Returned"]],order.collectionStatus || "uncollected")}</select></label>
+      <label>${ar ? "المبلغ المدفوع" : "Amount paid"}<input type="number" min="0" max="${Number(order.total || 0)}" step="0.01" name="amountPaid" value="${Number(order.amountPaid || 0)}"/></label>
+      <label>${ar ? "الأولوية" : "Priority"}<select name="priority">${selectOptions([["normal",ar?"عادية":"Normal"],["high",ar?"عالية":"High"],["urgent",ar?"عاجلة":"Urgent"]],order.priority || "normal")}</select></label>
+      <label>${ar ? "الموظف المسؤول" : "Assigned to"}<select name="assignedTo"><option value="">${ar?"غير معيّن":"Unassigned"}</option>${state.adminStaff.map((staff)=>`<option value="${staff.id}"${Number(staff.id)===Number(order.assignedTo)?" selected":""}>${escapeHTML(staff.name)}</option>`).join("")}</select></label>
       <label>${ar ? "شركة الشحن" : "Carrier"}<input name="shippingCarrier" value="${escapeHTML(order.shippingCarrier || "")}" /></label>
       <label>${ar ? "رقم التتبع" : "Tracking number"}<input name="trackingNumber" value="${escapeHTML(order.trackingNumber || "")}" /></label>
+      <label>${ar ? "الوسوم — مفصولة بفاصلة" : "Tags — comma separated"}<input name="tags" value="${escapeHTML((order.tags || []).join(", "))}" /></label>
     </section>
+    <section class="admin-order-customer"><div><h4>${ar?"بيانات العميل":"Customer"}</h4><b>${escapeHTML(order.customerName)}</b><a href="tel:${escapeHTML(order.phone)}" dir="ltr">${escapeHTML(order.phone)}</a>${order.extraPhone?`<a href="tel:${escapeHTML(order.extraPhone)}" dir="ltr">${escapeHTML(order.extraPhone)}</a>`:""}<p>${escapeHTML([order.governorate,order.city,order.address].filter(Boolean).join("، "))}</p></div><div><h4>${ar?"الحساب":"Financials"}</h4><span>${ar?"إجمالي المنتجات":"Subtotal"}<b>${formatPrice(order.subtotal)}</b></span><span>${ar?"الخصم":"Discount"}<b>${formatPrice(Number(order.productDiscount||0)+Number(order.couponDiscount||0))}</b></span><span>${ar?"الشحن":"Shipping"}<b>${formatPrice(order.shipping||order.shippingTotal||0)}</b></span><span>${ar?"الإجمالي":"Total"}<b>${formatPrice(order.total)}</b></span><span>${ar?"المتبقي":"Remaining"}<b>${formatPrice(order.remainingAmount ?? order.total)}</b></span></div></section>
     <label>${ar ? "ملاحظات داخلية" : "Internal notes"}<textarea name="internalNotes" rows="3">${escapeHTML(order.internalNotes || "")}</textarea></label>
     <div class="admin-order-items">${(order.items || []).map((item) => `<span><b>${item.quantity}× ${escapeHTML(item.productName)}</b><i>${formatPrice(item.lineTotal)}</i></span>`).join("")}</div>
-    <div class="admin-order-timeline">${(order.timeline || []).map((event) => `<span><i></i><b>${escapeHTML(event.status || event.type)}</b><small>${escapeHTML(event.createdAt || "")}</small></span>`).join("")}</div>
+    <div class="admin-order-timeline">${(order.timeline || []).map((event) => `<span><i></i><b>${escapeHTML(ar ? event.titleAr || adminStatusLabel(event.status) : event.titleEn || adminStatusLabel(event.status))}${event.actorName ? ` — ${escapeHTML(event.actorName)}` : ""}</b><small>${escapeHTML(event.createdAt || "")}</small></span>`).join("")}</div>
+    <section class="admin-order-notes"><h4>${ar?"الملاحظات":"Notes"}</h4>${(order.orderNotes||[]).map((note)=>`<article><b>${note.type==="internal"?(ar?"داخلية":"Internal"):(ar?"للعميل":"Customer")}</b><p>${escapeHTML(note.note)}</p><small>${escapeHTML(note.actorName||"")} · ${escapeHTML(note.createdAt||"")}</small></article>`).join("")}<div><select id="new-order-note-type"><option value="internal">${ar?"ملاحظة داخلية":"Internal note"}</option><option value="customer">${ar?"ملاحظة عميل":"Customer note"}</option></select><textarea id="new-order-note" rows="2" placeholder="${ar?"أضف ملاحظة…":"Add a note…"}"></textarea><button type="button" data-action="add-order-note" data-id="${order.id}">${ar?"إضافة":"Add"}</button></div></section>
     <footer><strong>${formatPrice(order.total)}</strong><button class="button burgundy-button" type="submit">${ar ? "حفظ تفاصيل الطلب" : "Save order details"}</button></footer>
   </form>`;
 }
@@ -3201,14 +3250,21 @@ function openAccount(mode = "login", pendingAction = "") {
 }
 
 const orderStatuses = {
+  draft: ["مسودة", "Draft"],
+  new: ["جديد", "New"],
   received: ["تم استلام الطلب", "Order received"],
-  processing: ["قيد التجهيز", "Processing"],
+  awaiting_confirmation: ["بانتظار التأكيد", "Awaiting confirmation"],
+  confirmed: ["تم التأكيد", "Confirmed"],
+  processing: ["جاري التجهيز", "Processing"],
   ready_to_ship: ["جاهز للشحن", "Ready to ship"],
+  handed_to_carrier: ["تم تسليمه لشركة الشحن", "Handed to carrier"],
   shipped: ["تم الشحن", "Shipped"],
-  out_for_delivery: ["خرج للتسليم", "Out for delivery"],
+  out_for_delivery: ["قيد التوصيل", "Out for delivery"],
   delivered: ["تم التسليم", "Delivered"],
+  awaiting_customer: ["بانتظار العميل", "Awaiting customer"],
   cancelled: ["تم إلغاء الطلب", "Cancelled"],
-  returned: ["تم إرجاع الطلب", "Returned"]
+  returned: ["تم إرجاع الطلب", "Returned"],
+  delivery_failed: ["فشل التسليم", "Delivery failed"]
 };
 
 function orderStatusLabel(status) {
@@ -9280,8 +9336,46 @@ document.addEventListener("click", async (event) => {
   }
   if (action === "admin-order-filter") {
     state.adminOrderStatusFilter = actionElement.dataset.status || "all";
+    state.adminOrderPagination.page = 1;
     state.activeAdminOrderId = null;
+    await refreshAdminOrders();
+  }
+  if (action === "orders-page") {
+    state.adminOrderPagination.page = Number(actionElement.dataset.page || 1);
+    await refreshAdminOrders();
+  }
+  if (action === "create-manual-order") openAdminEditorModal(manualOrderMarkup(), "[name='phone']");
+  if (action === "add-manual-order-item") {
+    const list = $("#manual-order-items");
+    if (list) list.insertAdjacentHTML("beforeend", manualOrderItemMarkup(list.children.length));
+  }
+  if (action === "remove-manual-order-item") {
+    const item = actionElement.closest("[data-manual-order-item]");
+    if ($$("[data-manual-order-item]", item?.parentElement).length > 1) item?.remove();
+  }
+  if (action === "quick-order-status") {
+    const result = await api(`/api/admin/orders/${actionElement.dataset.id}/status`, { method:"POST", body:JSON.stringify({ status:actionElement.dataset.status }) });
+    state.adminOrders = state.adminOrders.map((order)=>Number(order.id)===Number(result.order.id)?result.order:order);
     renderAdminDashboard("orders");
+    showToast(adminCopy("تم تنفيذ الإجراء التالي", "Order advanced"));
+  }
+  if (action === "archive-order") {
+    const result = await api(`/api/admin/orders/${actionElement.dataset.id}/archive`, { method:"POST", body:"{}" });
+    state.adminOrders = state.adminOrders.filter((order)=>Number(order.id)!==Number(result.order.id));
+    renderAdminDashboard("orders");
+    showToast(adminCopy("تمت أرشفة الطلب", "Order archived"));
+  }
+  if (action === "add-order-note") {
+    const result = await api(`/api/admin/orders/${actionElement.dataset.id}/notes`, { method:"POST", body:JSON.stringify({ type:$("#new-order-note-type")?.value, note:$("#new-order-note")?.value }) });
+    state.adminOrders = state.adminOrders.map((order)=>Number(order.id)===Number(result.order.id)?result.order:order);
+    renderAdminDashboard("orders");
+  }
+  if (action === "bulk-order-status" || action === "bulk-order-archive") {
+    const ids=$$("[data-order-select]:checked").map((input)=>Number(input.value));
+    if(!ids.length){showToast(adminCopy("حدد طلبًا واحدًا على الأقل", "Select at least one order"));return;}
+    if(!confirm(adminCopy(`تنفيذ الإجراء على ${ids.length} طلب؟`,`Apply this action to ${ids.length} orders?`)))return;
+    for(const id of ids) await api(action==="bulk-order-archive"?`/api/admin/orders/${id}/archive`:`/api/admin/orders/${id}/status`,{method:"POST",body:JSON.stringify(action==="bulk-order-status"?{status:actionElement.dataset.status}:{})});
+    await refreshAdminOrders();
   }
   if (action === "toggle-banner") {
     const banner = (state.adminWorkspace.banners || []).find((item) => item.id === actionElement.dataset.id);
@@ -9551,7 +9645,12 @@ document.addEventListener("click", async (event) => {
   }
   if (action === "open-order-details") {
     state.activeAdminOrderId = Number(actionElement.dataset.id);
-    const order = state.adminOrders.find((item) => Number(item.id) === state.activeAdminOrderId);
+    let order = state.adminOrders.find((item) => Number(item.id) === state.activeAdminOrderId);
+    try {
+      const result = await api(`/api/admin/orders/${state.activeAdminOrderId}/viewed`, { method:"POST", body:"{}" });
+      order = result.order || order;
+      state.adminOrders = state.adminOrders.map((item)=>Number(item.id)===state.activeAdminOrderId?order:item);
+    } catch {}
     if (order) history.pushState({ adminView: "orders", orderId: order.id }, "", `/admin/orders/${encodeURIComponent(order.orderNumber || order.id)}`);
     renderAdminDashboard("orders");
   }
@@ -10194,6 +10293,24 @@ document.addEventListener("submit", async (event) => {
     }
     return;
   }
+  if (event.target.id === "admin-order-search-form") {
+    const data = new FormData(event.target);
+    state.adminOrderQuery = String(data.get("q") || "").trim();
+    state.adminOrderSourceFilter = String(data.get("source") || "all");
+    state.adminOrderCollectionFilter = String(data.get("collectionStatus") || "all");
+    state.adminOrderSort = String(data.get("sort") || "newest");
+    state.adminOrderPagination.page = 1;
+    await refreshAdminOrders();
+    return;
+  }
+  if (event.target.id === "manual-order-form") {
+    const form=event.target,data=new FormData(form),items=$$("[data-manual-order-item]",form).map((row)=>{const product=row.querySelector("select")?.value;return product?{productId:product,quantity:Number(row.querySelector("[name^='itemQuantity']")?.value||1),unitPrice:row.querySelector("[name^='itemPrice']")?.value||undefined,discount:Number(row.querySelector("[name^='itemDiscount']")?.value||0)}:null;}).filter(Boolean);
+    try {
+      const result=await api("/api/admin/orders",{method:"POST",body:JSON.stringify({draft:event.submitter?.value==="draft",orderSource:data.get("orderSource"),priority:data.get("priority"),customerName:data.get("customerName"),phone:data.get("phone"),extraPhone:data.get("extraPhone"),governorate:data.get("governorate"),city:data.get("city"),address:data.get("address"),shippingTotal:Number(data.get("shippingTotal")||0),paymentMethod:data.get("paymentMethod"),customerNotes:data.get("customerNotes"),internalNotes:data.get("internalNotes"),items})});
+      closeAdminEditorModal();state.adminOrderStatusFilter="all";state.adminOrderPagination.page=1;await refreshAdminOrders();state.activeAdminOrderId=result.order.id;renderAdminDashboard("orders");showToast(event.submitter?.value==="draft"?adminCopy("تم حفظ المسودة","Draft saved"):adminCopy("تم إنشاء الطلب","Order created"));
+    } catch(error){showToast(error.message);}
+    return;
+  }
   if (event.target.id === "admin-order-details-form") {
     const data = new FormData(event.target);
     try {
@@ -10201,7 +10318,13 @@ document.addEventListener("submit", async (event) => {
         method: "POST",
         body: JSON.stringify({
           status: String(data.get("status") || "new"),
+          rowVersion: Number(data.get("rowVersion") || 1),
           paymentStatus: String(data.get("paymentStatus") || "pending"),
+          collectionStatus: String(data.get("collectionStatus") || "uncollected"),
+          amountPaid: Number(data.get("amountPaid") || 0),
+          priority: String(data.get("priority") || "normal"),
+          assignedTo: data.get("assignedTo") ? Number(data.get("assignedTo")) : null,
+          tags: String(data.get("tags") || "").split(",").map((tag) => tag.trim()).filter(Boolean),
           shippingCarrier: String(data.get("shippingCarrier") || "").trim(),
           trackingNumber: String(data.get("trackingNumber") || "").trim(),
           internalNotes: String(data.get("internalNotes") || "").trim()
