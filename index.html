@@ -207,8 +207,11 @@
         </section>
 
         <section class="home-benefits-directory" aria-labelledby="home-benefits-title">
-          <div class="home-section-head"><a href="/benefits" data-action="open-benefits-page"><span data-i18n="viewAll">عرض الكل</span> <span>‹</span></a><div class="ornament-heading"><span aria-hidden="true"></span><h2 id="home-benefits-title">مميزاتنا</h2><span aria-hidden="true"></span></div></div>
-          <div class="benefit-carousel-track" id="home-benefits-track" data-benefit-marquee aria-live="off"></div><button class="drag-strip-hint drag-strip-hint--start" type="button" data-action="drag-strip-scroll" data-direction="-1" aria-label="تحريك المزايا إلى اليسار">‹</button><button class="drag-strip-hint drag-strip-hint--end" type="button" data-action="drag-strip-scroll" data-direction="1" aria-label="تحريك المزايا إلى اليمين">›</button><div class="home-rail-dots" id="home-benefit-dots" aria-hidden="true"></div>
+          <button class="benefits-curtain-trigger" type="button" data-action="toggle-benefits-curtain" aria-expanded="false" aria-controls="home-benefits-curtain">
+            <span class="benefits-curtain-heading"><span class="benefits-curtain-badge" aria-hidden="true"></span><span id="home-benefits-title">مميزاتنا</span></span>
+            <span class="benefits-curtain-toggle" aria-hidden="true"></span>
+          </button>
+          <div class="benefits-curtain" id="home-benefits-curtain" aria-hidden="true"><div class="benefits-curtain-inner" id="home-benefits-track"></div></div>
         </section>
 
         <section class="home-gender-section" aria-labelledby="home-gender-title">

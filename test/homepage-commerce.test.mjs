@@ -13,6 +13,8 @@ test("homepage exposes the requested commerce hierarchy without duplicate benefi
   assert.match(html, /id="best-sellers"/);
   assert.match(html, /id="home-configured-product-rows"/);
   assert.equal((html.match(/id="home-benefits-track"/g) || []).length, 1);
+  assert.match(html, /data-action="toggle-benefits-curtain"[^>]+aria-expanded="false"[^>]+aria-controls="home-benefits-curtain"/);
+  assert.doesNotMatch(html, /benefit-carousel-track|data-benefit-marquee|home-benefit-dots/);
   ["authentic", "shipping", "returns", "prices", "cod", "gift", "support"].forEach((id) => assert.match(app, new RegExp(`\\["${id}"`)));
   assert.match(app, /const ORIGO_PERFUME_BRANDS = \[/);
   assert.match(app, /"Lattafa"/);

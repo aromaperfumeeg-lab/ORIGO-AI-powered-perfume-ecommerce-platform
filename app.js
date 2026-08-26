@@ -2916,7 +2916,6 @@ function applyHomepageRailSettings() {
     element.setAttribute("aria-label", state.lang === "ar" ? settings[key]?.titleAr || "" : settings[key]?.titleEn || "");
   });
   document.documentElement.style.setProperty("--brand-marquee-duration", `${Math.max(12, Math.min(120, Number(settings.brands?.speed || 34)))}s`);
-  document.documentElement.style.setProperty("--benefit-marquee-duration", `${Math.max(6, Math.min(120, Number(settings.benefits?.speed || 18)))}s`);
 }
 
 function renderAdminDashboard(view = state.adminView) {
@@ -3417,7 +3416,7 @@ function localizeStaticStorefront() {
   setText("#home-seo-title", "ORIGO Scents | أوريجو سينتس - متجر العطور الأصلية في مصر", "ORIGO Scents | Original Perfume Store in Egypt");
   setText("#home-seo-copy", "يوفر ORIGO Scents عطورًا أصلية 100% للرجال والنساء وللجنسين من علامات تجارية متنوعة مع الأسعار والتوفر داخل مصر.", "ORIGO Scents offers 100% original perfumes for men, women and everyone from a wide range of brands, with prices and availability in Egypt.");
   setText("#home-original-perfumes-link", "تسوق العطور الأصلية", "Shop original perfumes");
-  renderHomeBenefitsMarquee();
+  renderHomeBenefitsCurtain();
   const genderCards = [
     ["للرجال", "عطور تعكس القوة والأناقة والثقة", "Men", "Fragrances of strength, elegance, and confidence"],
     ["للنساء", "عطور تمنحك الجمال والجاذبية", "Women", "Fragrances of beauty and allure"],
@@ -3554,18 +3553,28 @@ function bindHomeBrandPagination(track, dotsSelector) {
   requestAnimationFrame(update);
 }
 
-function renderHomeBenefitsMarquee() {
+function renderHomeBenefitsCurtain() {
   const track = $("#home-benefits-track");
   if (!track) return;
-  const benefits = activeFooterBenefits();
-  const items = benefits.map((benefit) => {
-    const title = state.lang === "ar" ? benefit.titleAr : benefit.titleEn;
-    const short = state.lang === "ar" ? benefit.shortAr : benefit.shortEn;
-    return `<a class="marquee-item benefit-marquee-item" href="/benefits/${escapeHTML(benefit.slug)}" data-action="benefit-link" data-slug="${escapeHTML(benefit.slug)}"><span class="benefit-icon">${footerBenefitIcon(benefit.icon, benefit.colors)}</span><b>${escapeHTML(title)}</b><small>${escapeHTML(short || "")}</small></a>`;
+  const available = new Map(activeFooterBenefits().map((benefit) => [benefit.slug, benefit]));
+  const benefits = [
+    ["shipping", "شحن سريع", "Fast shipping", "توصيل سريع خلال 2–3 أيام عمل", "Fast delivery within 2–3 business days", "customer-service"],
+    ["returns", "استرجاع سهل", "Easy returns", "استرجاع واستبدال خلال 14 يوم", "Returns and exchanges within 14 days", "easy-returns"],
+    ["authentic", "منتجات أصلية 100%", "100% authentic products", "منتجات أصلية وموثوقة", "Authentic, trusted products", ""],
+    ["support", "خدمة عملاء 24/7", "24/7 customer service", "خدمة عملاء على مدار الساعة", "Customer service around the clock", "customer-service"],
+    ["cod", "دفع آمن", "Secure payment", "بوابات دفع آمنة ومشفرة", "Secure, encrypted payment gateways", ""],
+    ["prices", "أسعار منافسة", "Competitive prices", "قيمة ممتازة مقابل الجودة", "Excellent value for quality", ""],
+    ["gift", "تغليف فاخر", "Luxury wrapping", "تغليف أنيق وجاهز للإهداء", "Elegant, gift-ready wrapping", "luxury-gift-wrap"],
+    ["samples", "عينات عطور", "Perfume samples", "عينات مختارة مع الطلبات", "Selected samples with orders", "perfume-samples"]
+  ];
+  track.innerHTML = benefits.map(([icon, titleAr, titleEn, shortAr, shortEn, slug]) => {
+    const target = slug && available.has(slug) ? slug : "";
+    const title = state.lang === "ar" ? titleAr : titleEn;
+    const short = state.lang === "ar" ? shortAr : shortEn;
+    return `<button class="benefits-curtain-item" type="button"${target ? ` data-action="benefit-link" data-slug="${escapeHTML(target)}"` : " disabled"}><span class="benefit-icon">${footerBenefitIcon(icon)}</span><span class="benefits-curtain-copy"><b>${escapeHTML(title)}</b><small>${escapeHTML(short)}</small></span>${target ? `<span class="benefits-curtain-link" aria-hidden="true">${luxuryIcon("chevron")}</span>` : ""}</button>`;
   }).join("");
-  track.innerHTML = items ? `<div class="brand-marquee-content benefit-marquee-content"><div class="brand-marquee-set benefit-marquee-set">${items}</div></div>` : "";
-  bindBrandMarquee(track);
-  renderHomeRailDots("#home-benefit-dots", benefits.length, matchMedia("(max-width: 700px)").matches ? 4 : 6);
+  const trigger = $("[data-action='toggle-benefits-curtain']");
+  if (trigger) trigger.querySelector("#home-benefits-title").textContent = state.lang === "ar" ? "مميزاتنا" : "Our benefits";
 }
 
 function renderHomeNavigation() {
@@ -3756,7 +3765,7 @@ function renderConfiguredHomeProductRows() {
 }
 
 function renderHomepageCommerce() {
-  renderHomeBenefitsMarquee();
+  renderHomeBenefitsCurtain();
   renderConfiguredHomeProductRows();
   observeReveals();
 }
@@ -8677,12 +8686,19 @@ document.addEventListener("click", async (event) => {
     return;
   }
   if (action === "drag-strip-scroll") {
-    const track = actionElement.closest(".home-brand-directory,.home-benefits-directory")?.querySelector(".brand-carousel-track,.benefit-carousel-track");
+    const track = actionElement.closest(".home-brand-directory")?.querySelector(".brand-carousel-track");
     if (track) {
       const direction = Number(actionElement.dataset.direction) || 1;
       const pageStep = track.id === "home-brand-carousel-track" ? track.clientWidth : Math.max(240, track.clientWidth * .65);
       track.scrollBy({ left: direction * pageStep, behavior: "smooth" });
     }
+  }
+  if (action === "toggle-benefits-curtain") {
+    const curtain = $("#home-benefits-curtain");
+    const expanded = actionElement.getAttribute("aria-expanded") === "true";
+    actionElement.setAttribute("aria-expanded", String(!expanded));
+    curtain?.setAttribute("aria-hidden", String(expanded));
+    return;
   }
   if (action === "parse-perfume-bundle") {
     const form = actionElement.closest("#import-review-form");
@@ -11676,7 +11692,7 @@ function bindHorizontalRail(rail) {
   }, true);
 }
 
-$$("[data-brand-marquee], [data-benefit-marquee]").forEach(bindBrandMarquee);
+$$("[data-brand-marquee]").forEach(bindBrandMarquee);
 $$('[data-horizontal-rail]').forEach(bindHorizontalRail);
 
 const backToTopButton = $("#back-to-top");
