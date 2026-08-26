@@ -1160,6 +1160,12 @@ async function handleAPI(request, response, url, origin) {
     }, origin);
   }
 
+  if (url.pathname === "/api/brand-options" && request.method === "GET") {
+    return jsonResponse(response, 200, {
+      options: listProductOptions("brand", false)
+    }, origin, { "Cache-Control": "public, max-age=15, stale-while-revalidate=60" });
+  }
+
   if (url.pathname === "/api/admin/product-options" && request.method === "GET") {
     const user = requireUser(request, response, origin, "catalog:view");
     if (!user) return;

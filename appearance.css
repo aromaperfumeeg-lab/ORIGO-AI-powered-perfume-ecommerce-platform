@@ -4114,3 +4114,28 @@ html body :is(#storefront-main,.product-overlay) .product-card .exact-card-actio
 #home .benefits-curtain-link svg{width:18px;height:18px}
 @media(max-width:700px){#home .benefits-curtain-trigger{min-height:60px;padding-inline:12px}#home .benefits-curtain-heading{font-size:18px}#home .benefits-curtain-toggle{width:44px;height:44px}#home .benefits-curtain-inner{grid-template-columns:1fr;padding-inline:8px}#home .benefits-curtain-item{min-height:76px;padding:10px 8px;grid-template-columns:48px minmax(0,1fr) 36px}#home .benefits-curtain-item:nth-child(odd){border-inline-end:0}#home .benefits-curtain-item:nth-last-child(2){border-block-end:1px solid #eee}#home .benefits-curtain-copy b{font-size:15px}#home .benefits-curtain-copy small{font-size:12px}}
 @media(prefers-reduced-motion:reduce){#home .benefits-curtain,#home .benefits-curtain-inner,#home .benefits-curtain-toggle{transition:none!important}}
+
+/* Restore the complete brand marquee: continuous loop, pause-on-interaction and RTL direction. */
+@media(prefers-reduced-motion:no-preference){
+  body:not(.admin-mode) #home .home-brand-directory .brand-marquee-content{
+    animation:origoBrandMarquee var(--brand-marquee-duration,34s) linear infinite!important;
+    transform:none;
+    will-change:transform;
+  }
+  html[dir="rtl"] body:not(.admin-mode) #home .home-brand-directory .brand-marquee-content{
+    animation-name:origoBrandMarqueeRtl!important;
+  }
+  body:not(.admin-mode) #home .home-brand-directory .brand-carousel-track:is(:hover,:focus-within,.is-interacting) .brand-marquee-content{
+    animation-play-state:paused!important;
+  }
+  body:not(.admin-mode) .announcement>span{
+    animation:origoAnnouncementTicker 20s linear infinite!important;
+    will-change:transform;
+  }
+  body:not(.admin-mode) .announcement:hover>span{
+    animation-play-state:paused!important;
+  }
+}
+@media(max-width:640px) and (prefers-reduced-motion:no-preference){
+  body:not(.admin-mode) .announcement>span{animation-duration:14s!important}
+}

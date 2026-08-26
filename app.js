@@ -1521,12 +1521,14 @@ async function hydrateServer() {
     const results = await Promise.allSettled([
       api("/api/products?offset=0&limit=24"),
       api("/api/session"),
-      api("/api/storefront-settings")
+      api("/api/storefront-settings"),
+      api("/api/brand-options")
     ]);
     const valueAt = (index, fallback) => results[index]?.status === "fulfilled" ? results[index].value : fallback;
     const catalog = valueAt(0, { products:state.products });
     const session = valueAt(1, { user:null, cart:[] });
     const storefrontSettings = valueAt(2, { settings:{} });
+    const brandOptions = valueAt(3, { options:[] });
     const localSettings = state.adminWorkspace.settings || {};
     const serverSettings = storefrontSettings.settings || {};
     state.adminWorkspace.settings = mergeStoreSettings({
@@ -1537,6 +1539,10 @@ async function hydrateServer() {
     });
     state.serverAvailable = results[0]?.status === "fulfilled";
     if (Array.isArray(catalog.products)) state.products = catalog.products.map(serverProduct);
+    if (Array.isArray(brandOptions.options)) state.productOptions = [
+      ...state.productOptions.filter((item) => item.group !== "brand"),
+      ...brandOptions.options
+    ];
     if (state.authRevision === authRevisionAtStart) state.user = session.user || null;
     if (state.user) {
       if (cartOwner === String(state.user.id)) {
@@ -3571,14 +3577,15 @@ function renderBrandCarousel(query = "") {
   const visibleBrands = brands;
   const brandOptions = state.productOptions.filter((item) => item.group === "brand" && item.active !== false);
   const items = visibleBrands.map(([brand, count]) => {
-    const option = brandOptions.find((item) => [item.value,item.nameAr,item.nameEn].some((value) => normalizeOptionSearch(value) === normalizeOptionSearch(brand)));
+    const option = brandOptions.find((item) => [item.value,item.slug,item.nameAr,item.nameEn].some((value) => normalizeOptionSearch(value) === normalizeOptionSearch(brand)));
     const logo = option?.image || origoBrandLogo(brand);
     const artwork = logo ? `<img src="${escapeHTML(logo)}" alt="" loading="lazy"/>` : `<span aria-hidden="true">${escapeHTML(brand.slice(0, 2).toUpperCase())}</span>`;
     const label = localizedBrandLabel(brand);
     return `<button class="marquee-item" data-action="brand-search" data-query="${escapeHTML(brand)}" aria-label="${escapeHTML(`${state.lang === "ar" ? "عرض منتجات" : "View products by"} ${label}`)}">${artwork}<b>${escapeHTML(label)}</b></button>`;
   }).join("");
   $$("#brand-carousel-track, #home-brand-carousel-track").forEach((track) => {
-    track.innerHTML = items ? `<div class="brand-marquee-content"><div class="brand-marquee-set">${items}</div></div>` : "";
+    const duplicateItems = items.replaceAll("<button ", "<button tabindex=\"-1\" aria-hidden=\"true\" ");
+    track.innerHTML = items ? `<div class="brand-marquee-content"><div class="brand-marquee-set">${items}</div><div class="brand-marquee-set" aria-hidden="true">${duplicateItems}</div></div>` : "";
     bindBrandMarquee(track);
   });
   renderHomeRailDots("#home-brand-dots", visibleBrands.length, mobile ? 4 : 6);
@@ -11336,7 +11343,9 @@ document.addEventListener("change", async (event) => {
     if (status) status.textContent = adminCopy("جارٍ ضغط الصورة وتجهيزها…", "Optimizing artwork…");
     if (saveButton) saveButton.disabled = true;
     try {
-      const value = await optimizeProductOptionArtwork(file);
+      const value = dialog.dataset.group === "brand" && file.type !== "image/svg+xml"
+        ? await uploadStorefrontImage(file, "brand")
+        : await optimizeProductOptionArtwork(file);
       dialog.querySelector("[name='image']").value = value;
       const preview = dialog.querySelector(".option-image-preview");
       preview.hidden = false;
