@@ -3697,7 +3697,7 @@ function renderBrandCarousel(query = "") {
     const logo = option?.image || origoBrandLogo(brand);
     const artwork = logo ? `<img src="${escapeHTML(logo)}" alt="" loading="lazy"/>` : `<span aria-hidden="true">${escapeHTML(brand.slice(0, 2).toUpperCase())}</span>`;
     const label = localizedBrandLabel(brand);
-    return `<button class="brand-slider-card" data-action="brand-search" data-query="${escapeHTML(brand)}" aria-label="${escapeHTML(`${state.lang === "ar" ? "عرض منتجات" : "View products by"} ${label}`)}">${artwork}<b>${escapeHTML(label)}</b></button>`;
+    return `<button class="brand-slider-card" data-action="brand-search" data-query="${escapeHTML(brand)}" aria-label="${escapeHTML(`${state.lang === "ar" ? "عرض منتجات" : "View products by"} ${label}`)}">${artwork}</button>`;
   });
   const seconds = mergeStoreSettings(state.adminWorkspace.settings || {}).homepageRails.brands.intervalSeconds || 3;
   $$("#brand-carousel-track, #home-brand-carousel-track").forEach((track) => {
