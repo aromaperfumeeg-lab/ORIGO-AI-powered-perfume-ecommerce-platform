@@ -3085,7 +3085,6 @@ function applyHomepageRailSettings() {
     element.setAttribute("aria-label", state.lang === "ar" ? settings[key]?.titleAr || "" : settings[key]?.titleEn || "");
   });
   $$("#brand-carousel-track, #home-brand-carousel-track").forEach((track) => window.ORIGOBrandSlider?.get(track)?.setInterval(settings.brands?.intervalSeconds || 3));
-  window.ORIGOBrandSlider?.get($("#home-benefits-track"))?.setInterval(settings.benefits?.intervalSeconds || 3);
 }
 
 function renderAdminDashboard(view = state.adminView) {
@@ -3591,9 +3590,7 @@ function localizeStaticStorefront() {
   setText(".home-new-arrivals .home-section-head>a span:first-child", "عرض باقي المنتجات الحديثة", "View all new arrivals");
   setText("#home-benefits-title", "مميزاتنا", "Our benefits");
   setText("#home-gender-title", "تسوّق حسب الجنس", "Shop by gender");
-  setText("#home-seo-title", "ORIGO Scents | أوريجو سينتس - متجر العطور الأصلية في مصر", "ORIGO Scents | Original Perfume Store in Egypt");
-  setText("#home-seo-copy", "يوفر ORIGO Scents عطورًا أصلية 100% للرجال والنساء وللجنسين من علامات تجارية متنوعة مع الأسعار والتوفر داخل مصر.", "ORIGO Scents offers 100% original perfumes for men, women and everyone from a wide range of brands, with prices and availability in Egypt.");
-  setText("#home-original-perfumes-link", "تسوق العطور الأصلية", "Shop original perfumes");
+  setText("#home-seo-title", "أوريجو سينتس - متجر العطور الأصلية في مصر", "ORIGO Scents - Original Perfume Store in Egypt");
   renderHomeBenefitsSlider();
   const genderCards = [
     ["للرجال", "عطور تعكس القوة والأناقة والثقة", "Men", "Fragrances of strength, elegance, and confidence"],
@@ -3739,7 +3736,8 @@ function renderHomeBenefitsSlider() {
     return `<button class="benefit-slider-card" type="button" data-action="benefit-link" data-slug="${escapeHTML(benefit.slug)}"><span class="benefit-icon">${footerBenefitIcon(benefit.icon, benefit.colors)}</span><span class="benefit-slider-copy"><b>${escapeHTML(title)}</b><small>${escapeHTML(short)}</small></span></button>`;
   });
   const rail = mergeStoreSettings(state.adminWorkspace.settings || {}).homepageRails.benefits;
-  window.ORIGOBrandSlider.mount(track, items, rail.intervalSeconds || 3);
+  track.innerHTML = items.join("");
+  bindHorizontalRail(track);
   $("#home-benefits-title").textContent = state.lang === "ar" ? rail.titleAr || "مميزاتنا" : rail.titleEn || "Our benefits";
 }
 
@@ -8866,10 +8864,6 @@ document.addEventListener("click", async (event) => {
       track.scrollBy({ left: direction * pageStep, behavior: "smooth" });
     }
   }
-  if (action === "benefits-slider-step") {
-    window.ORIGOBrandSlider?.get($("#home-benefits-track"))?.step(Number(actionElement.dataset.direction) || 1);
-    return;
-  }
   if (action === "parse-perfume-bundle") {
     const form = actionElement.closest("#import-review-form");
     const feedback = form?.querySelector("[data-perfume-bundle-feedback]");
@@ -11935,7 +11929,7 @@ function bindHorizontalRail(rail) {
     // A fresh physical press is intentional; only a click emitted without a
     // new pointerdown belongs to the preceding drag gesture.
     suppressClickUntil = 0;
-    if (event.target.closest(blockedStart)) return;
+    if (event.target.closest(blockedStart) && !(rail.id === "home-benefits-track" && event.target.closest(".benefit-slider-card"))) return;
     candidate = true;
     dragging = false;
     moved = false;

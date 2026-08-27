@@ -131,7 +131,8 @@ test("homepage exposes the requested commerce hierarchy without duplicate benefi
   assert.match(html, /id="best-sellers"/);
   assert.match(html, /id="home-configured-product-rows"/);
   assert.equal((html.match(/id="home-benefits-track"/g) || []).length, 1);
-  assert.match(html, /data-action="benefits-slider-step"/);
+  assert.doesNotMatch(html, /data-action="benefits-slider-step"/);
+  assert.match(html, /id="home-benefits-track" data-horizontal-rail/);
   assert.doesNotMatch(html, /toggle-benefits-curtain|id="home-benefits-curtain"/);
   assert.doesNotMatch(html, /benefit-carousel-track|data-benefit-marquee|home-benefit-dots/);
   ["authentic", "shipping", "returns", "prices", "cod", "gift", "support"].forEach((id) => assert.match(app, new RegExp(`icon:\\s*"${id}"`)));
@@ -147,21 +148,29 @@ test("benefit slider uses saved active benefits and retains detail links", async
   const app = await read("app.js");
   const source = app.slice(app.indexOf("function renderHomeBenefitsSlider("), app.indexOf("function renderHomeNavigation("));
   const track = {}, title = {};
-  let mounted;
+  let boundRail;
   const context = {
     state:{lang:"ar",adminWorkspace:{settings:{}}},
     $:(selector) => selector === "#home-benefits-track" ? track : title,
     activeFooterBenefits:() => [{slug:"secure-payment",titleAr:"دفع آمن",shortAr:"تفاصيل الدفع",icon:"cod"}],
     escapeHTML:(value) => String(value), footerBenefitIcon:() => "<svg></svg>",
     mergeStoreSettings:() => ({homepageRails:{benefits:{intervalSeconds:5,titleAr:"المزايا"}}}),
-    window:{ORIGOBrandSlider:{mount:(...args) => { mounted = args; }}}
+    bindHorizontalRail:(rail) => { boundRail = rail; }
   };
   runInNewContext(source,context);
   context.renderHomeBenefitsSlider();
-  assert.equal(mounted[0],track);
-  assert.equal(mounted[2],5);
-  assert.equal(mounted[1].length,1);
-  assert.match(mounted[1][0],/data-action="benefit-link" data-slug="secure-payment"/);
-  assert.match(mounted[1][0],/دفع آمن/);
+  assert.equal(boundRail,track);
+  assert.doesNotMatch(source,/ORIGOBrandSlider|setInterval|setTimeout/);
+  assert.match(track.innerHTML,/data-action="benefit-link" data-slug="secure-payment"/);
+  assert.match(track.innerHTML,/دفع آمن/);
   assert.equal(title.textContent,"المزايا");
+});
+
+test("homepage shows only the localized store title while retaining SEO description", async () => {
+  const [html, app] = await Promise.all([read("index.html"), read("app.js")]);
+  const intro = html.match(/<section class="home-seo-intro"[\s\S]*?<\/section>/)[0];
+  assert.match(intro, /<h1 id="home-seo-title">أوريجو سينتس - متجر العطور الأصلية في مصر<\/h1>/);
+  assert.doesNotMatch(intro, /<(?:p|a)\b/);
+  assert.match(app, /setText\("#home-seo-title", "أوريجو سينتس - متجر العطور الأصلية في مصر", "ORIGO Scents - Original Perfume Store in Egypt"\)/);
+  assert.match(html, /<meta\s+name="description"\s+content="[^"]+"/);
 });

@@ -5,6 +5,17 @@ import { readFile } from "node:fs/promises";
 const app = await readFile(new URL("../app.js", import.meta.url), "utf8");
 const finderI18n = await readFile(new URL("../fragrance-finder-i18n.js", import.meta.url), "utf8");
 const appearance = await readFile(new URL("../appearance.css", import.meta.url), "utf8");
+
+test("brand and benefit slider tiles keep rounded square geometry", () => {
+  const squareStyles = appearance.slice(appearance.indexOf("/* Square cards for the paged brand and benefit rails. */"));
+  assert.match(squareStyles, /aspect-ratio:1\/1!important;min-height:0!important;height:auto!important/);
+  assert.match(squareStyles, /box-sizing:border-box;align-self:start/);
+  assert.match(squareStyles, /border-radius:18px/);
+  assert.match(squareStyles, /border-radius:14px/);
+  assert.match(squareStyles, /object-fit:contain;object-position:center/);
+  assert.match(squareStyles, /position:absolute;inset:0;width:100%!important;height:100%!important/);
+  assert.doesNotMatch(squareStyles, /width:38px;height:30px/);
+});
 const noEffects = await readFile(new URL("../no-effects.css", import.meta.url), "utf8");
 const styles = await readFile(new URL("../styles.css", import.meta.url), "utf8");
 const productDetail = await readFile(new URL("../product-detail.css", import.meta.url), "utf8");
@@ -51,9 +62,16 @@ test("homepage benefits use one admin source and transparent vector icons", () =
   assert.match(app, /image: ""/);
 });
 
-test("brand and benefit rails expose slider controls", () => {
+test("brands retain controls while benefits scroll manually with a partial next card", () => {
   assert.match(index, /id="home-brand-dots"/);
-  assert.match(index, /data-action="benefits-slider-step"/);
+  assert.doesNotMatch(index, /data-action="benefits-slider-step"/);
+  const benefits = app.slice(app.indexOf("function renderHomeBenefitsSlider"), app.indexOf("function renderHomeNavigation"));
+  assert.doesNotMatch(benefits, /ORIGOBrandSlider\.mount|setInterval|setTimeout/);
+  assert.match(benefits, /track\.innerHTML = items\.join/);
+  assert.match(benefits, /bindHorizontalRail\(track\)/);
+  assert.match(appearance, /grid-template-rows:minmax\(0,1fr\) auto/);
+  assert.match(appearance, /\.benefit-icon :is\(svg,img\)\{\s*width:100%!important;height:100%!important/);
+  assert.match(appearance, /flex-basis:calc\(\(100% - 26px\)\/3\.3\)/);
   assert.match(app, /function renderHomeRailDots/);
   assert.match(app, /function bindHomeBrandPagination/);
   assert.match(app, /track\.scrollWidth - track\.clientWidth/);
