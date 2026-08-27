@@ -4180,3 +4180,22 @@ body #storefront-main #home .home-gender-section .home-gender-card .gender-card-
 :is(body.dark,html[data-theme="dark"] body) #storefront-main #home .home-gender-section .home-gender-slider .home-gender-card{
   --gender-accent:#fff!important;color:#fff!important;border-color:#fff!important;background:#292b2f!important;
 }
+
+/* Square cards for the paged brand and benefit rails. */
+#home :is(#home-benefits-track,.home-brand-directory .brand-paged-slider) .brand-slider-page>button{
+  aspect-ratio:1/1;min-height:0!important;height:auto;overflow:hidden;
+  justify-content:center;gap:6px;padding:8px;border-radius:4px;
+}
+#home-benefits-track .benefit-slider-copy small{
+  display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;
+}
+@media(max-width:700px){
+  #home :is(#home-benefits-track,.home-brand-directory .brand-paged-slider) .brand-slider-page>button{padding:4px;gap:3px}
+  #home .home-brand-directory .brand-slider-page>button>img{width:38px;height:30px;flex-shrink:0}
+  #home .home-brand-directory .brand-slider-page>button>b,
+  #home-benefits-track .benefit-slider-copy b{font-size:10px;line-height:1.2;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+  #home-benefits-track .benefit-icon{width:26px;height:26px;flex-shrink:0}
+  #home-benefits-track .benefit-icon svg{width:24px;height:24px}
+  #home-benefits-track .benefit-slider-copy{gap:0}
+  #home-benefits-track .benefit-slider-copy small{display:none}
+}
