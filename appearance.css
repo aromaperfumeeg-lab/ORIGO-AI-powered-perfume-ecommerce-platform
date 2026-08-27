@@ -3672,10 +3672,10 @@ html body .product-overlay .origo-exact-product-card .product-card-top-actions .
 /* Mobile product density switch shared by every storefront product gallery. */
 .mobile-product-view-control{display:none}
 @media(max-width:700px){
-  .mobile-product-view-control{position:static;z-index:auto;flex:0 0 auto;display:grid;grid-template-columns:1fr 1fr;gap:3px;margin-inline-start:auto;padding:3px;border:1px solid rgba(121,0,32,.35);border-radius:10px;background:#fff;box-shadow:none}
-  .mobile-product-view-control button{width:34px;height:34px;padding:0;display:grid;place-content:center;border:0;border-radius:7px;color:#6c6265;background:transparent}
-  .mobile-product-view-control button svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8}.mobile-product-view-control button.active{color:#fff;background:#790020}
-  body.dark .mobile-product-view-control{border-color:#5a5d63;background:#2d3034}.mobile-product-view-control[hidden]{display:none!important}
+  .mobile-product-view-control{position:static;z-index:auto;flex:0 0 auto;display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-inline-start:auto;padding:0;border:0;border-radius:0;background:#fff;box-shadow:none}
+  .mobile-product-view-control button{width:28px;height:28px;padding:0;display:grid;place-content:center;border:0;border-radius:2px;color:#000;background:#fff}
+  .mobile-product-view-control button svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8}.mobile-product-view-control button.active{color:#fff;background:#000}
+  body.dark .mobile-product-view-control{border-color:#000;background:#fff}.mobile-product-view-control[hidden]{display:none!important}
   html[data-product-card-view="one"] #storefront-main :is(.catalog-product-grid,.pdp-products-row,.note-products-grid){display:grid!important;grid-template-columns:1fr!important;gap:10px!important;overflow:visible!important}
   html[data-product-card-view="two"] #storefront-main :is(.catalog-product-grid,.pdp-products-row,.note-products-grid){display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;overflow:visible!important}
   html[data-product-card-view="one"] #storefront-main :is(.catalog-product-grid,.pdp-products-row,.note-products-grid) > :is(.product-card,.perfume-product-card,.pdp-related-card){width:100%!important;max-width:none!important;min-width:0!important;flex:none!important}
@@ -3684,9 +3684,9 @@ html body .product-overlay .origo-exact-product-card .product-card-top-actions .
   html[data-product-card-view="one"] #home .home-product-row-track>.product-card{flex:0 0 calc(100% - 38px)!important;width:calc(100% - 38px)!important;max-width:none!important;scroll-snap-align:start}
   html[data-product-card-view="two"] #home .home-product-row-track>.product-card{flex:0 0 calc((100% - 52px)/2)!important;width:calc((100% - 52px)/2)!important;max-width:none!important;scroll-snap-align:start}
   #home .home-section-head{position:relative!important;display:flex!important;align-items:center!important;gap:8px!important;direction:inherit!important}
-  #home .home-section-head>.ornament-heading{order:1!important;margin-inline-end:auto!important;text-align:start!important}
-  #home .home-section-head>.mobile-product-view-control{position:absolute!important;inset-inline-start:50%!important;order:2!important;margin:0!important;transform:translateX(-50%)!important}
-  #home .home-section-head>a{order:3!important;margin-inline-start:auto!important;margin-inline-end:0!important;text-align:end!important}
+  #home .home-section-head>.ornament-heading{order:1!important;margin-inline-end:0!important;text-align:start!important}
+  #home .home-section-head>.mobile-product-view-control{position:static!important;order:2!important;margin:0!important;transform:none!important}
+  #home .home-section-head>:is(a,button){order:3!important;margin-inline-start:auto!important;margin-inline-end:0!important;text-align:end!important}
   .catalog-title-area,.pdp-recommendations .pdp-section-heading{display:flex!important;align-items:center!important;flex-wrap:wrap!important;gap:8px!important}
   .pdp-recommendations .mobile-product-view-control{order:3}
 }

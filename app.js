@@ -3917,11 +3917,14 @@ function renderConfiguredHomeProductRows() {
   if (!holder) return;
   const settings = mergeStoreSettings(state.adminWorkspace.settings || {});
   const rows = settings.homeProductRows.filter((row) => row.enabled !== false).sort((a, b) => Number(a.order || 0) - Number(b.order || 0));
+  let productViewControlAdded = false;
   holder.innerHTML = rows.map((row) => {
     const products = homeProductRowProducts(row);
     if (!products.length) return "";
+    const viewControl = productViewControlAdded ? "" : mobileProductViewControlMarkup();
+    productViewControlAdded = true;
     return `<section class="home-configured-product-row" data-home-product-source="${escapeHTML(row.source)}"${row.brand ? ` data-home-product-brand="${escapeHTML(row.brand)}"` : ""}>
-      <div class="home-section-head">${homeProductRowViewAll(row)}<div class="ornament-heading"><h2>${escapeHTML(homeProductRowTitle(row))}</h2></div>${mobileProductViewControlMarkup()}</div>
+      <div class="home-section-head">${homeProductRowViewAll(row)}<div class="ornament-heading"><h2>${escapeHTML(homeProductRowTitle(row))}</h2></div>${viewControl}</div>
       <div class="home-products-wrap"><button class="home-product-row-arrow previous" type="button" data-home-product-row-direction="-1" aria-label="${state.lang === "ar" ? "المنتجات السابقة" : "Previous products"}">${state.lang === "ar" ? "›" : "‹"}</button><div class="product-grid home-product-row-track" data-mobile-product-rail>${products.map((product, index) => productCardMarkup(product, { context: "grid", delay: Math.min(index * 35, 175) })).join("")}</div><button class="home-product-row-arrow next" type="button" data-home-product-row-direction="1" aria-label="${state.lang === "ar" ? "المنتجات التالية" : "Next products"}">${state.lang === "ar" ? "‹" : "›"}</button></div>
     </section>`;
   }).join("");
@@ -5073,8 +5076,8 @@ function noteLabel(note) {
 
 const MOBILE_PRODUCT_COLUMNS_KEY = "origoMobileProductColumns";
 function mobileProductViewControlMarkup() {
-  const square = `<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="5" width="14" height="14" rx="1.5"/></svg>`;
-  const squares = `<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="8" height="14" rx="1.5"/><rect x="13" y="5" width="8" height="14" rx="1.5"/></svg>`;
+  const square = `<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="5" width="14" height="14"/></svg>`;
+  const squares = `<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="8" width="8" height="8"/><rect x="14" y="8" width="8" height="8"/></svg>`;
   return `<div class="mobile-product-view-control" role="group" aria-label="${state.lang === "ar" ? "عدد المنتجات في الصف" : "Products per row"}"><button type="button" data-action="mobile-product-columns" data-columns="1" aria-pressed="false">${square}</button><button type="button" data-action="mobile-product-columns" data-columns="2" aria-pressed="true">${squares}</button></div>`;
 }
 function setMobileProductColumns(value, persistValue = true) {

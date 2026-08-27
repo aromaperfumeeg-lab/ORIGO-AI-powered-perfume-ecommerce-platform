@@ -5,6 +5,32 @@ import { runInNewContext } from "node:vm";
 
 const read = (file) => readFile(new URL(`../${file}`, import.meta.url), "utf8");
 
+test("only the first nonempty enabled product rail has the shared density control", async () => {
+  const app = await read("app.js");
+  const holder = { innerHTML: "" };
+  const context = {
+    $: () => holder, $$: () => [],
+    state: { lang: "ar", adminWorkspace: { settings: {} } },
+    mergeStoreSettings: () => ({ homeProductRows: [
+      { source: "hidden", enabled: false }, { source: "empty", order: 1 },
+      { source: "first", order: 2 }, { source: "second", order: 3 }
+    ] }),
+    homeProductRowProducts: row => row.source === "empty" ? [] : [{}],
+    homeProductRowTitle: row => row.source,
+    homeProductRowViewAll: () => "", escapeHTML: value => value,
+    mobileProductViewControlMarkup: () => '<div class="mobile-product-view-control"></div>',
+    productCardMarkup: () => "<article></article>",
+    bindConfiguredHomeProductRow: () => {}, setMobileProductColumns: () => {},
+    document: { documentElement: { dataset: {} } }, matchMedia: () => ({ matches: false })
+  };
+  runInNewContext(app.slice(app.indexOf("function renderConfiguredHomeProductRows()"), app.indexOf("function renderHomepageCommerce()")), context);
+  context.renderConfiguredHomeProductRows();
+  assert.equal((holder.innerHTML.match(/mobile-product-view-control/g) || []).length, 1);
+  assert.match(holder.innerHTML.split("</section>")[0], /data-home-product-source="first"[\s\S]*mobile-product-view-control/);
+  context.renderConfiguredHomeProductRows();
+  assert.equal((holder.innerHTML.match(/mobile-product-view-control/g) || []).length, 1);
+});
+
 test("every default benefit has bilingual detail and old settings retain edits when new benefits are added", async () => {
   const app = await read("app.js");
   const defaults = app.slice(app.indexOf("const defaultFooterBenefits ="), app.indexOf("const defaultStoreSettings ="));
