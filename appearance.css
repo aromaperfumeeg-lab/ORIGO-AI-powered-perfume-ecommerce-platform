@@ -4164,3 +4164,19 @@ html body :is(#storefront-main,.product-overlay) .product-card .exact-card-actio
 #home-benefits-track .benefit-slider-copy b{font-size:14px;line-height:1.4;overflow-wrap:anywhere}
 #home-benefits-track .benefit-slider-copy small{font-size:11px;line-height:1.5;color:var(--muted,#6f6568)}
 @media(max-width:700px){#home-benefits-track .benefit-slider-card{min-height:150px}#home-benefits-track .benefit-slider-copy b{font-size:11px}#home-benefits-track .benefit-slider-copy small{font-size:10px}#home-benefits-track .benefit-icon{width:40px;height:40px}#home-benefits-track .benefit-icon svg{width:30px;height:30px}}
+
+/* Gender navigation: centered labels and a shared monochrome palette. */
+body #storefront-main #home .home-gender-section .home-gender-slider .home-gender-card{
+  --gender-accent:#000!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  gap:0!important;color:#000!important;border-color:#000!important;background:#fff!important;
+}
+body #storefront-main #home .home-gender-section .home-gender-card .gender-card-copy{
+  width:100%!important;min-height:0!important;margin:0!important;padding:0!important;
+  display:grid!important;place-items:center!important;text-align:center!important;
+  color:inherit!important;background:transparent!important;
+}
+body #storefront-main #home .home-gender-section .home-gender-card .gender-card-copy b{color:inherit!important}
+:is(body.dark,html[data-theme="dark"] body) #storefront-main #home .home-gender-section .home-gender-slider .home-gender-card{
+  --gender-accent:#fff!important;color:#fff!important;border-color:#fff!important;background:#292b2f!important;
+}

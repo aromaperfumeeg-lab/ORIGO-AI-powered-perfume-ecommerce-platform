@@ -93,11 +93,11 @@ test("announcement ticker above the header keeps its continuous motion", () => {
 test("homepage directories avoid glass compositing and use unified gender controls", () => {
   assert.match(appearance, /Lightweight homepage directories: solid surfaces, no glass\/blur compositing/);
   assert.match(appearance, /-webkit-backdrop-filter:none!important;\s*backdrop-filter:none!important/);
-  assert.match(index, /class="gender-button-icon"[^>]*><svg viewBox="0 0 24 24">/);
+  assert.doesNotMatch(index, /class="gender-button-icon"/);
   assert.doesNotMatch(index, />[♂♀⚥]</u);
-  assert.match(appearance, /\.home-gender-card:is\(\.gender-men,\.gender-women,\.gender-unisex\)\{[\s\S]{0,420}gap:clamp\(20px,3vw,34px\)!important;[\s\S]{0,180}border:1\.5px solid #790020!important/);
-  assert.match(appearance, /--gender-edge:#790020!important;--gender-edge-soft:#790020!important/);
-  assert.match(appearance, /\.gender-card-copy b,\.gender-button-icon\)\{\s*color:#fff!important;background:transparent!important/);
+  assert.match(appearance, /gap:0!important;color:#000!important;border-color:#000!important;background:#fff!important/);
+  assert.match(appearance, /place-items:center!important;text-align:center!important/);
+  assert.match(appearance, /--gender-accent:#fff!important;color:#fff!important;border-color:#fff!important/);
   assert.match(appearance, /html\[data-theme="dark"\] body\) #home :is\(h1,h2,h3,h4,h5,h6/);
 });
 
