@@ -1162,7 +1162,7 @@ async function handleAPI(request, response, url, origin) {
 
   if (url.pathname === "/api/brand-options" && request.method === "GET") {
     return jsonResponse(response, 200, {
-      options: listProductOptions("brand", false)
+      options: listProductOptions("brand", true)
     }, origin, { "Cache-Control": "public, max-age=15, stale-while-revalidate=60" });
   }
 

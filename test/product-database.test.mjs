@@ -131,6 +131,15 @@ test("database migrates old users and structured notes override stale flat notes
     assert.equal(database.deleteProduct(payloadProduct.id), true);
     assert.equal(database.deleteProduct(updated.id), true);
     assert.equal(database.listProducts({ includeHidden: true }).some((product) => product.id === updated.id), false);
+    const brand = database.upsertProductOption({ group:"brand", nameAr:"دار الاختبار", nameEn:"Test House", slug:"test-house" });
+    const linkedBrandProduct = database.upsertProduct({ id:"brand-delete-guard", nameAr:"عطر اختبار", nameEn:"Brand guard", brand:"Test House", price:10, status:"draft" });
+    assert.throws(() => database.deleteProductOption(brand.id), /علامة مرتبطة بمنتجات/);
+    const hiddenBrand = database.upsertProductOption({ ...brand, active:false });
+    assert.equal(hiddenBrand.active, false);
+    assert.equal(database.listProductOptions("brand", false).some((item) => item.id === brand.id), false);
+    assert.equal(database.listProducts({ includeHidden:true }).find((item) => item.id === linkedBrandProduct.id).brand, "Test House");
+    database.deleteProduct(linkedBrandProduct.id);
+    assert.equal(database.deleteProductOption(brand.id), true);
     database.db.close();
   } finally {
     if (previousPath == null) delete process.env.ORIGO_DB_PATH;

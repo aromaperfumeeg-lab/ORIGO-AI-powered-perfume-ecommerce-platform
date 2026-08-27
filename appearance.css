@@ -3680,9 +3680,9 @@ html body .product-overlay .origo-exact-product-card .product-card-top-actions .
   html[data-product-card-view="two"] #storefront-main :is(.catalog-product-grid,.pdp-products-row,.note-products-grid){display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;overflow:visible!important}
   html[data-product-card-view="one"] #storefront-main :is(.catalog-product-grid,.pdp-products-row,.note-products-grid) > :is(.product-card,.perfume-product-card,.pdp-related-card){width:100%!important;max-width:none!important;min-width:0!important;flex:none!important}
   html[data-product-card-view="two"] #storefront-main :is(.catalog-product-grid,.pdp-products-row,.note-products-grid) > :is(.product-card,.perfume-product-card,.pdp-related-card){width:100%!important;max-width:none!important;min-width:0!important;flex:none!important}
-  html[data-product-card-view="one"] #home .home-product-row-track,html[data-product-card-view="two"] #home .home-product-row-track{display:flex!important;overflow-x:auto!important;overflow-y:hidden!important;gap:8px!important;scroll-snap-type:x mandatory}
-  html[data-product-card-view="one"] #home .home-product-row-track>.product-card{flex:0 0 calc(100% - 2px)!important;width:calc(100% - 2px)!important;max-width:none!important;scroll-snap-align:start}
-  html[data-product-card-view="two"] #home .home-product-row-track>.product-card{flex:0 0 calc((100% - 8px)/2)!important;width:calc((100% - 8px)/2)!important;max-width:none!important;scroll-snap-align:start}
+  html[data-product-card-view="one"] #home .home-product-row-track,html[data-product-card-view="two"] #home .home-product-row-track{display:flex!important;overflow-x:auto!important;overflow-y:hidden!important;gap:9px!important;scroll-snap-type:x mandatory}
+  html[data-product-card-view="one"] #home .home-product-row-track>.product-card{flex:0 0 calc(100% - 33px)!important;width:calc(100% - 33px)!important;max-width:none!important;scroll-snap-align:start}
+  html[data-product-card-view="two"] #home .home-product-row-track>.product-card{flex:0 0 calc((100% - 42px)/2)!important;width:calc((100% - 42px)/2)!important;max-width:none!important;scroll-snap-align:start}
   #home .home-section-head{position:relative!important;display:flex!important;align-items:center!important;gap:8px!important;direction:inherit!important}
   #home .home-section-head>.ornament-heading{order:1!important;margin-inline-end:auto!important;text-align:start!important}
   #home .home-section-head>.mobile-product-view-control{position:absolute!important;inset-inline-start:50%!important;order:2!important;margin:0!important;transform:translateX(-50%)!important}
@@ -4143,3 +4143,24 @@ html body :is(#storefront-main,.product-overlay) .product-card .exact-card-actio
 @media(max-width:640px) and (prefers-reduced-motion:no-preference){
   body:not(.admin-mode) .announcement>span{animation-duration:14s!important}
 }
+/* Discrete brand pages, sized from the rail rather than the viewport. */
+#home .home-brand-directory .brand-carousel-track.brand-paged-slider,
+.brand-carousel-track.brand-paged-slider{display:block!important;overflow:hidden!important;touch-action:pan-y!important;scroll-snap-type:none!important}
+.brand-paged-slider .brand-slider-page{display:grid!important;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;width:100%;animation:none!important}
+.brand-paged-slider .brand-slider-page>button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;width:100%;min-width:0;min-height:100px;padding:12px;border:1px solid var(--line);border-radius:12px;color:var(--ink);background:var(--surface);cursor:pointer}
+.brand-paged-slider .brand-slider-page>button>img{width:64px;height:55px;max-width:100%;object-fit:contain}
+.brand-paged-slider .brand-slider-page>button>span{font-size:24px;color:var(--burgundy)}
+.brand-paged-slider .brand-slider-page>button>b{max-width:100%;font-size:12px;line-height:1.4;text-align:center;overflow-wrap:anywhere}
+.brand-paged-slider .brand-slider-page>button:focus-visible{outline:2px solid var(--burgundy);outline-offset:-3px}
+@media(max-width:700px){.brand-paged-slider .brand-slider-page{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}.brand-paged-slider .brand-slider-page>button{min-height:88px;padding:6px 3px}.brand-paged-slider .brand-slider-page>button>img{width:48px;height:44px}.brand-paged-slider .brand-slider-page>button>b{font-size:10px}}
+.home-benefits-directory .home-section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 10px}
+.benefits-slider-controls{display:flex;gap:8px}
+.benefits-slider-controls button{width:38px;height:38px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)}
+#home-benefits-track{padding:8px 0!important}
+#home-benefits-track .benefit-slider-card{min-height:145px;justify-content:flex-start}
+#home-benefits-track .benefit-icon{width:54px;height:54px;display:grid;place-items:center}
+#home-benefits-track .benefit-icon svg{width:38px;height:38px}
+#home-benefits-track .benefit-slider-copy{display:grid;gap:6px;width:100%;min-width:0;text-align:center}
+#home-benefits-track .benefit-slider-copy b{font-size:14px;line-height:1.4;overflow-wrap:anywhere}
+#home-benefits-track .benefit-slider-copy small{font-size:11px;line-height:1.5;color:var(--muted,#6f6568)}
+@media(max-width:700px){#home-benefits-track .benefit-slider-card{min-height:150px}#home-benefits-track .benefit-slider-copy b{font-size:11px}#home-benefits-track .benefit-slider-copy small{font-size:10px}#home-benefits-track .benefit-icon{width:40px;height:40px}#home-benefits-track .benefit-icon svg{width:30px;height:30px}}

@@ -23,7 +23,7 @@
     <title>ORIGO Scents | أوريجو سينتس - عطور أصلية 100% في مصر</title>
     <!-- ORIGO_INITIAL_HERO_PRELOAD -->
     <link rel="stylesheet" href="chunks/styles.min.css?v=4" />
-    <link rel="stylesheet" href="chunks/home.min.css?v=4" />
+    <link rel="stylesheet" href="chunks/home.min.css?v=5" />
     <link rel="stylesheet" data-deferred-href="product-detail.css?v=46" />
     <link rel="stylesheet" data-route="catalog" data-route-href="catalog.css?v=4" />
     <link rel="stylesheet" data-idle-href="footer.css?v=28" />
@@ -35,13 +35,13 @@
 <link rel="stylesheet" href="chunks/shell.min.css?v=4" />
   <link rel="stylesheet" data-deferred-href="product-reference-card.css?v=9" />
     <link rel="stylesheet" href="chunks/home-gender-slider.min.css?v=4" />
-    <script defer src="home-brand-navigation.js?v=1"></script>
-    <link rel="stylesheet" data-admin-href="admin-ui-fixes.css?v=6" />
+    <script defer src="home-brand-navigation.js?v=3"></script>
+    <link rel="stylesheet" data-admin-href="admin-ui-fixes.css?v=8" />
     <link rel="stylesheet" data-admin-href="notes-admin-fixes.css?v=2" />
     <link rel="stylesheet" data-idle-href="dark-theme.css?v=14" />
     <link rel="stylesheet" href="chunks/origo-identity.min.css?v=4" />
     <link rel="stylesheet" href="chunks/no-effects.min.css?v=5" />
-    <link rel="stylesheet" href="chunks/appearance.min.css?v=7" />
+    <link rel="stylesheet" href="chunks/appearance.min.css?v=10" />
   </head>
   <body>
     <div class="announcement" aria-hidden="true"></div>
@@ -207,11 +207,8 @@
         </section>
 
         <section class="home-benefits-directory" aria-labelledby="home-benefits-title">
-          <button class="benefits-curtain-trigger" type="button" data-action="toggle-benefits-curtain" aria-expanded="false" aria-controls="home-benefits-curtain">
-            <span class="benefits-curtain-heading"><span class="benefits-curtain-badge" aria-hidden="true"></span><span id="home-benefits-title">مميزاتنا</span></span>
-            <span class="benefits-curtain-toggle" aria-hidden="true"></span>
-          </button>
-          <div class="benefits-curtain" id="home-benefits-curtain" aria-hidden="true"><div class="benefits-curtain-inner" id="home-benefits-track"></div></div>
+          <div class="home-section-head"><h2 id="home-benefits-title">مميزاتنا</h2><div class="benefits-slider-controls"><button type="button" data-action="benefits-slider-step" data-direction="-1" aria-label="المزايا السابقة">→</button><button type="button" data-action="benefits-slider-step" data-direction="1" aria-label="المزايا التالية">←</button></div></div>
+          <div class="brand-carousel-track benefits-slider-track" id="home-benefits-track" aria-live="off"></div>
         </section>
 
         <section class="home-gender-section" aria-labelledby="home-gender-title">
@@ -974,8 +971,8 @@
     <script defer src="catalog-providers.js?v=6"></script>
     <script data-idle-src="external-tracking.js?v=1"></script>
     <script data-admin-src="perfume-bundle.js?v=9"></script>
-    <script defer src="runtime-loader.js?v=8"></script>
-    <script defer src="chunks/storefront-core.min.js?v=14"></script>
+    <script defer src="runtime-loader.js?v=13"></script>
+    <script defer src="chunks/storefront-core.min.js?v=18"></script>
     <script defer src="deferred-modules.js?v=12"></script>
   </body>
 </html>

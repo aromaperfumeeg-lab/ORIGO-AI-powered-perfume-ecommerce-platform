@@ -40,20 +40,20 @@ test("light mode uses a white background behind transparent product imagery", ()
 });
 
 test("homepage benefits use one admin source and transparent vector icons", () => {
-  const admin = app.slice(app.indexOf("const benefitMarkup ="), app.indexOf("const categoryIconMarkup ="));
-  const homeBenefits = app.slice(app.indexOf("function renderHomeBenefitsCurtain"), app.indexOf("function renderHomeNavigation"));
+  const admin = app.slice(app.indexOf("function benefitSettingsCards("), app.indexOf("function settingsMarkup("));
+  const homeBenefits = app.slice(app.indexOf("function renderHomeBenefitsSlider"), app.indexOf("function renderHomeNavigation"));
   assert.doesNotMatch(admin, /homeBenefitIconMarkup|data-benefit-icon-upload|data-home-benefit-icon-upload/);
   assert.doesNotMatch(app, /const homeBenefitIconMarkup/);
   assert.match(app, /data-action="add-store-benefit"/);
   assert.match(admin, /الرمز التعبيري الشفاف|Transparent expressive icon/);
-  assert.match(homeBenefits, /footerBenefitIcon\(icon\)/);
+  assert.match(homeBenefits, /footerBenefitIcon\(benefit.icon, benefit.colors\)/);
   assert.doesNotMatch(homeBenefits, /benefit\.image|<img/);
   assert.match(app, /image: ""/);
 });
 
-test("brand rail keeps pagination while benefits use an accessible curtain", () => {
+test("brand and benefit rails expose slider controls", () => {
   assert.match(index, /id="home-brand-dots"/);
-  assert.match(index, /id="home-benefits-curtain"/);
+  assert.match(index, /data-action="benefits-slider-step"/);
   assert.match(app, /function renderHomeRailDots/);
   assert.match(app, /function bindHomeBrandPagination/);
   assert.match(app, /track\.scrollWidth - track\.clientWidth/);
@@ -62,7 +62,7 @@ test("brand rail keeps pagination while benefits use an accessible curtain", () 
   assert.match(appearance, /Four brands per mobile swipe/);
   assert.match(appearance, /brand-marquee-set>button\{flex:0 0 calc\(\(100vw - 60px\)\/4\)!important/);
   assert.match(appearance, /button:nth-child\(4n \+ 1\)\{scroll-snap-align:start/);
-  const brands = app.slice(app.indexOf("function renderBrandCarousel"), app.indexOf("function renderHomeBenefitsCurtain"));
+  const brands = app.slice(app.indexOf("function renderBrandCarousel"), app.indexOf("function renderHomeBenefitsSlider"));
   assert.match(brands, /const visibleBrands = brands;/);
   assert.doesNotMatch(brands, /brands\.slice\(0,\s*12\)/);
   assert.match(appearance, /brand-marquee-set>button>img\{\s*width:100%!important;height:100%!important/);
@@ -75,11 +75,10 @@ test("saved brand artwork is loaded by the public storefront and matched by slug
   assert.match(app, /uploadStorefrontImage\(file, "brand"\)/);
 });
 
-test("brand marquee restores its seamless autoplay and interaction controls", () => {
-  assert.match(app, /brand-marquee-set\">\$\{items\}<\/div><div class="brand-marquee-set" aria-hidden="true">\$\{duplicateItems\}/);
-  assert.match(appearance, /animation:origoBrandMarquee var\(--brand-marquee-duration,34s\) linear infinite!important/);
-  assert.match(appearance, /animation-name:origoBrandMarqueeRtl!important/);
-  assert.match(appearance, /animation-play-state:paused!important/);
+test("brand rail uses paged autoplay instead of duplicate marquee cards", () => {
+  assert.match(app, /window\.ORIGOBrandSlider\.mount\(track, items, seconds\)/);
+  assert.match(appearance, /brand-slider-page/);
+  assert.match(appearance, /grid-template-columns:repeat\(4,minmax\(0,1fr\)\)/);
 });
 
 test("announcement ticker above the header keeps its continuous motion", () => {

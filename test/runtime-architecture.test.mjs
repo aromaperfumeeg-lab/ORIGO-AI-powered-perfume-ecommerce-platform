@@ -1,14 +1,74 @@
 import assert from "node:assert/strict";
 import { readFile, stat } from "node:fs/promises";
 import test from "node:test";
+import { runInNewContext } from "node:vm";
 import { gzipSync } from "node:zlib";
 
 const read = (path) => readFile(new URL(path, import.meta.url), "utf8");
 
+test("brand management counts aliases and keeps hidden defaults out of product choices", async () => {
+  const source = await read("../app.js");
+  const helpers = source.slice(source.indexOf("function brandIdentity("), source.indexOf("function brandsManagementMarkup("));
+  const options = source.slice(source.indexOf("const PRODUCT_OPTION_DEFAULTS ="), source.indexOf("function smartSelectOptionMarkup("));
+  const state = {
+    catalogProducts: [{ brand:"Test House" }, { brand:"test-house" }, { brand:"other", brandAr:"دار الاختبار" }, { brand:"Other" }],
+    productOptions: [{ group:"brand", slug:"test-house", nameEn:"Test House", nameAr:"دار الاختبار", active:false }]
+  };
+  const context = { state, ORIGO_PERFUME_BRANDS:["Test House", "Other"], window:{} };
+  runInNewContext(`${options}\n${helpers}`, context);
+  assert.equal(context.linkedBrandProducts(state.productOptions[0]).length, 3);
+  assert.equal(context.productOptionItems("brand").some((item) => context.brandMatches(item, "Test House")), false);
+  state.productOptions[0].active = true;
+  assert.equal(context.productOptionItems("brand").filter((item) => context.brandMatches(item, "Test House")).length, 1);
+});
+
+test("product studio click passes through both asynchronous loaders exactly once", async () => {
+  const listeners = [];
+  const appended = [];
+  let clicks = 0;
+  let handled = 0;
+  const target = {
+    dataset: { action: "open-product-studio" },
+    closest: () => target,
+    getAttribute: () => null,
+    click() {
+      if (++clicks > 10) return; // Bound the broken replay loop so the test can fail.
+      const event = { target, preventDefault() {}, stopImmediatePropagation() { this.stopped = true; } };
+      for (const listener of listeners) {
+        listener(event);
+        if (event.stopped) return;
+      }
+      handled++;
+    }
+  };
+  const append = (node) => { appended.push(node); queueMicrotask(() => node.onload?.()); };
+  const context = {
+    window: { dispatchEvent() {} },
+    document: {
+      scripts: [], readyState: "loading",
+      createElement: () => ({}), querySelector: () => null, querySelectorAll: () => [],
+      head: { append }, body: { append },
+      addEventListener: (type, listener) => { if (type === "click") listeners.push(listener); }
+    },
+    location: { pathname: "/", href: "https://origo.test/" },
+    navigator: {}, URL, Event, addEventListener() {}, setTimeout
+  };
+  runInNewContext(await read("../runtime-loader.js"), context);
+  runInNewContext(await read("../deferred-modules.js"), context);
+  target.click();
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(handled, 1, "the editor action must run after both loaders finish");
+  assert.ok(clicks <= 3, "loaders must not replay each other's clicks forever");
+  assert.equal(appended.filter((node) => node.src?.includes("product-editor-runtime")).length, 1);
+  target.click();
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(handled, 2, "the same button remains usable");
+});
+
 test("home loads production storefront core without admin editor or finder runtimes", async () => {
   const [html, loader, core] = await Promise.all([read("../index.html"), read("../runtime-loader.js"), read("../chunks/storefront-core.min.js")]);
-  assert.match(html, /chunks\/storefront-core\.min\.js\?v=14/);
-  assert.match(html, /runtime-loader\.js\?v=8/);
+  assert.match(html, /chunks\/storefront-core\.min\.js\?v=18/);
+  assert.match(html, /runtime-loader\.js\?v=13/);
   assert.doesNotMatch(html, /<script[^>]+(?:admin-runtime|product-editor-runtime|storefront-settings-runtime|fragrance-finder-(?:engine|i18n)|fragrance-finder\.js)/);
   assert.doesNotMatch(core, /function settingsMarkup\(|function renderImportReview\(|function overviewMarkup\(/);
   assert.match(core, /function homeHeroTargetHref\(/);

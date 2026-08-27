@@ -851,6 +851,54 @@ const storedAdminWorkspace = readStoredObject("origoAdminWorkspace");
 
 const defaultFooterBenefits = [
   {
+    id:"benefit-shipping", slug:"fast-shipping", icon:"shipping", active:true, sort:1,
+    titleAr:"شحن سريع", titleEn:"Fast shipping", shortAr:"متابعة من التجهيز حتى التسليم", shortEn:"From preparation to delivery",
+    descriptionAr:"نجهز طلبك للشحن بعد تأكيده، ونساعدك في متابعة وصوله. راجع تكلفة التوصيل والمدة المتوقعة لمنطقتك عند إتمام الطلب أو مع خدمة العملاء.",
+    descriptionEn:"We prepare confirmed orders for dispatch and help you follow their delivery. Check the shipping cost and estimated time for your area at checkout or with support.",
+    stepsAr:["أدخل عنوانًا واضحًا ورقم هاتف للتواصل.","راجع تفاصيل الشحن قبل تأكيد الطلب.","استخدم رقم الطلب للاستفسار عن حالة التوصيل."],
+    stepsEn:["Enter a clear address and contact number.","Review shipping details before confirming.","Use your order number for delivery enquiries."],
+    conditionsAr:["تختلف المدة والتكلفة حسب المنطقة وتوفر المنتجات.","قد تتأثر المواعيد بالعطلات أو ظروف شركة الشحن."],
+    conditionsEn:["Timing and cost depend on location and stock.","Holidays and carrier conditions may affect estimates."],
+    faqs:[{qAr:"كيف أتابع الشحنة؟",qEn:"How do I track delivery?",aAr:"تواصل مع الدعم برقم طلبك لمعرفة آخر تحديث.",aEn:"Contact support with your order number for the latest update."}],
+    ctaLabelAr:"استفسر عن الشحن",ctaLabelEn:"Ask about shipping",ctaUrl:"mailto:support@origoscents.com"
+  },
+  {
+    id:"benefit-authentic",slug:"authentic-products",icon:"authentic",active:true,sort:3,
+    titleAr:"منتجات أصلية",titleEn:"Authentic products",shortAr:"معلومات واضحة عن اختيارك",shortEn:"Clear information about your choice",
+    descriptionAr:"نحرص على تقديم معلومات واضحة عن العلامة التجارية والحجم والتركيز لكل عطر. يمكنك طلب توضيح بيانات المنتج قبل الشراء والتواصل معنا إذا لاحظت اختلافًا عند الاستلام.",
+    descriptionEn:"We aim to provide clear brand, size and concentration details. Ask for clarification before purchasing and contact us if the delivered product differs from its description.",
+    stepsAr:["راجع اسم العلامة والحجم والتركيز في صفحة المنتج.","اسأل الدعم عن أي معلومات غير واضحة.","احتفظ بالفاتورة وصور العبوة عند الإبلاغ عن مشكلة."],
+    stepsEn:["Review the brand, size and concentration.","Ask support about unclear details.","Keep the invoice and package photos when reporting a concern."],
+    conditionsAr:["قد يتغير تصميم العبوة بين إصدارات الشركة.","نراجع أي ملاحظة بالاستناد إلى المنتج وبيانات الطلب."],
+    conditionsEn:["Packaging may change between manufacturer releases.","Concerns are reviewed against the product and order details."],
+    faqs:[{qAr:"هل اختلاف العبوة يعني اختلاف المنتج؟",qEn:"Does different packaging mean a different product?",aAr:"قد تحدث تحديثات في التصميم؛ أرسل بيانات العبوة للدعم للتحقق.",aEn:"Design updates can occur; send packaging details to support for review."}],
+    ctaLabelAr:"اسأل عن منتج",ctaLabelEn:"Ask about a product",ctaUrl:"mailto:support@origoscents.com"
+  },
+  {
+    id:"benefit-payment",slug:"secure-payment",icon:"cod",active:true,sort:5,
+    titleAr:"دفع آمن",titleEn:"Secure payment",shortAr:"راجع وسائل الدفع عند إتمام الطلب",shortEn:"Check payment options at checkout",
+    descriptionAr:"اختر إحدى وسائل الدفع المتاحة لطلبك، وراجع الإجمالي قبل التأكيد. لا ترسل كلمة المرور أو رمز التحقق أو بيانات البطاقة الكاملة عبر رسائل خدمة العملاء.",
+    descriptionEn:"Choose an available payment method and review the total before confirming. Never send passwords, verification codes or full card details in support messages.",
+    stepsAr:["راجع المنتجات وتكلفة الشحن والإجمالي.","اختر وسيلة الدفع المتاحة واتبع تعليماتها.","احتفظ بتأكيد الطلب أو مرجع العملية للمتابعة."],
+    stepsEn:["Review products, shipping and the total.","Choose an available method and follow its instructions.","Keep the order confirmation or payment reference."],
+    conditionsAr:["تظهر الوسائل المتاحة أثناء إتمام الطلب.","عند تعثر الدفع، تحقق من حالة العملية قبل تكرارها."],
+    conditionsEn:["Available methods appear at checkout.","If payment fails, check its status before trying again."],
+    faqs:[{qAr:"ماذا أفعل إذا خُصم مبلغ دون تأكيد؟",qEn:"What if I am charged without confirmation?",aAr:"تواصل مع الدعم بمرجع العملية دون مشاركة بيانات بطاقتك الحساسة.",aEn:"Contact support with the transaction reference, without sharing sensitive card details."}],
+    ctaLabelAr:"مساعدة في الدفع",ctaLabelEn:"Payment help",ctaUrl:"mailto:support@origoscents.com"
+  },
+  {
+    id:"benefit-prices",slug:"competitive-prices",icon:"prices",active:true,sort:6,
+    titleAr:"أسعار منافسة",titleEn:"Competitive prices",shortAr:"قارن الخيارات قبل الشراء",shortEn:"Compare options before buying",
+    descriptionAr:"استعرض الأحجام والتركيزات والأسعار لاختيار ما يناسب ميزانيتك. تظهر الخصومات المتاحة في صفحات المنتجات، ويُعرض إجمالي الطلب قبل التأكيد.",
+    descriptionEn:"Compare sizes, concentrations and prices to suit your budget. Available discounts appear on product pages and the order total is shown before confirmation.",
+    stepsAr:["قارن المنتجات بالحجم والتركيز نفسه.","راجع شروط أي عرض أو كوبون.","تأكد من الإجمالي النهائي قبل إتمام الطلب."],
+    stepsEn:["Compare products of the same size and concentration.","Review any offer or coupon conditions.","Check the final total before placing your order."],
+    conditionsAr:["تخضع العروض للمدة والتوفر والشروط المعلنة.","لا يعني السعر المنافس ضمان أقل سعر لدى جميع المتاجر."],
+    conditionsEn:["Offers are subject to stated dates, availability and conditions.","Competitive pricing is not a lowest-price guarantee across all stores."],
+    faqs:[{qAr:"هل يمكن جمع أكثر من عرض؟",qEn:"Can offers be combined?",aAr:"راجع شروط العرض؛ يظهر الخصم المقبول في ملخص الطلب.",aEn:"Check the offer terms; eligible discounts appear in the order summary."}],
+    ctaLabelAr:"تصفح العطور",ctaLabelEn:"Browse fragrances",ctaUrl:"/perfumes"
+  },
+  {
     id: "benefit-customer-service", slug: "customer-service", icon: "support", active: true, sort: 1,
     titleAr: "خدمة عملاء", titleEn: "Customer service", shortAr: "سريعة", shortEn: "Fast and personal",
     descriptionAr: "فريق ORIGO معك قبل الطلب وبعده لمساعدتك في الاختيار، متابعة الشحن، والإجابة عن كل ما يخص عطرك.",
@@ -965,10 +1013,10 @@ const defaultStoreSettings = {
   socialLinks: { youtube: "", facebook: "", tiktok: "", instagram: "", snapchat: "", telegram: "", whatsapp: "" },
   appLinks: { appStore: "", googlePlay: "" },
   homepageRails: {
-    benefits: { enabled: true, order: 1, titleAr: "مزايا ORIGO", titleEn: "ORIGO benefits", speed: 18 },
+    benefits: { enabled: true, order: 1, titleAr: "مزايا ORIGO", titleEn: "ORIGO benefits", intervalSeconds: 3 },
     gender: { enabled: true, order: 2, titleAr: "تسوق حسب الجنس", titleEn: "Shop by gender" },
     categories: { enabled: true, order: 3, titleAr: "تسوق حسب الفئة", titleEn: "Shop by category" },
-    brands: { enabled: true, order: 4, titleAr: "العلامات التجارية", titleEn: "Brands", speed: 34 }
+    brands: { enabled: true, order: 4, titleAr: "العلامات التجارية", titleEn: "Brands", intervalSeconds: 3 }
   },
   homeProductRows: [
     { id: "home-row-newest", source: "newest", brand: "", titleAr: "المنتجات الحديثة", titleEn: "New arrivals", order: 1, enabled: true },
@@ -1038,6 +1086,10 @@ function mergeStoreSettings(saved = {}) {
   const mergedBenefits = savedBenefits.length
     ? savedBenefits.map((item) => ({ ...(benefitMap.get(item.id) || {}), ...item }))
     : defaultFooterBenefits.map((item) => structuredClone(item));
+  // Add detail pages introduced after an older settings snapshot, preserving saved edits.
+  for (const benefit of defaultFooterBenefits) {
+    if (!mergedBenefits.some((item) => item.id === benefit.id || item.slug === benefit.slug)) mergedBenefits.push(structuredClone(benefit));
+  }
   const savedAppearance = saved.appearance && typeof saved.appearance === "object" ? saved.appearance : {};
   const migratedAppearance = Number(savedAppearance.layoutTuningVersion || 0) >= 2 ? savedAppearance : {
     ...savedAppearance,
@@ -1232,7 +1284,7 @@ function sectionPermission(sectionId) {
     suppliers: "purchases", purchases: "purchases", marketing: "marketing", homepage: "content",
     coupons: "coupons", content: "content", reviews: "reviews",
     accounting: "accounting", shipping: "shipping", reports: "reports:view",
-    support: "support", team: "users", settings: "settings", activity: "settings", "ui-states": "settings"
+    support: "support", team: "users", benefits: "settings", settings: "settings", activity: "settings", "ui-states": "settings"
   }[sectionId] || "staff";
 }
 
@@ -1260,6 +1312,7 @@ const adminSections = [
   { groupAr: "المالية", groupEn: "FINANCE", id: "reports", icon: "▥", ar: "التقارير والتحليلات", en: "Reports", descriptionAr: "تقارير قابلة للفلترة والتصدير لكل عمليات المتجر.", descriptionEn: "Filterable and exportable business reports." },
   { groupAr: "الإدارة", groupEn: "MANAGEMENT", id: "support", icon: "◌", ar: "خدمة العملاء", en: "Customer support", descriptionAr: "التذاكر والشكاوى وسجل التواصل.", descriptionEn: "Tickets, complaints, and communication history." },
   { groupAr: "الإدارة", groupEn: "MANAGEMENT", id: "team", icon: "♟", ar: "الفريق والصلاحيات", en: "Team & roles", descriptionAr: "الأدوار والصلاحيات وسجل نشاط الموظفين.", descriptionEn: "Roles, permissions, and staff activity." },
+  { groupAr: "النمو", groupEn: "GROWTH", id: "benefits", icon: "✓", ar: "المزايا", en: "Benefits", descriptionAr: "إضافة المزايا وتعديل التفاصيل والخطوات والشروط والأسئلة لكل ميزة.", descriptionEn: "Add benefits and edit their details, steps, conditions and FAQs." },
   { groupAr: "الإدارة", groupEn: "MANAGEMENT", id: "settings", icon: "⚙", ar: "الإعدادات", en: "Settings", descriptionAr: "إعدادات المتجر والأمان وSEO والإشعارات.", descriptionEn: "Store, security, SEO, and notification settings." },
   { groupAr: "الإدارة", groupEn: "MANAGEMENT", id: "activity", icon: "◷", ar: "سجل النشاط والأمان", en: "Activity & security", descriptionAr: "تتبع العمليات ومحاولات الدخول والأحداث الأمنية.", descriptionEn: "Audit operations, sign-ins, and security events." },
   { groupAr: "الإدارة", groupEn: "MANAGEMENT", id: "ui-states", icon: "◈", ar: "حالات النظام", en: "System states", descriptionAr: "معاينة حالات التفاعل والنوافذ المنبثقة الموحدة.", descriptionEn: "Reusable interaction states and modal patterns." }
@@ -2304,16 +2357,30 @@ function brandManagementRecords() {
   return [...records.values()].map((item) => { const live=source.get(item.nameEn)||source.get(item.nameAr); return live ? { ...item, count:Math.max(Number(item.count||0),live.count), sales:Math.max(Number(item.sales||0),live.sales) } : item; });
 }
 
+function brandIdentity(value) {
+  return normalizeOptionSearch(value).replace(/[^\p{L}\p{N}]+/gu, "-").replace(/^-+|-+$/g, "");
+}
+
+function brandMatches(brand, value) {
+  const key = brandIdentity(value);
+  return Boolean(key) && [brand.slug, brand.value, brand.nameAr, brand.nameEn, brand.metadata?.value].some((alias) => brandIdentity(alias) === key);
+}
+
+function linkedBrandProducts(brand) {
+  return state.catalogProducts.filter((product) => [product.brand, product.brandAr, product.brandEn].some((value) => brandMatches(brand, value)));
+}
+
 function brandsManagementMarkup() {
   const savedBrands = state.productOptions.filter((item) => item.group === "brand").map((item) => ({ ...item, value:item.slug || item.nameEn || item.nameAr }));
   const brandRecords = new Map();
   [...savedBrands, ...productOptionItems("brand")].forEach((item) => {
-    const key = normalizeOptionSearch(item.slug || item.value || item.nameEn || item.nameAr);
-    if (key && !brandRecords.has(key)) brandRecords.set(key, item);
+    const key = brandIdentity(item.slug || item.value || item.nameEn || item.nameAr);
+    if (key && ![...brandRecords.values()].some((brand) => brandMatches(brand, key))) brandRecords.set(key, item);
   });
   const brands = [...brandRecords.values()];
   const savedBySlug = new Map(savedBrands.map((item) => [item.slug, item]));
-  const productCount = (brand) => state.catalogProducts.filter((product) => normalizeOptionSearch(product.brand) === normalizeOptionSearch(brand.value || brand.nameEn || brand.nameAr)).length;
+  const productCount = (brand) => linkedBrandProducts(brand).length;
+  brands.sort((a, b) => Number(a.sortOrder || 0) - Number(b.sortOrder || 0) || String(a.nameEn).localeCompare(String(b.nameEn)));
   return `<section class="brands-management brand-library" dir="${state.lang === "ar" ? "rtl" : "ltr"}">
     <div class="brands-kpis">
       <article><span>⌑</span><div><small>${adminCopy("إجمالي العلامات","Total brands")}</small><b>${formatNumber(brands.length)}</b><em>${adminCopy("علامة تجارية","brands")}</em></div></article>
@@ -2324,14 +2391,33 @@ function brandsManagementMarkup() {
     <main class="brands-table-card">
       <header><div><h3>${adminCopy("مكتبة العلامات التجارية","Brand library")}</h3><p>${adminCopy("أضف أو عدّل الاسم الثنائي والشعار المستخدمين في المنتجات والمتجر.","Add or edit the bilingual name and logo used by products and the storefront.")}</p></div><label>⌕<input id="brand-search" placeholder="${adminCopy("ابحث عن علامة تجارية...","Search brands...")}"/></label><button type="button" class="button burgundy-button" data-action="manage-product-option" data-group="brand">＋ ${adminCopy("إضافة علامة","Add brand")}</button></header>
       <div class="brands-table-scroll"><table><thead><tr><th>${adminCopy("الصورة","Image")}</th><th>${adminCopy("الاسم بالعربية","Arabic name")}</th><th>${adminCopy("الاسم بالإنجليزية","English name")}</th><th>${adminCopy("المنتجات","Products")}</th><th>${adminCopy("الحالة","Status")}</th><th>${adminCopy("الإجراءات","Actions")}</th></tr></thead><tbody>${brands.map((item) => {
-        const saved = savedBySlug.get(item.slug);
-        return `<tr data-brand-row data-search="${escapeHTML(`${item.nameAr || ""} ${item.nameEn || ""} ${item.slug || ""}`)}"><td><div class="brand-logo">${item.image ? `<img src="${escapeHTML(item.image)}" alt="${escapeHTML(item.nameEn || item.nameAr)}"/>` : `<span>${escapeHTML((item.nameEn || item.nameAr || "ORIGO").slice(0, 2).toUpperCase())}</span>`}</div></td><td><b>${escapeHTML(item.nameAr || item.nameEn)}</b></td><td><b dir="ltr">${escapeHTML(item.nameEn || item.nameAr)}</b><small>${escapeHTML(item.slug || "")}</small></td><td>${formatNumber(productCount(item))}</td><td><span class="brand-active">● ${item.active === false ? adminCopy("مخفية","Hidden") : adminCopy("نشطة","Active")}</span></td><td><button type="button" data-action="edit-managed-product-option" data-group="brand" data-value="${escapeHTML(item.value || item.slug || item.nameEn || item.nameAr)}" aria-label="${adminCopy("تعديل","Edit")}">✎</button>${saved ? `<button type="button" data-action="delete-product-option" data-id="${saved.id}" aria-label="${adminCopy("حذف","Delete")}">×</button>` : ""}</td></tr>`;
+        const saved = ORIGO_PERFUME_BRANDS.some((name) => brandMatches(item, name)) ? null : savedBySlug.get(item.slug);
+        const value = escapeHTML(item.slug || item.value || item.nameEn || item.nameAr);
+        const count = productCount(item);
+        return `<tr data-brand-row data-active="${item.active !== false}" data-count="${count}" data-search="${escapeHTML(`${item.nameAr || ""} ${item.nameEn || ""} ${item.slug || ""}`)}"><td><div class="brand-logo">${item.image ? `<img src="${escapeHTML(item.image)}" alt="${escapeHTML(item.nameEn || item.nameAr)}"/>` : `<span>${escapeHTML((item.nameEn || item.nameAr || "ORIGO").slice(0, 2).toUpperCase())}</span>`}</div></td><td><b>${escapeHTML(item.nameAr || item.nameEn)}</b></td><td><b dir="ltr">${escapeHTML(item.nameEn || item.nameAr)}</b><small>${escapeHTML(item.slug || "")}</small></td><td>${formatNumber(count)}</td><td><span class="brand-active">● ${item.active === false ? adminCopy("مخفية","Hidden") : adminCopy("نشطة","Active")}</span></td><td><div class="brand-row-actions"><button type="button" data-action="edit-managed-product-option" data-group="brand" data-value="${value}">✎ ${adminCopy("تعديل","Edit")}</button><button type="button" data-action="toggle-managed-brand" data-value="${value}">${item.active === false ? adminCopy("تفعيل","Activate") : adminCopy("إخفاء","Hide")}</button>${saved ? `<button type="button" data-action="delete-product-option" data-id="${saved.id}" ${count ? `disabled title="${adminCopy("مرتبطة بمنتجات؛ استخدم الإخفاء","Linked to products; use Hide")}"` : ""}>× ${adminCopy("حذف","Delete")}</button>` : `<small>${adminCopy("علامة افتراضية — يمكن إخفاؤها","Built-in brand — can be hidden")}</small>`}</div></td></tr>`;
       }).join("")}</tbody></table></div>
     </main>
   </section>`;
 }
 
-function initializeBrandsManagement() { const input=$("#brand-search"); input?.addEventListener("input",()=>{const q=input.value.toLowerCase(); $$('[data-brand-row]').forEach(row=>row.hidden=!row.dataset.search.toLowerCase().includes(q));}); }
+function initializeBrandsManagement() {
+  const input = $("#brand-search");
+  const header = input?.closest("header");
+  if (!header) return;
+  header.insertAdjacentHTML("afterend", `<div class="brand-library-filters"><label>${adminCopy("الحالة","Status")}<select id="brand-status-filter"><option value="all">${adminCopy("الكل","All")}</option><option value="true">${adminCopy("نشطة","Active")}</option><option value="false">${adminCopy("مخفية","Hidden")}</option><option value="empty">${adminCopy("بدون منتجات","Without products")}</option></select></label><span id="brand-result-count" role="status"></span></div>`);
+  const filter = $("#brand-status-filter");
+  const update = () => {
+    let visible = 0;
+    $$('[data-brand-row]').forEach((row) => {
+      row.hidden = !normalizeOptionSearch(row.dataset.search).includes(normalizeOptionSearch(input.value)) || (filter.value === "empty" ? Number(row.dataset.count) !== 0 : filter.value !== "all" && row.dataset.active !== filter.value);
+      if (!row.hidden) visible++;
+    });
+    $("#brand-result-count").textContent = `${formatNumber(visible)} ${adminCopy("علامة تجارية","brands")}`;
+  };
+  input.addEventListener("input", update);
+  filter.addEventListener("change", update);
+  update();
+}
 
 function notesViewMarkup() {
   const library = window.ORIGOFragranceNotes;
@@ -2518,6 +2604,50 @@ function reportsMarkup() {
     <span class="admin-table-actions"><button data-action="admin-export" data-report="${id}" data-format="csv">CSV</button><button data-action="admin-export" data-report="${id}" data-format="xls">XLS</button><button data-action="admin-export" data-report="${id}" data-format="pdf">PDF</button></span></article>`).join("")}</section>`;
 }
 
+function benefitEditorForm(benefit) {
+  return `<form data-benefit-editor data-id="${escapeHTML(benefit.id)}" class="admin-settings-form"><details open><summary>${escapeHTML(adminCopy(benefit.titleAr, benefit.titleEn))}</summary>${benefitSettingsCards([benefit])}<button type="submit" class="button burgundy-button">${adminCopy("حفظ هذه الميزة", "Save this benefit")}</button><p data-benefit-save-status role="status"></p></details></form>`;
+}
+
+function benefitsManagementMarkup() {
+  const benefits = mergeStoreSettings(state.adminWorkspace.settings || {}).footerBenefits;
+  return `<section class="benefits-manager"><p>${adminCopy("عدّل كل ميزة واحفظها بشكل مستقل. تظهر التعديلات في الرئيسية وصفحة تفاصيل الميزة. يمكنك إخفاء أي ميزة بإلغاء تفعيلها.", "Edit and save each benefit independently. Updates appear on the homepage and detail page. Uncheck Active to hide a benefit.")}</p><button type="button" class="button burgundy-button" data-action="add-managed-benefit">＋ ${adminCopy("إضافة ميزة", "Add benefit")}</button><div class="benefits-manager-list">${benefits.map(benefitEditorForm).join("")}</div></section>`;
+}
+
+function benefitFromForm(form, existing = {}) {
+  const data = new FormData(form);
+  const id = form.dataset.id;
+  const value = (name) => String(data.get(`benefit.${id}.${name}`) || "").trim();
+  const lines = (name) => value(name).split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+  const faqs = (name) => lines(name).map((line) => { const [q, ...a] = line.split("|"); return { q:q.trim(), a:a.join("|").trim() }; }).filter((item) => item.q && item.a);
+  const ar = faqs("faqsAr"), en = faqs("faqsEn");
+  const result = { ...existing, id, slug:existing.slug || value("slug") || id, active:data.has(`benefit.${id}.active`), icon:value("icon"), sort:Math.max(1, Number(value("sort")) || 1), colors:[value("color0"),value("color1"),value("color2")], faqs:Array.from({length:Math.max(ar.length,en.length)}, (_, index) => ({qAr:ar[index]?.q || "",aAr:ar[index]?.a || "",qEn:en[index]?.q || "",aEn:en[index]?.a || ""})) };
+  for (const field of ["titleAr","titleEn","shortAr","shortEn","descriptionAr","descriptionEn","ctaLabelAr","ctaLabelEn","ctaUrl"]) result[field] = value(field);
+  for (const field of ["stepsAr","stepsEn","conditionsAr","conditionsEn"]) result[field] = lines(field);
+  if (!result.titleAr || !result.titleEn || !result.descriptionAr || !result.descriptionEn) throw new Error(adminCopy("أدخل العنوان والتفاصيل بالعربية والإنجليزية.", "Enter the title and details in Arabic and English."));
+  if (result.ctaUrl && !safePublicHref(result.ctaUrl)) throw new Error(adminCopy("رابط الإجراء غير صالح.", "Invalid action link."));
+  return result;
+}
+
+function benefitSettingsCards(benefits, ar = state.lang === "ar") {
+  return benefits.map((benefit) => {
+    const prefix = `benefit.${benefit.id}`;
+    const faqsAr = (benefit.faqs || []).map((item) => `${item.qAr || ""}|${item.aAr || ""}`).join("\n");
+    const faqsEn = (benefit.faqs || []).map((item) => `${item.qEn || ""}|${item.aEn || ""}`).join("\n");
+    return `<article class="benefit-admin-card"><header><b>${escapeHTML(ar ? benefit.titleAr : benefit.titleEn)}</b><label><input type="checkbox" name="${prefix}.active"${benefit.active !== false ? " checked" : ""}/> ${ar ? "مفعلة" : "Active"}</label></header>
+      <input type="hidden" name="${prefix}.id" value="${escapeHTML(benefit.id)}"/><input type="hidden" name="${prefix}.slug" value="${escapeHTML(benefit.slug)}"/>
+      <div class="review-grid"><label>${ar ? "العنوان العربي" : "Arabic title"}<input name="${prefix}.titleAr" value="${escapeHTML(benefit.titleAr)}"/></label><label>${ar ? "العنوان الإنجليزي" : "English title"}<input name="${prefix}.titleEn" value="${escapeHTML(benefit.titleEn)}"/></label></div>
+      <div class="review-grid"><label>${ar ? "الوصف القصير" : "Arabic short copy"}<input name="${prefix}.shortAr" value="${escapeHTML(benefit.shortAr)}"/></label><label>${ar ? "الوصف القصير EN" : "English short copy"}<input name="${prefix}.shortEn" value="${escapeHTML(benefit.shortEn)}"/></label></div>
+      <label>${ar ? "تفاصيل الميزة بالعربية" : "Arabic detail"}<textarea name="${prefix}.descriptionAr">${escapeHTML(benefit.descriptionAr)}</textarea></label><label>${ar ? "تفاصيل الميزة بالإنجليزية" : "English detail"}<textarea name="${prefix}.descriptionEn">${escapeHTML(benefit.descriptionEn)}</textarea></label>
+      <div class="review-grid"><label>${ar ? "خطوات العربية — سطر لكل خطوة" : "Arabic steps — one per line"}<textarea name="${prefix}.stepsAr">${escapeHTML((benefit.stepsAr || []).join("\n"))}</textarea></label><label>${ar ? "الخطوات الإنجليزية" : "English steps"}<textarea name="${prefix}.stepsEn">${escapeHTML((benefit.stepsEn || []).join("\n"))}</textarea></label></div>
+      <div class="review-grid"><label>${ar ? "شروط العربية — سطر لكل شرط" : "Arabic conditions"}<textarea name="${prefix}.conditionsAr">${escapeHTML((benefit.conditionsAr || []).join("\n"))}</textarea></label><label>${ar ? "الشروط الإنجليزية" : "English conditions"}<textarea name="${prefix}.conditionsEn">${escapeHTML((benefit.conditionsEn || []).join("\n"))}</textarea></label></div>
+      <div class="review-grid"><label>${ar ? "الأسئلة العربية: سؤال|إجابة" : "Arabic FAQ: Question|Answer"}<textarea name="${prefix}.faqsAr">${escapeHTML(faqsAr)}</textarea></label><label>${ar ? "الأسئلة الإنجليزية: Question|Answer" : "English FAQ: Question|Answer"}<textarea name="${prefix}.faqsEn">${escapeHTML(faqsEn)}</textarea></label></div>
+      <div class="review-grid"><label>${ar ? "الرمز التعبيري الشفاف" : "Transparent expressive icon"}<select name="${prefix}.icon">${selectOptions([["shipping",ar?"الشحن":"Shipping"],["authentic",ar?"الأصالة":"Authenticity"],["cod",ar?"الدفع":"Payment"],["prices",ar?"الأسعار":"Prices"],["support",ar?"خدمة العملاء":"Customer support"],["returns",ar?"استرجاع سهل":"Easy returns"],["gift",ar?"تغليف هدايا":"Gift wrapping"],["samples",ar?"عينات عطرية":"Perfume samples"]], benefit.icon)}</select></label><label>${ar ? "الترتيب" : "Order"}<input type="number" min="1" max="50" name="${prefix}.sort" value="${Number(benefit.sort || 1)}"/></label></div>
+      <div class="review-grid"><label>${ar ? "لون أساسي" : "Primary color"}<input type="color" name="${prefix}.color0" value="${escapeHTML(benefit.colors?.[0] || "#7b0a20")}"/></label><label>${ar ? "لون ثانوي" : "Secondary color"}<input type="color" name="${prefix}.color1" value="${escapeHTML(benefit.colors?.[1] || "#77b8ff")}"/></label><label>${ar ? "لون إبراز" : "Accent color"}<input type="color" name="${prefix}.color2" value="${escapeHTML(benefit.colors?.[2] || "#f2b844")}"/></label></div>
+      <div class="review-grid"><label>${ar ? "زر الإجراء AR" : "Arabic CTA"}<input name="${prefix}.ctaLabelAr" value="${escapeHTML(benefit.ctaLabelAr)}"/></label><label>${ar ? "زر الإجراء EN" : "English CTA"}<input name="${prefix}.ctaLabelEn" value="${escapeHTML(benefit.ctaLabelEn)}"/></label><label>${ar ? "رابط الإجراء" : "CTA URL"}<input name="${prefix}.ctaUrl" value="${escapeHTML(benefit.ctaUrl)}" dir="ltr"/></label></div>
+    </article>`;
+  }).join("");
+}
+
 function settingsMarkup() {
   const settings = mergeStoreSettings(state.adminWorkspace.settings || {});
   const providers = [
@@ -2547,23 +2677,7 @@ function settingsMarkup() {
     const enabled = new Set(settings.fragranceFinder?.enabled?.[group] || options);
     return `<fieldset class="finder-admin-group"><legend>${escapeHTML(finderTranslate(titleKey))}</legend><div>${options.map((id) => `<label><input type="checkbox" name="finder.${group}.${id}"${enabled.has(id) ? " checked" : ""}/><span>${escapeHTML(finderTranslate(`${prefix}.${id}`))}</span></label>`).join("")}</div></fieldset>`;
   }).join("");
-  const benefitMarkup = settings.footerBenefits.map((benefit) => {
-    const prefix = `benefit.${benefit.id}`;
-    const faqsAr = (benefit.faqs || []).map((item) => `${item.qAr || ""}|${item.aAr || ""}`).join("\n");
-    const faqsEn = (benefit.faqs || []).map((item) => `${item.qEn || ""}|${item.aEn || ""}`).join("\n");
-    return `<article class="benefit-admin-card"><header><b>${escapeHTML(ar ? benefit.titleAr : benefit.titleEn)}</b><label><input type="checkbox" name="${prefix}.active"${benefit.active !== false ? " checked" : ""}/> ${ar ? "مفعلة" : "Active"}</label></header>
-      <input type="hidden" name="${prefix}.id" value="${escapeHTML(benefit.id)}"/><input type="hidden" name="${prefix}.slug" value="${escapeHTML(benefit.slug)}"/>
-      <div class="review-grid"><label>${ar ? "العنوان العربي" : "Arabic title"}<input name="${prefix}.titleAr" value="${escapeHTML(benefit.titleAr)}"/></label><label>${ar ? "العنوان الإنجليزي" : "English title"}<input name="${prefix}.titleEn" value="${escapeHTML(benefit.titleEn)}"/></label></div>
-      <div class="review-grid"><label>${ar ? "الوصف القصير" : "Arabic short copy"}<input name="${prefix}.shortAr" value="${escapeHTML(benefit.shortAr)}"/></label><label>${ar ? "الوصف القصير EN" : "English short copy"}<input name="${prefix}.shortEn" value="${escapeHTML(benefit.shortEn)}"/></label></div>
-      <label>${ar ? "تفاصيل الميزة بالعربية" : "Arabic detail"}<textarea name="${prefix}.descriptionAr">${escapeHTML(benefit.descriptionAr)}</textarea></label><label>${ar ? "تفاصيل الميزة بالإنجليزية" : "English detail"}<textarea name="${prefix}.descriptionEn">${escapeHTML(benefit.descriptionEn)}</textarea></label>
-      <div class="review-grid"><label>${ar ? "خطوات العربية — سطر لكل خطوة" : "Arabic steps — one per line"}<textarea name="${prefix}.stepsAr">${escapeHTML((benefit.stepsAr || []).join("\n"))}</textarea></label><label>${ar ? "الخطوات الإنجليزية" : "English steps"}<textarea name="${prefix}.stepsEn">${escapeHTML((benefit.stepsEn || []).join("\n"))}</textarea></label></div>
-      <div class="review-grid"><label>${ar ? "شروط العربية — سطر لكل شرط" : "Arabic conditions"}<textarea name="${prefix}.conditionsAr">${escapeHTML((benefit.conditionsAr || []).join("\n"))}</textarea></label><label>${ar ? "الشروط الإنجليزية" : "English conditions"}<textarea name="${prefix}.conditionsEn">${escapeHTML((benefit.conditionsEn || []).join("\n"))}</textarea></label></div>
-      <div class="review-grid"><label>${ar ? "الأسئلة العربية: سؤال|إجابة" : "Arabic FAQ: Question|Answer"}<textarea name="${prefix}.faqsAr">${escapeHTML(faqsAr)}</textarea></label><label>${ar ? "الأسئلة الإنجليزية: Question|Answer" : "English FAQ: Question|Answer"}<textarea name="${prefix}.faqsEn">${escapeHTML(faqsEn)}</textarea></label></div>
-      <div class="review-grid"><label>${ar ? "الرمز التعبيري الشفاف" : "Transparent expressive icon"}<select name="${prefix}.icon">${selectOptions([["support",ar?"خدمة العملاء":"Customer support"],["returns",ar?"استرجاع سهل":"Easy returns"],["gift",ar?"تغليف هدايا":"Gift wrapping"],["samples",ar?"عينات عطرية":"Perfume samples"]], benefit.icon)}</select></label><label>${ar ? "الترتيب" : "Order"}<input type="number" min="1" max="50" name="${prefix}.sort" value="${Number(benefit.sort || 1)}"/></label></div>
-      <div class="review-grid"><label>${ar ? "لون أساسي" : "Primary color"}<input type="color" name="${prefix}.color0" value="${escapeHTML(benefit.colors?.[0] || "#7b0a20")}"/></label><label>${ar ? "لون ثانوي" : "Secondary color"}<input type="color" name="${prefix}.color1" value="${escapeHTML(benefit.colors?.[1] || "#77b8ff")}"/></label><label>${ar ? "لون إبراز" : "Accent color"}<input type="color" name="${prefix}.color2" value="${escapeHTML(benefit.colors?.[2] || "#f2b844")}"/></label></div>
-      <div class="review-grid"><label>${ar ? "زر الإجراء AR" : "Arabic CTA"}<input name="${prefix}.ctaLabelAr" value="${escapeHTML(benefit.ctaLabelAr)}"/></label><label>${ar ? "زر الإجراء EN" : "English CTA"}<input name="${prefix}.ctaLabelEn" value="${escapeHTML(benefit.ctaLabelEn)}"/></label><label>${ar ? "رابط الإجراء" : "CTA URL"}<input name="${prefix}.ctaUrl" value="${escapeHTML(benefit.ctaUrl)}" dir="ltr"/></label></div>
-    </article>`;
-  }).join("");
+  const benefitMarkup = benefitSettingsCards(settings.footerBenefits, ar);
   const categoryIconMarkup = [...ORIGO_HOME_CATEGORIES, ["offers", "العروض", "Offers", "٪"]].map(([key, arName, enName, fallback]) => `<label class="store-icon-upload"><span>${escapeHTML(ar ? arName : enName)}</span><span class="store-icon-preview" id="category-icon-preview-${key}">${settings.categoryIcons[key] ? `<img src="${escapeHTML(settings.categoryIcons[key])}" alt=""/>` : fallback}</span><input type="file" accept="image/png,image/jpeg,image/webp,image/avif" data-category-icon-upload="${key}"/></label>`).join("");
   return `<form class="admin-settings-form" id="admin-settings-form"><section><div class="review-section-head"><span>01</span><div><b>${ar ? "هوية المتجر والشعار المركزي" : "Store identity & central logo"}</b><small>${ar ? "يتغير الشعار في الهيدر والقائمة والفوتر من هنا." : "One source updates header, menu, and footer."}</small></div></div>
     <div class="review-grid"><label>${ar ? "اسم المتجر" : "Store name"}<input name="storeName" value="${escapeHTML(settings.storeName)}" /></label>
@@ -2950,7 +3064,7 @@ function homepageRailsAdminMarkup() {
       <div class="home-media-library">${heroMedia.length ? mediaCards : `<p>${ar ? "لا توجد صور مخصصة؛ يتم استخدام صورة ORIGO الافتراضية المعروضة أعلاه." : "No custom slides yet; the ORIGO default shown above is in use."}</p>`}</div>
     </section>
     <section><div class="review-section-head"><span>02</span><div><b>${ar ? "إدارة أشرطة الصفحة الرئيسية" : "Homepage rails management"}</b><small>${ar ? "تحكم في ظهور الأشرطة وترتيبها وسرعة حركة المميزات والعلامات." : "Control rail visibility, order, and the benefits and brands motion speed."}</small></div></div>
-      <div class="homepage-rail-settings">${Object.entries(settings.homepageRails).map(([key, rail]) => `<article><header><b>${escapeHTML(labels[key][ar ? 0 : 1])}</b><label class="admin-toggle-row"><span>${ar ? "ظاهر" : "Visible"}</span><input name="${key}.enabled" type="checkbox"${rail.enabled !== false ? " checked" : ""}/></label></header><div class="review-grid"><label>${ar ? "العنوان العربي" : "Arabic title"}<input name="${key}.titleAr" value="${escapeHTML(rail.titleAr || "")}"/></label><label>${ar ? "العنوان الإنجليزي" : "English title"}<input name="${key}.titleEn" value="${escapeHTML(rail.titleEn || "")}"/></label><label>${ar ? "الترتيب" : "Order"}<input name="${key}.order" type="number" min="1" max="10" value="${Number(rail.order || 1)}"/></label>${key === "brands" || key === "benefits" ? `<label>${ar ? "مدة الدورة بالثواني" : "Cycle duration (seconds)"}<input name="${key}.speed" type="number" min="6" max="120" step="1" value="${Number(rail.speed || (key === "benefits" ? 18 : 34))}"/></label>` : ""}</div></article>`).join("")}</div>
+      <div class="homepage-rail-settings">${Object.entries(settings.homepageRails).map(([key, rail]) => `<article><header><b>${escapeHTML(labels[key][ar ? 0 : 1])}</b><label class="admin-toggle-row"><span>${ar ? "ظاهر" : "Visible"}</span><input name="${key}.enabled" type="checkbox"${rail.enabled !== false ? " checked" : ""}/></label></header><div class="review-grid"><label>${ar ? "العنوان العربي" : "Arabic title"}<input name="${key}.titleAr" value="${escapeHTML(rail.titleAr || "")}"/></label><label>${ar ? "العنوان الإنجليزي" : "English title"}<input name="${key}.titleEn" value="${escapeHTML(rail.titleEn || "")}"/></label><label>${ar ? "الترتيب" : "Order"}<input name="${key}.order" type="number" min="1" max="10" value="${Number(rail.order || 1)}"/></label>${key === "brands" || key === "benefits" ? `<label>${key === "brands" ? (ar ? "زمن تبديل مجموعة العلامات بالثواني" : "Seconds per brand group") : (ar ? "زمن تبديل مجموعة المزايا بالثواني" : "Seconds per benefit group")}<input name="${key}.intervalSeconds" type="number" min="1" max="120" step="1" value="${Number(rail.intervalSeconds || 3)}"/></label>` : ""}</div></article>`).join("")}</div>
     </section>
     <section class="home-product-rows-admin"><div class="review-section-head"><span>03</span><div><b>${ar ? "أقسام المنتجات المتعددة" : "Multiple product sections"}</b><small>${ar ? "أضف أي عدد من الأقسام، واربط كل قسم بالأحدث أو الأكثر مبيعًا أو بعلامة تجارية محددة." : "Add any number of sections and connect each to newest, best sellers, or a specific brand."}</small></div></div>
       <div id="home-product-row-list" class="home-product-row-admin-list">${settings.homeProductRows.map((row, index) => homepageProductRowAdminCard(row, index)).join("")}</div>
@@ -2970,7 +3084,8 @@ function applyHomepageRailSettings() {
     element.style.order = String(Number(settings[key]?.order || 0));
     element.setAttribute("aria-label", state.lang === "ar" ? settings[key]?.titleAr || "" : settings[key]?.titleEn || "");
   });
-  document.documentElement.style.setProperty("--brand-marquee-duration", `${Math.max(12, Math.min(120, Number(settings.brands?.speed || 34)))}s`);
+  $$("#brand-carousel-track, #home-brand-carousel-track").forEach((track) => window.ORIGOBrandSlider?.get(track)?.setInterval(settings.brands?.intervalSeconds || 3));
+  window.ORIGOBrandSlider?.get($("#home-benefits-track"))?.setInterval(settings.benefits?.intervalSeconds || 3);
 }
 
 function renderAdminDashboard(view = state.adminView) {
@@ -2991,7 +3106,7 @@ function renderAdminDashboard(view = state.adminView) {
     content: `<button class="button secondary-button" data-action="export-banners">تصدير تقرير ↓</button><button class="button secondary-button" data-action="import-banners">استيراد بنرات ↥</button><button class="button burgundy-button" data-action="create-banner">إضافة بنر جديد ＋</button>`,
     coupons: `<button class="button secondary-button" data-action="admin-export" data-report="coupons">تصدير ↓</button><button class="button secondary-button" data-action="import-coupons">استيراد كوبونات ↓</button><button class="button burgundy-button" data-action="create-coupon">إضافة كوبون جديد ＋</button>`
   };
-  $("#admin-view-actions").innerHTML = actions[view] || (["overview","accounting","reports","settings"].includes(view) ? "" :
+  $("#admin-view-actions").innerHTML = actions[view] || (["overview","accounting","reports","settings","benefits"].includes(view) ? "" :
     `<button class="button burgundy-button" data-action="admin-create-entity" data-view="${view}">${state.lang === "ar" ? "إضافة جديد" : "Add new"} ＋</button>`);
   const content = {
     overview: overviewMarkup,
@@ -3012,6 +3127,7 @@ function renderAdminDashboard(view = state.adminView) {
     notes: notesViewMarkup,
     accounting: accountingMarkup,
     reports: reportsMarkup,
+    benefits: benefitsManagementMarkup,
     settings: () => storeSettingsDashboardMarkup()
     ,"ui-states": systemStatesMarkup
   };
@@ -3478,7 +3594,7 @@ function localizeStaticStorefront() {
   setText("#home-seo-title", "ORIGO Scents | أوريجو سينتس - متجر العطور الأصلية في مصر", "ORIGO Scents | Original Perfume Store in Egypt");
   setText("#home-seo-copy", "يوفر ORIGO Scents عطورًا أصلية 100% للرجال والنساء وللجنسين من علامات تجارية متنوعة مع الأسعار والتوفر داخل مصر.", "ORIGO Scents offers 100% original perfumes for men, women and everyone from a wide range of brands, with prices and availability in Egypt.");
   setText("#home-original-perfumes-link", "تسوق العطور الأصلية", "Shop original perfumes");
-  renderHomeBenefitsCurtain();
+  renderHomeBenefitsSlider();
   const genderCards = [
     ["للرجال", "عطور تعكس القوة والأناقة والثقة", "Men", "Fragrances of strength, elegance, and confidence"],
     ["للنساء", "عطور تمنحك الجمال والجاذبية", "Women", "Fragrances of beauty and allure"],
@@ -3568,12 +3684,12 @@ function renderBrandCarousel(query = "") {
     const brand = String(product.brand || "ORIGO").trim();
     counts.set(brand, (counts.get(brand) || 0) + 1);
   });
-  const catalogNames = [...ORIGO_PERFUME_BRANDS, ...counts.keys()].filter((brand, index, values) =>
+  const catalogNames = [...state.productOptions.filter((item) => item.group === "brand" && item.active !== false).map((item) => item.nameEn || item.nameAr), ...ORIGO_PERFUME_BRANDS, ...counts.keys()].filter((brand, index, values) =>
     values.findIndex((candidate) => ORIGOCatalog.normalize(candidate) === ORIGOCatalog.normalize(brand)) === index
   );
   const mobile = matchMedia("(max-width: 700px)").matches;
   const brands = catalogNames.map((brand) => [brand, counts.get(brand) || 0])
-    .filter(([brand]) => !normalized || ORIGOCatalog.normalize(brand).includes(normalized));
+    .filter(([brand]) => (!normalized || ORIGOCatalog.normalize(brand).includes(normalized)) && !state.productOptions.some((item) => item.group === "brand" && item.active === false && brandMatches(item, brand)));
   const visibleBrands = brands;
   const brandOptions = state.productOptions.filter((item) => item.group === "brand" && item.active !== false);
   const items = visibleBrands.map(([brand, count]) => {
@@ -3581,15 +3697,13 @@ function renderBrandCarousel(query = "") {
     const logo = option?.image || origoBrandLogo(brand);
     const artwork = logo ? `<img src="${escapeHTML(logo)}" alt="" loading="lazy"/>` : `<span aria-hidden="true">${escapeHTML(brand.slice(0, 2).toUpperCase())}</span>`;
     const label = localizedBrandLabel(brand);
-    return `<button class="marquee-item" data-action="brand-search" data-query="${escapeHTML(brand)}" aria-label="${escapeHTML(`${state.lang === "ar" ? "عرض منتجات" : "View products by"} ${label}`)}">${artwork}<b>${escapeHTML(label)}</b></button>`;
-  }).join("");
-  $$("#brand-carousel-track, #home-brand-carousel-track").forEach((track) => {
-    const duplicateItems = items.replaceAll("<button ", "<button tabindex=\"-1\" aria-hidden=\"true\" ");
-    track.innerHTML = items ? `<div class="brand-marquee-content"><div class="brand-marquee-set">${items}</div><div class="brand-marquee-set" aria-hidden="true">${duplicateItems}</div></div>` : "";
-    bindBrandMarquee(track);
+    return `<button class="brand-slider-card" data-action="brand-search" data-query="${escapeHTML(brand)}" aria-label="${escapeHTML(`${state.lang === "ar" ? "عرض منتجات" : "View products by"} ${label}`)}">${artwork}<b>${escapeHTML(label)}</b></button>`;
   });
-  renderHomeRailDots("#home-brand-dots", visibleBrands.length, mobile ? 4 : 6);
-  bindHomeBrandPagination($("#home-brand-carousel-track"), "#home-brand-dots");
+  const seconds = mergeStoreSettings(state.adminWorkspace.settings || {}).homepageRails.brands.intervalSeconds || 3;
+  $$("#brand-carousel-track, #home-brand-carousel-track").forEach((track) => {
+    window.ORIGOBrandSlider.mount(track, items, seconds);
+  });
+  if ($("#home-brand-dots")) $("#home-brand-dots").hidden = true;
 }
 
 function renderHomeRailDots(selector, itemCount, pageSize) {
@@ -3616,28 +3730,17 @@ function bindHomeBrandPagination(track, dotsSelector) {
   requestAnimationFrame(update);
 }
 
-function renderHomeBenefitsCurtain() {
+function renderHomeBenefitsSlider() {
   const track = $("#home-benefits-track");
   if (!track) return;
-  const available = new Map(activeFooterBenefits().map((benefit) => [benefit.slug, benefit]));
-  const benefits = [
-    ["shipping", "شحن سريع", "Fast shipping", "توصيل سريع خلال 2–3 أيام عمل", "Fast delivery within 2–3 business days", "customer-service"],
-    ["returns", "استرجاع سهل", "Easy returns", "استرجاع واستبدال خلال 14 يوم", "Returns and exchanges within 14 days", "easy-returns"],
-    ["authentic", "منتجات أصلية 100%", "100% authentic products", "منتجات أصلية وموثوقة", "Authentic, trusted products", ""],
-    ["support", "خدمة عملاء 24/7", "24/7 customer service", "خدمة عملاء على مدار الساعة", "Customer service around the clock", "customer-service"],
-    ["cod", "دفع آمن", "Secure payment", "بوابات دفع آمنة ومشفرة", "Secure, encrypted payment gateways", ""],
-    ["prices", "أسعار منافسة", "Competitive prices", "قيمة ممتازة مقابل الجودة", "Excellent value for quality", ""],
-    ["gift", "تغليف فاخر", "Luxury wrapping", "تغليف أنيق وجاهز للإهداء", "Elegant, gift-ready wrapping", "luxury-gift-wrap"],
-    ["samples", "عينات عطور", "Perfume samples", "عينات مختارة مع الطلبات", "Selected samples with orders", "perfume-samples"]
-  ];
-  track.innerHTML = benefits.map(([icon, titleAr, titleEn, shortAr, shortEn, slug]) => {
-    const target = slug && available.has(slug) ? slug : "";
-    const title = state.lang === "ar" ? titleAr : titleEn;
-    const short = state.lang === "ar" ? shortAr : shortEn;
-    return `<button class="benefits-curtain-item" type="button"${target ? ` data-action="benefit-link" data-slug="${escapeHTML(target)}"` : " disabled"}><span class="benefit-icon">${footerBenefitIcon(icon)}</span><span class="benefits-curtain-copy"><b>${escapeHTML(title)}</b><small>${escapeHTML(short)}</small></span>${target ? `<span class="benefits-curtain-link" aria-hidden="true">${luxuryIcon("chevron")}</span>` : ""}</button>`;
-  }).join("");
-  const trigger = $("[data-action='toggle-benefits-curtain']");
-  if (trigger) trigger.querySelector("#home-benefits-title").textContent = state.lang === "ar" ? "مميزاتنا" : "Our benefits";
+  const items = activeFooterBenefits().map((benefit) => {
+    const title = state.lang === "ar" ? benefit.titleAr : benefit.titleEn;
+    const short = state.lang === "ar" ? benefit.shortAr : benefit.shortEn;
+    return `<button class="benefit-slider-card" type="button" data-action="benefit-link" data-slug="${escapeHTML(benefit.slug)}"><span class="benefit-icon">${footerBenefitIcon(benefit.icon, benefit.colors)}</span><span class="benefit-slider-copy"><b>${escapeHTML(title)}</b><small>${escapeHTML(short)}</small></span></button>`;
+  });
+  const rail = mergeStoreSettings(state.adminWorkspace.settings || {}).homepageRails.benefits;
+  window.ORIGOBrandSlider.mount(track, items, rail.intervalSeconds || 3);
+  $("#home-benefits-title").textContent = state.lang === "ar" ? rail.titleAr || "مميزاتنا" : rail.titleEn || "Our benefits";
 }
 
 function renderHomeNavigation() {
@@ -3828,7 +3931,7 @@ function renderConfiguredHomeProductRows() {
 }
 
 function renderHomepageCommerce() {
-  renderHomeBenefitsCurtain();
+  renderHomeBenefitsSlider();
   renderConfiguredHomeProductRows();
   observeReveals();
 }
@@ -4626,12 +4729,12 @@ function handleCatalogRoute({ replace = false } = {}) {
 function renderBrandsPage() {
   const root = $("#brands-page-content");
   if (!root) return;
-  const optionMap = new Map(productOptionItems("brand").map((item) => [ORIGOCatalog.normalize(item.value || item.nameEn || item.nameAr), item]));
+  const brandOptions = state.productOptions.filter((item) => item.group === "brand");
   const names = [...new Set(state.products.filter((product) => product.status === "published" && product.deleted !== true && (product.category || "perfume") === "perfume").map((product) => product.brandEn || product.brand || product.brandAr).filter(Boolean))];
   root.innerHTML = `<nav class="brands-page-breadcrumb"><button data-action="catalog-home">${state.lang === "ar" ? "الرئيسية" : "Home"}</button><span>‹</span><b>${state.lang === "ar" ? "العلامات التجارية" : "Brands"}</b></nav>
     <header><span>${state.lang === "ar" ? "دليل ORIGO" : "ORIGO directory"}</span><h1 id="brands-page-title">${state.lang === "ar" ? "العلامات التجارية" : "Fragrance brands"}</h1><p>${state.lang === "ar" ? "اختر العلامة لعرض جميع منتجاتها." : "Choose a brand to see all its products."}</p></header>
-    <div class="brands-page-grid">${names.map((brand) => {
-      const option = optionMap.get(ORIGOCatalog.normalize(brand));
+    <div class="brands-page-grid">${names.filter((brand) => !brandOptions.some((item) => item.active === false && brandMatches(item, brand))).map((brand) => {
+      const option = brandOptions.find((item) => brandMatches(item, brand));
       const fallback = state.products.find((product) => [product.brandEn,product.brand,product.brandAr].filter(Boolean).some((name) => ORIGOCatalog.normalize(name) === ORIGOCatalog.normalize(brand)));
       const image = option?.image || option?.logo || fallback?.brandLogo || origoBrandLogo(brand);
        const label = localizedBrandLabel(brand);
@@ -7232,6 +7335,7 @@ function productOptionItems(group) {
   }));
   const unique = new Map();
   [...saved, ...defaults].forEach((item) => {
+    if (group === "brand" && item.builtIn && state.productOptions.some((option) => option.group === "brand" && brandMatches(option, item.value))) return;
     const key = normalizeOptionSearch(item.value || item.slug || item.nameEn || item.nameAr);
     if (key && !unique.has(key)) unique.set(key, item);
   });
@@ -8705,10 +8809,11 @@ function openProductOptionDialog(holder) {
 }
 
 function populateProductOptionDialog(dialog, value = "") {
-  const item = productOptionItems(dialog.dataset.group).find((option) => normalizeOptionSearch(option.value) === normalizeOptionSearch(value))
-    || state.productOptions.find((option) => option.group === dialog.dataset.group && normalizeOptionSearch(option.slug || option.nameEn || option.nameAr) === normalizeOptionSearch(value));
+  const item = state.productOptions.find((option) => option.group === dialog.dataset.group && normalizeOptionSearch(option.slug || option.nameEn || option.nameAr) === normalizeOptionSearch(value))
+    || productOptionItems(dialog.dataset.group).find((option) => normalizeOptionSearch(option.value) === normalizeOptionSearch(value) || normalizeOptionSearch(option.slug) === normalizeOptionSearch(value));
   if (!item) return;
   const form = dialog.querySelector("form");
+  dialog.querySelector('[data-action="save-product-option"]').textContent = adminCopy("حفظ التعديلات", "Save changes");
   const note = dialog.dataset.group === "note" ? window.ORIGOFragranceNotes.find(item.slug || item.value) : null;
   const source = { ...item, ...(note || {}), ...(item.metadata || {}) };
   form.elements.slug.value = item.slug || "";
@@ -8752,15 +8857,14 @@ document.addEventListener("click", async (event) => {
     const track = actionElement.closest(".home-brand-directory")?.querySelector(".brand-carousel-track");
     if (track) {
       const direction = Number(actionElement.dataset.direction) || 1;
+      const slider = window.ORIGOBrandSlider?.get(track);
+      if (slider) { slider.step(direction); return; }
       const pageStep = track.id === "home-brand-carousel-track" ? track.clientWidth : Math.max(240, track.clientWidth * .65);
       track.scrollBy({ left: direction * pageStep, behavior: "smooth" });
     }
   }
-  if (action === "toggle-benefits-curtain") {
-    const curtain = $("#home-benefits-curtain");
-    const expanded = actionElement.getAttribute("aria-expanded") === "true";
-    actionElement.setAttribute("aria-expanded", String(!expanded));
-    curtain?.setAttribute("aria-hidden", String(expanded));
+  if (action === "benefits-slider-step") {
+    window.ORIGOBrandSlider?.get($("#home-benefits-track"))?.step(Number(actionElement.dataset.direction) || 1);
     return;
   }
   if (action === "parse-perfume-bundle") {
@@ -8942,11 +9046,25 @@ document.addEventListener("click", async (event) => {
     populateProductOptionDialog($("#product-option-dialog"), actionElement.dataset.value || "");
     return;
   }
+  if (action === "toggle-managed-brand") {
+    const brand = state.productOptions.find((item) => item.group === "brand" && brandMatches(item, actionElement.dataset.value)) || productOptionItems("brand").find((item) => brandMatches(item, actionElement.dataset.value));
+    if (!brand) return;
+    actionElement.disabled = true;
+    try {
+      const result = await api("/api/admin/product-options", { method:"POST", body:JSON.stringify({ ...brand, group:"brand", active:brand.active === false }) });
+      state.productOptions = [...state.productOptions.filter((item) => !(item.group === "brand" && item.slug === result.option.slug)), result.option];
+      renderAdminDashboard("brands");
+      renderBrandCarousel();
+      showToast(adminCopy("تم تحديث حالة العلامة", "Brand status updated"));
+    } catch (error) { actionElement.disabled = false; showToast(error.message, "error"); }
+    return;
+  }
   if (action === "delete-product-option") {
     if (!window.confirm(adminCopy("حذف هذا الخيار؟","Delete this option?"))) return;
     try {
       await api(`/api/admin/product-options/${actionElement.dataset.id}`, { method:"DELETE" });
       state.productOptions = state.productOptions.filter((item) => String(item.id) !== String(actionElement.dataset.id));
+      renderBrandCarousel();
       renderAdminDashboard(state.adminView === "brands" ? "brands" : "product-options");
       showToast(adminCopy("تم حذف الخيار","Option deleted"));
     } catch (errorValue) { showToast(errorValue.message); }
@@ -8974,16 +9092,17 @@ document.addEventListener("click", async (event) => {
     if (form.dataset.imageProcessing === "true") { error.hidden=false; error.textContent=adminCopy("انتظر حتى يكتمل تجهيز الصورة.","Wait for the image to finish processing."); return; }
     const data = new FormData(form);
     const payload = { group:dialog.dataset.group, slug:String(data.get("slug") || "").trim(), nameAr:String(data.get("nameAr") || "").trim(), nameEn:String(data.get("nameEn") || "").trim(), image:String(data.get("image") || "").trim(), icon:String(data.get("icon") || "").trim(), color:String(data.get("color") || ""), sortOrder:Number(data.get("sortOrder") || 0), active:data.get("active") === "on" };
+    if (payload.group === "brand") payload.metadata = state.productOptions.find((item) => item.group === "brand" && item.slug === payload.slug)?.metadata || {};
     if (payload.group === "note") payload.metadata = { descriptionAr:String(data.get("descriptionAr") || "").trim(), descriptionEn:String(data.get("descriptionEn") || "").trim(), familyId:String(data.get("familyId") || "").trim(), position:String(data.get("position") || "multiple"), value:String(data.get("existingOption") || "").trim() || payload.slug || payload.nameEn || payload.nameAr };
     error.hidden = true;
     if (!payload.nameAr || !payload.nameEn) { error.hidden=false; error.textContent=adminCopy("أدخل الاسم بالعربية والإنجليزية.","Enter both Arabic and English names."); return; }
     if (payload.group === "note" && !payload.metadata.familyId) { error.hidden=false; error.textContent=adminCopy("اختر العائلة العطرية التي تنتمي إليها النوتة.","Select the fragrance family this note belongs to."); form.elements.familyId?.focus(); return; }
-    if (["note", "brand"].includes(payload.group) && !payload.image) { error.hidden=false; error.textContent=adminCopy("ارفع الصورة من الملفات قبل الحفظ.","Upload the image file before saving."); return; }
+    if (payload.group === "note" && !payload.image) { error.hidden=false; error.textContent=adminCopy("ارفع الصورة من الملفات قبل الحفظ.","Upload the image file before saving."); return; }
     const duplicate = productOptionItems(payload.group).find((item) => item.slug !== payload.slug && [item.nameAr,item.nameEn].some((name) => [payload.nameAr,payload.nameEn].some((candidate) => normalizeOptionSearch(candidate) === normalizeOptionSearch(name))));
     if (duplicate) { error.hidden=false; error.textContent=adminCopy("هذه النوتة أو العلامة موجودة بالفعل؛ اخترها للتعديل بدل إنشاء نسخة مكررة.","This note or brand already exists; select it for editing instead of creating a duplicate."); return; }
     actionElement.disabled = true;
     try {
-      const result = state.serverAvailable ? await api("/api/admin/product-options", { method:"POST", body:JSON.stringify(payload) }) : { option:{ ...payload, id:Date.now(), value:payload.nameEn } };
+      const result = (state.serverAvailable || payload.group === "brand") ? await api("/api/admin/product-options", { method:"POST", body:JSON.stringify(payload) }) : { option:{ ...payload, id:Date.now(), value:payload.nameEn } };
       state.productOptions = [...state.productOptions.filter((item) => !(item.group === result.option.group && item.slug === result.option.slug)), result.option];
       if (payload.group === "note") {
         window.ORIGOFragranceNotes.upsertNote({ slug:result.option.slug, nameAr:payload.nameAr, nameEn:payload.nameEn, descriptionAr:payload.metadata.descriptionAr, descriptionEn:payload.metadata.descriptionEn, familyId:payload.metadata.familyId, position:payload.metadata.position, image:payload.image, symbol:payload.icon || "✦", aliases:[] });
@@ -8991,6 +9110,7 @@ document.addEventListener("click", async (event) => {
       }
       if (dialog.dataset.context === "manager") {
         dialog.close(); dialog.remove();
+        if (payload.group === "brand") renderBrandCarousel();
         renderAdminDashboard(state.adminView === "brands" && payload.group === "brand" ? "brands" : "product-options");
         showToast(adminCopy("تم حفظ الخيار","Option saved"));
         return;
@@ -9230,6 +9350,8 @@ document.addEventListener("click", async (event) => {
     handleCatalogRoute();
   }
   if (action === "brand-carousel-scroll") {
+    const slider = window.ORIGOBrandSlider?.get($("#brand-carousel-track"));
+    if (slider) { slider.step(Number(actionElement.dataset.direction || 1)); return; }
     $("#brand-carousel-track")?.scrollBy({ left: Number(actionElement.dataset.direction || 1) * 420, behavior: "smooth" });
   }
   if (action === "account") openAccount();
@@ -9525,6 +9647,13 @@ document.addEventListener("click", async (event) => {
     } catch (error) { showToast(error.message); }
   }
   if (action === "toggle-admin-sidebar") $(".advanced-admin-panel")?.classList.toggle("sidebar-open");
+  if (action === "add-managed-benefit") {
+    const id = `benefit-${crypto.randomUUID()}`;
+    const benefit = { id, slug:id, titleAr:"ميزة جديدة",titleEn:"New benefit",shortAr:"",shortEn:"",descriptionAr:"",descriptionEn:"",icon:"support",active:true,sort:mergeStoreSettings(state.adminWorkspace.settings || {}).footerBenefits.length + 1,ctaLabelAr:"",ctaLabelEn:"",ctaUrl:"" };
+    $(".benefits-manager-list").insertAdjacentHTML("afterbegin", benefitEditorForm(benefit));
+    $(".benefits-manager-list input:not([type='hidden']):not([type='checkbox'])")?.focus();
+    return;
+  }
   if (action === "add-store-benefit") {
     const settings = mergeStoreSettings(state.adminWorkspace.settings || {});
     const stamp = Date.now();
@@ -9537,7 +9666,7 @@ document.addEventListener("click", async (event) => {
       ctaLabelAr:"اعرف المزيد", ctaLabelEn:"Learn more", ctaUrl:"/benefits"
     }];
     state.adminWorkspace.settings = settings;
-    renderAdminDashboard(state.adminView);
+    $(".benefits-settings-grid").insertAdjacentHTML("beforeend", benefitSettingsCards([settings.footerBenefits.at(-1)]));
     requestAnimationFrame(() => $(".benefits-settings-grid .benefit-admin-card:last-child input:not([type='hidden'])")?.focus());
     return;
   }
@@ -10183,6 +10312,35 @@ document.addEventListener("click", async (event) => {
 
 document.addEventListener("submit", async (event) => {
   event.preventDefault();
+  if (event.target.matches("[data-benefit-editor]")) {
+    const form = event.target;
+    const manager = form.closest(".benefits-manager");
+    const button = form.querySelector("button[type='submit']");
+    if (manager.dataset.saving === "true") return;
+    const status = form.querySelector("[data-benefit-save-status]");
+    const previous = state.adminWorkspace.settings;
+    button.disabled = true;
+    manager.dataset.saving = "true";
+    try {
+      const settings = mergeStoreSettings(previous || {});
+      const benefit = benefitFromForm(form, settings.footerBenefits.find((item) => item.id === form.dataset.id));
+      const index = settings.footerBenefits.findIndex((item) => item.id === benefit.id);
+      if (index < 0) settings.footerBenefits.push(benefit); else settings.footerBenefits[index] = benefit;
+      clearTimeout(adminWorkspaceSyncTimer);
+      await api("/api/admin/workspace", { method:"POST", body:JSON.stringify({ state:{ ...state.adminWorkspace, settings }, section:"settings" }) });
+      state.adminWorkspace.settings = settings;
+      try { localStorage.setItem("origoAdminWorkspace", JSON.stringify(state.adminWorkspace)); } catch {}
+      renderHomeBenefitsSlider();
+      renderSiteFooter();
+      if (document.body.classList.contains("benefit-route")) handleBenefitRoute({replace:true});
+      status.textContent = adminCopy("تم حفظ الميزة", "Benefit saved");
+      form.querySelector("summary").textContent = adminCopy(benefit.titleAr, benefit.titleEn);
+    } catch (error) {
+      state.adminWorkspace.settings = previous;
+      status.textContent = error.message || adminCopy("تعذر حفظ الميزة", "Could not save benefit");
+    } finally { button.disabled = false; delete manager.dataset.saving; }
+    return;
+  }
   if (event.target.id === "admin-brand-form") {
     const data = new FormData(event.target);
     const id = String(data.get("id") || `brand-${Date.now().toString(36)}`);
@@ -10376,8 +10534,8 @@ document.addEventListener("submit", async (event) => {
       ...current.homepageRails[key], enabled: data.has(`${key}.enabled`),
       titleAr: String(data.get(`${key}.titleAr`) || "").trim(), titleEn: String(data.get(`${key}.titleEn`) || "").trim(),
       order: Math.max(1, Math.min(10, Number(data.get(`${key}.order`) || 1))),
-      ...(key === "brands" ? { speed: Math.max(12, Math.min(120, Number(data.get("brands.speed") || 34))) } : {}),
-      ...(key === "benefits" ? { speed: Math.max(6, Math.min(120, Number(data.get("benefits.speed") || 18))) } : {})
+      ...(key === "brands" ? { intervalSeconds: Math.max(1, Math.min(120, Number(data.get("brands.intervalSeconds") || 3))) } : {}),
+      ...(key === "benefits" ? { intervalSeconds: Math.max(1, Math.min(120, Number(data.get("benefits.intervalSeconds") || 3))) } : {})
     }])) : current.homepageRails;
     const nextProductRows = event.target.id === "admin-homepage-rails"
       ? homepageProductRowsFromAdminForm(event.target)
@@ -11631,6 +11789,7 @@ window.addEventListener("popstate", (event) => {
 });
 
 function bindBrandMarquee(brandTrack) {
+  if (["home-brand-carousel-track", "brand-carousel-track"].includes(brandTrack?.id)) return;
   if (!brandTrack || brandTrack.dataset.dragBound === "true") return;
   brandTrack.dataset.dragBound = "true";
   let brandDragging = false;

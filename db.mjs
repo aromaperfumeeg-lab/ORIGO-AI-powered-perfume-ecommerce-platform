@@ -1673,6 +1673,14 @@ export function upsertProductOption(input = {}) {
 export function deleteProductOption(id) {
   const row = db.prepare("SELECT * FROM product_options WHERE id = ?").get(Number(id));
   if (!row) return false;
+  if (row.option_group === "brand") {
+    const aliases = new Set([row.slug, row.name_ar, row.name_en, parseJSON(row.metadata_json, {}).value].filter(Boolean).map(optionSlug));
+    const linked = db.prepare("SELECT brand, catalog_json FROM products").all().some((product) => {
+      const catalog = parseJSON(product.catalog_json, {});
+      return [product.brand, catalog.brand, catalog.brandAr, catalog.brandEn].filter(Boolean).some((value) => aliases.has(optionSlug(value)));
+    });
+    if (linked) throw new Error("لا يمكن حذف علامة مرتبطة بمنتجات؛ أخفها أو غيّر علامة المنتجات أولًا.");
+  }
   if (Number(row.usage_count || 0) > 0) throw new Error("لا يمكن حذف خيار مستخدم؛ أخفه أو استبدله أولًا.");
   return db.prepare("DELETE FROM product_options WHERE id = ?").run(Number(id)).changes > 0;
 }

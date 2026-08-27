@@ -1,8 +1,100 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
+import { runInNewContext } from "node:vm";
 
 const read = (file) => readFile(new URL(`../${file}`, import.meta.url), "utf8");
+
+test("every default benefit has bilingual detail and old settings retain edits when new benefits are added", async () => {
+  const app = await read("app.js");
+  const defaults = app.slice(app.indexOf("const defaultFooterBenefits ="), app.indexOf("const defaultStoreSettings ="));
+  const merging = app.slice(app.indexOf("  const benefitMap ="), app.indexOf("  const savedAppearance ="));
+  const context = { structuredClone };
+  runInNewContext(`${defaults}; this.defaults = defaultFooterBenefits; this.merge = (saved) => { ${merging} return mergedBenefits; };`, context);
+  assert.equal(context.defaults.length, 8);
+  for (const benefit of context.defaults) {
+    for (const field of ["titleAr","titleEn","descriptionAr","descriptionEn"]) assert.ok(benefit[field], `${benefit.slug}: ${field}`);
+    for (const field of ["stepsAr","stepsEn","conditionsAr","conditionsEn","faqs"]) assert.ok(benefit[field].length, `${benefit.slug}: ${field}`);
+  }
+  const merged = context.merge({footerBenefits:[{id:"benefit-customer-service",slug:"customer-service",titleAr:"دعم مخصص",active:false},{id:"custom",slug:"custom",titleAr:"مخصصة"}]});
+  assert.equal(merged.find((item) => item.id === "benefit-customer-service").titleAr, "دعم مخصص");
+  assert.equal(merged.find((item) => item.id === "benefit-customer-service").active, false);
+  assert.equal(merged.length, 9);
+  assert.equal(context.merge({footerBenefits:merged}).length, 9);
+  Object.assign(context, {
+    state:{lang:"ar",adminWorkspace:{settings:{}}},
+    mergeStoreSettings:() => ({footerBenefits:context.defaults}),
+    adminCopy:(ar) => ar,
+    escapeHTML:(value = "") => String(value).replaceAll('"','&quot;'),
+    selectOptions:(options, selected) => options.map(([value,label]) => `<option value="${value}"${value === selected ? " selected" : ""}>${label}</option>`).join("")
+  });
+  runInNewContext(app.slice(app.indexOf("function benefitEditorForm("), app.indexOf("function settingsMarkup(")), context);
+  const editor = context.benefitsManagementMarkup();
+  assert.equal((editor.match(/data-benefit-editor/g) || []).length, 8);
+  assert.match(editor,/data-action="add-managed-benefit"/);
+  for (const benefit of context.defaults) assert.ok(editor.includes(`benefit.${benefit.id}.descriptionAr`));
+});
+
+test("benefit form edits can clear optional content and preserve the detail URL", async () => {
+  const app = await read("app.js");
+  const source = app.slice(app.indexOf("function benefitFromForm("), app.indexOf("function benefitSettingsCards("));
+  const context = { FormData:class { constructor(form) { return form.data; } }, adminCopy:(ar,en) => en, safePublicHref:(url) => url.startsWith("/") ? url : "" };
+  runInNewContext(source, context);
+  const form = { dataset:{id:"sample"}, data:new Map(Object.entries({"benefit.sample.titleAr":"عنوان","benefit.sample.titleEn":"Title","benefit.sample.descriptionAr":"تفاصيل","benefit.sample.descriptionEn":"Details","benefit.sample.faqsAr":"سؤال|إجابة","benefit.sample.ctaUrl":"/perfumes"})) };
+  const result = context.benefitFromForm(form,{slug:"stable-url",shortAr:"old",conditionsAr:["old"]});
+  assert.equal(result.slug,"stable-url");
+  assert.equal(result.shortAr,"");
+  assert.equal(result.conditionsAr.length,0);
+  assert.equal(result.active,false);
+  assert.equal(result.faqs[0].qAr,"سؤال");
+  form.data.set("benefit.sample.descriptionAr","");
+  assert.throws(() => context.benefitFromForm(form),/title and details/);
+});
+
+test("brand slider advances four distinct cards every three seconds and accepts speed changes", async () => {
+  const timers = new Map();
+  let timerId = 0;
+  const mobile = Object.assign(new EventTarget(), { matches:true });
+  const reduced = Object.assign(new EventTarget(), { matches:false });
+  const document = Object.assign(new EventTarget(), { hidden:false, documentElement:{ dir:"rtl" }, body:{ classList:{ contains:() => false } } });
+  const window = new EventTarget();
+  runInNewContext(await read("home-brand-navigation.js"), {
+    window, document, AbortController,
+    matchMedia: (query) => query.includes("700px") ? mobile : reduced,
+    setTimeout: (callback, delay) => { const id = ++timerId; timers.set(id, { callback, delay }); return id; },
+    clearTimeout: (id) => timers.delete(id)
+  });
+  const track = Object.assign(new EventTarget(), { dataset:{}, classList:{ add() {} }, isConnected:true, closest:() => null, contains:() => false });
+  const items = Array.from({ length:31 }, (_, index) => `<button>${index}</button>`);
+  const slider = window.ORIGOBrandSlider.mount(track, items);
+  const shown = () => [...track.innerHTML.matchAll(/<button>(\d+)<\/button>/g)].map((match) => Number(match[1]));
+  assert.deepEqual(shown(), [0,1,2,3]);
+  assert.equal([...timers.values()][0].delay, 3000);
+  const tick = [...timers.values()][0]; timers.clear(); tick.callback();
+  assert.deepEqual(shown(), [4,5,6,7]);
+  slider.setInterval(5);
+  assert.equal(timers.size, 1);
+  assert.equal([...timers.values()][0].delay, 5000);
+  document.hidden = true; document.dispatchEvent(new Event("visibilitychange"));
+  assert.equal(timers.size, 0);
+  document.hidden = false; document.dispatchEvent(new Event("visibilitychange"));
+  assert.equal([...timers.values()][0].delay, 5000);
+  mobile.matches = false; mobile.dispatchEvent(new Event("change"));
+  assert.equal(shown().length, 6);
+  mobile.matches = true; mobile.dispatchEvent(new Event("change"));
+  assert.equal(shown().length, 4);
+  for (let step = 0; step < 31; step++) {
+    const previous = shown(); slider.step(1);
+    assert.equal(shown().length, 4);
+    assert.equal(shown().some((item) => previous.includes(item)), false);
+  }
+  slider.destroy(); assert.equal(timers.size, 0);
+  window.ORIGOBrandSlider.mount(track, items.slice(0,3));
+  assert.equal(shown().length, 3); assert.equal(timers.size, 0);
+  reduced.matches = true;
+  window.ORIGOBrandSlider.mount(track, items);
+  assert.equal(timers.size, 0);
+});
 
 test("homepage exposes the requested commerce hierarchy without duplicate benefit strips", async () => {
   const [html, app, css] = await Promise.all([read("index.html"), read("app.js"), read("home.css")]);
@@ -13,13 +105,37 @@ test("homepage exposes the requested commerce hierarchy without duplicate benefi
   assert.match(html, /id="best-sellers"/);
   assert.match(html, /id="home-configured-product-rows"/);
   assert.equal((html.match(/id="home-benefits-track"/g) || []).length, 1);
-  assert.match(html, /data-action="toggle-benefits-curtain"[^>]+aria-expanded="false"[^>]+aria-controls="home-benefits-curtain"/);
+  assert.match(html, /data-action="benefits-slider-step"/);
+  assert.doesNotMatch(html, /toggle-benefits-curtain|id="home-benefits-curtain"/);
   assert.doesNotMatch(html, /benefit-carousel-track|data-benefit-marquee|home-benefit-dots/);
-  ["authentic", "shipping", "returns", "prices", "cod", "gift", "support"].forEach((id) => assert.match(app, new RegExp(`\\["${id}"`)));
+  ["authentic", "shipping", "returns", "prices", "cod", "gift", "support"].forEach((id) => assert.match(app, new RegExp(`icon:\\s*"${id}"`)));
   assert.match(app, /const ORIGO_PERFUME_BRANDS = \[/);
   assert.match(app, /"Lattafa"/);
   assert.match(app, /"الرونق للعطور"/);
   assert.match(app, /function renderHomepageCommerce\(\)/);
   assert.match(app, /placement === "hero"/);
   assert.match(css, /grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/);
+});
+
+test("benefit slider uses saved active benefits and retains detail links", async () => {
+  const app = await read("app.js");
+  const source = app.slice(app.indexOf("function renderHomeBenefitsSlider("), app.indexOf("function renderHomeNavigation("));
+  const track = {}, title = {};
+  let mounted;
+  const context = {
+    state:{lang:"ar",adminWorkspace:{settings:{}}},
+    $:(selector) => selector === "#home-benefits-track" ? track : title,
+    activeFooterBenefits:() => [{slug:"secure-payment",titleAr:"دفع آمن",shortAr:"تفاصيل الدفع",icon:"cod"}],
+    escapeHTML:(value) => String(value), footerBenefitIcon:() => "<svg></svg>",
+    mergeStoreSettings:() => ({homepageRails:{benefits:{intervalSeconds:5,titleAr:"المزايا"}}}),
+    window:{ORIGOBrandSlider:{mount:(...args) => { mounted = args; }}}
+  };
+  runInNewContext(source,context);
+  context.renderHomeBenefitsSlider();
+  assert.equal(mounted[0],track);
+  assert.equal(mounted[2],5);
+  assert.equal(mounted[1].length,1);
+  assert.match(mounted[1][0],/data-action="benefit-link" data-slug="secure-payment"/);
+  assert.match(mounted[1][0],/دفع آمن/);
+  assert.equal(title.textContent,"المزايا");
 });

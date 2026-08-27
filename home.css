@@ -1810,16 +1810,17 @@ body:not(.dark) .home-gender-section .gender-card:is(:hover,:focus-visible,:acti
   }
   #home .home-configured-product-row .home-product-row-track::-webkit-scrollbar{display:none!important}
   #home .home-configured-product-row .home-product-row-track>.origo-reference-product-card{
-    flex:0 0 calc((100% - 9px)/2)!important;
-    width:calc((100% - 9px)/2)!important;
+    /* Two cards, two 9px gaps, and a 24px preview of the next product. */
+    flex:0 0 calc((100% - 42px)/2)!important;
+    width:calc((100% - 42px)/2)!important;
     min-width:0!important;
     max-width:none!important;
     margin:0!important;
     scroll-snap-align:start;
   }
   html[data-product-card-view="one"] #home .home-configured-product-row .home-product-row-track>.origo-reference-product-card{
-    flex-basis:100%!important;
-    width:100%!important;
+    flex-basis:calc(100% - 33px)!important;
+    width:calc(100% - 33px)!important;
   }
   #home :is(.home-carousel-arrow,.home-hero-arrow,.home-product-row-arrow){display:none!important}
 }
