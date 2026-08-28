@@ -1,0 +1,33 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import {runInNewContext} from 'node:vm';
+
+test('brand aliases and legacy records resolve to one current saved image', async () => {
+  const app = await readFile(new URL('../app.js', import.meta.url), 'utf8');
+  const source = app.slice(app.indexOf('function storefrontBrandEntries('), app.indexOf('function renderHomeRailDots('));
+  const state = {productOptions:[
+    {id:1,group:'brand',slug:'old-house',nameEn:'Test House',nameAr:'دار الاختبار',image:'/old.webp',updatedAt:'2026-08-01'},
+    {id:2,group:'brand',slug:'test-house',nameEn:'Test House',nameAr:'دار الاختبار',image:'/new.webp',updatedAt:'2026-08-28'}
+  ]};
+  const context = {state, brandIdentity:(s) => String(s).toLowerCase().replace(/[^\p{L}\p{N}]+/gu,'-')};
+  runInNewContext(source, context);
+  const names = ['Test House','test-house','دار الاختبار','old-house'];
+  let entries = context.storefrontBrandEntries(names);
+  assert.equal(entries.length,1);
+  assert.equal(entries[0].option.image,'/new.webp');
+  state.productOptions[1].image='';
+  entries=context.storefrontBrandEntries(names);
+  assert.equal(entries.length,1);
+  assert.equal(entries[0].option.image,'');
+  state.productOptions[1].active=false;
+  assert.equal(context.storefrontBrandEntries(names).length,0);
+  state.productOptions[1].active=true;
+  state.productOptions[1].metadata={deleted:true};
+  assert.equal(context.storefrontBrandEntries(names).length,0);
+});
+
+test('saved brands never fall back to obsolete default artwork after clearing their image', async () => {
+  const app=await readFile(new URL('../app.js', import.meta.url),'utf8');
+  assert.ok(app.includes('const logo = option ? option.image : origoBrandLogo(brand);'));
+});

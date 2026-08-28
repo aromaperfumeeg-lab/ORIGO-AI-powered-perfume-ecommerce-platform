@@ -1639,7 +1639,8 @@ export function listProductOptions(group = "", includeInactive = false) {
     metadata: parseJSON(row.metadata_json, {}),
     sortOrder: row.sort_order,
     active: Boolean(row.active),
-    usageCount: row.usage_count
+    usageCount: row.usage_count,
+    updatedAt: row.updated_at
   }));
 }
 

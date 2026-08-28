@@ -3681,19 +3681,13 @@ function renderBrandCarousel(query = "") {
     const brand = String(product.brand || "ORIGO").trim();
     counts.set(brand, (counts.get(brand) || 0) + 1);
   });
-  const catalogNames = [...state.productOptions.filter((item) => item.group === "brand" && item.active !== false).map((item) => item.nameEn || item.nameAr), ...ORIGO_PERFUME_BRANDS, ...counts.keys()].filter((brand, index, values) =>
-    values.findIndex((candidate) => ORIGOCatalog.normalize(candidate) === ORIGOCatalog.normalize(brand)) === index
-  );
-  const mobile = matchMedia("(max-width: 700px)").matches;
-  const brands = catalogNames.map((brand) => [brand, counts.get(brand) || 0])
-    .filter(([brand]) => (!normalized || ORIGOCatalog.normalize(brand).includes(normalized)) && !state.productOptions.some((item) => item.group === "brand" && item.active === false && brandMatches(item, brand)));
+  const brands = storefrontBrandEntries([...ORIGO_PERFUME_BRANDS, ...counts.keys()])
+    .filter(({ brand, option }) => !normalized || [brand, option?.nameAr, option?.nameEn, option?.slug].some((name) => name && ORIGOCatalog.normalize(name).includes(normalized)));
   const visibleBrands = brands;
-  const brandOptions = state.productOptions.filter((item) => item.group === "brand" && item.active !== false);
-  const items = visibleBrands.map(([brand, count]) => {
-    const option = brandOptions.find((item) => [item.value,item.slug,item.nameAr,item.nameEn].some((value) => normalizeOptionSearch(value) === normalizeOptionSearch(brand)));
-    const logo = option?.image || origoBrandLogo(brand);
+  const items = visibleBrands.map(({ brand, option }) => {
+    const logo = option ? option.image : origoBrandLogo(brand);
     const artwork = logo ? `<img src="${escapeHTML(logo)}" alt="" loading="lazy"/>` : `<span aria-hidden="true">${escapeHTML(brand.slice(0, 2).toUpperCase())}</span>`;
-    const label = localizedBrandLabel(brand);
+    const label = (state.lang === "ar" ? option?.nameAr : option?.nameEn) || localizedBrandLabel(brand);
     return `<button class="brand-slider-card" data-action="brand-search" data-query="${escapeHTML(brand)}" aria-label="${escapeHTML(`${state.lang === "ar" ? "عرض منتجات" : "View products by"} ${label}`)}">${artwork}</button>`;
   });
   const seconds = mergeStoreSettings(state.adminWorkspace.settings || {}).homepageRails.brands.intervalSeconds || 3;
@@ -3701,6 +3695,27 @@ function renderBrandCarousel(query = "") {
     window.ORIGOBrandSlider.mount(track, items, seconds);
   });
   if ($("#home-brand-dots")) $("#home-brand-dots").hidden = true;
+}
+
+function storefrontBrandEntries(defaultNames) {
+  const options = state.productOptions.filter((item) => item.group === "brand").slice().sort((a, b) =>
+    String(b.updatedAt || "").localeCompare(String(a.updatedAt || "")) || Number(b.id || 0) - Number(a.id || 0));
+  const owners = new Map();
+  for (const option of options) {
+    const aliases = [option.value,option.slug,option.nameAr,option.nameEn,option.metadata?.value].filter(Boolean).map(brandIdentity);
+    const owner = aliases.map((alias) => owners.get(alias)).find(Boolean) || option;
+    for (const alias of aliases) owners.set(alias, owner);
+  }
+  const entries = new Map();
+  for (const name of [...options.map((item) => item.nameEn || item.nameAr || item.slug), ...defaultNames]) {
+    if (!name) continue;
+    const option = owners.get(brandIdentity(name));
+    if (option && (option.active === false || option.metadata?.deleted)) continue;
+    const brand = option?.nameEn || option?.nameAr || name;
+    const key = option ? String(option.id || brandIdentity(option.slug || brand)) : brandIdentity(name);
+    if (!entries.has(key)) entries.set(key, { brand, option });
+  }
+  return [...entries.values()];
 }
 
 function renderHomeRailDots(selector, itemCount, pageSize) {
