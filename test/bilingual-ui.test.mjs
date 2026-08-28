@@ -71,7 +71,9 @@ test("brands retain controls while benefits scroll manually with a partial next 
   assert.match(benefits, /bindHorizontalRail\(track\)/);
   assert.match(appearance, /grid-template-rows:minmax\(0,1fr\) auto/);
   assert.match(appearance, /\.benefit-icon :is\(svg,img\)\{\s*width:100%!important;height:100%!important/);
-  assert.match(appearance, /flex-basis:calc\(\(100% - 26px\)\/3\.3\)/);
+  assert.match(appearance, /flex-basis:calc\(\(100% - 32px\)\/4\.5\)/);
+  assert.match(appearance, /flex:0 0 calc\(\(100% - 66px\)\/5\.5 \* \.75\)/);
+  assert.match(appearance, /#home \.benefits-pagination:not\(\[hidden\]\)\{display:flex/);
   assert.match(app, /function renderHomeRailDots/);
   assert.match(app, /function bindHomeBrandPagination/);
   assert.match(app, /track\.scrollWidth - track\.clientWidth/);

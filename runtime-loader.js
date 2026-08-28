@@ -45,7 +45,7 @@
         template.remove();
       }
     }
-    if (name === "admin") await Promise.all([style("admin-ui-fixes.css?v=8"), style("admin-order-center.css?v=1")]);
+    if (name === "admin") await Promise.all([style("admin-ui-fixes.css?v=9"), style("admin-order-center.css?v=1")]);
     if (name === "productEditor") await style("product-editor-runtime.css?v=4");
     if (name === "storefrontSettings") await style("storefront-settings-runtime.css?v=4");
     if (name === "finder") await style("fragrance-finder.css?v=3");

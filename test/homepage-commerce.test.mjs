@@ -77,7 +77,7 @@ test("benefit form edits can clear optional content and preserve the detail URL"
   assert.throws(() => context.benefitFromForm(form),/title and details/);
 });
 
-test("brand slider advances four distinct cards every three seconds and accepts speed changes", async () => {
+test("brand slider advances four mobile or twelve desktop cards and accepts speed changes", async () => {
   const timers = new Map();
   let timerId = 0;
   const mobile = Object.assign(new EventTarget(), { matches:true });
@@ -106,7 +106,13 @@ test("brand slider advances four distinct cards every three seconds and accepts 
   document.hidden = false; document.dispatchEvent(new Event("visibilitychange"));
   assert.equal([...timers.values()][0].delay, 5000);
   mobile.matches = false; mobile.dispatchEvent(new Event("change"));
-  assert.equal(shown().length, 6);
+  assert.deepEqual(shown(), Array.from({length:12}, (_, i) => i));
+  const desktopTick = [...timers.values()][0]; timers.clear(); desktopTick.callback();
+  assert.deepEqual(shown(), Array.from({length:12}, (_, i) => i + 12));
+  assert.equal([...timers.values()][0].delay, 5000);
+  const css = await read("appearance.css");
+  assert.match(css, /\.brand-paged-slider \.brand-slider-page\{display:grid!important;grid-template-columns:repeat\(12,minmax\(0,1fr\)\)/);
+  assert.match(css, /@media\(max-width:700px\)\{\.brand-paged-slider \.brand-slider-page\{grid-template-columns:repeat\(4,minmax\(0,1fr\)\)/);
   mobile.matches = true; mobile.dispatchEvent(new Event("change"));
   assert.equal(shown().length, 4);
   for (let step = 0; step < 31; step++) {
@@ -155,7 +161,16 @@ test("benefit slider uses saved active benefits and retains detail links", async
     activeFooterBenefits:() => [{slug:"secure-payment",titleAr:"دفع آمن",shortAr:"تفاصيل الدفع",icon:"cod"}],
     escapeHTML:(value) => String(value), footerBenefitIcon:() => "<svg></svg>",
     mergeStoreSettings:() => ({homepageRails:{benefits:{intervalSeconds:5,titleAr:"المزايا"}}}),
-    bindHorizontalRail:(rail) => { boundRail = rail; }
+    bindHorizontalRail:(rail) => { boundRail = rail; },
+    renderHomeRailDots:(selector, count, size) => {
+      assert.equal(selector, "#home-benefits-pagination");
+      assert.equal(count, 1);
+      assert.equal(size, 4);
+    },
+    bindHomeBrandPagination:(rail, selector) => {
+      assert.equal(rail, track);
+      assert.equal(selector, "#home-benefits-pagination");
+    }
   };
   runInNewContext(source,context);
   context.renderHomeBenefitsSlider();
@@ -166,6 +181,25 @@ test("benefit slider uses saved active benefits and retains detail links", async
   assert.equal(title.textContent,"المزايا");
 });
 
+test("benefit pagination follows swipe progress in both directions without duplicate listeners", async () => {
+  const app = await read("app.js");
+  const source = app.slice(app.indexOf("function bindHomeBrandPagination("), app.indexOf("function renderHomeBenefitsSlider("));
+  const active = [false, false, false];
+  const dots = {children:active.map((_, i) => ({classList:{toggle:(_name, value) => { active[i] = value; }}}))};
+  let onScroll, bindings = 0;
+  const track = {dataset:{}, scrollWidth:900, clientWidth:300, scrollLeft:0, addEventListener:(_event, callback) => { onScroll = callback; bindings++; }};
+  const context = {$:() => dots, requestAnimationFrame:(callback) => callback()};
+  runInNewContext(source, context);
+  context.bindHomeBrandPagination(track, "#home-benefits-pagination");
+  assert.deepEqual(active, [true,false,false]);
+  track.scrollLeft = -300; onScroll();
+  assert.deepEqual(active, [false,true,false]);
+  track.scrollLeft = 600; onScroll();
+  assert.deepEqual(active, [false,false,true]);
+  context.bindHomeBrandPagination(track, "#home-benefits-pagination");
+  assert.equal(bindings, 1);
+});
+
 test("homepage shows only the localized store title while retaining SEO description", async () => {
   const [html, app] = await Promise.all([read("index.html"), read("app.js")]);
   const intro = html.match(/<section class="home-seo-intro"[\s\S]*?<\/section>/)[0];
@@ -173,4 +207,6 @@ test("homepage shows only the localized store title while retaining SEO descript
   assert.doesNotMatch(intro, /<(?:p|a)\b/);
   assert.match(app, /setText\("#home-seo-title", "أوريجو سينتس - متجر العطور الأصلية في مصر", "ORIGO Scents - Original Perfume Store in Egypt"\)/);
   assert.match(html, /<meta\s+name="description"\s+content="[^"]+"/);
+  const css = await read("appearance.css");
+  assert.match(css, /@media\(max-width:700px\)\{\s*#home \.home-seo-intro\{width:calc\(100% - 20px\);padding:10px 6px\}\s*#home #home-seo-title\{font-size:clamp\(11px,3\.4vw,15px\);line-height:1\.4;white-space:nowrap;letter-spacing:0;zoom:1\}/);
 });

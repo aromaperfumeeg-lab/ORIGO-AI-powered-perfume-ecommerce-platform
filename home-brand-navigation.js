@@ -14,7 +14,7 @@
     let hovered = false;
     let focused = false;
     let delay = interval(seconds);
-    const size = () => mobile.matches ? 4 : 6;
+    const size = () => mobile.matches ? 4 : 12;
     const draw = (animate = false) => {
       track.classList.add("brand-paged-slider");
       track.innerHTML = `<div class="brand-slider-page">${indices(items.length, start, size()).map((index) => items[index]).join("")}</div>`;

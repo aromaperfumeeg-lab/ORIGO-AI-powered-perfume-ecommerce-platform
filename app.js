@@ -3716,6 +3716,12 @@ function bindHomeBrandPagination(track, dotsSelector) {
   if (!track || !dots || track.dataset.paginationBound === "true") return;
   track.dataset.paginationBound = "true";
   const update = () => {
+    if (dotsSelector === "#home-benefits-pagination" && track.children?.length && track.clientWidth > 0) {
+      const overflow = track.scrollWidth - track.clientWidth;
+      const count = overflow > 1 ? Math.ceil(track.scrollWidth / track.clientWidth) : 1;
+      if (dots.children.length !== count) dots.innerHTML = Array.from({ length:count }, () => "<i></i>").join("");
+      dots.hidden = overflow <= 1;
+    }
     const indicators = [...dots.children];
     if (!indicators.length) return;
     const maximum = Math.max(1, track.scrollWidth - track.clientWidth);
@@ -3724,6 +3730,10 @@ function bindHomeBrandPagination(track, dotsSelector) {
     indicators.forEach((dot, index) => dot.classList.toggle("active", index === active));
   };
   track.addEventListener("scroll", update, { passive:true });
+  if (dotsSelector === "#home-benefits-pagination" && typeof ResizeObserver !== "undefined") {
+    const observer = new ResizeObserver(update);
+    observer.observe(track);
+  }
   requestAnimationFrame(update);
 }
 
@@ -3738,6 +3748,9 @@ function renderHomeBenefitsSlider() {
   const rail = mergeStoreSettings(state.adminWorkspace.settings || {}).homepageRails.benefits;
   track.innerHTML = items.join("");
   bindHorizontalRail(track);
+  track.scrollLeft = 0;
+  renderHomeRailDots("#home-benefits-pagination", items.length, 4);
+  bindHomeBrandPagination(track, "#home-benefits-pagination");
   $("#home-benefits-title").textContent = state.lang === "ar" ? rail.titleAr || "مميزاتنا" : rail.titleEn || "Our benefits";
 }
 
@@ -5084,12 +5097,39 @@ function setMobileProductColumns(value, persistValue = true) {
   if (persistValue) localStorage.setItem(MOBILE_PRODUCT_COLUMNS_KEY, columns);
   const ar = state.lang === "ar";
   $$(".mobile-product-view-control").forEach((control) => {
+    if (!control.closest("#home")) {
+      control.classList.add("catalog-layout-control");
+      if (!control.querySelector('[data-action="toggle-product-list"]')) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.dataset.action = "toggle-product-list";
+        button.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5h12M9 12h12M9 19h12M3 5h1M3 12h1M3 19h1"/></svg>';
+        control.append(button);
+      }
+    }
     control.setAttribute("aria-label", ar ? "عدد المنتجات في الصف" : "Products per row");
     control.querySelectorAll("[data-columns]").forEach((button) => {
       const active = (button.dataset.columns === "1") === (columns === "one");
       button.classList.toggle("active", active);
       button.setAttribute("aria-pressed", String(active));
       button.title = ar ? `عرض ${button.dataset.columns === "1" ? "منتج واحد" : "منتجين"} في الصف` : `Show ${button.dataset.columns} product${button.dataset.columns === "1" ? "" : "s"} per row`;
+    });
+  });
+  syncProductListControls();
+}
+
+function syncProductListControls() {
+  const list = document.documentElement.dataset.catalogLayout === "list";
+  $$(".catalog-layout-control").forEach((control) => {
+    control.setAttribute("aria-label", state.lang === "ar" ? "طريقة عرض المنتجات" : "Product layout");
+    const button = control.querySelector('[data-action="toggle-product-list"]');
+    button.setAttribute("aria-label", state.lang === "ar" ? "عرض المنتجات كقائمة" : "Show products as a list");
+    button.title = button.getAttribute("aria-label");
+    button.setAttribute("aria-pressed", String(list));
+    button.classList.toggle("active", list);
+    if (list) control.querySelectorAll("[data-columns]").forEach((gridButton) => {
+      gridButton.classList.remove("active");
+      gridButton.setAttribute("aria-pressed", "false");
     });
   });
 }
@@ -5316,7 +5356,7 @@ function renderNoteDetail(note) {
 
       <section class="note-detail-section">
         <div class="notes-results-head"><div><span class="eyebrow">${state.lang === "ar" ? "اختيارات ORIGO" : "ORIGO SELECTION"}</span>
-          <h2>${state.lang === "ar" ? "عطور تحتوي على هذا المكوّن" : "Perfumes containing this note"}</h2></div><b>${exactProducts.length}</b></div>
+          <h2>${state.lang === "ar" ? "عطور تحتوي على هذا المكوّن" : "Perfumes containing this note"}</h2></div><b>${exactProducts.length}</b>${mobileProductViewControlMarkup()}</div>
         <div class="note-products-grid">${exactProducts.length ? exactProducts.map(productMiniCard).join("") : `
           <div class="note-products-empty">${state.lang === "ar" ? "لا يوجد عطر منشور مرتبط به حتى الآن." : "No published perfume is linked yet."}</div>`}</div>
       </section>
@@ -5334,6 +5374,7 @@ function renderNoteDetail(note) {
           <div class="note-products-empty">${state.lang === "ar" ? "ستظهر الاقتراحات عند إضافة عطور أخرى من العائلة." : "Suggestions will appear as more perfumes are added."}</div>`}</div>
       </section>
     </article>`;
+  setMobileProductColumns(document.documentElement.dataset.productCardView === "one" ? "1" : "2", false);
   updateNotesMeta(note);
 }
 
@@ -8848,6 +8889,15 @@ document.addEventListener("click", async (event) => {
   const action = actionElement.dataset.action;
   if (action === "mobile-product-columns") {
     setMobileProductColumns(actionElement.dataset.columns);
+    if (!actionElement.closest("#home")) {
+      document.documentElement.dataset.catalogLayout = "grid";
+      setMobileProductColumns(actionElement.dataset.columns, false);
+    }
+    return;
+  }
+  if (action === "toggle-product-list") {
+    document.documentElement.dataset.catalogLayout = document.documentElement.dataset.catalogLayout === "list" ? "grid" : "list";
+    setMobileProductColumns(document.documentElement.dataset.productCardView === "one" ? "1" : "2", false);
     return;
   }
   if (action === "save-catalog-product") {
