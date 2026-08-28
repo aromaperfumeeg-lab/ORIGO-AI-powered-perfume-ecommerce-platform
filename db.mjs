@@ -1682,6 +1682,11 @@ export function deleteProductOption(id) {
     if (linked) throw new Error("لا يمكن حذف علامة مرتبطة بمنتجات؛ أخفها أو غيّر علامة المنتجات أولًا.");
   }
   if (Number(row.usage_count || 0) > 0) throw new Error("لا يمكن حذف خيار مستخدم؛ أخفه أو استبدله أولًا.");
+  if (row.option_group === "brand") {
+    // Keep an inactive tombstone so built-in brand defaults cannot reappear.
+    const metadata = { ...parseJSON(row.metadata_json, {}), deleted: true };
+    return db.prepare("UPDATE product_options SET active = 0, metadata_json = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?").run(JSON.stringify(metadata), Number(id)).changes > 0;
+  }
   return db.prepare("DELETE FROM product_options WHERE id = ?").run(Number(id)).changes > 0;
 }
 

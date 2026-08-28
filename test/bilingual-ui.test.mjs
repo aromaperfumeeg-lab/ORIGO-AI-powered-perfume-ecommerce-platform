@@ -28,7 +28,7 @@ test("dark mode uses a black background behind product imagery", () => {
   assert.match(appearance,/object-fit:contain!important;[\s\S]{0,140}background:transparent!important;[\s\S]{0,100}mix-blend-mode:normal!important/);
   assert.match(productDetail,/html\[data-theme="dark"\] \.pdp-main-image/);
   assert.match(productDetail,/\.pdp-thumbnails button\{background:#000\}/);
-  assert.match(appearance,/\.product-card\{\s*border:1px solid #7a001d!important/);
+  assert.match(appearance,/\.product-card:hover\{\s*border:0!important;box-shadow:none!important/);
   assert.match(appearance,/border-radius:0!important;[\s\S]{0,80}overflow:hidden!important/);
   assert.match(appearance,/\.product-card \.exact-card-actions\{[\s\S]{0,140}place-items:center!important/);
   assert.match(appearance,/\.exact-card-actions \.card-add-button\{[\s\S]{0,120}justify-self:center!important/);
@@ -36,12 +36,12 @@ test("dark mode uses a black background behind product imagery", () => {
 
 test("night mode uses one neutral palette across mobile, products and admin", () => {
   assert.match(appearance, /ORIGO monochrome night system/);
-  assert.match(appearance, /--admin-bg:#000/);
+  assert.match(appearance, /--admin-bg:#242424/);
   assert.match(appearance, /\.mobile-menu-panel :where\([\s\S]{0,220}background:#171717!important/);
   assert.match(appearance, /\.product-card \.card-add-button[\s\S]{0,180}background:#181818!important/);
   assert.match(appearance, /\.mobile-menu-active \.store-bottom-nav\{display:none!important\}/);
   assert.match(appearance, /\.home-gender-card\.gender-women \.gender-card-copy[\s\S]{0,180}background-color:#111!important/);
-  assert.match(appearance, /article,section\[class\*="card"\][\s\S]{0,520}background-color:#111!important/);
+  assert.match(appearance, /article,section\[class\*="card"\][\s\S]{0,520}background-color:#2c2c2c!important/);
 });
 
 test("light mode uses a white background behind transparent product imagery", () => {
@@ -71,8 +71,8 @@ test("brands retain controls while benefits scroll manually with a partial next 
   assert.match(benefits, /bindHorizontalRail\(track\)/);
   assert.match(appearance, /grid-template-rows:minmax\(0,1fr\) auto/);
   assert.match(appearance, /\.benefit-icon :is\(svg,img\)\{\s*width:100%!important;height:100%!important/);
-  assert.match(appearance, /flex-basis:calc\(\(100% - 32px\)\/4\.5\)/);
-  assert.match(appearance, /flex:0 0 calc\(\(100% - 66px\)\/5\.5 \* \.75\)/);
+  assert.match(appearance, /flex-basis:calc\(\(100% - 48px\)\/4\.8\)/);
+  assert.match(appearance, /flex:0 0 calc\(\(100% - 66px\)\/5\.5 \* \.68\)/);
   assert.match(appearance, /#home \.benefits-pagination:not\(\[hidden\]\)\{display:flex/);
   assert.match(app, /function renderHomeRailDots/);
   assert.match(app, /function bindHomeBrandPagination/);
@@ -95,10 +95,10 @@ test("saved brand artwork is loaded by the public storefront and matched by slug
   assert.match(app, /uploadStorefrontImage\(file, "brand"\)/);
 });
 
-test("brand rail uses paged autoplay instead of duplicate marquee cards", () => {
+test("brand rail uses continuous motion without duplicate marquee cards", () => {
   assert.match(app, /window\.ORIGOBrandSlider\.mount\(track, items, seconds\)/);
-  assert.match(appearance, /brand-slider-page/);
-  assert.match(appearance, /grid-template-columns:repeat\(4,minmax\(0,1fr\)\)/);
+  assert.match(appearance, /brand-continuous-track/);
+  assert.match(appearance, /scroll-behavior:auto!important;scroll-snap-type:none!important/);
 });
 
 test("announcement ticker above the header keeps its continuous motion", () => {

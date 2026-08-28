@@ -2371,7 +2371,7 @@ function linkedBrandProducts(brand) {
 }
 
 function brandsManagementMarkup() {
-  const savedBrands = state.productOptions.filter((item) => item.group === "brand").map((item) => ({ ...item, value:item.slug || item.nameEn || item.nameAr }));
+  const savedBrands = state.productOptions.filter((item) => item.group === "brand" && !item.metadata?.deleted).map((item) => ({ ...item, value:item.slug || item.nameEn || item.nameAr }));
   const brandRecords = new Map();
   [...savedBrands, ...productOptionItems("brand")].forEach((item) => {
     const key = brandIdentity(item.slug || item.value || item.nameEn || item.nameAr);
@@ -2391,10 +2391,10 @@ function brandsManagementMarkup() {
     <main class="brands-table-card">
       <header><div><h3>${adminCopy("مكتبة العلامات التجارية","Brand library")}</h3><p>${adminCopy("أضف أو عدّل الاسم الثنائي والشعار المستخدمين في المنتجات والمتجر.","Add or edit the bilingual name and logo used by products and the storefront.")}</p></div><label>⌕<input id="brand-search" placeholder="${adminCopy("ابحث عن علامة تجارية...","Search brands...")}"/></label><button type="button" class="button burgundy-button" data-action="manage-product-option" data-group="brand">＋ ${adminCopy("إضافة علامة","Add brand")}</button></header>
       <div class="brands-table-scroll"><table><thead><tr><th>${adminCopy("الصورة","Image")}</th><th>${adminCopy("الاسم بالعربية","Arabic name")}</th><th>${adminCopy("الاسم بالإنجليزية","English name")}</th><th>${adminCopy("المنتجات","Products")}</th><th>${adminCopy("الحالة","Status")}</th><th>${adminCopy("الإجراءات","Actions")}</th></tr></thead><tbody>${brands.map((item) => {
-        const saved = ORIGO_PERFUME_BRANDS.some((name) => brandMatches(item, name)) ? null : savedBySlug.get(item.slug);
+        const saved = savedBySlug.get(item.slug);
         const value = escapeHTML(item.slug || item.value || item.nameEn || item.nameAr);
         const count = productCount(item);
-        return `<tr data-brand-row data-active="${item.active !== false}" data-count="${count}" data-search="${escapeHTML(`${item.nameAr || ""} ${item.nameEn || ""} ${item.slug || ""}`)}"><td><div class="brand-logo">${item.image ? `<img src="${escapeHTML(item.image)}" alt="${escapeHTML(item.nameEn || item.nameAr)}"/>` : `<span>${escapeHTML((item.nameEn || item.nameAr || "ORIGO").slice(0, 2).toUpperCase())}</span>`}</div></td><td><b>${escapeHTML(item.nameAr || item.nameEn)}</b></td><td><b dir="ltr">${escapeHTML(item.nameEn || item.nameAr)}</b><small>${escapeHTML(item.slug || "")}</small></td><td>${formatNumber(count)}</td><td><span class="brand-active">● ${item.active === false ? adminCopy("مخفية","Hidden") : adminCopy("نشطة","Active")}</span></td><td><div class="brand-row-actions"><button type="button" data-action="edit-managed-product-option" data-group="brand" data-value="${value}">✎ ${adminCopy("تعديل","Edit")}</button><button type="button" data-action="toggle-managed-brand" data-value="${value}">${item.active === false ? adminCopy("تفعيل","Activate") : adminCopy("إخفاء","Hide")}</button>${saved ? `<button type="button" data-action="delete-product-option" data-id="${saved.id}" ${count ? `disabled title="${adminCopy("مرتبطة بمنتجات؛ استخدم الإخفاء","Linked to products; use Hide")}"` : ""}>× ${adminCopy("حذف","Delete")}</button>` : `<small>${adminCopy("علامة افتراضية — يمكن إخفاؤها","Built-in brand — can be hidden")}</small>`}</div></td></tr>`;
+        return `<tr data-brand-row data-active="${item.active !== false}" data-count="${count}" data-search="${escapeHTML(`${item.nameAr || ""} ${item.nameEn || ""} ${item.slug || ""}`)}"><td><div class="brand-logo">${item.image ? `<img src="${escapeHTML(item.image)}" alt="${escapeHTML(item.nameEn || item.nameAr)}"/>` : `<span>${escapeHTML((item.nameEn || item.nameAr || "ORIGO").slice(0, 2).toUpperCase())}</span>`}</div></td><td><b>${escapeHTML(item.nameAr || item.nameEn)}</b></td><td><b dir="ltr">${escapeHTML(item.nameEn || item.nameAr)}</b><small>${escapeHTML(item.slug || "")}</small></td><td>${formatNumber(count)}</td><td><span class="brand-active">● ${item.active === false ? adminCopy("مخفية","Hidden") : adminCopy("نشطة","Active")}</span></td><td><div class="brand-row-actions"><button type="button" data-action="edit-managed-product-option" data-group="brand" data-value="${value}">✎ ${adminCopy("تعديل","Edit")}</button><button type="button" data-action="toggle-managed-brand" data-value="${value}">${item.active === false ? adminCopy("تفعيل","Activate") : adminCopy("إخفاء","Hide")}</button><button type="button" data-action="delete-empty-brand" data-value="${value}" ${count || saved?.usageCount > 0 ? `disabled title="${adminCopy("مرتبطة بمنتجات؛ استخدم الإخفاء","Linked to products; use Hide")}"` : ""}>× ${adminCopy("حذف","Delete")}</button></div></td></tr>`;
       }).join("")}</tbody></table></div>
     </main>
   </section>`;
@@ -2966,7 +2966,7 @@ function productOptionsAdminMarkup() {
     ["perfumer","المصممون","Perfumers"],["tag","الوسوم","Tags"]
   ];
   return `<div class="product-options-admin"><header><div><span class="eyebrow">ORIGO CATALOG</span><h2>${adminCopy("إدارة خصائص وخيارات المنتجات","Product attributes & options")}</h2><p>${adminCopy("كل خيار سجل واحد بالعربية والإنجليزية، ويظهر مباشرة في نموذج المنتج.","Each option is one bilingual record and appears immediately in the product editor.")}</p></div></header><div class="product-options-groups">${groups.map(([group,ar,en]) => {
-    const saved = state.productOptions.filter((item) => item.group === group);
+    const saved = state.productOptions.filter((item) => item.group === group && !item.metadata?.deleted);
     const allItems = productOptionItems(group);
     return `<section><header><div><b>${adminCopy(ar,en)}</b><small>${allItems.length} ${adminCopy("خيارًا","options")}</small></div><button type="button" data-action="manage-product-option" data-group="${group}">＋ ${adminCopy("إضافة","Add")}</button></header><div>${saved.length ? saved.map((item) => `<article class="${item.active ? "" : "inactive"}">${item.image ? `<img src="${escapeHTML(item.image)}" alt=""/>` : `<i style="--option-color:${escapeHTML(item.color || "#b98725")}">${escapeHTML(item.icon || "◇")}</i>`}<span><b>${escapeHTML(state.lang === "ar" ? item.nameAr || item.nameEn : item.nameEn || item.nameAr)}</b><small>${escapeHTML(state.lang === "ar" ? item.nameEn : item.nameAr)} · ${escapeHTML(item.slug)}</small></span><em>${item.active ? adminCopy("نشط","Active") : adminCopy("مخفي","Hidden")}</em><button type="button" data-action="delete-product-option" data-id="${item.id}">×</button></article>`).join("") : `<p>${adminCopy("تُستخدم القيم الافتراضية حاليًا. أضف قيمًا مخصصة عند الحاجة.","Built-in values are active. Add custom options as needed.")}</p>`}</div></section>`;
   }).join("")}</div></div>`;
@@ -3064,7 +3064,7 @@ function homepageRailsAdminMarkup() {
       <div class="home-media-library">${heroMedia.length ? mediaCards : `<p>${ar ? "لا توجد صور مخصصة؛ يتم استخدام صورة ORIGO الافتراضية المعروضة أعلاه." : "No custom slides yet; the ORIGO default shown above is in use."}</p>`}</div>
     </section>
     <section><div class="review-section-head"><span>02</span><div><b>${ar ? "إدارة أشرطة الصفحة الرئيسية" : "Homepage rails management"}</b><small>${ar ? "تحكم في ظهور الأشرطة وترتيبها وسرعة حركة المميزات والعلامات." : "Control rail visibility, order, and the benefits and brands motion speed."}</small></div></div>
-      <div class="homepage-rail-settings">${Object.entries(settings.homepageRails).map(([key, rail]) => `<article><header><b>${escapeHTML(labels[key][ar ? 0 : 1])}</b><label class="admin-toggle-row"><span>${ar ? "ظاهر" : "Visible"}</span><input name="${key}.enabled" type="checkbox"${rail.enabled !== false ? " checked" : ""}/></label></header><div class="review-grid"><label>${ar ? "العنوان العربي" : "Arabic title"}<input name="${key}.titleAr" value="${escapeHTML(rail.titleAr || "")}"/></label><label>${ar ? "العنوان الإنجليزي" : "English title"}<input name="${key}.titleEn" value="${escapeHTML(rail.titleEn || "")}"/></label><label>${ar ? "الترتيب" : "Order"}<input name="${key}.order" type="number" min="1" max="10" value="${Number(rail.order || 1)}"/></label>${key === "brands" || key === "benefits" ? `<label>${key === "brands" ? (ar ? "زمن تبديل مجموعة العلامات بالثواني" : "Seconds per brand group") : (ar ? "زمن تبديل مجموعة المزايا بالثواني" : "Seconds per benefit group")}<input name="${key}.intervalSeconds" type="number" min="1" max="120" step="1" value="${Number(rail.intervalSeconds || 3)}"/></label>` : ""}</div></article>`).join("")}</div>
+      <div class="homepage-rail-settings">${Object.entries(settings.homepageRails).map(([key, rail]) => `<article><header><b>${escapeHTML(labels[key][ar ? 0 : 1])}</b><label class="admin-toggle-row"><span>${ar ? "ظاهر" : "Visible"}</span><input name="${key}.enabled" type="checkbox"${rail.enabled !== false ? " checked" : ""}/></label></header><div class="review-grid"><label>${ar ? "العنوان العربي" : "Arabic title"}<input name="${key}.titleAr" value="${escapeHTML(rail.titleAr || "")}"/></label><label>${ar ? "العنوان الإنجليزي" : "English title"}<input name="${key}.titleEn" value="${escapeHTML(rail.titleEn || "")}"/></label><label>${ar ? "الترتيب" : "Order"}<input name="${key}.order" type="number" min="1" max="10" value="${Number(rail.order || 1)}"/></label>${key === "brands" || key === "benefits" ? `<label>${key === "brands" ? (ar ? "زمن مرور العلامة بالثواني (الأقل أسرع)" : "Seconds per brand (lower is faster)") : (ar ? "زمن تبديل مجموعة المزايا بالثواني" : "Seconds per benefit group")}<input name="${key}.intervalSeconds" type="number" min="1" max="120" step="1" value="${Number(rail.intervalSeconds || 3)}"/></label>` : ""}</div></article>`).join("")}</div>
     </section>
     <section class="home-product-rows-admin"><div class="review-section-head"><span>03</span><div><b>${ar ? "أقسام المنتجات المتعددة" : "Multiple product sections"}</b><small>${ar ? "أضف أي عدد من الأقسام، واربط كل قسم بالأحدث أو الأكثر مبيعًا أو بعلامة تجارية محددة." : "Add any number of sections and connect each to newest, best sellers, or a specific brand."}</small></div></div>
       <div id="home-product-row-list" class="home-product-row-admin-list">${settings.homeProductRows.map((row, index) => homepageProductRowAdminCard(row, index)).join("")}</div>
@@ -9106,11 +9106,30 @@ document.addEventListener("click", async (event) => {
     } catch (error) { actionElement.disabled = false; showToast(error.message, "error"); }
     return;
   }
+  if (action === "delete-empty-brand") {
+    let brand = state.productOptions.find((item) => item.group === "brand" && brandMatches(item, actionElement.dataset.value)) || productOptionItems("brand").find((item) => brandMatches(item, actionElement.dataset.value));
+    if (!brand) return;
+    if (linkedBrandProducts(brand).length) { showToast(adminCopy("لا يمكن حذف علامة مرتبطة بمنتجات", "A brand linked to products cannot be deleted"), "error"); return; }
+    if (!window.confirm(adminCopy("حذف هذه العلامة الفارغة من المكتبة؟ لن يتم حذف أي منتجات.", "Delete this empty brand from the library? No products will be deleted."))) return;
+    actionElement.disabled = true;
+    try {
+      if (!brand.id || brand.builtIn) {
+        const result = await api("/api/admin/product-options", { method:"POST", body:JSON.stringify({ ...brand, group:"brand" }) });
+        brand = result.option;
+      }
+      await api(`/api/admin/product-options/${brand.id}`, { method:"DELETE" });
+      state.productOptions = [...state.productOptions.filter((item) => String(item.id) !== String(brand.id)), { ...brand, active:false, metadata:{ ...brand.metadata, deleted:true } }];
+      renderBrandCarousel();
+      renderAdminDashboard("brands");
+      showToast(adminCopy("تم حذف العلامة الفارغة", "Empty brand deleted"));
+    } catch (error) { actionElement.disabled = false; showToast(error.message, "error"); }
+    return;
+  }
   if (action === "delete-product-option") {
     if (!window.confirm(adminCopy("حذف هذا الخيار؟","Delete this option?"))) return;
     try {
       await api(`/api/admin/product-options/${actionElement.dataset.id}`, { method:"DELETE" });
-      state.productOptions = state.productOptions.filter((item) => String(item.id) !== String(actionElement.dataset.id));
+      state.productOptions = state.productOptions.flatMap((item) => String(item.id) !== String(actionElement.dataset.id) ? [item] : item.group === "brand" ? [{ ...item, active:false, metadata:{ ...item.metadata, deleted:true } }] : []);
       renderBrandCarousel();
       renderAdminDashboard(state.adminView === "brands" ? "brands" : "product-options");
       showToast(adminCopy("تم حذف الخيار","Option deleted"));

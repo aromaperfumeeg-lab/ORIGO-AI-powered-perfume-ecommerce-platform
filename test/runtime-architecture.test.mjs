@@ -20,6 +20,9 @@ test("brand management counts aliases and keeps hidden defaults out of product c
   assert.equal(context.productOptionItems("brand").some((item) => context.brandMatches(item, "Test House")), false);
   state.productOptions[0].active = true;
   assert.equal(context.productOptionItems("brand").filter((item) => context.brandMatches(item, "Test House")).length, 1);
+  state.productOptions[0].active = false;
+  state.productOptions[0].metadata = { deleted:true };
+  assert.equal(context.productOptionItems("brand").some((item) => context.brandMatches(item, "Test House")), false);
 });
 
 test("product studio click passes through both asynchronous loaders exactly once", async () => {
@@ -67,8 +70,8 @@ test("product studio click passes through both asynchronous loaders exactly once
 
 test("home loads production storefront core without admin editor or finder runtimes", async () => {
   const [html, loader, core] = await Promise.all([read("../index.html"), read("../runtime-loader.js"), read("../chunks/storefront-core.min.js")]);
-  assert.match(html, /chunks\/storefront-core\.min\.js\?v=22/);
-  assert.match(html, /runtime-loader\.js\?v=14/);
+  assert.match(html, /chunks\/storefront-core\.min\.js\?v=23/);
+  assert.match(html, /runtime-loader\.js\?v=15/);
   assert.doesNotMatch(html, /<script[^>]+(?:admin-runtime|product-editor-runtime|storefront-settings-runtime|fragrance-finder-(?:engine|i18n)|fragrance-finder\.js)/);
   assert.doesNotMatch(core, /function settingsMarkup\(|function renderImportReview\(|function overviewMarkup\(/);
   assert.match(core, /function homeHeroTargetHref\(/);

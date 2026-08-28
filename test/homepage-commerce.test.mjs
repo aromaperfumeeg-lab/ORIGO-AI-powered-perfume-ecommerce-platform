@@ -77,55 +77,48 @@ test("benefit form edits can clear optional content and preserve the detail URL"
   assert.throws(() => context.benefitFromForm(form),/title and details/);
 });
 
-test("brand slider advances four mobile or twelve desktop cards and accepts speed changes", async () => {
-  const timers = new Map();
-  let timerId = 0;
-  const mobile = Object.assign(new EventTarget(), { matches:true });
-  const reduced = Object.assign(new EventTarget(), { matches:false });
-  const document = Object.assign(new EventTarget(), { hidden:false, documentElement:{ dir:"rtl" }, body:{ classList:{ contains:() => false } } });
+test("brand rail moves continuously, changes speed, pauses and never clones cards", async () => {
+  const frames = new Map();
+  let id = 0;
+  const mobile = Object.assign(new EventTarget(), {matches:true});
+  const reduced = Object.assign(new EventTarget(), {matches:false});
+  const document = Object.assign(new EventTarget(), {hidden:false, documentElement:{dir:"rtl"}, body:{classList:{contains:() => false}}});
   const window = new EventTarget();
   runInNewContext(await read("home-brand-navigation.js"), {
     window, document, AbortController,
-    matchMedia: (query) => query.includes("700px") ? mobile : reduced,
-    setTimeout: (callback, delay) => { const id = ++timerId; timers.set(id, { callback, delay }); return id; },
-    clearTimeout: (id) => timers.delete(id)
+    matchMedia:(query) => query.includes("700px") ? mobile : reduced,
+    requestAnimationFrame:(callback) => {frames.set(++id, callback); return id;},
+    cancelAnimationFrame:(key) => frames.delete(key), setTimeout:(callback) => callback()
   });
-  const track = Object.assign(new EventTarget(), { dataset:{}, classList:{ add() {} }, isConnected:true, closest:() => null, contains:() => false });
-  const items = Array.from({ length:31 }, (_, index) => `<button>${index}</button>`);
-  const slider = window.ORIGOBrandSlider.mount(track, items);
-  const shown = () => [...track.innerHTML.matchAll(/<button>(\d+)<\/button>/g)].map((match) => Number(match[1]));
-  assert.deepEqual(shown(), [0,1,2,3]);
-  assert.equal([...timers.values()][0].delay, 3000);
-  const tick = [...timers.values()][0]; timers.clear(); tick.callback();
-  assert.deepEqual(shown(), [4,5,6,7]);
-  slider.setInterval(5);
-  assert.equal(timers.size, 1);
-  assert.equal([...timers.values()][0].delay, 5000);
-  document.hidden = true; document.dispatchEvent(new Event("visibilitychange"));
-  assert.equal(timers.size, 0);
-  document.hidden = false; document.dispatchEvent(new Event("visibilitychange"));
-  assert.equal([...timers.values()][0].delay, 5000);
-  mobile.matches = false; mobile.dispatchEvent(new Event("change"));
-  assert.deepEqual(shown(), Array.from({length:12}, (_, i) => i));
-  const desktopTick = [...timers.values()][0]; timers.clear(); desktopTick.callback();
-  assert.deepEqual(shown(), Array.from({length:12}, (_, i) => i + 12));
-  assert.equal([...timers.values()][0].delay, 5000);
-  const css = await read("appearance.css");
-  assert.match(css, /\.brand-paged-slider \.brand-slider-page\{display:grid!important;grid-template-columns:repeat\(12,minmax\(0,1fr\)\)/);
-  assert.match(css, /@media\(max-width:700px\)\{\.brand-paged-slider \.brand-slider-page\{grid-template-columns:repeat\(4,minmax\(0,1fr\)\)/);
-  mobile.matches = true; mobile.dispatchEvent(new Event("change"));
-  assert.equal(shown().length, 4);
-  for (let step = 0; step < 31; step++) {
-    const previous = shown(); slider.step(1);
-    assert.equal(shown().length, 4);
-    assert.equal(shown().some((item) => previous.includes(item)), false);
-  }
-  slider.destroy(); assert.equal(timers.size, 0);
-  window.ORIGOBrandSlider.mount(track, items.slice(0,3));
-  assert.equal(shown().length, 3); assert.equal(timers.size, 0);
-  reduced.matches = true;
-  window.ORIGOBrandSlider.mount(track, items);
-  assert.equal(timers.size, 0);
+  const cards = Array.from({length:20}, (_, index) => ({index}));
+  const track = Object.assign(new EventTarget(), {
+    children:cards, dataset:{}, clientWidth:360, scrollWidth:1600, scrollLeft:0,
+    style:{setProperty(){}}, classList:{add(){},remove(){}}, isConnected:true,
+    closest:() => null, contains:() => false,
+    append(card){cards.splice(cards.indexOf(card),1); cards.push(card);},
+    prepend(card){cards.splice(cards.indexOf(card),1); cards.unshift(card);}
+  });
+  Object.defineProperties(track, {firstElementChild:{get:() => cards[0]}, lastElementChild:{get:() => cards.at(-1)}});
+  const slider = window.ORIGOBrandSlider.mount(track, cards.map(card => `<button>${card.index}</button>`));
+  const tick = (time) => {const callback = frames.values().next().value; frames.clear(); callback(time);};
+  tick(100); tick(120);
+  const firstDistance = Math.abs(track.scrollLeft);
+  assert.ok(firstDistance > 0 && firstDistance < 3, "motion advances pixels, not a whole page");
+  tick(140); assert.ok(Math.abs(track.scrollLeft) > firstDistance);
+  slider.setInterval(6); tick(160);
+  const beforeSlow = Math.abs(track.scrollLeft); tick(180);
+  assert.ok(Math.abs(track.scrollLeft) - beforeSlow < firstDistance);
+  for(let index=0;index<30;index++) slider.step(1);
+  assert.equal(new Set(cards).size, 20);
+  assert.equal(cards.length, 20);
+  document.hidden=true; document.dispatchEvent(new Event("visibilitychange")); assert.equal(frames.size,0);
+  document.hidden=false; document.dispatchEvent(new Event("visibilitychange")); assert.equal(frames.size,1);
+  reduced.matches=true; reduced.dispatchEvent(new Event("change")); assert.equal(frames.size,0);
+  reduced.matches=false; reduced.dispatchEvent(new Event("change"));
+  mobile.matches=false; mobile.dispatchEvent(new Event("change")); assert.equal(frames.size,1);
+  slider.destroy(); assert.equal(frames.size,0);
+  track.scrollWidth=300;
+  window.ORIGOBrandSlider.mount(track, ["<button>One</button>"]); assert.equal(frames.size,0);
 });
 
 test("homepage exposes the requested commerce hierarchy without duplicate benefit strips", async () => {

@@ -13,3 +13,17 @@ test('brand action labels override legacy fixed square buttons and keep touch ta
   assert.ok(html.includes('admin-ui-fixes.css?v=9'));
   assert.ok(loader.includes('admin-ui-fixes.css?v=9'));
 });
+
+test('brand deletion is offered for empty defaults and still guards linked products', async () => {
+  const source = await readFile(new URL('../app.js', import.meta.url), 'utf8');
+  const table = source.slice(source.indexOf('function brandsManagementMarkup('), source.indexOf('function brandsManagementMarkup(') + 6000);
+  assert.ok(table.includes('data-action="delete-empty-brand"'));
+  assert.ok(table.includes('count || saved?.usageCount > 0'));
+  assert.ok(table.includes('!item.metadata?.deleted'));
+  assert.ok(!table.includes('Built-in brand — can be hidden'));
+  const handler = source.slice(source.indexOf('if (action === "delete-empty-brand")'), source.indexOf('if (action === "delete-product-option")'));
+  assert.ok(handler.includes('linkedBrandProducts(brand).length'));
+  assert.ok(handler.includes('window.confirm'));
+  assert.ok(handler.includes('actionElement.disabled = true'));
+  assert.ok(handler.includes('deleted:true'));
+});
