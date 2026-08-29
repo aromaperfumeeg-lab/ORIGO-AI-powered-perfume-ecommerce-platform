@@ -1227,6 +1227,7 @@ const state = {
   emailVerificationFlow: { requestId: "", email: "", expiresAt: 0, resendAt: 0 },
   filterDefinitions: [],
   productOptions: [],
+  brandOptionsReady: false,
   activeDynamicFilters: {},
   productEditorMode: localStorage.getItem("origoProductEditorMode") || "smart",
   aiProductSuggestion: null,
@@ -1596,6 +1597,7 @@ async function hydrateServer() {
       ...state.productOptions.filter((item) => item.group !== "brand"),
       ...brandOptions.options
     ];
+    state.brandOptionsReady = true;
     if (state.authRevision === authRevisionAtStart) state.user = session.user || null;
     if (state.user) {
       if (cartOwner === String(state.user.id)) {
@@ -1636,6 +1638,7 @@ async function hydrateServer() {
     if (!directProductRoute) scheduleStorefrontIdle(() => hydrateDeferredStorefront(Number(catalog.total || state.products.length)), 1800);
   } catch {
     state.serverAvailable = false;
+    state.brandOptionsReady = true;
     updateAccountIndicator();
     const directProductRoute = /^\/perfume\/[^/]+\/?$/i.test(location.pathname);
     if (!directProductRoute) {
@@ -3675,6 +3678,17 @@ function localizedBrandLabel(brand) {
 }
 
 function renderBrandCarousel(query = "") {
+  const track = $("#home-brand-carousel-track");
+  if (!track) return;
+  if (!state.brandOptionsReady) {
+    window.ORIGOBrandSlider?.get(track)?.destroy();
+    track.innerHTML = "";
+    track.setAttribute("aria-busy", "true");
+    track.closest(".home-brand-directory")?.classList.add("brands-loading");
+    return;
+  }
+  track.removeAttribute("aria-busy");
+  track.closest(".home-brand-directory")?.classList.remove("brands-loading");
   const normalized = ORIGOCatalog.normalize(query);
   const counts = new Map();
   state.products.forEach((product) => {
@@ -3691,7 +3705,7 @@ function renderBrandCarousel(query = "") {
     return `<button class="brand-slider-card" data-action="brand-search" data-query="${escapeHTML(brand)}" aria-label="${escapeHTML(`${state.lang === "ar" ? "عرض منتجات" : "View products by"} ${label}`)}">${artwork}</button>`;
   });
   const seconds = mergeStoreSettings(state.adminWorkspace.settings || {}).homepageRails.brands.intervalSeconds || 3;
-  window.ORIGOBrandSlider.mount($("#home-brand-carousel-track"), items, seconds);
+  window.ORIGOBrandSlider.mount(track, items, seconds);
   if ($("#home-brand-dots")) $("#home-brand-dots").hidden = true;
 }
 

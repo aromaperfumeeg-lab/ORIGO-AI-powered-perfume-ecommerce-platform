@@ -40,3 +40,14 @@ test('homepage contains one managed brand rail and no legacy carousel', async ()
   assert.ok(!app.includes('$("#brand-carousel-track")'));
   assert.ok(!app.includes('action === "brand-carousel-scroll"'));
 });
+
+test('brand rail stays empty until current server options finish loading', async () => {
+  const app = await readFile(new URL('../app.js', import.meta.url),'utf8');
+  assert.ok(app.includes('brandOptionsReady: false'));
+  assert.ok(app.includes('state.brandOptionsReady = true'));
+  const render = app.slice(app.indexOf('function renderBrandCarousel('), app.indexOf('function storefrontBrandEntries('));
+  assert.ok(render.indexOf('if (!state.brandOptionsReady)') < render.indexOf('ORIGO_PERFUME_BRANDS'));
+  assert.ok(render.includes('track.innerHTML = ""'));
+  assert.ok(render.includes('aria-busy'));
+  assert.ok(render.includes('window.ORIGOBrandSlider.mount(track, items, seconds)'));
+});

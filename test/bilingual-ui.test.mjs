@@ -69,12 +69,13 @@ test("brands retain controls while benefits scroll manually with a partial next 
   assert.doesNotMatch(benefits, /ORIGOBrandSlider\.mount|setInterval|setTimeout/);
   assert.match(benefits, /track\.innerHTML = items\.join/);
   assert.match(benefits, /bindHorizontalRail\(track\)/);
-  assert.match(appearance, /grid-template-rows:minmax\(0,1fr\) auto/);
+  assert.match(appearance, /grid-template-rows:auto auto/);
   assert.match(appearance, /\.benefit-icon :is\(svg,img\)\{\s*width:100%!important;height:100%!important/);
-  assert.match(appearance, /flex-basis:calc\(\(100% - 48px\)\/4\.8\)/);
-  assert.match(appearance, /flex:0 0 calc\(\(100% - 66px\)\/5\.5 \* \.68\)/);
-  assert.match(appearance, /min-height:0!important;aspect-ratio:1\.25\/1/);
-  assert.match(appearance, /padding:0;gap:0;border:1px solid/);
+  assert.match(appearance, /flex-basis:calc\(\(100% - 48px\)\/4\.7\)/);
+  assert.match(appearance, /flex:0 0 calc\(\(100% - 240px\)\/13\.5\)/);
+  assert.match(appearance, /\.benefit-icon\{[\s\S]{0,220}aspect-ratio:1\/1/);
+  assert.match(appearance, /padding:0;gap:5px;border:0;border-radius:0/);
+  assert.match(appearance, /\.benefit-slider-copy\{[^}]*text-align:center/);
   assert.match(appearance, /#home \.benefits-pagination:not\(\[hidden\]\)\{display:flex/);
   assert.match(app, /function renderHomeRailDots/);
   assert.match(app, /function bindHomeBrandPagination/);
@@ -98,7 +99,7 @@ test("saved brand artwork is loaded by the public storefront and matched by slug
 });
 
 test("brand rail uses continuous motion without duplicate marquee cards", () => {
-  assert.match(app, /window\.ORIGOBrandSlider\.mount\(\$\("#home-brand-carousel-track"\), items, seconds\)/);
+  assert.match(app, /window\.ORIGOBrandSlider\.mount\(track, items, seconds\)/);
   assert.match(appearance, /brand-continuous-track/);
   assert.match(appearance, /scroll-behavior:auto!important;scroll-snap-type:none!important/);
 });
@@ -121,6 +122,13 @@ test("homepage directories avoid glass compositing and use unified gender contro
   assert.match(appearance, /place-items:center!important;text-align:center!important/);
   assert.match(appearance, /--gender-accent:#fff!important;color:#fff!important;border-color:#fff!important/);
   assert.match(appearance, /html\[data-theme="dark"\] body\) #home :is\(h1,h2,h3,h4,h5,h6/);
+});
+
+test("gender cards use larger frames and readable centered labels", () => {
+  assert.match(appearance, /\.home-gender-slider \.home-gender-card\{\s*min-height:110px!important;padding:20px 24px!important;border-width:2\.5px!important/);
+  assert.match(appearance, /\.gender-card-copy b\{\s*font-size:22px!important;line-height:1\.3!important;font-weight:800!important/);
+  assert.match(appearance, /@media\(max-width:700px\)\{[\s\S]{0,220}min-height:88px!important/);
+  assert.match(appearance, /font-size:17px!important/);
 });
 
 test("season and time controls use inline decorative SVG instead of emoji", () => {
