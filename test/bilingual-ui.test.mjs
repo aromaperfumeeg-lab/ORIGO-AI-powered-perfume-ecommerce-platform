@@ -300,8 +300,21 @@ test("published product details expose saved public fields without admin metadat
 test("product details lead with saved alternative and similar fragrance names", () => {
   assert.match(app, /const relationshipDetails = \[[\s\S]*?"العطر البديل"[\s\S]*?configuredRelationshipName\("alternativeIds"\)[\s\S]*?"العطر المشابه"[\s\S]*?configuredRelationshipName\("similarProductIds"\)/);
   assert.match(app, /const identityDetails = \[\s*\.\.\.relationshipDetails,/);
-  assert.match(app, /\$\{productPublicDetailsMarkup\(product\)\}\s*\$\{productConfiguredLinksMarkup\(product\)\}/);
+  assert.match(app, /\$\{productPublicDetailsMarkup\(product\)\}\s*\$\{productAlternativeReferencesMarkup\(product\)\}\s*\$\{productConfiguredLinksMarkup\(product\)\}/);
   assert.match(app, /\["alternativeIds", ar \? "البدائل المختارة" : "Selected alternatives", "ALTERNATIVES"\]/);
+});
+
+test("product detail hydration loads and renders published alternative references", () => {
+  const hydration = app.slice(app.indexOf("async function hydrateProductDetails"), app.indexOf("function addToCart"));
+  assert.match(hydration, /\/api\/products\/\$\{encodedProductId\}\/alternative-references/);
+  assert.match(hydration, /const needsAlternativeReferences = !Array\.isArray\(product\.alternativeReferences\)/);
+  assert.match(hydration, /if \(!needsProductDetail && !needsAlternativeReferences\) return product/);
+  assert.match(app, /if \(product\.detailLoaded === false \|\| !Array\.isArray\(product\.alternativeReferences\)\) \{/);
+  assert.match(hydration, /\.catch\(\(\) => \(\{ items:\[\] \}\)\)/);
+  assert.match(hydration, /detailed\.alternativeReferences = Array\.isArray\(referencesPayload\?\.items\)/);
+  assert.match(app, /function productAlternativeReferencesMarkup\(product\)/);
+  assert.match(app, /"العطر الأصلي أو المرجعي"[\s\S]*?savedReferenceNames\(\["direct_alternative","inspired_by"\]\)/);
+  assert.match(app, /\$\{productAlternativeReferencesMarkup\(product\)\}\s*\$\{productConfiguredLinksMarkup\(product\)\}/);
 });
 
 test("product description is collapsible and product identity is rendered once", () => {

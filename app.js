@@ -4856,11 +4856,19 @@ function getProduct(id) {
 const productDetailRequests = new Map();
 
 async function hydrateProductDetails(product) {
-  if (!product || product.detailLoaded !== false || !state.serverAvailable) return product;
+  if (!product || !state.serverAvailable) return product;
+  const needsProductDetail = product.detailLoaded === false;
+  const needsAlternativeReferences = !Array.isArray(product.alternativeReferences);
+  if (!needsProductDetail && !needsAlternativeReferences) return product;
   if (!productDetailRequests.has(product.id)) {
-    productDetailRequests.set(product.id, api(`/api/products/${encodeURIComponent(product.id)}`)
-      .then((payload) => {
+    const encodedProductId = encodeURIComponent(product.id);
+    productDetailRequests.set(product.id, Promise.all([
+      needsProductDetail ? api(`/api/products/${encodedProductId}`) : Promise.resolve({ product }),
+      needsAlternativeReferences ? api(`/api/products/${encodedProductId}/alternative-references`).catch(() => ({ items:[] })) : Promise.resolve({ items:product.alternativeReferences })
+    ])
+      .then(([payload, referencesPayload]) => {
         const detailed = serverProduct(payload.product);
+        detailed.alternativeReferences = Array.isArray(referencesPayload?.items) ? referencesPayload.items : [];
         const index = state.products.findIndex((item) => item.id === product.id);
         if (index >= 0) state.products[index] = detailed;
         return detailed;
@@ -5773,7 +5781,15 @@ function productPublicDetailsMarkup(product) {
   };
   const inspiredNames = (Array.isArray(product.inspiration?.inspiredBy) ? product.inspiration.inspiredBy : []).map(relationshipName).filter(Boolean).join(ar ? "، " : ", ");
   const closestNames = (Array.isArray(product.inspiration?.closestMatches) ? product.inspiration.closestMatches : []).map(relationshipName).filter(Boolean).join(ar ? "، " : ", ");
+  const savedReferenceMatches = Array.isArray(product.alternativeReferences) ? product.alternativeReferences : [];
+  const savedReferenceNames = (types) => savedReferenceMatches
+    .filter((match) => types.includes(match.relationshipType))
+    .map((match) => localizedText(match.reference?.nameAr, match.reference?.nameEn))
+    .filter(Boolean)
+    .join(ar ? "، " : ", ");
   const relationshipDetails = [
+    [ar ? "العطر الأصلي أو المرجعي" : "Original or reference fragrance", savedReferenceNames(["direct_alternative","inspired_by"])],
+    [ar ? "العطر المرجعي المشابه" : "Similar reference fragrance", savedReferenceNames(["similar_character","similar_opening","similar_drydown","custom"])],
     [ar ? "العطر البديل" : "Alternative fragrance", configuredRelationshipName("alternativeIds")],
     [ar ? "العطر المشابه" : "Similar fragrance", configuredRelationshipName("similarProductIds")],
     [ar ? "مستوحى من" : "Inspired by", inspiredNames],
@@ -5853,6 +5869,24 @@ function productConfiguredLinksMarkup(product) {
     return products.length ? `<section class="pdp-recommendations pdp-configured-products"><div class="pdp-section-heading"><span>${eyebrow}</span><h2>${title}</h2>${mobileProductViewControlMarkup()}</div><div class="pdp-products-row">${products.map((item) => productCardMarkup(item)).join("")}</div></section>` : "";
   });
   return groups.join("");
+}
+
+function productAlternativeReferencesMarkup(product) {
+  const ar = state.lang === "ar";
+  const matches = Array.isArray(product.alternativeReferences) ? product.alternativeReferences : [];
+  if (!matches.length) return "";
+  const relationLabels = {
+    direct_alternative:["بديل مباشر لـ","Direct alternative to"], inspired_by:["مستوحى من","Inspired by"],
+    similar_character:["طابع مشابه لـ","Similar character to"], similar_opening:["افتتاحية مشابهة لـ","Similar opening to"],
+    similar_drydown:["قاعدة مشابهة لـ","Similar dry-down to"], custom:["علاقة عطرية","Fragrance relationship"]
+  };
+  return `<section class="pdp-fragrance-relationships is-reference"><div class="pdp-section-heading"><span>REFERENCE FRAGRANCES</span><h2>${ar ? "العطر الأصلي أو المشابه" : "Original or similar fragrance"}</h2></div><div class="fragrance-relationship-cards">${matches.map((match) => {
+    const reference = match.reference || {};
+    const name = localizedText(reference.nameAr, reference.nameEn);
+    const relation = relationLabels[match.relationshipType]?.[ar ? 0 : 1] || relationLabels.similar_character[ar ? 0 : 1];
+    const reason = localizedText(match.reasonAr, match.reasonEn);
+    return `<article class="fragrance-relationship-card-public is-external has-image">${reference.image ? `<img src="${escapeHTML(reference.image)}" alt="${escapeHTML(name)}" loading="lazy"/>` : ""}<span><small>${escapeHTML(reference.brand || "")}</small><b>${escapeHTML(name)}</b><em>${escapeHTML(relation)} · ${formatPercent(match.similarity)}</em>${reason ? `<p>${escapeHTML(reason)}</p>` : ""}</span></article>`;
+  }).join("")}</div></section>`;
 }
 
 function productProfileAccordions(product) {
@@ -6730,7 +6764,7 @@ function bindProductGallerySwipe() {
 
 function showProductDetails(product, shouldOpen = true) {
   if (!product) return;
-  if (product.detailLoaded === false) {
+  if (product.detailLoaded === false || !Array.isArray(product.alternativeReferences)) {
     hydrateProductDetails(product).then((detailed) => {
       if (detailed && state.activeProductId === product.id) showProductDetails(detailed, false);
     }).catch(() => {});
@@ -6803,6 +6837,7 @@ function showProductDetails(product, shouldOpen = true) {
       </section>
       ${productPublicAccordsMarkup(product)}
       ${productPublicDetailsMarkup(product)}
+      ${productAlternativeReferencesMarkup(product)}
       ${productConfiguredLinksMarkup(product)}
       ${productProfileAccordions(product)}
       ${productIngredientsMarkup(product)}
