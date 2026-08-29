@@ -5761,7 +5761,26 @@ function productPublicDetailsMarkup(product) {
     ${timeVisualItems.length ? `<section class="pdp-time-visual"><h4>${ar ? "النهار والليل" : "Day and night"}</h4><div>${timeVisualItems.map((item) => `<article class="is-${item.key}" style="--usage-score:${Math.max(0,Math.min(100,Number(item.value)||0))}%"><span>${item.icon} ${escapeHTML(item.label)}</span><b>${formatPercent(item.value)}</b><i><u></u></i></article>`).join("")}</div></section>` : ""}
     ${seasonVisualItems.length ? `<section class="pdp-season-visual"><h4>${ar ? "ملاءمة الفصول" : "Season suitability"}</h4><div>${seasonVisualItems.map((item) => `<article class="is-${item.key}" style="--usage-score:${Math.max(0,Math.min(100,Number(item.value)||0))}%"><span>${item.icon} ${escapeHTML(item.label)}</span><b>${formatPercent(item.value)}</b><i><u></u></i></article>`).join("")}</div></section>` : ""}
   </div>` : "";
+  const configuredRelationshipName = (field) => (Array.isArray(product[field]) ? product[field] : [])
+    .map((id) => getProduct(id))
+    .filter((item) => item && item.status === "published")
+    .map((item) => localizedProductName(item))
+    .filter(Boolean)
+    .join(ar ? "، " : ", ");
+  const relationshipName = (relation) => {
+    const internal = resolveFragranceRelationship(relation);
+    return internal ? localizedProductName(internal) : localizedText(relation?.nameAr, relation?.nameEn);
+  };
+  const inspiredNames = (Array.isArray(product.inspiration?.inspiredBy) ? product.inspiration.inspiredBy : []).map(relationshipName).filter(Boolean).join(ar ? "، " : ", ");
+  const closestNames = (Array.isArray(product.inspiration?.closestMatches) ? product.inspiration.closestMatches : []).map(relationshipName).filter(Boolean).join(ar ? "، " : ", ");
+  const relationshipDetails = [
+    [ar ? "العطر البديل" : "Alternative fragrance", configuredRelationshipName("alternativeIds")],
+    [ar ? "العطر المشابه" : "Similar fragrance", configuredRelationshipName("similarProductIds")],
+    [ar ? "مستوحى من" : "Inspired by", inspiredNames],
+    [ar ? "أقرب عطر" : "Closest fragrance", closestNames]
+  ];
   const identityDetails = [
+    ...relationshipDetails,
     [ar ? "نوع المنتج" : "Product type", type],
     [ar ? "الجنس" : "Gender", genderLabels[catalogGender(product)]?.[ar ? 0 : 1]],
     [ar ? "العائلة العطرية" : "Fragrance family", family],
@@ -6477,7 +6496,6 @@ function productCardMarkup(product, options = {}) {
       : "";
   return `<article class="product-card origo-reference-product-card origo-exact-product-card${options.reveal ? " reveal" : ""}${outOfStock ? " is-out" : ""}" data-id="${escapeHTML(product.id)}" dir="${isArabic ? "rtl" : "ltr"}" lang="${state.lang}"${delayStyle}>
     <div class="product-image">
-      ${discount ? `<span class="product-badge" data-badge-kind="sale">-${discount}%</span>` : ""}
       <div class="product-card-top-actions">
         <button class="card-action-button card-favorite-button${saved ? " active" : ""}"${interactive ? ` data-action="toggle-wishlist"` : disabled} aria-label="${escapeHTML(favoriteLabel)}" aria-pressed="${saved}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/></svg></button>
         <button class="card-action-button card-compare-button${compared ? " active" : ""}"${interactive ? ` data-action="toggle-product-compare"` : disabled} aria-label="${escapeHTML(compareLabel)}" aria-pressed="${compared}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h12m0 0-3-3m3 3-3 3M17 17H5m0 0 3 3m-3-3 3-3"/></svg></button>
@@ -6490,7 +6508,7 @@ function productCardMarkup(product, options = {}) {
       <div class="exact-card-heading"><div class="product-brand" dir="auto">${escapeHTML(localizedProductBrand(product))}</div>${ratingSummary.rating == null ? "" : `<span class="exact-card-rating"><b aria-hidden="true">★</b><span>${formatNumber(ratingSummary.rating, { maximumFractionDigits:2 })}</span>${ratingSummary.count == null ? "" : `<small>(${formatNumber(ratingSummary.count)})</small>`}</span>`}</div>
       <h3 class="exact-card-product-name${productNameSizeClass}"><a href="/perfume/${encodeURIComponent(product.slug || product.id)}"${interactive ? ` data-action="open-product" data-id="${escapeHTML(product.id)}"` : ` tabindex="-1" aria-disabled="true"`}>${escapeHTML(name || (isArabic ? "منتج جديد" : "New product"))}</a></h3>
       <div class="product-bottom">
-        <div class="exact-card-prices"><b class="product-price">${formatPrice(price)}</b>${oldPrice > price ? `<del>${formatPrice(oldPrice)}</del>` : ""}</div>
+        <div class="exact-card-prices"><b class="product-price">${formatPrice(price)}</b>${discount ? `<span class="product-price-discount">-${discount}%</span>` : ""}${oldPrice > price ? `<del>${formatPrice(oldPrice)}</del>` : ""}</div>
         <div class="exact-card-actions">
           <button class="card-add-button${outOfStock ? " is-restock" : ""}"${interactive ? ` data-action="${outOfStock ? "notify-restock" : "add-to-cart"}"` : disabled} aria-label="${escapeHTML(outOfStock ? (isArabic ? "أخبرني عند توفره" : "Notify me when available") : translations[state.lang].addToBag)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.2 10.2a2 2 0 0 0 2 1.6h7.9a2 2 0 0 0 2-1.6L20.5 7H6"/><circle cx="10" cy="20" r="1"/><circle cx="18" cy="20" r="1"/></svg><span>${escapeHTML(outOfStock ? (isArabic ? "أخبرني عند توفره" : "Notify me when available") : translations[state.lang].addToBag)}</span></button>
         </div>
@@ -6785,6 +6803,7 @@ function showProductDetails(product, shouldOpen = true) {
       </section>
       ${productPublicAccordsMarkup(product)}
       ${productPublicDetailsMarkup(product)}
+      ${productConfiguredLinksMarkup(product)}
       ${productProfileAccordions(product)}
       ${productIngredientsMarkup(product)}
       ${window.ORIGOAlternatives?.productPanel?.(product) || productFragranceRelationshipsMarkup(product)}

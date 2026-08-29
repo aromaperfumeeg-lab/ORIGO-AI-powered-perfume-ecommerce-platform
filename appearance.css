@@ -4517,28 +4517,70 @@ html body :is(#storefront-main,.product-overlay) .product-card.origo-exact-produ
 }
 :is(body.dark,html[data-theme="dark"] body) .overlay{background:rgba(28,28,28,.9)!important}
 
-/* Compact discount tab and reserve clear image space so it never covers the product. */
-html body :is(#storefront-main,.product-overlay) .product-card.origo-exact-product-card .product-image>.product-badge[data-badge-kind="sale"]{
-  top:6px!important;
-  right:auto!important;
-  left:auto!important;
-  inset-inline-start:6px!important;
-  inset-inline-end:auto!important;
-  z-index:9!important;
-  max-width:none!important;
-  min-height:20px!important;
+/* Compact product copy: localized brand, restrained rating and discount beside price. */
+html body :is(#storefront-main,.product-overlay) .product-card.origo-exact-product-card .product-info{
+  gap:2px!important;
+}
+html body :is(#storefront-main,.product-overlay) .product-card.origo-exact-product-card .exact-card-heading{
+  width:100%!important;
+  min-width:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:6px!important;
+}
+html body :is(#storefront-main,.product-overlay) .product-card.origo-exact-product-card .product-brand{
+  width:auto!important;
+  min-width:0!important;
+  margin:0!important;
+  text-align:start!important;
+  align-self:flex-start!important;
+  font-size:clamp(8px,.7vw,11px)!important;
+  line-height:1.2!important;
+}
+html body :is(#storefront-main,.product-overlay) .product-card.origo-exact-product-card[dir="rtl"] .product-brand{margin-inline-end:auto!important;text-align:right!important}
+html body :is(#storefront-main,.product-overlay) .product-card.origo-exact-product-card[dir="ltr"] .product-brand{margin-inline-start:0!important;margin-inline-end:auto!important;text-align:left!important}
+html body :is(#storefront-main,.product-overlay) .product-card.origo-exact-product-card .exact-card-rating{
+  flex:none!important;
+  gap:2px!important;
+  font-size:clamp(8px,.72vw,11px)!important;
+  font-weight:700!important;
+  line-height:1!important;
+}
+html body :is(#storefront-main,.product-overlay) .product-card.origo-exact-product-card .exact-card-rating b{font-size:1em!important}
+html body :is(#storefront-main,.product-overlay) .product-card.origo-exact-product-card .exact-card-rating small{font-size:.82em!important;font-weight:600!important}
+html body :is(#storefront-main,.product-overlay) .product-card.origo-exact-product-card .exact-card-product-name{
+  margin:0!important;
+  padding:0!important;
+  line-height:1.2!important;
+}
+html body :is(#storefront-main,.product-overlay) .product-card.origo-exact-product-card .product-bottom{
+  margin-top:1px!important;
+  padding-top:3px!important;
+  gap:5px!important;
+  border-top:0!important;
+}
+html body :is(#storefront-main,.product-overlay) .product-card.origo-exact-product-card .exact-card-prices{
+  width:100%!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  gap:5px!important;
+  direction:inherit!important;
+}
+html body :is(#storefront-main,.product-overlay) .product-card.origo-exact-product-card .product-price-discount{
+  flex:none!important;
+  min-height:18px!important;
   padding:3px 6px!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
   border:0!important;
   border-radius:6px!important;
   color:#fff!important;
   background:#76001c!important;
-  box-shadow:none!important;
-  font-size:clamp(7px,.65vw,10px)!important;
+  font-size:clamp(7px,.65vw,9px)!important;
+  font-weight:800!important;
   line-height:1!important;
-}
-html body :is(#storefront-main,.product-overlay) .product-card.origo-exact-product-card .product-image:has(>.product-badge[data-badge-kind="sale"]) .product-card-media-link{
-  padding-top:clamp(52px,5vw,70px)!important;
-}
-@media(max-width:700px){
-  html body :is(#storefront-main,.product-overlay) .product-card.origo-exact-product-card .product-image:has(>.product-badge[data-badge-kind="sale"]) .product-card-media-link{padding-top:42px!important}
+  direction:ltr!important;
 }

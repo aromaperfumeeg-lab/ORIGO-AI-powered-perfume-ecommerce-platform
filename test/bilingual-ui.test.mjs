@@ -169,10 +169,14 @@ test("night storefront replaces pure black surfaces with layered charcoal", () =
   assert.match(appearance, /\.origo-footer\{[\s\S]*?linear-gradient\(145deg,#303030,#262626\)!important/);
 });
 
-test("discount badge stays compact and reserves clear product-image space", () => {
-  assert.match(appearance, /Compact discount tab and reserve clear image space so it never covers the product/);
-  assert.match(appearance, /\.product-badge\[data-badge-kind="sale"\]\{[\s\S]*?top:6px!important;[\s\S]*?padding:3px 6px!important;[\s\S]*?font-size:clamp\(7px,\.65vw,10px\)!important/);
-  assert.match(appearance, /:has\(>\.product-badge\[data-badge-kind="sale"\]\) \.product-card-media-link\{[\s\S]*?padding-top:clamp\(52px,5vw,70px\)!important/);
+test("discount sits beside the price and compact metadata follows locale direction", () => {
+  assert.doesNotMatch(app, /<div class="product-image">\s*\$\{discount \? `<span class="product-badge"/);
+  assert.match(app, /class="product-price">\$\{formatPrice\(price\)\}<\/b>\$\{discount \? `<span class="product-price-discount">-\$\{discount\}%<\/span>`/);
+  assert.match(appearance, /Compact product copy: localized brand, restrained rating and discount beside price/);
+  assert.match(appearance, /\[dir="rtl"\] \.product-brand\{[\s\S]*?text-align:right!important/);
+  assert.match(appearance, /\[dir="ltr"\] \.product-brand\{[\s\S]*?text-align:left!important/);
+  assert.match(appearance, /\.exact-card-rating\{[\s\S]*?font-size:clamp\(8px,\.72vw,11px\)!important/);
+  assert.match(appearance, /\.product-bottom\{[\s\S]*?margin-top:1px!important;[\s\S]*?padding-top:3px!important;[\s\S]*?border-top:0!important/);
 });
 
 test("gender cards use larger frames and readable centered labels", () => {
@@ -234,14 +238,15 @@ test("product details use saved performance when artwork is absent", () => {
   assert.doesNotMatch(details, /لم تُرفع صور مؤشرات العطر بعد/);
 });
 
-test("product page does not render ORIGO usage, occasion or longevity suggestions", () => {
+test("product page avoids automatic suggestions while allowing saved related products", () => {
   const page = app.slice(app.indexOf("function showProductDetails"), app.indexOf("function closeProductPage"));
   const profile = app.slice(app.indexOf("function productProfileAccordions"), app.indexOf("async function persistNotesState"));
   const cards = app.slice(app.indexOf("function productCardDetailsMarkup"), app.indexOf("function productCardMarkup"));
   assert.doesNotMatch(page, /productSuitabilityMarkup\(product\)|productRelated\(product\)|عطور قريبة في الرائحة|Similar-smelling fragrances/);
   assert.doesNotMatch(profile, /productIntelligenceMarkup\(product\)|Character and usage|الطابع والاستخدام/);
   assert.doesNotMatch(cards, /estimatedHours|Times and occasions|الأوقات والمناسبات|card-season-grid/);
-  assert.doesNotMatch(page, /productConfiguredLinksMarkup\(product\)|Recently viewed|شوهد مؤخرًا/);
+  assert.match(page, /productConfiguredLinksMarkup\(product\)/);
+  assert.doesNotMatch(page, /Recently viewed|شوهد مؤخرًا/);
   const performance = app.slice(app.indexOf("function productPerformanceMarkup"), app.indexOf("function productCardGenderLabel"));
   const cardPerformance = app.slice(app.indexOf("function productCardPerformance"), app.indexOf("let productCardRenderSerial"));
   assert.doesNotMatch(performance, /occasionLabels|product\.seasons|Occasion|Season/);
@@ -288,6 +293,13 @@ test("published product details expose saved public fields without admin metadat
   const accordsAt = app.indexOf("${productPublicAccordsMarkup(product)}");
   const detailsAt = app.indexOf("${productPublicDetailsMarkup(product)}");
   assert.ok(accordsAt >= 0 && detailsAt > accordsAt);
+});
+
+test("product details lead with saved alternative and similar fragrance names", () => {
+  assert.match(app, /const relationshipDetails = \[[\s\S]*?"العطر البديل"[\s\S]*?configuredRelationshipName\("alternativeIds"\)[\s\S]*?"العطر المشابه"[\s\S]*?configuredRelationshipName\("similarProductIds"\)/);
+  assert.match(app, /const identityDetails = \[\s*\.\.\.relationshipDetails,/);
+  assert.match(app, /\$\{productPublicDetailsMarkup\(product\)\}\s*\$\{productConfiguredLinksMarkup\(product\)\}/);
+  assert.match(app, /\["alternativeIds", ar \? "البدائل المختارة" : "Selected alternatives", "ALTERNATIVES"\]/);
 });
 
 test("product description is collapsible and product identity is rendered once", () => {
