@@ -73,6 +73,8 @@ test("brands retain controls while benefits scroll manually with a partial next 
   assert.match(appearance, /\.benefit-icon :is\(svg,img\)\{\s*width:100%!important;height:100%!important/);
   assert.match(appearance, /flex-basis:calc\(\(100% - 48px\)\/4\.8\)/);
   assert.match(appearance, /flex:0 0 calc\(\(100% - 66px\)\/5\.5 \* \.68\)/);
+  assert.match(appearance, /min-height:0!important;aspect-ratio:1\.25\/1/);
+  assert.match(appearance, /padding:0;gap:0;border:1px solid/);
   assert.match(appearance, /#home \.benefits-pagination:not\(\[hidden\]\)\{display:flex/);
   assert.match(app, /function renderHomeRailDots/);
   assert.match(app, /function bindHomeBrandPagination/);
@@ -96,7 +98,7 @@ test("saved brand artwork is loaded by the public storefront and matched by slug
 });
 
 test("brand rail uses continuous motion without duplicate marquee cards", () => {
-  assert.match(app, /window\.ORIGOBrandSlider\.mount\(track, items, seconds\)/);
+  assert.match(app, /window\.ORIGOBrandSlider\.mount\(\$\("#home-brand-carousel-track"\), items, seconds\)/);
   assert.match(appearance, /brand-continuous-track/);
   assert.match(appearance, /scroll-behavior:auto!important;scroll-snap-type:none!important/);
 });

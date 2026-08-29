@@ -3084,7 +3084,7 @@ function applyHomepageRailSettings() {
     element.style.order = String(Number(settings[key]?.order || 0));
     element.setAttribute("aria-label", state.lang === "ar" ? settings[key]?.titleAr || "" : settings[key]?.titleEn || "");
   });
-  $$("#brand-carousel-track, #home-brand-carousel-track").forEach((track) => window.ORIGOBrandSlider?.get(track)?.setInterval(settings.brands?.intervalSeconds || 3));
+  window.ORIGOBrandSlider?.get($("#home-brand-carousel-track"))?.setInterval(settings.brands?.intervalSeconds || 3);
 }
 
 function renderAdminDashboard(view = state.adminView) {
@@ -3691,9 +3691,7 @@ function renderBrandCarousel(query = "") {
     return `<button class="brand-slider-card" data-action="brand-search" data-query="${escapeHTML(brand)}" aria-label="${escapeHTML(`${state.lang === "ar" ? "عرض منتجات" : "View products by"} ${label}`)}">${artwork}</button>`;
   });
   const seconds = mergeStoreSettings(state.adminWorkspace.settings || {}).homepageRails.brands.intervalSeconds || 3;
-  $$("#brand-carousel-track, #home-brand-carousel-track").forEach((track) => {
-    window.ORIGOBrandSlider.mount(track, items, seconds);
-  });
+  window.ORIGOBrandSlider.mount($("#home-brand-carousel-track"), items, seconds);
   if ($("#home-brand-dots")) $("#home-brand-dots").hidden = true;
 }
 
@@ -9429,11 +9427,6 @@ document.addEventListener("click", async (event) => {
     $(".brands-nav")?.classList.remove("open");
     history.pushState({ catalog:true }, "", actionElement.getAttribute("href") || `/brands/${encodeURIComponent(normalizeOptionSearch(query).replaceAll(" ","-"))}`);
     handleCatalogRoute();
-  }
-  if (action === "brand-carousel-scroll") {
-    const slider = window.ORIGOBrandSlider?.get($("#brand-carousel-track"));
-    if (slider) { slider.step(Number(actionElement.dataset.direction || 1)); return; }
-    $("#brand-carousel-track")?.scrollBy({ left: Number(actionElement.dataset.direction || 1) * 420, behavior: "smooth" });
   }
   if (action === "account") openAccount();
   if (action === "auth-mode") {

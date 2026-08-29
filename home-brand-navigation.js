@@ -81,7 +81,7 @@
 /* Brand cards remain real navigation controls. */
 document.addEventListener("click", (event) => {
   const target = event.target.closest(
-    "#home-brand-carousel-track [data-action='brand-search'], #brand-carousel-track [data-action='brand-search'], #home-benefits-track [data-action='benefit-link']"
+    "#home-brand-carousel-track [data-action='brand-search'], #home-benefits-track [data-action='benefit-link']"
   );
   if (!target) return;
   if (target.closest(".brand-continuous-track")?.dataset.suppressBrandClick) { event.preventDefault(); event.stopImmediatePropagation(); return; }

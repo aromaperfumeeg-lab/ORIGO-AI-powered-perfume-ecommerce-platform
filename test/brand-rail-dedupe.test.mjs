@@ -31,3 +31,12 @@ test('saved brands never fall back to obsolete default artwork after clearing th
   const app=await readFile(new URL('../app.js', import.meta.url),'utf8');
   assert.ok(app.includes('const logo = option ? option.image : origoBrandLogo(brand);'));
 });
+
+test('homepage contains one managed brand rail and no legacy carousel', async () => {
+  const [html, app] = await Promise.all(['index.html','app.js'].map(file => readFile(new URL('../' + file, import.meta.url),'utf8')));
+  assert.equal((html.match(/id="home-brand-carousel-track"/g) || []).length, 1);
+  assert.equal((html.match(/id="brand-carousel-track"/g) || []).length, 0);
+  assert.ok(!html.includes('class="brand-carousel-section"'));
+  assert.ok(!app.includes('$("#brand-carousel-track")'));
+  assert.ok(!app.includes('action === "brand-carousel-scroll"'));
+});

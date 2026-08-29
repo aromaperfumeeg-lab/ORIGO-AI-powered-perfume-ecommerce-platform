@@ -6,9 +6,12 @@ test('desktop cards are capped, spaced and keep list mode independent', async ()
   const css = await readFile(new URL('../appearance.css', import.meta.url), 'utf8');
   const block = css.slice(css.indexOf('/* Smaller desktop cards'));
   assert.match(block, /@media\(min-width:1121px\)/);
-  assert.match(block, /flex-basis:min\(220px,calc/);
+  assert.match(block, /flex-basis:min\(154px,calc/);
   assert.match(block, /gap:clamp\(28px,2\.4vw,48px\)!important/);
   assert.match(block, /html:not\(\[data-catalog-layout="list"\]\)/);
+  assert.match(block, /repeat\(auto-fit,minmax\(120px,154px\)\)/);
+  assert.match(block, /\.exact-card-product-name\{font-size:12px!important/);
+  assert.match(block, /\.card-add-button\{width:100%!important;min-height:32px!important/);
   assert.match(css, /\.product-card:hover\{\s*border:0!important;box-shadow:none!important/);
 });
 
