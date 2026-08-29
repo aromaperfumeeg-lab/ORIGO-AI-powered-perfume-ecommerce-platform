@@ -4567,6 +4567,21 @@ html body :is(#storefront-main,.product-overlay) .product-card.origo-exact-produ
   justify-content:flex-start!important;
   gap:5px!important;
   direction:inherit!important;
+  flex-wrap:nowrap!important;
+  overflow:visible!important;
+}
+html body :is(#storefront-main,.product-overlay) .product-card.origo-exact-product-card .exact-card-prices .product-price{
+  flex:0 1 auto!important;
+  min-width:0!important;
+  font-size:clamp(11px,1vw,16px)!important;
+  line-height:1.1!important;
+  white-space:nowrap!important;
+}
+html body :is(#storefront-main,.product-overlay) .product-card.origo-exact-product-card .exact-card-prices del{
+  flex:0 1 auto!important;
+  min-width:0!important;
+  font-size:clamp(8px,.72vw,11px)!important;
+  white-space:nowrap!important;
 }
 html body :is(#storefront-main,.product-overlay) .product-card.origo-exact-product-card .product-price-discount{
   flex:none!important;
