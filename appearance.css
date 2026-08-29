@@ -4404,3 +4404,62 @@ html body :is(#storefront-main,.product-overlay) .product-card.origo-exact-produ
 @media(max-width:700px){
   #home #home-benefits-track .benefit-slider-card .benefit-icon{width:40px!important;height:40px!important;padding:1px!important;border-radius:11px!important}
 }
+
+/* Storefront typography follows the same display face used by the homepage SEO title. */
+:where(#storefront-main,.site-header,#site-footer,.origo-footer,.mobile-menu-panel,.store-bottom-nav,.drawer,.product-overlay),
+:where(#storefront-main,.site-header,#site-footer,.origo-footer,.mobile-menu-panel,.store-bottom-nav,.drawer,.product-overlay) :where(*:not(code):not(pre):not(kbd):not(samp)){
+  font-family:var(--origo-font-heading)!important;
+}
+
+/* Add-to-cart is a solid brand action, never a white framed control. */
+html body :is(#storefront-main,.product-overlay) .product-card .exact-card-actions{
+  border:0!important;
+  outline:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+html body :is(#storefront-main,.product-overlay) .product-card .exact-card-actions .card-add-button,
+html body :is(#storefront-main,.product-overlay) .product-card .exact-card-actions .card-add-button:is(:hover,:focus-visible){
+  color:#fff!important;
+  background:#76001c!important;
+  background-image:none!important;
+  border:0!important;
+  outline-color:#fff!important;
+  box-shadow:none!important;
+}
+
+/* Keep the cart action centered at the card foot and fully inside its bounds. */
+html body :is(#storefront-main,.product-overlay) .product-card.origo-exact-product-card .product-info{
+  display:flex!important;
+  flex:1 1 auto!important;
+  min-width:0!important;
+  overflow:visible!important;
+}
+html body :is(#storefront-main,.product-overlay) .product-card.origo-exact-product-card .exact-card-actions{
+  width:100%!important;
+  margin-top:auto!important;
+  padding:4px 0 2px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  overflow:visible!important;
+}
+html body :is(#storefront-main,.product-overlay) .product-card.origo-exact-product-card .exact-card-actions .card-add-button{
+  width:calc(100% - 12px)!important;
+  max-width:100%!important;
+  min-width:0!important;
+  margin:0 auto!important;
+  padding-inline:10px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  overflow:visible!important;
+  white-space:nowrap!important;
+}
+html body :is(#storefront-main,.product-overlay) .product-card.origo-exact-product-card .exact-card-actions .card-add-button>span{
+  width:auto!important;
+  min-width:0!important;
+  overflow:visible!important;
+  white-space:nowrap!important;
+  text-overflow:clip!important;
+}

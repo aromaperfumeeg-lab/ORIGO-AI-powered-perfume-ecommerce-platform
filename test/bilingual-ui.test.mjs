@@ -145,6 +145,25 @@ test("benefit frames wrap only their icons while labels remain outside", () => {
   assert.match(appearance, /\.benefit-slider-card \.benefit-slider-copy\{[\s\S]*?background:transparent!important;[\s\S]*?border:0!important/);
 });
 
+test("storefront typography uses the same face as the homepage SEO title", () => {
+  assert.match(index, /<h1 id="home-seo-title">أوريجو سينتس - متجر العطور الأصلية في مصر<\/h1>/);
+  assert.match(appearance, /Storefront typography follows the same display face used by the homepage SEO title/);
+  assert.match(appearance, /#storefront-main,\.site-header,#site-footer,\.origo-footer,\.mobile-menu-panel,\.store-bottom-nav,\.drawer,\.product-overlay[\s\S]*?font-family:var\(--origo-font-heading\)!important/);
+});
+
+test("product add-to-cart uses white copy without a white frame", () => {
+  assert.match(appearance, /Add-to-cart is a solid brand action, never a white framed control/);
+  assert.match(appearance, /\.exact-card-actions\{[\s\S]*?border:0!important;[\s\S]*?background:transparent!important/);
+  assert.match(appearance, /\.card-add-button:is\(:hover,:focus-visible\)\{[\s\S]*?color:#fff!important;[\s\S]*?background:#76001c!important;[\s\S]*?border:0!important/);
+});
+
+test("product add-to-cart stays centered at the card foot without clipping", () => {
+  assert.match(appearance, /Keep the cart action centered at the card foot and fully inside its bounds/);
+  assert.match(appearance, /\.exact-card-actions\{[\s\S]*?margin-top:auto!important;[\s\S]*?justify-content:center!important;[\s\S]*?overflow:visible!important/);
+  assert.match(appearance, /\.card-add-button\{[\s\S]*?width:calc\(100% - 12px\)!important;[\s\S]*?margin:0 auto!important;[\s\S]*?white-space:nowrap!important/);
+  assert.match(appearance, /\.card-add-button>span\{[\s\S]*?overflow:visible!important;[\s\S]*?text-overflow:clip!important/);
+});
+
 test("gender cards use larger frames and readable centered labels", () => {
   assert.match(appearance, /\.home-gender-slider \.home-gender-card\{\s*min-height:110px!important;padding:20px 24px!important;border-width:2\.5px!important/);
   assert.match(appearance, /\.gender-card-copy b\{\s*font-size:22px!important;line-height:1\.3!important;font-weight:800!important/);
