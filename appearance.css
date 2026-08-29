@@ -4463,3 +4463,82 @@ html body :is(#storefront-main,.product-overlay) .product-card.origo-exact-produ
   white-space:nowrap!important;
   text-overflow:clip!important;
 }
+
+/* Final night storefront palette: charcoal layers replace every pure-black customer surface. */
+:is(body.dark,html[data-theme="dark"] body){
+  --white:#242424!important;
+  --paper:#292929!important;
+  --paper-2:#303030!important;
+  --card:#2c2c2c!important;
+  --surface:#2c2c2c!important;
+  background:#242424!important;
+  background-image:none!important;
+}
+:is(body.dark,html[data-theme="dark"] body) :is(
+  #storefront-main,.origo-home,.site-header,.category-nav,.origo-footer,
+  .product-overlay,.drawer,.mobile-menu-panel,.store-bottom-nav,.header-account-menu,
+  .catalog-page,.commerce-page,.account-route-page,.fragrance-finder-page,
+  .alternatives-page,.benefit-detail-page,.brands-route-page
+){
+  background:#242424!important;
+  background-image:none!important;
+}
+:is(body.dark,html[data-theme="dark"] body) :is(
+  #storefront-main,.product-overlay,.drawer,.mobile-menu-panel,.header-account-menu
+) :is(
+  .product-card,.product-card-info,.product-info,.pdp-card,.pdp-purchase,
+  .catalog-filter-panel,.catalog-toolbar,.finder-card,.finder-option,.alternative-card,
+  .benefit-content-card,.account-card,.account-subview,.checkout-main-card,.checkout-summary-card,
+  .mobile-menu-head,.mobile-menu-actions,.mobile-menu-search,.mobile-menu-links>*,
+  .mobile-menu-section,.mobile-menu-preferences>*,input,textarea,select
+){
+  background:#2c2c2c!important;
+  background-image:none!important;
+}
+:is(body.dark,html[data-theme="dark"] body) :is(#storefront-main,.product-overlay) :is(.product-card,.product-card-info,.product-info,.exact-card-copy,.exact-card-prices,.exact-card-actions){
+  background:transparent!important;
+  background-image:none!important;
+  border-color:transparent!important;
+  box-shadow:none!important;
+}
+:is(body.dark,html[data-theme="dark"] body) :is(#storefront-main,.product-overlay) :is(
+  .product-image,.product-card-media-link,.pdp-media,.product-media-stage,.product-media-lightbox
+){
+  background:#303030!important;
+  background-image:linear-gradient(145deg,#343434,#2b2b2b)!important;
+}
+:is(body.dark,html[data-theme="dark"] body) :is(.store-bottom-nav,.mobile-menu-links>button,.mobile-menu-links>a,.mobile-menu-section>button,.mobile-menu-section>a,.mobile-menu-preferences>button){
+  background:#303030!important;
+  background-image:none!important;
+}
+:is(body.dark,html[data-theme="dark"] body) .origo-footer{
+  background:#292929!important;
+  background-image:linear-gradient(145deg,#303030,#262626)!important;
+}
+:is(body.dark,html[data-theme="dark"] body) .overlay{background:rgba(28,28,28,.9)!important}
+
+/* Compact discount tab and reserve clear image space so it never covers the product. */
+html body :is(#storefront-main,.product-overlay) .product-card.origo-exact-product-card .product-image>.product-badge[data-badge-kind="sale"]{
+  top:6px!important;
+  right:auto!important;
+  left:auto!important;
+  inset-inline-start:6px!important;
+  inset-inline-end:auto!important;
+  z-index:9!important;
+  max-width:none!important;
+  min-height:20px!important;
+  padding:3px 6px!important;
+  border:0!important;
+  border-radius:6px!important;
+  color:#fff!important;
+  background:#76001c!important;
+  box-shadow:none!important;
+  font-size:clamp(7px,.65vw,10px)!important;
+  line-height:1!important;
+}
+html body :is(#storefront-main,.product-overlay) .product-card.origo-exact-product-card .product-image:has(>.product-badge[data-badge-kind="sale"]) .product-card-media-link{
+  padding-top:clamp(52px,5vw,70px)!important;
+}
+@media(max-width:700px){
+  html body :is(#storefront-main,.product-overlay) .product-card.origo-exact-product-card .product-image:has(>.product-badge[data-badge-kind="sale"]) .product-card-media-link{padding-top:42px!important}
+}

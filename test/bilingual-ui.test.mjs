@@ -22,12 +22,10 @@ const productDetail = await readFile(new URL("../product-detail.css", import.met
 const index = await readFile(new URL("../index.html", import.meta.url), "utf8");
 const performance = app.slice(app.indexOf("function perfumePerformanceEditorSection"), app.indexOf("const PRODUCT_PROFILE_IMAGE_FIELDS"));
 
-test("dark mode uses a black background behind product imagery", () => {
-  assert.match(styles,/html\[data-theme="dark"\] \.product-image \{\s*background: #000/);
+test("dark mode uses a charcoal gradient behind product imagery", () => {
   assert.match(appearance,/html\[data-theme="dark"\] body :is\(#storefront-main,\.product-overlay\) \.product-card \.product-card-media-link/);
   assert.match(appearance,/object-fit:contain!important;[\s\S]{0,140}background:transparent!important;[\s\S]{0,100}mix-blend-mode:normal!important/);
-  assert.match(productDetail,/html\[data-theme="dark"\] \.pdp-main-image/);
-  assert.match(productDetail,/\.pdp-thumbnails button\{background:#000\}/);
+  assert.match(appearance,/\.product-image,\.product-card-media-link,\.pdp-media,\.product-media-stage,\.product-media-lightbox[\s\S]*?linear-gradient\(145deg,#343434,#2b2b2b\)!important/);
   assert.match(appearance,/\.product-card:hover\{\s*border:0!important;box-shadow:none!important/);
   assert.match(appearance,/border-radius:0!important;[\s\S]{0,80}overflow:hidden!important/);
   assert.match(appearance,/\.product-card \.exact-card-actions\{[\s\S]{0,140}place-items:center!important/);
@@ -162,6 +160,19 @@ test("product add-to-cart stays centered at the card foot without clipping", () 
   assert.match(appearance, /\.exact-card-actions\{[\s\S]*?margin-top:auto!important;[\s\S]*?justify-content:center!important;[\s\S]*?overflow:visible!important/);
   assert.match(appearance, /\.card-add-button\{[\s\S]*?width:calc\(100% - 12px\)!important;[\s\S]*?margin:0 auto!important;[\s\S]*?white-space:nowrap!important/);
   assert.match(appearance, /\.card-add-button>span\{[\s\S]*?overflow:visible!important;[\s\S]*?text-overflow:clip!important/);
+});
+
+test("night storefront replaces pure black surfaces with layered charcoal", () => {
+  assert.match(appearance, /Final night storefront palette: charcoal layers replace every pure-black customer surface/);
+  assert.match(appearance, /--white:#242424!important;[\s\S]*?--surface:#2c2c2c!important/);
+  assert.match(appearance, /\.product-image,\.product-card-media-link,\.pdp-media,\.product-media-stage,\.product-media-lightbox[\s\S]*?background:#303030!important;[\s\S]*?linear-gradient\(145deg,#343434,#2b2b2b\)/);
+  assert.match(appearance, /\.origo-footer\{[\s\S]*?linear-gradient\(145deg,#303030,#262626\)!important/);
+});
+
+test("discount badge stays compact and reserves clear product-image space", () => {
+  assert.match(appearance, /Compact discount tab and reserve clear image space so it never covers the product/);
+  assert.match(appearance, /\.product-badge\[data-badge-kind="sale"\]\{[\s\S]*?top:6px!important;[\s\S]*?padding:3px 6px!important;[\s\S]*?font-size:clamp\(7px,\.65vw,10px\)!important/);
+  assert.match(appearance, /:has\(>\.product-badge\[data-badge-kind="sale"\]\) \.product-card-media-link\{[\s\S]*?padding-top:clamp\(52px,5vw,70px\)!important/);
 });
 
 test("gender cards use larger frames and readable centered labels", () => {
