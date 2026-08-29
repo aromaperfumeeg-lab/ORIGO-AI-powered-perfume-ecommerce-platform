@@ -179,6 +179,9 @@ test("discount sits beside the price and compact metadata follows locale directi
   assert.match(appearance, /\.product-bottom\{[\s\S]*?margin-top:1px!important;[\s\S]*?padding-top:3px!important;[\s\S]*?border-top:0!important/);
   assert.match(appearance, /\.exact-card-prices \.product-price\{[\s\S]*?font-size:clamp\(11px,1vw,16px\)!important;[\s\S]*?white-space:nowrap!important/);
   assert.match(appearance, /\.exact-card-prices\{[\s\S]*?flex-wrap:nowrap!important;[\s\S]*?overflow:visible!important/);
+  assert.match(appearance, /Current price always leads; legacy high-specificity rules must not enlarge the crossed-out price/);
+  assert.match(appearance, /#home \.origo-exact-product-card \.exact-card-prices \.product-price[\s\S]*?font-size:clamp\(12px,1\.05vw,16px\)!important/);
+  assert.match(appearance, /#home \.origo-exact-product-card \.exact-card-prices del[\s\S]*?font-size:clamp\(8px,\.68vw,10px\)!important/);
 });
 
 test("gender cards use larger frames and readable centered labels", () => {

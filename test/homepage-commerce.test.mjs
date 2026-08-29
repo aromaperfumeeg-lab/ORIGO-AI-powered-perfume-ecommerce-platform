@@ -31,6 +31,22 @@ test("only the first nonempty enabled product rail has the shared density contro
   assert.equal((holder.innerHTML.match(/mobile-product-view-control/g) || []).length, 1);
 });
 
+test("brand product rails match saved Arabic, English and slug aliases", async () => {
+  const app = await read("app.js");
+  const source = app.slice(app.indexOf("function homeProductMatchesBrand("), app.indexOf("function homeProductRowProducts("));
+  const option = {slug:"lattafa",value:"lattafa",nameAr:"لطافة",nameEn:"Lattafa",metadata:{value:"lattafa-perfumes"}};
+  const normalize = (value) => String(value || "").trim().toLocaleLowerCase("en").replace(/[^\p{L}\p{N}]+/gu,"-").replace(/^-+|-+$/g,"");
+  const context = {
+    brandIdentity:normalize,
+    brandMatches:(brand,value) => [brand.slug,brand.value,brand.nameAr,brand.nameEn,brand.metadata?.value].some((alias) => normalize(alias) === normalize(value)),
+    productOptionItems:() => [option]
+  };
+  runInNewContext(source,context);
+  assert.equal(context.homeProductMatchesBrand({brandAr:"لطافة"},"lattafa"),true);
+  assert.equal(context.homeProductMatchesBrand({brandEn:"Lattafa"},"لطافة"),true);
+  assert.equal(context.homeProductMatchesBrand({brand:"Other"},"lattafa"),false);
+});
+
 test("every default benefit has bilingual detail and old settings retain edits when new benefits are added", async () => {
   const app = await read("app.js");
   const defaults = app.slice(app.indexOf("const defaultFooterBenefits ="), app.indexOf("const defaultStoreSettings ="));

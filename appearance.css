@@ -4583,6 +4583,21 @@ html body :is(#storefront-main,.product-overlay) .product-card.origo-exact-produ
   font-size:clamp(8px,.72vw,11px)!important;
   white-space:nowrap!important;
 }
+/* Current price always leads; legacy high-specificity rules must not enlarge the crossed-out price. */
+html body #storefront-main #home .origo-exact-product-card .exact-card-prices .product-price,
+html body #storefront-main .catalog-product-grid .origo-exact-product-card .exact-card-prices .product-price,
+html body #storefront-main .pdp-products-row .origo-exact-product-card .exact-card-prices .product-price,
+html body .product-overlay .origo-exact-product-card .exact-card-prices .product-price{
+  font-size:clamp(12px,1.05vw,16px)!important;
+  font-weight:900!important;
+}
+html body #storefront-main #home .origo-exact-product-card .exact-card-prices del,
+html body #storefront-main .catalog-product-grid .origo-exact-product-card .exact-card-prices del,
+html body #storefront-main .pdp-products-row .origo-exact-product-card .exact-card-prices del,
+html body .product-overlay .origo-exact-product-card .exact-card-prices del{
+  font-size:clamp(8px,.68vw,10px)!important;
+  font-weight:600!important;
+}
 html body :is(#storefront-main,.product-overlay) .product-card.origo-exact-product-card .product-price-discount{
   flex:none!important;
   min-height:18px!important;

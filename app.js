@@ -2976,10 +2976,17 @@ function productOptionsAdminMarkup() {
 }
 
 function homepageProductBrandOptions(selected = "") {
-  const brands = [...ORIGO_PERFUME_BRANDS, ...state.products.map((product) => String(product.brand || "").trim()).filter(Boolean)]
-    .filter((brand, index, values) => values.findIndex((candidate) => ORIGOCatalog.normalize(candidate) === ORIGOCatalog.normalize(brand)) === index)
-    .sort((a, b) => a.localeCompare(b, state.lang === "ar" ? "ar" : "en"));
-  return `<option value="">${adminCopy("اختر العلامة التجارية", "Choose a brand")}</option>${brands.map((brand) => `<option value="${escapeHTML(brand)}"${ORIGOCatalog.normalize(brand) === ORIGOCatalog.normalize(selected) ? " selected" : ""}>${escapeHTML(brand)}</option>`).join("")}`;
+  const saved = productOptionItems("brand").map((option) => ({
+    value:String(option.slug || option.value || option.nameEn || option.nameAr || "").trim(),
+    nameAr:String(option.nameAr || option.nameEn || option.value || "").trim(),
+    nameEn:String(option.nameEn || option.nameAr || option.value || "").trim(),
+    option
+  }));
+  const fallbacks = [...ORIGO_PERFUME_BRANDS, ...state.products.flatMap((product) => [product.brand,product.brandAr,product.brandEn]).map((brand) => String(brand || "").trim()).filter(Boolean)]
+    .map((brand) => ({ value:brand,nameAr:brand,nameEn:brand,option:{ slug:brand,value:brand,nameAr:brand,nameEn:brand } }));
+  const brands = [...saved,...fallbacks].filter((brand,index,values) => values.findIndex((candidate) => brandIdentity(candidate.value) === brandIdentity(brand.value)) === index)
+    .sort((a,b) => (state.lang === "ar" ? a.nameAr : a.nameEn).localeCompare(state.lang === "ar" ? b.nameAr : b.nameEn,state.lang === "ar" ? "ar" : "en"));
+  return `<option value="">${adminCopy("اختر العلامة التجارية", "Choose a brand")}</option>${brands.map((brand) => `<option value="${escapeHTML(brand.value)}"${brandMatches(brand.option,selected) ? " selected" : ""}>${escapeHTML(state.lang === "ar" ? brand.nameAr : brand.nameEn)}</option>`).join("")}`;
 }
 
 function homepageProductRowAdminCard(row = {}, index = 0) {
@@ -3905,17 +3912,23 @@ function productSalesScore(product) {
 }
 
 function homeBrandProducts(brand) {
-  const key = ORIGOCatalog.normalize(brand);
   const perfumeOnly = mergeStoreSettings(state.adminWorkspace.settings || {}).perfumeOnlyMode !== false;
-  return state.products.filter((product) => (!perfumeOnly || product.category === "perfume") && ORIGOCatalog.normalize(product.brand || "") === key);
+  return state.products.filter((product) => (!perfumeOnly || product.category === "perfume") && homeProductMatchesBrand(product,brand));
+}
+
+function homeProductMatchesBrand(product, value) {
+  const aliases = [product?.brand,product?.brandAr,product?.brandEn,product?.brandSlug].filter(Boolean);
+  const selectedKey = brandIdentity(value);
+  if (selectedKey && aliases.some((alias) => brandIdentity(alias) === selectedKey)) return true;
+  const option = productOptionItems("brand").find((candidate) => brandMatches(candidate,value));
+  return Boolean(option && aliases.some((alias) => brandMatches(option,alias)));
 }
 
 function homeProductRowProducts(row) {
   const perfumeOnly = mergeStoreSettings(state.adminWorkspace.settings || {}).perfumeOnlyMode !== false;
   const products = state.products.filter((product) => !perfumeOnly || product.category === "perfume").map((product, index) => ({ product, index }));
   if (row.source === "brand") {
-    const brand = ORIGOCatalog.normalize(row.brand || "");
-    return products.filter(({ product }) => ORIGOCatalog.normalize(product.brand || "") === brand).map(({ product }) => product);
+    return products.filter(({ product }) => homeProductMatchesBrand(product,row.brand)).map(({ product }) => product);
   }
   if (row.source === "newest") return products.sort((a, b) => productDateScore(b.product, b.index) - productDateScore(a.product, a.index)).map(({ product }) => product);
   if (row.source === "best-selling") return products.sort((a, b) => productSalesScore(b.product) - productSalesScore(a.product)).map(({ product }) => product);
