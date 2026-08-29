@@ -4116,6 +4116,23 @@ html body :is(#storefront-main,.product-overlay) .product-card .exact-card-actio
 @media(max-width:700px){#home .benefits-curtain-trigger{min-height:60px;padding-inline:12px}#home .benefits-curtain-heading{font-size:18px}#home .benefits-curtain-toggle{width:44px;height:44px}#home .benefits-curtain-inner{grid-template-columns:1fr;padding-inline:8px}#home .benefits-curtain-item{min-height:76px;padding:10px 8px;grid-template-columns:48px minmax(0,1fr) 36px}#home .benefits-curtain-item:nth-child(odd){border-inline-end:0}#home .benefits-curtain-item:nth-last-child(2){border-block-end:1px solid #eee}#home .benefits-curtain-copy b{font-size:15px}#home .benefits-curtain-copy small{font-size:12px}}
 @media(prefers-reduced-motion:reduce){#home .benefits-curtain,#home .benefits-curtain-inner,#home .benefits-curtain-toggle{transition:none!important}}
 
+/* Dark storefront: keep sliders crisp and align the benefits curtain with the shared charcoal palette. */
+:is(body.dark,html[data-theme="dark"] body) #home :is(.origo-home-hero,.home-hero-products){opacity:1!important;filter:none!important}
+:is(body.dark,html[data-theme="dark"] body) #home .home-brand-directory .brand-slider-card>img{opacity:1!important;filter:none!important;mix-blend-mode:normal!important}
+:is(body.dark,html[data-theme="dark"] body) #home .benefits-curtain-trigger{
+  color:#fff!important;background:#2c2c2c!important;border-color:#505050!important;box-shadow:none!important;
+}
+:is(body.dark,html[data-theme="dark"] body) #home .benefits-curtain-toggle{color:#fff!important;background:#333!important;border-color:#686868!important}
+:is(body.dark,html[data-theme="dark"] body) #home .benefits-curtain-trigger[aria-expanded="true"] .benefits-curtain-toggle{background:#3a3a3a!important}
+:is(body.dark,html[data-theme="dark"] body) #home .benefits-curtain-inner{background:#242424!important;border-color:#505050!important}
+:is(body.dark,html[data-theme="dark"] body) #home .benefits-curtain-item{
+  color:#fff!important;background:#2c2c2c!important;border-color:#505050!important;
+}
+:is(body.dark,html[data-theme="dark"] body) #home .benefits-curtain-item:not(:disabled):hover{background:#333!important}
+:is(body.dark,html[data-theme="dark"] body) #home .benefits-curtain-item .benefit-icon{color:#fff!important;background:#333!important;border-color:#505050!important}
+:is(body.dark,html[data-theme="dark"] body) #home .benefits-curtain-copy small{color:#d0d0d0!important}
+:is(body.dark,html[data-theme="dark"] body) #home .benefits-curtain-link{color:#fff!important}
+
 /* Restore the complete brand marquee: continuous loop, pause-on-interaction and RTL direction. */
 @media(prefers-reduced-motion:no-preference){
   body:not(.admin-mode) #home .home-brand-directory .brand-marquee-content{
@@ -4311,4 +4328,79 @@ html body :is(#storefront-main,.product-overlay) .product-card.origo-exact-produ
   #home-benefits-track .benefit-icon svg{width:24px;height:24px}
   #home-benefits-track .benefit-slider-copy{gap:0}
   #home-benefits-track .benefit-slider-copy small{display:none}
+}
+
+/* Dark storefront cards blend into the shared charcoal canvas without black frames. */
+:is(body.dark,html[data-theme="dark"] body) :is(#storefront-main,.product-overlay) .product-card,
+:is(body.dark,html[data-theme="dark"] body) :is(#storefront-main,.product-overlay) .product-card:is(:hover,:focus-within),
+:is(body.dark,html[data-theme="dark"] body) :is(#storefront-main,.product-overlay) .product-card :is(.product-card-info,.product-info,.exact-card-copy,.exact-card-prices,.exact-card-actions){
+  border:0!important;
+  outline:0!important;
+  box-shadow:none!important;
+  background:transparent!important;
+  background-image:none!important;
+}
+:is(body.dark,html[data-theme="dark"] body) #storefront-main .product-card::before,
+:is(body.dark,html[data-theme="dark"] body) #storefront-main .product-card::after{
+  content:none!important;
+  display:none!important;
+}
+
+/* Brand, benefit and gender rails use the page charcoal instead of isolated black panels. */
+:is(body.dark,html[data-theme="dark"] body) #home :is(.home-brand-directory,.home-benefits-directory,.home-gender-section),
+:is(body.dark,html[data-theme="dark"] body) #home :is(.home-brand-directory,.home-benefits-directory) .brand-slider-page>button,
+:is(body.dark,html[data-theme="dark"] body) #home .home-brand-directory .brand-marquee-set>button,
+:is(body.dark,html[data-theme="dark"] body) #home #home-benefits-track>.benefit-slider-card,
+:is(body.dark,html[data-theme="dark"] body) #home .home-gender-card:is(.gender-men,.gender-women,.gender-unisex){
+  background:#242424!important;
+  background-image:none!important;
+  box-shadow:none!important;
+}
+
+/* Benefit tiles frame only the icon; their label remains below the frame. */
+#home #home-benefits-track.brand-paged-slider .brand-slider-page>.benefit-slider-card,
+#home #home-benefits-track.benefits-swipe-track>.benefit-slider-card{
+  width:auto!important;
+  height:auto!important;
+  min-height:0!important;
+  aspect-ratio:auto!important;
+  padding:2px!important;
+  gap:6px!important;
+  overflow:visible!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+#home #home-benefits-track .benefit-slider-card .benefit-icon{
+  box-sizing:border-box!important;
+  width:48px!important;
+  height:48px!important;
+  padding:2px!important;
+  overflow:hidden!important;
+  border:1px solid var(--line,#ded7d9)!important;
+  border-radius:13px!important;
+  background:var(--surface,#fff)!important;
+}
+#home #home-benefits-track .benefit-slider-card .benefit-icon :is(svg,img,.origo-lux-icon-medallion){
+  width:100%!important;
+  height:100%!important;
+  max-width:none!important;
+  max-height:none!important;
+  margin:0!important;
+  object-fit:contain!important;
+}
+#home #home-benefits-track .benefit-slider-card .benefit-slider-copy{
+  width:100%!important;
+  padding:0!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+:is(body.dark,html[data-theme="dark"] body) #home #home-benefits-track .benefit-slider-card .benefit-icon{
+  border-color:#505050!important;
+  background:#2c2c2c!important;
+}
+@media(max-width:700px){
+  #home #home-benefits-track .benefit-slider-card .benefit-icon{width:40px!important;height:40px!important;padding:1px!important;border-radius:11px!important}
 }

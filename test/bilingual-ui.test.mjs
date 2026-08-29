@@ -124,6 +124,27 @@ test("homepage directories avoid glass compositing and use unified gender contro
   assert.match(appearance, /html\[data-theme="dark"\] body\) #home :is\(h1,h2,h3,h4,h5,h6/);
 });
 
+test("dark sliders stay crisp and the benefits curtain uses the shared charcoal palette", () => {
+  assert.match(appearance, /\.home-hero-products\)\{opacity:1!important;filter:none!important\}/);
+  assert.match(appearance, /\.brand-slider-card>img\{opacity:1!important;filter:none!important;mix-blend-mode:normal!important\}/);
+  assert.match(appearance, /\.benefits-curtain-trigger\{\s*color:#fff!important;background:#2c2c2c!important;border-color:#505050!important/);
+  assert.match(appearance, /\.benefits-curtain-inner\{background:#242424!important;border-color:#505050!important\}/);
+  assert.match(appearance, /\.benefits-curtain-item\{\s*color:#fff!important;background:#2c2c2c!important;border-color:#505050!important/);
+});
+
+test("dark product and homepage rail cards do not render black frames", () => {
+  assert.match(appearance, /Dark storefront cards blend into the shared charcoal canvas without black frames/);
+  assert.match(appearance, /\.product-card:is\(:hover,:focus-within\)[\s\S]*?border:0!important;[\s\S]*?box-shadow:none!important;[\s\S]*?background:transparent!important/);
+  assert.match(appearance, /Brand, benefit and gender rails use the page charcoal instead of isolated black panels[\s\S]*?background:#242424!important/);
+});
+
+test("benefit frames wrap only their icons while labels remain outside", () => {
+  assert.match(appearance, /Benefit tiles frame only the icon; their label remains below the frame/);
+  assert.match(appearance, /\.benefit-slider-card\{[\s\S]*?aspect-ratio:auto!important;[\s\S]*?border:0!important;[\s\S]*?background:transparent!important/);
+  assert.match(appearance, /\.benefit-slider-card \.benefit-icon\{[\s\S]*?width:48px!important;[\s\S]*?height:48px!important;[\s\S]*?border:1px solid/);
+  assert.match(appearance, /\.benefit-slider-card \.benefit-slider-copy\{[\s\S]*?background:transparent!important;[\s\S]*?border:0!important/);
+});
+
 test("gender cards use larger frames and readable centered labels", () => {
   assert.match(appearance, /\.home-gender-slider \.home-gender-card\{\s*min-height:110px!important;padding:20px 24px!important;border-width:2\.5px!important/);
   assert.match(appearance, /\.gender-card-copy b\{\s*font-size:22px!important;line-height:1\.3!important;font-weight:800!important/);
