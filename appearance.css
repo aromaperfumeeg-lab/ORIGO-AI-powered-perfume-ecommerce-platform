@@ -4614,3 +4614,12 @@ html body :is(#storefront-main,.product-overlay) .product-card.origo-exact-produ
   line-height:1!important;
   direction:ltr!important;
 }
+
+/* Homepage section headings use neutral contrast in both color modes. */
+#home :is(#home-brands-title,#home-benefits-title,.home-configured-product-row .home-section-head h2,#new-arrivals-title,#best-sellers-title){
+  color:#000!important;
+}
+html[data-theme="dark"] #home :is(#home-brands-title,#home-benefits-title,.home-configured-product-row .home-section-head h2,#new-arrivals-title,#best-sellers-title),
+body.dark #home :is(#home-brands-title,#home-benefits-title,.home-configured-product-row .home-section-head h2,#new-arrivals-title,#best-sellers-title){
+  color:#fff!important;
+}
