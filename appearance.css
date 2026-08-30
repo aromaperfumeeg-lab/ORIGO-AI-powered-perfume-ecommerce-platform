@@ -4157,6 +4157,97 @@ html body :is(#storefront-main,.product-overlay) .product-card .exact-card-actio
     animation-play-state:paused!important;
   }
 }
+
+/* Keep the compact gender buttons grouped closely in the center. */
+body #storefront-main #home .home-gender-section .home-gender-slider{
+  width:max-content!important;
+  max-width:100%!important;
+  margin-inline:auto!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:8px!important;
+}
+@media(max-width:700px){
+  body #storefront-main #home .home-gender-section .home-gender-slider{
+    gap:5px!important;
+  }
+}
+
+/* Final product-card hierarchy and commerce controls. */
+html body :is(#storefront-main,.product-overlay) .origo-exact-product-card .exact-card-heading{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:6px!important;
+  direction:inherit!important;
+}
+html body :is(#storefront-main,.product-overlay) .origo-exact-product-card .product-brand{
+  margin:0!important;
+  min-width:0!important;
+  text-align:start!important;
+  direction:inherit!important;
+  font-size:clamp(9px,.72vw,11px)!important;
+  line-height:1.15!important;
+}
+html body :is(#storefront-main,.product-overlay) .origo-exact-product-card .exact-card-rating{
+  flex:none!important;
+  gap:2px!important;
+  font-size:clamp(9px,.72vw,11px)!important;
+  line-height:1.15!important;
+}
+html body :is(#storefront-main,.product-overlay) .origo-exact-product-card .exact-card-product-name{
+  width:100%!important;
+  justify-content:space-between!important;
+}
+html body :is(#storefront-main,.product-overlay) .origo-exact-product-card .exact-card-product-name>a{
+  overflow:visible!important;
+  text-overflow:clip!important;
+  white-space:normal!important;
+}
+html body :is(#storefront-main,.product-overlay) .origo-exact-product-card .exact-card-product-name>.product-price-discount{
+  margin-inline-start:auto!important;
+}
+html body :is(#storefront-main,.product-overlay) .origo-exact-product-card .exact-card-prices .product-price{
+  font-size:clamp(11px,.9vw,14px)!important;
+  line-height:1.15!important;
+}
+html body :is(#storefront-main,.product-overlay) .origo-exact-product-card .exact-card-actions .card-add-button{
+  width:100%!important;
+  min-height:34px!important;
+  height:auto!important;
+  padding:7px 10px!important;
+  overflow:visible!important;
+  border:1px solid #76001c!important;
+  border-radius:8px!important;
+  color:#000!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+html body :is(#storefront-main,.product-overlay) .origo-exact-product-card .exact-card-actions .card-add-button:hover{
+  color:#000!important;
+  background:rgba(118,0,28,.05)!important;
+}
+html body :is(#storefront-main,.product-overlay) .origo-exact-product-card .exact-card-actions .card-add-button span{
+  min-width:0!important;
+  display:block!important;
+  overflow:visible!important;
+  text-overflow:clip!important;
+  white-space:normal!important;
+  line-height:1.25!important;
+}
+html body :is(#storefront-main,.product-overlay) .origo-exact-product-card .card-add-button .available-cart-icon{
+  color:#76001c!important;
+}
+html body :is(#storefront-main,.product-overlay) .origo-exact-product-card .card-add-button .restock-alert-icon{
+  color:#c28719!important;
+  stroke-width:1.9!important;
+}
+:is(body.dark,html[data-theme="dark"] body) :is(#storefront-main,.product-overlay) .origo-exact-product-card .exact-card-actions .card-add-button,
+:is(body.dark,html[data-theme="dark"] body) :is(#storefront-main,.product-overlay) .origo-exact-product-card .exact-card-actions .card-add-button:hover{
+  color:#fff!important;
+  background:transparent!important;
+}
 @keyframes origoAnnouncementTickerRtl{to{transform:translateX(100%)}}
 @media(max-width:640px) and (prefers-reduced-motion:no-preference){
   body:not(.admin-mode) .announcement>span{animation-duration:14s!important}
@@ -4668,5 +4759,55 @@ body #storefront-main #home .home-gender-section .home-gender-card .gender-card-
     padding:5px 9px!important;
     border-width:1.5px!important;
     border-radius:7px!important;
+  }
+}
+
+/* Phone sliders: slim indicators and a 20% taller, squarer hero frame. */
+@media(max-width:700px){
+  body #storefront-main #home .origo-home-hero{
+    aspect-ratio:40/27!important;
+    margin-bottom:8px!important;
+  }
+  body #storefront-main #home .home-hero-dots{
+    bottom:-3px!important;
+    height:2px!important;
+    gap:4px!important;
+  }
+  body #storefront-main #home .home-hero-dots button,
+  body #storefront-main #home .home-hero-dots button.active{
+    width:20px!important;
+    min-width:20px!important;
+    height:2px!important;
+    min-height:2px!important;
+    margin:0!important;
+    padding:0!important;
+    border:0!important;
+    border-radius:2px!important;
+    background-clip:border-box!important;
+    box-shadow:none!important;
+  }
+  body #storefront-main #home .home-hero-dots button.active{
+    width:30px!important;
+    min-width:30px!important;
+  }
+  body .card-image-dots{
+    bottom:3px!important;
+    gap:3px!important;
+  }
+  body .card-image-dots button,
+  body .card-image-dots button.active{
+    width:14px!important;
+    min-width:14px!important;
+    height:2px!important;
+    min-height:2px!important;
+    padding:0!important;
+    border:0!important;
+    border-radius:2px!important;
+    background-clip:border-box!important;
+    box-shadow:none!important;
+  }
+  body .card-image-dots button.active{
+    width:22px!important;
+    min-width:22px!important;
   }
 }

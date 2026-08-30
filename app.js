@@ -6559,7 +6559,9 @@ function productCardMarkup(product, options = {}) {
       <div class="product-bottom">
         <div class="exact-card-prices"><b class="product-price">${formatPrice(price)}</b>${oldPrice > price ? `<del>${formatPrice(oldPrice)}</del>` : ""}</div>
         <div class="exact-card-actions">
-          <button class="card-add-button${outOfStock ? " is-restock" : ""}"${interactive ? ` data-action="${outOfStock ? "notify-restock" : "add-to-cart"}"` : disabled} aria-label="${escapeHTML(outOfStock ? (isArabic ? "أخبرني عند توفره" : "Notify me when available") : translations[state.lang].addToBag)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.2 10.2a2 2 0 0 0 2 1.6h7.9a2 2 0 0 0 2-1.6L20.5 7H6"/><circle cx="10" cy="20" r="1"/><circle cx="18" cy="20" r="1"/></svg><span>${escapeHTML(outOfStock ? (isArabic ? "أخبرني عند توفره" : "Notify me when available") : translations[state.lang].addToBag)}</span></button>
+          <button class="card-add-button${outOfStock ? " is-restock" : ""}"${interactive ? ` data-action="${outOfStock ? "notify-restock" : "add-to-cart"}"` : disabled} aria-label="${escapeHTML(outOfStock ? (isArabic ? "أخبرني عند توفره" : "Notify me when available") : translations[state.lang].addToBag)}">${outOfStock
+            ? `<svg class="restock-alert-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Z"/><path d="M10 21h4"/></svg>`
+            : `<svg class="available-cart-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.2 10.2a2 2 0 0 0 2 1.6h7.9a2 2 0 0 0 2-1.6L20.5 7H6"/><circle cx="10" cy="20" r="1"/><circle cx="18" cy="20" r="1"/></svg>`}<span>${escapeHTML(outOfStock ? (isArabic ? "أخبرني عند توفره" : "Notify me when available") : translations[state.lang].addToBag)}</span></button>
         </div>
       </div>
     </div>

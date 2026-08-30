@@ -70,7 +70,7 @@ test("product studio click passes through both asynchronous loaders exactly once
 
 test("home loads production storefront core without admin editor or finder runtimes", async () => {
   const [html, loader, core] = await Promise.all([read("../index.html"), read("../runtime-loader.js"), read("../chunks/storefront-core.min.js")]);
-  assert.match(html, /chunks\/storefront-core\.min\.js\?v=32/);
+  assert.match(html, /chunks\/storefront-core\.min\.js\?v=33/);
   assert.match(html, /runtime-loader\.js\?v=15/);
   assert.doesNotMatch(html, /<script[^>]+(?:admin-runtime|product-editor-runtime|storefront-settings-runtime|fragrance-finder-(?:engine|i18n)|fragrance-finder\.js)/);
   assert.doesNotMatch(core, /function settingsMarkup\(|function renderImportReview\(|function overviewMarkup\(/);
@@ -100,6 +100,7 @@ test("product cards use valid semantic links and finder never emits an empty ima
   assert.match(card, /exact-card-product-name[\s\S]+<a href="\/perfume\//);
   assert.match(card, /exact-card-product-name[\s\S]+product-price-discount[\s\S]+<div class="product-bottom">/);
   assert.doesNotMatch(card, /exact-card-prices[^\n]+product-price-discount/);
+  assert.match(card, /is-restock[\s\S]+restock-alert-icon[\s\S]+available-cart-icon/);
   assert.doesNotMatch(card, /<button[^>]+product-card-media-link/);
   assert.match(finder, /p\.image\|\|"assets\/product-image-placeholder\.svg"/);
   assert.doesNotMatch(finder, /<img src="\$\{esc\(p\.image\)\}"/);
