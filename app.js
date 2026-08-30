@@ -3920,7 +3920,9 @@ function homeProductMatchesBrand(product, value) {
   const aliases = [product?.brand,product?.brandAr,product?.brandEn,product?.brandSlug].filter(Boolean);
   const selectedKey = brandIdentity(value);
   if (selectedKey && aliases.some((alias) => brandIdentity(alias) === selectedKey)) return true;
-  const option = productOptionItems("brand").find((candidate) => brandMatches(candidate,value));
+  // Homepage brand matching must stay independent from the deferred product
+  // editor runtime, where productOptionItems is defined in production builds.
+  const option = state.productOptions.find((candidate) => candidate.group === "brand" && candidate.active !== false && brandMatches(candidate,value));
   return Boolean(option && aliases.some((alias) => brandMatches(option,alias)));
 }
 
