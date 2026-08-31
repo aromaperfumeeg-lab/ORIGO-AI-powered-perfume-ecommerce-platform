@@ -41,7 +41,7 @@
     <link rel="stylesheet" data-idle-href="dark-theme.css?v=14" />
     <link rel="stylesheet" href="chunks/origo-identity.min.css?v=4" />
     <link rel="stylesheet" href="chunks/no-effects.min.css?v=5" />
-    <link rel="stylesheet" href="chunks/appearance.min.css?v=34" />
+    <link rel="stylesheet" href="chunks/appearance.min.css?v=35" />
   </head>
   <body>
     <div class="announcement" aria-hidden="true"></div>
@@ -54,10 +54,6 @@
           <div class="header-commerce-actions">
             <button class="icon-button mobile-header-search-trigger" data-action="mobile-header-search" aria-label="بحث" aria-expanded="false" aria-controls="mobile-header-search">
               <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg>
-            </button>
-            <button class="cart-button" data-action="cart" aria-label="سلة التسوق">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3h2l2.2 10.2a2 2 0 0 0 2 1.6h7.9a2 2 0 0 0 2-1.6L20.5 7H6"></path><circle cx="10" cy="20" r="1"></circle><circle cx="18" cy="20" r="1"></circle></svg>
-              <span class="action-count cart-count">0</span>
             </button>
             <button class="icon-button wishlist-button" data-action="wishlist" aria-label="المفضلة">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"></path></svg>
@@ -119,6 +115,10 @@
         <a class="smart-scent-nav" href="/fragrance-finder/for-whom" data-action="find-matches"><span class="nav-icon" aria-hidden="true">✧</span><span data-i18n="finderEntry">اكتشف عطرًا يناسب ذوقك</span></a>
       </nav>
     </header>
+    <button class="cart-button floating-cart-button" data-action="cart" aria-label="سلة التسوق — اسحب لتحريك الزر" title="اسحب لتحريك السلة">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3h2l2.2 10.2a2 2 0 0 0 2 1.6h7.9a2 2 0 0 0 2-1.6L20.5 7H6"></path><circle cx="10" cy="20" r="1"></circle><circle cx="18" cy="20" r="1"></circle></svg>
+      <span class="action-count cart-count">0</span>
+    </button>
 
     <div class="mobile-menu-backdrop" data-action="close-mobile-menu"></div>
     <aside class="mobile-menu-panel" id="mobile-menu" aria-hidden="true">
@@ -964,7 +964,7 @@
     <script data-idle-src="external-tracking.js?v=1"></script>
     <script data-admin-src="perfume-bundle.js?v=9"></script>
     <script defer src="runtime-loader.js?v=17"></script>
-    <script defer src="chunks/storefront-core.min.js?v=37"></script>
+    <script defer src="chunks/storefront-core.min.js?v=38"></script>
     <script defer src="deferred-modules.js?v=13"></script>
   </body>
 </html>

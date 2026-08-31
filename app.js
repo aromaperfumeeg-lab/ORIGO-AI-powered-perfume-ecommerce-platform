@@ -12298,6 +12298,77 @@ function bindHorizontalRail(rail) {
 $$("[data-brand-marquee]").forEach(bindBrandMarquee);
 $$('[data-horizontal-rail]').forEach(bindHorizontalRail);
 
+function initializeFloatingCart() {
+  const button = $(".floating-cart-button");
+  if (!button) return;
+  const storageKey = "origoFloatingCartPosition";
+  const margin = 8;
+  const clampPosition = (x, y) => ({
+    x:Math.max(margin, Math.min(x, window.innerWidth - button.offsetWidth - margin)),
+    y:Math.max(margin, Math.min(y, window.innerHeight - button.offsetHeight - margin))
+  });
+  const applyPosition = (position) => {
+    const next = clampPosition(Number(position.x), Number(position.y));
+    if (!Number.isFinite(next.x) || !Number.isFinite(next.y)) return;
+    button.style.left = `${next.x}px`;
+    button.style.top = `${next.y}px`;
+    button.style.right = "auto";
+    button.style.bottom = "auto";
+  };
+  try {
+    const saved = JSON.parse(localStorage.getItem(storageKey) || "null");
+    if (saved && Number.isFinite(Number(saved.x)) && Number.isFinite(Number(saved.y))) applyPosition(saved);
+  } catch {}
+  let pointerId = null;
+  let offsetX = 0;
+  let offsetY = 0;
+  let moved = false;
+  let startX = 0;
+  let startY = 0;
+  button.addEventListener("pointerdown", (event) => {
+    if (event.button != null && event.button !== 0) return;
+    const rect = button.getBoundingClientRect();
+    pointerId = event.pointerId;
+    startX = event.clientX;
+    startY = event.clientY;
+    offsetX = event.clientX - rect.left;
+    offsetY = event.clientY - rect.top;
+    moved = false;
+    button.classList.add("is-dragging");
+    button.setPointerCapture?.(pointerId);
+  });
+  button.addEventListener("pointermove", (event) => {
+    if (event.pointerId !== pointerId) return;
+    if (!moved && Math.hypot(event.clientX - startX, event.clientY - startY) < 6) return;
+    moved = true;
+    applyPosition({ x:event.clientX - offsetX, y:event.clientY - offsetY });
+  });
+  const finish = (event) => {
+    if (event.pointerId !== pointerId) return;
+    button.classList.remove("is-dragging");
+    if (moved) {
+      const rect = button.getBoundingClientRect();
+      localStorage.setItem(storageKey, JSON.stringify({ x:Math.round(rect.left), y:Math.round(rect.top) }));
+      button.dataset.suppressCartClick = "true";
+      setTimeout(() => delete button.dataset.suppressCartClick, 0);
+    }
+    pointerId = null;
+  };
+  button.addEventListener("pointerup", finish);
+  button.addEventListener("pointercancel", finish);
+  button.addEventListener("click", (event) => {
+    if (button.dataset.suppressCartClick !== "true") return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+  }, true);
+  window.addEventListener("resize", () => {
+    if (!button.style.left) return;
+    applyPosition({ x:parseFloat(button.style.left), y:parseFloat(button.style.top) });
+  }, { passive:true });
+}
+
+initializeFloatingCart();
+
 const backToTopButton = $("#back-to-top");
 if (backToTopButton) {
   const progressCircle = backToTopButton.querySelector(".back-to-top-value");
