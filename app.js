@@ -1552,7 +1552,7 @@ async function hydrateDeferredStorefront(total = 0) {
   renderDynamicFilters();
   let offset = state.products.length;
   while (offset < total) {
-    const page = await api(`/api/products?offset=${offset}&limit=48`).catch(() => null);
+    const page = await api(`/api/products?offset=${offset}&limit=48&diverse=1`).catch(() => null);
     if (!page?.products?.length) break;
     const merged = new Map(state.products.map((product) => [product.id, product]));
     page.products.map(serverProduct).forEach((product) => merged.set(product.id, product));
@@ -1574,7 +1574,7 @@ async function hydrateServer() {
   const authRevisionAtStart = state.authRevision;
   try {
     const results = await Promise.allSettled([
-      api("/api/products?offset=0&limit=24"),
+      api("/api/products?offset=0&limit=24&diverse=1"),
       api("/api/session"),
       api("/api/storefront-settings"),
       api("/api/brand-options")

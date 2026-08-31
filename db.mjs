@@ -1293,13 +1293,16 @@ export function userFromSession(token) {
   return publicUser(row);
 }
 
-export function listProducts({ includeHidden = false, limit = 0, offset = 0, summary = false } = {}) {
+export function listProducts({ includeHidden = false, limit = 0, offset = 0, summary = false, diverse = false } = {}) {
   const safeLimit = Math.max(0, Math.min(200, Number(limit) || 0));
   const safeOffset = Math.max(0, Number(offset) || 0);
   const pagination = safeLimit ? ` LIMIT ${safeLimit} OFFSET ${safeOffset}` : "";
+  const publicOrder = diverse
+    ? "ROW_NUMBER() OVER (PARTITION BY lower(trim(brand)) ORDER BY created_at DESC, id), created_at DESC, id"
+    : "created_at, id";
   const rows = includeHidden
     ? db.prepare(`SELECT * FROM products ORDER BY created_at DESC${pagination}`).all()
-    : db.prepare(`SELECT * FROM products WHERE status = 'published' ORDER BY created_at, id${pagination}`).all();
+    : db.prepare(`SELECT * FROM products WHERE status = 'published' ORDER BY ${publicOrder}${pagination}`).all();
   return rows.map((row) => {
     const product = productFromRow(row, includeHidden);
     if (!summary || includeHidden) return product;

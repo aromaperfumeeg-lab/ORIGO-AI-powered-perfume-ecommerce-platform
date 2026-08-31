@@ -1020,7 +1020,8 @@ async function handleAPI(request, response, url, origin) {
     const limit = Math.max(0, Math.min(200, Number(url.searchParams.get("limit")) || 0));
     const offset = Math.max(0, Number(url.searchParams.get("offset")) || 0);
     const total = countProducts();
-    const products = listProducts({ limit, offset, summary: true }).map(synchronizeProductPrimaryImage);
+    const diverse = url.searchParams.get("diverse") === "1";
+    const products = listProducts({ limit, offset, summary: true, diverse }).map(synchronizeProductPrimaryImage);
     return jsonResponse(response, 200, { products, total, offset, limit: limit || total, hasMore: limit > 0 && offset + products.length < total }, origin, {
       "Cache-Control": "public, max-age=30, stale-while-revalidate=120"
     });
