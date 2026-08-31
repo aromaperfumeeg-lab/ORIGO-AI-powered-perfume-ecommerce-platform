@@ -169,9 +169,10 @@ test("night storefront replaces pure black surfaces with layered charcoal", () =
   assert.match(appearance, /\.origo-footer\{[\s\S]*?linear-gradient\(145deg,#303030,#262626\)!important/);
 });
 
-test("discount sits beside the price and compact metadata follows locale direction", () => {
+test("discount sits at the end of the product-name row and compact metadata follows locale direction", () => {
   assert.doesNotMatch(app, /<div class="product-image">\s*\$\{discount \? `<span class="product-badge"/);
-  assert.match(app, /class="product-price">\$\{formatPrice\(price\)\}<\/b>\$\{discount \? `<span class="product-price-discount">-\$\{discount\}%<\/span>`/);
+  assert.match(app, /exact-card-product-name[\s\S]+?<\/a>\$\{discount \? `<span class="product-price-discount">-\$\{discount\}%<\/span>`/);
+  assert.doesNotMatch(app, /exact-card-prices"><b class="product-price">\$\{formatPrice\(price\)\}<\/b>\$\{discount/);
   assert.match(appearance, /Compact product copy: localized brand, restrained rating and discount beside price/);
   assert.match(appearance, /\[dir="rtl"\] \.product-brand\{[\s\S]*?text-align:right!important/);
   assert.match(appearance, /\[dir="ltr"\] \.product-brand\{[\s\S]*?text-align:left!important/);
@@ -217,8 +218,8 @@ test("storefront, admin, product data and finder render one effective language",
   assert.match(app, /const adminCopy = \(ar, en\) => localizedText\(ar, en\)/);
   assert.match(app, /return localizedText\(product\.nameAr, product\.nameEn, language\)/);
   assert.match(finderI18n, /translate:\(lang,key\)=>copy\[lang\]/);
-  assert.match(finderI18n, /مكتشف العطر المناسب لذوقك/);
-  assert.match(finderI18n, /Find Your Perfect Fragrance/);
+  assert.match(finderI18n, /رحلتك إلى العطر الأنسب/);
+  assert.match(finderI18n, /Your Journey to the Right Fragrance/);
 });
 
 test("product editor exposes and persists missing Arabic product-data translations", () => {
@@ -277,7 +278,7 @@ test("published product details expose saved public fields without admin metadat
   assert.match(app, /function productConfiguredLinksMarkup\(product\)/);
   assert.match(app, /\["similarProductIds"[\s\S]*\["crossSellIds"[\s\S]*\["alternativeIds"/);
   assert.match(app, /product\.cardBadgeAr \|\| product\.badgeAr/);
-  assert.match(details, /"الثبات بالساعات والفوحان" : "Longevity in hours and projection"/);
+  assert.match(details, /"مؤشرات العطر" : "Fragrance indicators"/);
   assert.match(details, /formatNumber\(longevityHours\)/);
   assert.match(details, /product\.seasonScores/);
   assert.match(details, /product\.usageTimeScores/);
@@ -340,16 +341,29 @@ test("occasions and fragrance character render as localized compact tags", () =>
   const details = app.slice(app.indexOf("function productPublicDetailsMarkup"), app.indexOf("function productConfiguredLinksMarkup"));
   assert.match(details, /"evening-events":\["فعاليات مسائية","Evening events"\]/);
   assert.match(details, /warm:\["دافئ","Warm"\]/);
+  assert.match(details, /formal:\["رسمي","Formal"\]/);
+  assert.match(details, /luxurious:\["فاخر","Luxurious"\]/);
+  assert.match(details, /localizedMappedValue\(value, occasionMap\)/);
   assert.match(details, /class="pdp-detail-tags"/);
   assert.match(productDetail, /\.pdp-public-details \.pdp-detail-tags/);
-  assert.doesNotMatch(details, /`\$\{formatRating\(ratingValue\)\} \/ 5`/);
+  assert.match(details, /`\$\{formatRating\(ratingValue\)\} \/ 5`/);
+});
+
+test("all standard fragrance families have Arabic storefront labels", () => {
+  const details = app.slice(app.indexOf("function productPublicDetailsMarkup"), app.indexOf("function productConfiguredLinksMarkup"));
+  for (const label of ["oriental","woody","floral","citrus","aromatic","leather","fruity","gourmand","chypre","aquatic","fougere","musky","amber","green","powdery","spicy","smoky","tobacco"]) {
+    assert.match(details, new RegExp(`${label}:\\[|"${label}":\\[`), label);
+  }
 });
 
 test("top performance strip replaces the duplicate editorial performance panel", () => {
   const details = app.slice(app.indexOf("function productPublicDetailsMarkup"), app.indexOf("function productConfiguredLinksMarkup"));
   const profile = app.slice(app.indexOf("function productProfileAccordions"), app.indexOf("async function persistNotesState"));
   assert.match(details, /pdp-performance-strip/);
-  assert.match(details, /الثبات بالساعات والفوحان/);
+  assert.match(details, /مؤشرات العطر/);
+  assert.match(details, /performanceCards/);
+  assert.match(productDetail, /grid-template-columns:repeat\(auto-fit,minmax\(68px,82px\)\)/);
+  assert.match(productDetail, /dialog-pyramid-row>span em/);
   assert.match(productDetail, /\.pdp-performance-strip/);
   assert.doesNotMatch(profile, /data-pdp-section="performance"|ملخص الأداء التحريري|Fragrance performance/);
 });
@@ -455,4 +469,11 @@ test("product detail facts render as one compact row per item", () => {
   assert.match(productDetail, /Product information groups: one compact fact per row/);
   assert.match(productDetail, /\.pdp-detail-gate dl,[\s\S]{0,180}grid-template-columns:1fr!important/);
   assert.match(productDetail, /grid-template-columns:minmax\(92px,34%\) minmax\(0,1fr\)!important/);
+});
+
+test("product detail add-to-cart uses the outlined pill and circular bag control", () => {
+  assert.match(productDetail, /\.pdp-page \.pdp-price-add\{position:relative!important/);
+  assert.match(productDetail, /border:2px dashed #790020!important/);
+  assert.match(productDetail, /\.pdp-page \.pdp-price-add>span\{position:absolute!important/);
+  assert.match(productDetail, /border-radius:50%!important/);
 });

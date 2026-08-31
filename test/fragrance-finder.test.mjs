@@ -22,14 +22,14 @@ test("fragrance finder exposes the current profile and ranking engine", () => {
 });
 
 test("Arabic and English finder catalogs expose current bilingual copy", () => {
-  assert.equal(translateFinder("ar", "title"), "مكتشف العطر المناسب لذوقك");
-  assert.equal(translateFinder("en", "title"), "Find Your Perfect Fragrance");
+  assert.equal(translateFinder("ar", "title"), "رحلتك إلى العطر الأنسب");
+  assert.equal(translateFinder("en", "title"), "Your Journey to the Right Fragrance");
   assert.equal(translateFinder("ar", "results"), "أفضل العطور المناسبة لك");
   assert.equal(translateFinder("en", "results"), "Your best fragrance matches");
 });
 
-test("weighted matching uses saved scent data and disliked-note penalties", () => {
-  const answers = { gender:"unisex", families:["woody"], likedNotes:["oud","amber","vanilla"], dislikedNotes:["leather"], seasons:["winter"], times:["night"], sillage:"strong", longevity:"long" };
+test("weighted matching uses saved product details without note preferences", () => {
+  const answers = { gender:"unisex", families:["woody"], accords:["woody"], seasons:["winter"], times:["night"], sillage:"strong", longevity:"long" };
   const disliked = product({ id: "disliked", noteSelectionsBundle:{top:[{ar:"جلد",en:"Leather"}],heart:[{ar:"باتشولي",en:"Patchouli"}],base:[]}, families:["leather"], familyAr: "جلدي", familyEn: "Leather" });
   const unavailable = product({ id: "unavailable", inventory: { quantity: 0 } });
   const result = rankProducts([disliked, unavailable, product()], answers);
@@ -52,4 +52,14 @@ test("Finder options are derived centrally from the published product profiles",
   assert.match(finderSource, /function profiles\(\)\{return g\.ORIGOFragranceFinderEngine\.profilesFromProducts\(products\(\)\)\}/);
   assert.match(finderSource, /function options\(field\)/);
   assert.match(finderSource, /new Set\(values\.filter\(Boolean\)\)/);
+  assert.doesNotMatch(finderSource, /likedNotes|rejectedNotes|profile\.notes/);
+  assert.doesNotMatch(finderSource, /t\("notes"\)/);
+});
+
+test("catalog filters use saved product profile fields and exclude notes", async () => {
+  const appSource = await readFile(new URL("../app.js", import.meta.url), "utf8");
+  const filters = appSource.slice(appSource.indexOf("function catalogValues"), appSource.indexOf("function catalogSortMarkup"));
+  for (const key of ["accords", "character", "season", "time", "occasion", "longevity", "projection"]) assert.match(filters, new RegExp(`catalogFilterSection\\(\"${key}\"`));
+  assert.doesNotMatch(filters, /catalogFilterSection\("notes"/);
+  assert.doesNotMatch(filters, /product\.notesAr|product\.notesEn/);
 });

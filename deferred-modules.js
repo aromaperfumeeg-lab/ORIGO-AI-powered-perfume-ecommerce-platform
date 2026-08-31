@@ -71,7 +71,7 @@
 
   routeScripts.filter((entry) => entry[1].test(route)).forEach(([src, , module]) => loadScript(src, module));
   routeStyles.filter((entry) => entry[1].test(route)).forEach(([id]) => loadStyles(`link[data-route="${id}"]`));
-  if (new URL(location.href).searchParams.has("product")) loadStyles("link[data-deferred-href]");
+  if (new URL(location.href).searchParams.has("product") || /^\/perfume\//.test(location.pathname)) loadStyles("link[data-deferred-href]");
 
   document.addEventListener("pointerover", (event) => {
     const target = event.target.closest("[data-action],a[href]");
