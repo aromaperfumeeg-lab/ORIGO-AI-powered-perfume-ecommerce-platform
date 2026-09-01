@@ -118,7 +118,7 @@
     idle(loadIdleScripts, 2600);
     if ("serviceWorker" in navigator) {
       const hadController = Boolean(navigator.serviceWorker.controller);
-      const releaseKey = "origoRuntimeReload-v151";
+      const releaseKey = "origoRuntimeReload-v152";
       navigator.serviceWorker.addEventListener("controllerchange", () => {
         if (!hadController || sessionStorage.getItem(releaseKey)) return;
         sessionStorage.setItem(releaseKey, "1");

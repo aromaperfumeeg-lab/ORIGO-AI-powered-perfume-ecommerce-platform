@@ -8896,16 +8896,35 @@ function renderCatalogList() {
   $("#catalog-total-count").textContent = state.catalogProducts.length;
   $("#catalog-draft-count").textContent = state.catalogProducts.filter((product) => product.status === "draft").length;
   $("#catalog-published-count").textContent = state.catalogProducts.filter((product) => product.status === "published").length;
+  const activeBrand = adminProductBrandRecords().find((brand) => brand.key === brandIdentity(state.activeAdminProductBrand) || brandMatches(brand, state.activeAdminProductBrand));
   if (!state.catalogProducts.length) {
     list.innerHTML = `<div class="catalog-empty"><span>◇</span><p>${adminCopy("لا توجد منتجات محفوظة بعد.", "No saved products yet.")}</p></div>`;
     return;
   }
-  list.innerHTML = state.catalogProducts.slice(0, 12).map((product) => {
+  if (!activeBrand) {
+    list.innerHTML = adminProductBrandRecords().map((brand) => `<button class="catalog-list-item catalog-brand-list-item" data-action="studio-open-brand-products" data-brand="${escapeHTML(brand.value)}"><span class="admin-product-brand-logo">${brand.image ? `<img src="${escapeHTML(brand.image)}" alt=""/>` : escapeHTML(String(state.lang === "ar" ? brand.nameAr : brand.nameEn).slice(0, 2))}</span><span><small>${adminCopy("علامة تجارية", "Brand")}</small><b>${escapeHTML(state.lang === "ar" ? brand.nameAr : brand.nameEn)}</b><i>${brand.products.length} ${adminCopy("منتج", "products")}</i></span><strong>‹</strong></button>`).join("");
+    return;
+  }
+  list.innerHTML = activeBrand.products.map((product) => {
     const image = product.images?.find((item) => item.selected)?.url || product.images?.[0]?.url || PRODUCT_IMAGE_PLACEHOLDER;
     return `<button class="catalog-list-item" data-action="edit-catalog-product" data-id="${escapeHTML(product.id)}">
       <img src="${escapeHTML(image)}" alt="" /><span><small>${escapeHTML(product.brand || adminCopy("بدون براند", "No brand"))}</small><b>${escapeHTML(state.lang === "ar" ? product.nameAr || product.nameEn : product.nameEn || product.nameAr)}</b><i class="${escapeHTML(product.status)}">${statusLabel(product.status)}</i></span><strong>→</strong>
     </button>`;
   }).join("");
+}
+
+function renderProductStudioBrandDirectory() {
+  const workspace = $("#import-workspace");
+  if (!workspace) return;
+  const ar = state.lang === "ar";
+  const brands = adminProductBrandRecords();
+  const activeBrand = brands.find((brand) => brand.key === brandIdentity(state.activeAdminProductBrand) || brandMatches(brand, state.activeAdminProductBrand));
+  if (activeBrand) {
+    const name = ar ? activeBrand.nameAr : activeBrand.nameEn;
+    workspace.innerHTML = `<section class="studio-brand-products"><header class="admin-brand-products-head"><button type="button" class="secondary-button compact-button" data-action="studio-brand-back">${ar ? "‹ كل العلامات" : "‹ All brands"}</button><div class="admin-brand-products-identity">${activeBrand.image ? `<img src="${escapeHTML(activeBrand.image)}" alt=""/>` : `<span>${escapeHTML(String(name).slice(0, 2))}</span>`}<div><small>${ar ? "منتجات العلامة التجارية" : "Brand products"}</small><h3>${escapeHTML(name)}</h3><p>${activeBrand.products.length} ${ar ? "منتج" : "products"}</p></div></div><button type="button" class="button burgundy-button" data-action="studio-add-brand-product" data-brand="${escapeHTML(activeBrand.value)}">${ar ? "إضافة منتج لهذه العلامة" : "Add product to this brand"} ＋</button></header><div class="studio-brand-product-grid">${activeBrand.products.length ? activeBrand.products.map((product) => `<button type="button" class="studio-brand-product-card" data-action="edit-catalog-product" data-id="${escapeHTML(product.id)}"><img src="${escapeHTML(product.image || product.images?.[0]?.url || PRODUCT_IMAGE_PLACEHOLDER)}" alt=""/><span><small>${escapeHTML(name)}</small><b>${escapeHTML(ar ? product.nameAr || product.nameEn : product.nameEn || product.nameAr)}</b><i class="${escapeHTML(product.status || "draft")}">${statusLabel(product.status || "draft")}</i></span></button>`).join("") : `<div class="admin-product-brand-empty"><b>${ar ? "لا توجد منتجات داخل هذه العلامة" : "No products in this brand"}</b><p>${ar ? "ابدأ بإضافة أول منتج وسيتم ربطه بالعلامة تلقائيًا." : "Add the first product and it will be linked automatically."}</p></div>`}</div></section>`;
+    return;
+  }
+  workspace.innerHTML = `<section class="studio-brand-directory"><header><div><span class="eyebrow">BRAND CATALOG</span><h3>${ar ? "اختر العلامة التجارية" : "Choose a brand"}</h3><p>${ar ? "ادخل إلى العلامة أولًا لعرض منتجاتها أو إضافة منتج جديد بداخلها." : "Open a brand to view its products or add a new product inside it."}</p></div></header><div class="admin-product-brand-grid">${brands.length ? brands.map((brand) => { const name = ar ? brand.nameAr : brand.nameEn; return `<button type="button" class="admin-product-brand-card" data-action="studio-open-brand-products" data-brand="${escapeHTML(brand.value)}"><span class="admin-product-brand-logo">${brand.image ? `<img src="${escapeHTML(brand.image)}" alt=""/>` : escapeHTML(String(name).slice(0, 2))}</span><span class="admin-product-brand-copy"><b>${escapeHTML(name)}</b><small>${brand.products.length} ${ar ? "منتج" : "products"}</small></span><span class="admin-product-brand-previews">${brand.products.slice(0, 3).map((product) => `<img src="${escapeHTML(product.image || PRODUCT_IMAGE_PLACEHOLDER)}" alt=""/>`).join("")}</span><i>‹</i></button>`; }).join("") : `<div class="admin-product-brand-empty"><b>${ar ? "لا توجد علامات تجارية بعد" : "No brands yet"}</b><p>${ar ? "أضف علامة تجارية من لوحة التحكم أولًا." : "Create a brand in the dashboard first."}</p><button class="button burgundy-button" data-action="back-to-dashboard">${ar ? "العودة إلى لوحة التحكم" : "Back to dashboard"}</button></div>`}</div></section>`;
 }
 
 function observeReveals() {
@@ -9983,10 +10002,22 @@ document.addEventListener("click", async (event) => {
   if (action === "open-product-studio") {
     closeOverlay($("#admin-overlay"));
     await loadAdminCatalog();
+    state.activeAdminProductBrand = "";
     renderCatalogList();
     openOverlay("#product-admin-overlay");
-    startManualProduct();
+    renderProductStudioBrandDirectory();
   }
+  if (action === "studio-open-brand-products") {
+    state.activeAdminProductBrand = actionElement.dataset.brand || "";
+    renderProductStudioBrandDirectory();
+    renderCatalogList();
+  }
+  if (action === "studio-brand-back") {
+    state.activeAdminProductBrand = "";
+    renderProductStudioBrandDirectory();
+    renderCatalogList();
+  }
+  if (action === "studio-add-brand-product") startManualProduct(false, actionElement.dataset.brand || state.activeAdminProductBrand || "");
   if (action === "admin-open-brand-products") {
     state.activeAdminProductBrand = actionElement.dataset.brand || "";
     renderAdminDashboard("products");
@@ -10574,7 +10605,11 @@ document.addEventListener("click", async (event) => {
     toggleMobileMenu(false);
     navigateCatalog({ category: actionElement.dataset.category || "all" });
   }
-  if (action === "new-product") startManualProduct(false, actionElement.dataset.brand || state.activeAdminProductBrand || "");
+  if (action === "new-product") {
+    const brand = actionElement.dataset.brand || state.activeAdminProductBrand || "";
+    if (brand) startManualProduct(false, brand);
+    else renderProductStudioBrandDirectory();
+  }
   if (action === "restore-product-draft") startManualProduct(true);
   if (action === "product-editor-mode") {
     state.productEditorMode = actionElement.dataset.mode || "smart";
