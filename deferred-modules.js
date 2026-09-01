@@ -116,7 +116,18 @@
       : setTimeout(callback, Math.min(timeout, 1500));
     idle(() => loadStyles("link[data-idle-href]"), 1200);
     idle(loadIdleScripts, 2600);
-    idle(() => navigator.serviceWorker?.register("/sw.js").catch(() => {}), 6500);
+    if ("serviceWorker" in navigator) {
+      const hadController = Boolean(navigator.serviceWorker.controller);
+      const releaseKey = "origoRuntimeReload-v151";
+      navigator.serviceWorker.addEventListener("controllerchange", () => {
+        if (!hadController || sessionStorage.getItem(releaseKey)) return;
+        sessionStorage.setItem(releaseKey, "1");
+        location.reload();
+      });
+      navigator.serviceWorker.register("/sw.js", { updateViaCache:"none" })
+        .then((registration) => registration.update())
+        .catch(() => {});
+    }
   };
   if (new URL(location.href).searchParams.has("product") || /^\/notes(?:\/|$)/.test(route)) loadKnowledgeResources();
   if (document.readyState === "complete") afterLoad();
