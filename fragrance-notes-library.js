@@ -52,6 +52,11 @@
     pitanga:"pitanga", snowberry:"snowberry", "umbu-caja-tapereba":"umbu-caja-tapereba",
     "azhar-alqra":"azhar-alqra", "ananas-shwghrlwf":"ananas-shwghrlwf", "awraq-altyn":"awraq-altyn",
     "atfaq-mwybyl":"atfaq-mwybyl", alarjan:"alarjan", "alakyrwla-alkrz-alhndy":"alakyrwla-alkrz-alhndy",
+    "alatfaq-aljwzy":"alatfaq-aljwzy", albabaya:"albabaya", albazla:"albazla", "albashwn-frwt":"albashwn-frwt",
+    albrqwq:"albrqwq", "albrqwq-alakhdr":"albrqwq-alakhdr", "albrqwq-albry":"albrqwq-albry",
+    "albrqwq-aldakn-ww-my":"albrqwq-aldakn-ww-my", albshmlh:"albshmlh", albtats:"albtats",
+    albtykh:"albtykh", "albtykh-alshtwy":"albtykh-alshtwy", albndq:"albndq", altamanw:"altamanw",
+    "altfah-alahmr":"altfah-alahmr", "altfah-almjff":"altfah-almjff",
     "orange-blossom":"orange-blossom", praline:"praline", "tonka-bean":"tonka-bean", ambroxan:"ambroxan",
     coffee:"coffee", tuberose:"tuberose", myrrh:"myrrh", "black-pepper":"black-pepper", tobacco:"tobacco",
     patchouli:"patchouli", vetiver:"vetiver", saffron:"saffron", oud:"oud", rosemary:"rosemary", geranium:"geranium",
@@ -69,6 +74,15 @@
     const filename = generatedNoteImages[slug];
     return filename ? `assets/notes/generated/${filename}.webp` : "";
   }
+
+  // Manager-uploaded artwork that passed the live transparency, resolution,
+  // detail and payload checks. These overrides remain authoritative.
+  const approvedManagerArtwork = new Set([
+    "black-lemon", "rose", "iris", "apple", "lavender", "coconut", "mango", "pear", "cherry", "pineapple",
+    "orange", "lemon", "grapefruit", "bergamot", "peach", "neroli", "pink-musk", "milk", "milk-accord",
+    "dates", "fig", "chocolate", "mandarin", "leather", "white-musk", "sandalwood", "cinnamon", "vanilla",
+    "cardamom", "pink-pepper", "honey"
+  ]);
 
   const curatedNotes = [
     ["rose", "ورد", "Rose", "flowers", ["ورد طائفي", "Taif Rose", "Rosa", "الورد"], "heart", "✿"],
@@ -384,7 +398,7 @@
       result.set(slug, {
         ...result.get(slug),
         ...override,
-        ...(bundledImage ? { image:bundledImage } : {}),
+        ...(bundledImage && !approvedManagerArtwork.has(slug) ? { image:bundledImage } : {}),
         slug
       });
     });
