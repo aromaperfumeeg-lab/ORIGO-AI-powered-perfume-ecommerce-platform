@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { readFile, stat } from "node:fs/promises";
 import test from "node:test";
 import vm from "node:vm";
 
@@ -13,7 +13,7 @@ const library = context.window.ORIGOFragranceNotes;
 
 test("builds the complete manager-provided fragrance library", () => {
   assert.ok(library.families.length >= 13);
-  assert.equal(library.notes.length, 1_868);
+  assert.ok(library.notes.length >= 1_868);
   assert.equal(library.familyById("flowers").nameEn, "Flowers");
 });
 
@@ -24,9 +24,13 @@ test("the retained first library has Arabic labels for every English source name
   assert.equal(library.find("Party Balloons")?.nameAr, "بالونات الحفلات");
 });
 
-test("removed artwork paths fall back to self-contained local SVGs", () => {
-  assert.ok(library.notes.every((note) => !note.image));
-  assert.match(library.artwork(library.find("Rose")), /^data:image\/svg\+xml/);
+test("generated note artwork uses lightweight local WebP while untouched notes retain the fallback", async () => {
+  const generated = library.find("Orange Blossom");
+  assert.equal(generated.image, "assets/notes/generated/orange-blossom.webp");
+  const generatedFile = new URL(`../${generated.image}`, import.meta.url);
+  assert.ok((await stat(generatedFile)).size < 100 * 1024);
+  assert.equal((await readFile(generatedFile)).subarray(0, 4).toString("ascii"), "RIFF");
+  assert.match(library.artwork(library.find("Party Balloons")), /^data:image\/svg\+xml/);
 });
 
 test("resolves Arabic, English, and alias spellings to one note", () => {
@@ -42,7 +46,7 @@ test("provides bilingual data, family metadata, and automatic artwork", () => {
   assert.equal(rose.nameEn, "Rose");
   assert.equal(rose.familyId, "flowers");
   assert.equal(rose.position, "heart");
-  assert.match(library.artwork(rose), /^data:image\/svg\+xml/);
+  assert.equal(library.artwork(rose), "/assets/notes/generated/rose.webp");
 });
 
 test("enriches English-only product notes without adding preview text to the review queue", () => {

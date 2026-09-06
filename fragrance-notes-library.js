@@ -19,6 +19,57 @@
     uncategorized: { color: "#77736E", accent: "#E2DFDB", symbol: "?", position: "multiple" }
   };
 
+  const generatedNoteImages = Object.freeze({
+    "black-lemon":"black-lemon", kabosu:"kabosu", orange:"orange", bergamot:"bergamot", grapefruit:"grapefruit",
+    alhmdyat:"citrus", lemon:"lemon", neroli:"neroli",
+    pineapple:"pineapple", apple:"apple", peach:"peach", cherry:"cherry", pear:"pear", mango:"mango",
+    coconut:"coconut", lavender:"lavender",
+    iris:"iris", rose:"rose", "fanylya-bahyana":"fanylya-bahyana", jasmine:"jasmine", vanilla:"vanilla",
+    "pink-pepper":"pink-pepper", cinnamon:"cinnamon", cardamom:"cardamom",
+    honey:"honey", sandalwood:"sandalwood", amber:"amber", "white-musk":"white-musk", leather:"leather",
+    mandarin:"mandarin", chocolate:"chocolate", fig:"fig",
+    dates:"dates", milk:"milk", "milk-accord":"milk-accord", "pink-musk":"pink-musk", "white-flowers":"white-flowers",
+    murcott:"murcott", "ashjar-allymwn":"ashjar-allymwn", "awraq-aljryb-frwt":"awraq-aljryb-frwt",
+    alatrj:"alatrj", "albrtqal-alahmr":"albrtqal-alahmr", "albrtqal-almr":"albrtqal-almr",
+    "albrtqal-alhndy":"albrtqal-alhndy", albytytghryn:"albytytghryn",
+    chinotto:"chinotto", alfyrbyna:"alfyrbyna", alkalamansy:"alkalamansy", alklamntyn:"alklamntyn",
+    "alkmkwat-albrtqal-alyabany":"alkmkwat-albrtqal-alyabany", allym:"allym",
+    "allym-alasbay":"allym-alasbay", "allymwn-alhlw":"allymwn-alhlw",
+    "allymwn-alkafyr":"allymwn-alkafyr", "allymwn-almskr":"allymwn-almskr",
+    "almandryn-alywsfy":"almandryn-alywsfy", "almandryn-alakhdr":"almandryn-alakhdr", almlysh:"almlysh",
+    "brtqal-mr":"brtqal-mr", "bshr-allymwn":"bshr-allymwn", "tanjryn-alywsfy":"tanjryn-alywsfy",
+    tanjylw:"tanjylw", "hmdyat-swdatshy":"hmdyat-swdatshy", shykwasha:"shykwasha",
+    "swda-aljryb-frwt":"swda-aljryb-frwt", "ashb-allymwn":"ashb-allymwn", "qshr-albrtqal":"qshr-albrtqal",
+    "qshr-albrghmwt":"qshr-albrghmwt", "qshr-aljryb-frwt":"qshr-aljryb-frwt",
+    "qshr-alywsfy":"qshr-alywsfy", "krystal-fyz":"krystal-fyz", kmkawt:"kmkawt", kynyba:"kynyba",
+    "lytzya-kwbyba":"lytzya-kwbyba", "lymwn-ranjbwr":"lymwn-ranjbwr",
+    "lymwn-flstyny-hlw":"lymwn-flstyny-hlw", "lymwn-matr":"lymwn-matr",
+    "lymwn-hatkwra":"lymwn-hatkwra", "ma-alhmdyat":"ma-alhmdyat", mandwra:"mandwra",
+    "mythyl-bamblymws":"mythyl-bamblymws", "myrtl-allymwn":"myrtl-allymwn", hasakw:"hasakw",
+    "yd-bwdha":"yd-bwdha", ywzw:"ywzw",
+    "ywsfy-ahmr":"ywsfy-ahmr", "ywsfy-bwkan":"ywsfy-bwkan", "twt-brambl":"twt-brambl",
+    chayote:"chayote", cherimoya:"cherimoya", "green-banana":"green-banana", "guava-nectar":"guava-nectar",
+    pitanga:"pitanga", snowberry:"snowberry", "umbu-caja-tapereba":"umbu-caja-tapereba",
+    "azhar-alqra":"azhar-alqra", "ananas-shwghrlwf":"ananas-shwghrlwf", "awraq-altyn":"awraq-altyn",
+    "atfaq-mwybyl":"atfaq-mwybyl", alarjan:"alarjan", "alakyrwla-alkrz-alhndy":"alakyrwla-alkrz-alhndy",
+    "orange-blossom":"orange-blossom", praline:"praline", "tonka-bean":"tonka-bean", ambroxan:"ambroxan",
+    coffee:"coffee", tuberose:"tuberose", myrrh:"myrrh", "black-pepper":"black-pepper", tobacco:"tobacco",
+    patchouli:"patchouli", vetiver:"vetiver", saffron:"saffron", oud:"oud", rosemary:"rosemary", geranium:"geranium",
+    sage:"sage", marine:"marine", incense:"incense", peony:"peony", ginger:"ginger", "candied-fruits":"candied-fruits",
+    benzoin:"benzoin", nutmeg:"nutmeg", cacao:"cacao", labdanum:"labdanum", caramel:"caramel",
+    "black-currant":"black-currant", raspberry:"raspberry", berries:"berries", cranberry:"cranberry",
+    "passion-fruit":"passion-fruit", "linden-blossom":"linden-blossom", broom:"broom", heliotrope:"heliotrope",
+    basil:"basil", cashmere:"cashmere", violet:"violet", cypress:"cypress", spices:"spices", davana:"davana",
+    osmanthus:"osmanthus", "osmanthus-milk":"osmanthus", tea:"black-tea", musk:"musk", woods:"woods",
+    akigalawood:"akigalawood", cedar:"cedar", "kmthry-akhdr":"green-pear", "powdered-sugar":"powdered-sugar",
+    sugar:"powdered-sugar", mahonial:"mahonial"
+  });
+
+  function generatedImageFor(slug) {
+    const filename = generatedNoteImages[slug];
+    return filename ? `assets/notes/generated/${filename}.webp` : "";
+  }
+
   const curatedNotes = [
     ["rose", "ورد", "Rose", "flowers", ["ورد طائفي", "Taif Rose", "Rosa", "الورد"], "heart", "✿"],
     ["oud", "عود", "Oud", "woods-mosses", ["Oudh", "Agarwood", "Aoud", "العود"], "base", "▥"],
@@ -37,7 +88,7 @@
     ["patchouli", "باتشولي", "Patchouli", "woods-mosses", ["الباتشولي", "Patchouly"], "base", "⌁"],
     ["vetiver", "فيتيفر", "Vetiver", "woods-mosses", ["نجيل الهند", "Vetivert"], "base", "⌁"],
     ["neroli", "نيرولي", "Neroli", "white-flowers", ["النيرولي", "Orange blossom oil"], "heart", "❀"],
-    ["orange-blossom", "زهر البرتقال", "Orange Blossom", "white-flowers", ["Orange flower", "أزهار البرتقال"], "heart", "❀"],
+    ["orange-blossom", "زهر البرتقال", "Orange Blossom", "white-flowers", ["Orange flower", "Citrus Aurantium", "أزهار البرتقال"], "heart", "❀"],
     ["lemon", "ليمون", "Lemon", "citrus", ["الليمون", "Citron"], "top", "◉"],
     ["orange", "برتقال", "Orange", "citrus", ["البرتقال", "Sweet orange"], "top", "◉"],
     ["grapefruit", "جريب فروت", "Grapefruit", "citrus", ["الجريب فروت", "Pomelo"], "top", "◉"],
@@ -76,7 +127,7 @@
     ["milk-accord", "أكورد الحليب", "Milk Accord", "sweets-gourmand", ["اتفاق الحليب", "Milky accord"], "heart", "◇"],
     ["milk-chocolate", "شوكولاتة بالحليب", "Milk Chocolate", "sweets-gourmand", ["شوكولاتة الحليب"], "base", "◇"],
     ["beeswax", "شمع العسل", "Beeswax", "musk-amber-animalic", ["شمع النحل"], "base", "◆"],
-    ["ambroxan", "أمبروكسان", "Ambroxan", "musk-amber-animalic", ["Ambrox", "أمبروكس"], "base", "◆"],
+    ["ambroxan", "أمبروكسان", "Ambroxan", "musk-amber-animalic", ["Ambrox", "Ambrofix", "أمبروكس"], "base", "◆"],
     ["ambrettolide", "أمبريتوليد", "Ambrettolide", "musk-amber-animalic", ["Ambrette Musk"], "base", "◌"],
     ["cetalox", "سيتالوكس", "Cetalox", "musk-amber-animalic", ["Cetambrox", "Ambroxide"], "base", "◆"],
     ["black-musk", "مسك أسود", "Black Musk", "musk-amber-animalic", ["المسك الأسود"], "base", "◌"],
@@ -88,8 +139,32 @@
     ["chinotto", "شينوتو", "Chinotto", "citrus", ["الشينوتو", "Myrtle-leaved orange"], "top", "◉"],
     ["white-flowers", "زهور بيضاء", "White Flowers", "white-flowers", ["الأزهار البيضاء", "White Floral Notes"], "heart", "❀"],
     ["sweet-notes", "نوتات حلوة", "Sweet Notes", "sweets-gourmand", ["حلو", "Sweet Accord"], "base", "◇"]
+    ,["peony", "فاوانيا", "Peony", "flowers", ["زهرة الفاوانيا"], "heart", "✿"]
+    ,["ginger", "زنجبيل", "Ginger", "spices", ["Blue Ginger", "Nigerian Ginger", "الزنجبيل"], "top", "✺"]
+    ,["candied-fruits", "فواكه مسكّرة", "Candied Fruits", "fruits-vegetables-nuts", ["الفواكه المسكرة"], "heart", "●"]
+    ,["benzoin", "بنزوين", "Benzoin", "resins-balsams", ["جاوي", "Benzoin Resin"], "base", "◆"]
+    ,["nutmeg", "جوزة الطيب", "Nutmeg", "spices", ["جوز الطيب"], "heart", "✺"]
+    ,["cacao", "كاكاو", "Cacao", "sweets-gourmand", ["Cocoa Bean", "حبوب الكاكاو"], "base", "◇"]
+    ,["labdanum", "لابدانوم", "Labdanum", "resins-balsams", ["Cistus Resin", "راتنج القستوس"], "base", "◆"]
+    ,["caramel", "كراميل", "Caramel", "sweets-gourmand", ["الكراميل"], "base", "◇"]
+    ,["sugar", "سكر", "Sugar", "sweets-gourmand", ["السكر"], "base", "◇"]
+    ,["basil", "ريحان", "Basil", "greens-herbs-fougere", ["الريحان"], "top", "⌁"]
+    ,["black-currant", "كشمش أسود", "Black Currant", "fruits-vegetables-nuts", ["Blackcurrant", "الكشمش الأسود"], "top", "●"]
+    ,["raspberry", "توت العليق", "Raspberry", "fruits-vegetables-nuts", ["رازبيري"], "top", "●"]
+    ,["cashmere", "كشمير", "Cashmere", "natural-synthetic-unusual", ["Cashmere Accord", "أكورد الكشمير"], "base", "✦"]
+    ,["berries", "توت بري", "Berries", "fruits-vegetables-nuts", ["Mixed Berries", "ثمار التوت"], "top", "●"]
+    ,["cranberry", "توت بري أحمر", "Cranberry", "fruits-vegetables-nuts", ["كرانبيري"], "top", "●"]
+    ,["linden-blossom", "زهر الزيزفون", "Linden Blossom", "flowers", ["Lime Blossom", "زيزفون"], "heart", "✿"]
+    ,["broom", "زهرة الوزّال", "Broom", "flowers", ["Genista", "الوزال"], "heart", "✿"]
+    ,["heliotrope", "زهرة الهليوتروب", "Heliotrope", "flowers", ["Heliotropium", "هليوتروب"], "heart", "✿"]
+    ,["violet", "بنفسج", "Violet", "flowers", ["البنفسج"], "heart", "✿"]
+    ,["spices", "توابل", "Spices", "spices", ["بهارات", "التوابل"], "multiple", "✺"]
+    ,["cypress", "سرو", "Cypress", "greens-herbs-fougere", ["السرو"], "top", "⌁"]
+    ,["passion-fruit", "باشن فروت", "Passion Fruit", "fruits-vegetables-nuts", ["فاكهة العاطفة"], "top", "●"]
+    ,["osmanthus", "أوسمانثوس", "Osmanthus", "flowers", ["زهرة الأوسمانثوس"], "heart", "✿"]
+    ,["davana", "دافانا", "Davana", "greens-herbs-fougere", ["الدافانا"], "heart", "⌁"]
   ].map(([slug, nameAr, nameEn, familyId, aliases, position, symbol]) => ({
-    slug, nameAr, nameEn, familyId, aliases, position, symbol, image: ""
+    slug, nameAr, nameEn, familyId, aliases, position, symbol, image: generatedImageFor(slug)
   }));
 
   const arabicNameOverrides = Object.freeze({
@@ -259,7 +334,7 @@
           familyId,
           position: curated?.position || family?.position || "multiple",
           symbol: curated?.symbol || family?.symbol || "✦",
-          image: curated?.image || "",
+          image: curated?.image || generatedImageFor(slug),
           defaultIntensity: Number(curated?.defaultIntensity || 3),
           related: curated?.related || [],
           compatible: curated?.compatible || [],
@@ -304,7 +379,14 @@
       ...note
     }));
     Object.entries(customState.overrides).forEach(([slug, override]) => {
-      if (result.has(slug)) result.set(slug, { ...result.get(slug), ...override, slug });
+      if (!result.has(slug)) return;
+      const bundledImage = generatedImageFor(slug);
+      result.set(slug, {
+        ...result.get(slug),
+        ...override,
+        ...(bundledImage ? { image:bundledImage } : {}),
+        slug
+      });
     });
 
     notes = [...result.values()]

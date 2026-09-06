@@ -7795,7 +7795,8 @@ body.notes-route #storefront-main > section:not(#notes-library-page) {
 .dialog-note-chip img {
   width: 100%;
   height: 82px;
-  object-fit: cover;
+  object-fit: contain;
+  image-rendering: auto;
 }
 
 .dialog-note-chip b {
@@ -8151,7 +8152,7 @@ body.notes-route #storefront-main > section:not(#notes-library-page) {
   width: 38px;
   height: 38px;
   grid-row: 1 / 3;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .note-match-items i {
