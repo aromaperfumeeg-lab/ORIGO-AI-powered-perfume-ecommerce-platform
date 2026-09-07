@@ -183,9 +183,9 @@
     "black-currant":"black-currant", raspberry:"raspberry", berries:"berries", cranberry:"cranberry",
     "passion-fruit":"passion-fruit", "linden-blossom":"linden-blossom", broom:"broom", heliotrope:"heliotrope",
     basil:"basil", cashmere:"cashmere", violet:"violet", cypress:"cypress", spices:"spices", davana:"davana",
-    osmanthus:"osmanthus", "osmanthus-milk":"osmanthus", tea:"black-tea", musk:"musk", woods:"woods",
+    osmanthus:"osmanthus", "osmanthus-milk":"osmanthus-milk", tea:"black-tea", musk:"musk", woods:"woods",
     akigalawood:"akigalawood", cedar:"cedar", "kmthry-akhdr":"green-pear", "powdered-sugar":"powdered-sugar",
-    sugar:"powdered-sugar", mahonial:"mahonial"
+    sugar:"sugar", mahonial:"mahonial"
   });
 
   function generatedImageFor(slug) {
