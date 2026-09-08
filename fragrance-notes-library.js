@@ -263,7 +263,11 @@
     altrkhwn:"altrkhwn", alarar:"alarar", alashb:"alashb", "alashb-alhlw":"alashb-alhlw",
     "alghabh-alkhdra":"alghabh-alkhdra", alghlabanwm:"alghlabanwm", "alflfl-alakhdr":"alflfl-alakhdr",
     "alflfl-alakhdr-alhar":"alflfl-alakhdr-alhar", alflwf:"alflwf", alqsb:"alqsb", alqtyfh:"alqtyfh",
-    alqmh:"alqmh", alqnb:"alqnb", alkady:"alkady", "alkalamynt-alasghr":"alkalamynt-alasghr", alkbr:"alkbr"
+    alqmh:"alqmh", alqnb:"alqnb", alkady:"alkady", "alkalamynt-alasghr":"alkalamynt-alasghr", alkbr:"alkbr",
+    alkrfs:"alkrfs", alkzbrh:"alkzbrh", allblab:"allblab", almrdqwsh:"almrdqwsh", alnkhalh:"alnkhalh",
+    "alndgh-aljbly":"alndgh-aljbly", alnanaa:"alnanaa", "alnanaa-albry":"alnanaa-albry",
+    "alnanaa-almdbb":"alnanaa-almdbb", alhlywn:"alhlywn", alwj:"alwj", alybrwh:"alybrwh",
+    "awraq-alanb":"awraq-alanb", balmarwza:"balmarwza", bandanws:"bandanws", "bdhwr-alkrfs":"bdhwr-alkrfs"
   });
 
   function generatedImageFor(slug) {
