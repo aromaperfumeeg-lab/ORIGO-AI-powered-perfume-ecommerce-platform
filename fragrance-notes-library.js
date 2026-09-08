@@ -259,7 +259,11 @@
     basil:"basil", cashmere:"cashmere", violet:"violet", cypress:"cypress", spices:"spices", davana:"davana",
     osmanthus:"osmanthus", "osmanthus-milk":"osmanthus-milk", tea:"black-tea", musk:"musk", woods:"woods",
     akigalawood:"akigalawood", cedar:"cedar", "kmthry-akhdr":"green-pear", "powdered-sugar":"powdered-sugar",
-    sugar:"sugar", mahonial:"mahonial"
+    sugar:"sugar", mahonial:"mahonial",
+    altrkhwn:"altrkhwn", alarar:"alarar", alashb:"alashb", "alashb-alhlw":"alashb-alhlw",
+    "alghabh-alkhdra":"alghabh-alkhdra", alghlabanwm:"alghlabanwm", "alflfl-alakhdr":"alflfl-alakhdr",
+    "alflfl-alakhdr-alhar":"alflfl-alakhdr-alhar", alflwf:"alflwf", alqsb:"alqsb", alqtyfh:"alqtyfh",
+    alqmh:"alqmh", alqnb:"alqnb", alkady:"alkady", "alkalamynt-alasghr":"alkalamynt-alasghr", alkbr:"alkbr"
   });
 
   function generatedImageFor(slug) {
