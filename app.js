@@ -5746,7 +5746,22 @@ function productAccordMarkup(product) {
 function productPublicAccordsMarkup(product) {
   if (!perfumeResolvedAccords(product).length) return "";
   const ar = state.lang === "ar";
-  return `<section class="pdp-public-accords"><div class="pdp-section-heading"><span>MAIN ACCORDS</span><h2>${ar ? "الأكوردات الرئيسية" : "Main accords"}</h2><p>${ar ? "مرتبة من الأقوى إلى الأقل حضورًا في تكوين العطر." : "Ordered from the strongest to the least prominent in the fragrance."}</p></div>${productAccordMarkup(product)}</section>`;
+  return `<section class="pdp-public-accords" id="pdp-fragrance-groups"><div class="pdp-section-heading"><span>FRAGRANCE GROUPS</span><h2>${ar ? "المجموعات العطرية والأكوردات" : "Fragrance groups and accords"}</h2><p>${ar ? "مرتبة من الأقوى إلى الأقل حضورًا لتوضيح الطابع العام للعطر." : "Ordered from strongest to least prominent to explain the fragrance character."}</p></div>${productAccordMarkup(product)}</section>`;
+}
+
+function productCompositionLinksMarkup(product) {
+  if (product.category && product.category !== "perfume") return "";
+  const ar = state.lang === "ar";
+  const groups = productNoteGroups(product);
+  const noteCount = groups.top.length + groups.heart.length + groups.base.length;
+  const accordCount = perfumeResolvedAccords(product).length;
+  if (!noteCount && !accordCount) return "";
+  return `<nav class="pdp-composition-links" aria-label="${ar ? "استكشاف تركيبة العطر" : "Explore fragrance composition"}">
+    <div><span>SCENT PROFILE</span><b>${ar ? "استكشف تركيبة العطر" : "Explore the fragrance composition"}</b></div>
+    ${noteCount ? `<button type="button" data-action="pdp-composition-jump" data-target="pdp-fragrance-notes"><i aria-hidden="true">✦</i><span><b>${ar ? "النوتات العطرية" : "Fragrance notes"}</b><small>${formatNumber(noteCount)} ${ar ? "نوتة · افتتاحية وقلب وقاعدة" : "notes · top, heart and base"}</small></span></button>` : ""}
+    ${accordCount ? `<button type="button" data-action="pdp-composition-jump" data-target="pdp-fragrance-groups"><i aria-hidden="true">◉</i><span><b>${ar ? "المجموعات العطرية" : "Fragrance groups"}</b><small>${formatNumber(accordCount)} ${ar ? "مجموعة مرتبة حسب القوة" : "groups ordered by strength"}</small></span></button>` : ""}
+    <a href="/notes" data-action="open-notes"><span>${ar ? "مكتبة النوتات" : "Notes library"}</span><i aria-hidden="true">←</i></a>
+  </nav>`;
 }
 
 function productProfileImage(product, key) {
@@ -6055,14 +6070,19 @@ function productAlternativeReferencesMarkup(product) {
     const name = localizedText(reference.nameAr, reference.nameEn);
     const relation = relationLabels[match.relationshipType]?.[ar ? 0 : 1] || relationLabels.similar_character[ar ? 0 : 1];
     const reason = localizedText(match.reasonAr, match.reasonEn);
-    return `<article class="fragrance-relationship-card-public is-external has-image">${reference.image ? `<img src="${escapeHTML(reference.image)}" alt="${escapeHTML(name)}" loading="lazy"/>` : ""}<span><small>${escapeHTML(reference.brand || "")}</small><b>${escapeHTML(name)}</b><em>${escapeHTML(relation)} · ${formatPercent(match.similarity)}</em>${reason ? `<p>${escapeHTML(reason)}</p>` : ""}</span></article>`;
+    const reasonCharacters = Array.from(reason || "");
+    const reasonNeedsExpansion = reasonCharacters.length > 150;
+    const reasonPreview = reasonNeedsExpansion ? `${reasonCharacters.slice(0, 150).join("").trim()}…` : reason;
+    const reasonMarkup = reason ? `<div class="pdp-reference-reason"><p>${escapeHTML(reasonPreview)}</p>${reasonNeedsExpansion ? `<details><summary>${ar ? "عرض المزيد" : "Show more"}</summary><p>${escapeHTML(reason)}</p></details>` : ""}</div>` : "";
+    const comparisonUrl = `/alternatives/compare/${encodeURIComponent(reference.slug || reference.id || match.referenceId)}`;
+    return `<article class="fragrance-relationship-card-public is-external has-image pdp-original-fragrance">${reference.image ? `<figure><img src="${escapeHTML(reference.image)}" alt="${escapeHTML(name)}" loading="lazy"/></figure>` : ""}<span><small>${escapeHTML(reference.brand || "")}</small><b>${escapeHTML(name)}</b><em>${escapeHTML(relation)} · ${formatPercent(match.similarity)}</em>${reasonMarkup}<a class="pdp-alternative-details-link" href="${comparisonUrl}">${ar ? "عرض صفحة التفاصيل والمقارنة الكاملة" : "View full details and comparison"} ←</a></span></article>`;
   }).join("")}</div></section>`;
 }
 
 function productProfileAccordions(product) {
   const ar = state.lang === "ar";
-  return `<section class="pdp-profile-accordions" aria-label="${ar ? "ملف العطر" : "Fragrance profile"}">
-    <article class="pdp-profile-section" data-pdp-section="notes"><button type="button" data-action="pdp-profile-section" aria-expanded="true"><div><b>${ar ? "هرم النوتات" : "Note pyramid"}</b><small>${ar ? "افتتاحية · قلب · قاعدة" : "Top · heart · base"}</small></div><i>⌃</i></button><div class="pdp-profile-panel">${productNotePyramid(product) || `<div class="pdp-empty-compact">${ar ? "لم تُضف النوتات العطرية لهذا المنتج بعد." : "Fragrance notes are not available yet."}</div>`}</div></article>
+  return `<section class="pdp-profile-accordions" id="pdp-fragrance-notes" aria-label="${ar ? "ملف العطر" : "Fragrance profile"}">
+    <article class="pdp-profile-section is-open" data-pdp-section="notes"><button type="button" data-action="pdp-profile-section" aria-expanded="true"><div><b>${ar ? "النوتات العطرية" : "Fragrance notes"}</b><small>${ar ? "افتتاحية · قلب · قاعدة — اضغط على النوتة لمعرفة تفاصيلها" : "Top · heart · base — select a note to see its details"}</small></div><i>⌃</i></button><div class="pdp-profile-panel">${productNotePyramid(product) || `<div class="pdp-empty-compact">${ar ? "لم تُضف النوتات العطرية لهذا المنتج بعد." : "Fragrance notes are not available yet."}</div>`}</div></article>
   </section>`;
 }
 
@@ -7007,6 +7027,7 @@ function showProductDetails(product, shouldOpen = true) {
           <div class="pdp-benefits"><span><i>✓</i>${isArabic ? "منتج أصلي 100%" : "100% authentic"}</span><span><i>◉</i>${isArabic ? "الدفع عند الاستلام" : "Cash on delivery"}</span></div>
         </aside>
       </section>
+      ${productCompositionLinksMarkup(product)}
       ${productPublicAccordsMarkup(product)}
       ${productPublicDetailsMarkup(product)}
       ${productAlternativeReferencesMarkup(product)}
@@ -10649,6 +10670,17 @@ document.addEventListener("click", async (event) => {
     const brand = actionElement.dataset.brand || state.activeAdminProductBrand || "";
     if (brand) startManualProduct(false, brand);
     else renderProductStudioBrandDirectory();
+  }
+  if (action === "pdp-composition-jump") {
+    const target = document.getElementById(actionElement.dataset.target || "");
+    target?.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+    if (target?.id === "pdp-fragrance-notes") {
+      const section = target.querySelector(".pdp-profile-section");
+      section?.classList.add("is-open");
+      section?.querySelector(":scope > button")?.setAttribute("aria-expanded", "true");
+      const panel = section?.querySelector(":scope > .pdp-profile-panel");
+      if (panel) panel.hidden = false;
+    }
   }
   if (action === "restore-product-draft") startManualProduct(true);
   if (action === "product-editor-mode") {

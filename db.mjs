@@ -2179,6 +2179,17 @@ function alternativeMatchFromRow(row, includeMetadata = false) {
   const calculatedSimilarity = Number(row.calculated_similarity || row.similarity || 0);
   const reviews = db.prepare(`SELECT COUNT(*) AS count, AVG(perceived_similarity) AS similarity,
     AVG(value_rating) AS valueRating FROM alternative_similarity_reviews WHERE match_id = ? AND status = 'approved'`).get(row.id);
+  const reference = referencePerfumeFromRow(referenceRow);
+  const referenceNameKeys = new Set([reference.nameAr, reference.nameEn, reference.shortName].map(normalizedAlternativeText).filter(Boolean));
+  const referenceBrand = normalizedAlternativeText(reference.brand);
+  const referenceProductRow = db.prepare("SELECT * FROM products WHERE status='published' AND id<>?").all(row.product_id).find((candidate) => {
+    const product = productFromRow(candidate, false);
+    const productNames = [product.nameAr, product.nameEn].map(normalizedAlternativeText).filter(Boolean);
+    const slugMatches = normalizedAlternativeText(product.slug) === normalizedAlternativeText(reference.slug);
+    const nameMatches = productNames.some((name) => referenceNameKeys.has(name));
+    const brandMatches = !referenceBrand || normalizedAlternativeText(product.brand) === referenceBrand;
+    return slugMatches || (nameMatches && brandMatches);
+  });
   return {
     id: Number(row.id), referenceId: row.reference_id, productId: row.product_id,
     similarity: approvedSimilarity, approvedSimilarity, calculatedSimilarity,
@@ -2199,7 +2210,8 @@ function alternativeMatchFromRow(row, includeMetadata = false) {
     visible: Boolean(row.visible), reviewStatus: row.review_status || "approved",
     status: row.status, lastReviewedAt: row.last_reviewed_at,
     customerReviews: { count: Number(reviews?.count || 0), similarity: Number(reviews?.similarity || 0), valueRating: Number(reviews?.valueRating || 0) },
-    reference: referencePerfumeFromRow(referenceRow), product: productFromRow(productRow, includeMetadata)
+    reference, referenceProduct: referenceProductRow ? productFromRow(referenceProductRow, includeMetadata) : null,
+    product: productFromRow(productRow, includeMetadata)
   };
 }
 

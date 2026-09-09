@@ -46,6 +46,8 @@ test("public alternatives UI never offers the reference fragrance for purchase",
   assert.match(html, /href="\/alternatives"/);
   assert.match(server, /\/api\/admin\/alternatives/);
   assert.match(script, /\/alternatives\/compare/);
+  assert.match(script, /function performanceValue\(value\)/);
+  assert.doesNotMatch(script, /\$\{comp\.longevity\}\/10/);
 });
 
 test("alternative events and homepage settings are managed by the shared backend", async () => {
@@ -91,4 +93,12 @@ test("product inspiration records automatically populate official and unofficial
   assert.equal(matches.length, 2);
   assert.deepEqual(new Set(matches.map((item) => item.relationshipType)), new Set(["inspired_by", "similar_character"]));
   assert.ok(matches.every((item) => item.product.brand === "Brand House" && item.visible));
+});
+
+test("a published catalog copy makes the reference fragrance purchasable", async () => {
+  const database = await import("../db.mjs");
+  database.upsertProduct({ id:"purchasable-original",sku:"ORIGINAL-1",brand:"Reference House",nameAr:"المرجع الرسمي",nameEn:"Official Reference",slug:"official-reference",category:"perfume",status:"published",price:4200,inventory:{quantity:3} });
+  const match = database.alternativesPayload().items.find((item) => item.product.id === "auto-linked-brand-product" && item.relationshipType === "inspired_by");
+  assert.equal(match.referenceProduct.id, "purchasable-original");
+  assert.equal(match.referenceProduct.price, 4200);
 });

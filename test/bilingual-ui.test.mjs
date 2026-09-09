@@ -301,6 +301,14 @@ test("published product details expose saved public fields without admin metadat
   assert.ok(accordsAt >= 0 && detailsAt > accordsAt);
 });
 
+test("customers get direct access to fragrance notes and fragrance groups", () => {
+  assert.match(app, /function productCompositionLinksMarkup\(product\)/);
+  assert.match(app, /data-target="pdp-fragrance-notes"/);
+  assert.match(app, /data-target="pdp-fragrance-groups"/);
+  assert.match(app, /المجموعات العطرية والأكوردات/);
+  assert.match(app, /pdp-profile-section is-open/);
+});
+
 test("product details lead with saved alternative and similar fragrance names", () => {
   assert.match(app, /const relationshipDetails = \[[\s\S]*?"العطر البديل"[\s\S]*?configuredRelationshipName\("alternativeIds"\)[\s\S]*?"العطر المشابه"[\s\S]*?configuredRelationshipName\("similarProductIds"\)/);
   assert.match(app, /const identityDetails = \[\s*\.\.\.relationshipDetails,/);
@@ -347,6 +355,16 @@ test("occasions and fragrance character render as localized compact tags", () =>
   assert.match(details, /class="pdp-detail-tags"/);
   assert.match(productDetail, /\.pdp-public-details \.pdp-detail-tags/);
   assert.match(details, /`\$\{formatRating\(ratingValue\)\} \/ 5`/);
+});
+
+test("original fragrance card uses a large image and collapsible explanation", () => {
+  const references = app.slice(app.indexOf("function productAlternativeReferencesMarkup"), app.indexOf("function productProfileAccordions"));
+  assert.match(references, /pdp-original-fragrance/);
+  assert.match(references, /pdp-reference-reason/);
+  assert.match(references, /reasonNeedsExpansion/);
+  assert.match(references, /عرض المزيد/);
+  assert.match(productDetail, /pdp-original-fragrance>figure>img/);
+  assert.match(productDetail, /height:clamp\(220px,28vw,360px\)/);
 });
 
 test("all standard fragrance families have Arabic storefront labels", () => {
