@@ -4779,7 +4779,7 @@ function updateCatalogRouteMeta(total, visibleTitle) {
   if (original || brand) { const schema=document.createElement("script"); schema.id="catalog-route-structured-data"; schema.type="application/ld+json"; schema.textContent=JSON.stringify({"@context":"https://schema.org","@type":"BreadcrumbList",itemListElement:brand?[{"@type":"ListItem",position:1,name:state.lang==="ar"?"الرئيسية":"Home",item:new URL("/",location.origin).href},{"@type":"ListItem",position:2,name:state.lang==="ar"?"العلامات التجارية":"Brands",item:new URL("/brands",location.origin).href},{"@type":"ListItem",position:3,name:brand[state.lang]||brand.en||brand.ar,item:location.href}]:[{"@type":"ListItem",position:1,name:state.lang==="ar"?"الرئيسية":"Home",item:new URL("/",location.origin).href},{"@type":"ListItem",position:2,name:state.lang==="ar"?"العطور":"Perfumes",item:new URL("/perfumes",location.origin).href},{"@type":"ListItem",position:3,name:visibleTitle,item:new URL("/perfumes/original",location.origin).href}]}); document.head.append(schema); }
 }
 
-function renderCatalog({ skeleton = true } = {}) {
+function renderCatalog({ skeleton = false } = {}) {
   const grid = $("#catalog-product-grid");
   if (!grid || !document.body.classList.contains("catalog-route")) return;
   clearTimeout(catalogRenderTimer);
@@ -4787,7 +4787,7 @@ function renderCatalog({ skeleton = true } = {}) {
   renderCatalogChrome(results.length);
   renderCatalogFilters();
   if (skeleton) grid.innerHTML = Array.from({ length: Math.min(state.catalogPageSize, 8) }, () => `<div class="catalog-skeleton" aria-hidden="true"></div>`).join("");
-  catalogRenderTimer = setTimeout(() => {
+  const commitCatalog = () => {
     const pages = Math.max(1, Math.ceil(results.length / state.catalogPageSize));
     state.catalogPage = Math.min(state.catalogPage, pages);
     const start = (state.catalogPage - 1) * state.catalogPageSize;
@@ -4796,7 +4796,9 @@ function renderCatalog({ skeleton = true } = {}) {
     else grid.innerHTML = pageProducts.map((product, index) => productCardMarkup(product, { context: "catalog", compact: matchMedia("(max-width:800px)").matches, reveal: true, delay: Math.min(index * 45, 180) })).join("");
     $("#catalog-pagination").innerHTML = pages > 1 ? Array.from({ length: pages }, (_, index) => `<button data-action="catalog-page" data-page="${index + 1}" class="${state.catalogPage === index + 1 ? "active" : ""}" aria-label="${state.lang === "ar" ? `صفحة ${index + 1}` : `Page ${index + 1}`}">${index + 1}</button>`).join("") : "";
     observeReveals();
-  }, skeleton ? 140 : 0);
+  };
+  if (skeleton) catalogRenderTimer = setTimeout(commitCatalog, 80);
+  else commitCatalog();
 }
 
 function resetCatalogFilters({ keepQuery = false } = {}) {

@@ -46,8 +46,8 @@
   let knowledgePromise;
   function loadKnowledgeResources() {
     if (knowledgePromise) return knowledgePromise;
-    knowledgePromise = [...document.querySelectorAll("script[data-knowledge-src]")]
-      .reduce((chain, placeholder) => chain.then(() => loadScript(placeholder.dataset.knowledgeSrc)), Promise.resolve())
+    knowledgePromise = Promise.all([...document.querySelectorAll("script[data-knowledge-src]")]
+      .map((placeholder) => loadScript(placeholder.dataset.knowledgeSrc)))
       .then(() => window.dispatchEvent(new Event("origo:knowledge-ready")));
     return knowledgePromise;
   }
@@ -73,8 +73,8 @@
   routeStyles.filter((entry) => entry[1].test(route)).forEach(([id]) => loadStyles(`link[data-route="${id}"]`));
   if (new URL(location.href).searchParams.has("product") || /^\/perfume\//.test(location.pathname)) loadStyles("link[data-deferred-href]");
 
-  document.addEventListener("pointerover", (event) => {
-    const target = event.target.closest("[data-action],a[href]");
+  function warmNavigationTarget(target) {
+    target = target?.closest?.("[data-action],a[href]");
     const action = target?.dataset.action || "";
     const href = target?.getAttribute("href") || "";
     if (/admin|product-studio/.test(action)) loadAdminResources();
@@ -87,7 +87,10 @@
     if (match) loadScript(match[0], match[2]);
     const styleMatch = routeStyles.find((entry) => entry[1].test(href));
     if (styleMatch) loadStyles(`link[data-route="${styleMatch[0]}"]`);
-  }, { passive:true, capture:true });
+  }
+  document.addEventListener("pointerover", (event) => warmNavigationTarget(event.target), { passive:true, capture:true });
+  document.addEventListener("pointerdown", (event) => warmNavigationTarget(event.target), { passive:true, capture:true });
+  document.addEventListener("focusin", (event) => warmNavigationTarget(event.target), { passive:true, capture:true });
 
   document.addEventListener("click", (event) => {
     const target = event.target.closest("[data-action],a[href]");
@@ -97,7 +100,7 @@
     if (!/open-product|quick-view|open-note|admin-notes/.test(action) && !/\/notes(?:\/|$)/.test(href)) return;
     event.preventDefault();
     event.stopImmediatePropagation();
-    Promise.all([loadKnowledgeResources(), /open-product|quick-view/.test(action) ? loadScript("alternatives.js?v=8") : Promise.resolve()]).then(() => {
+    loadKnowledgeResources().then(() => {
       target.dataset.knowledgeReady = "true";
       target.click();
       delete target.dataset.knowledgeReady;
@@ -115,10 +118,11 @@
       ? requestIdleCallback(callback, { timeout })
       : setTimeout(callback, Math.min(timeout, 1500));
     idle(() => loadStyles("link[data-idle-href]"), 1200);
+    idle(loadKnowledgeResources, 700);
     idle(loadIdleScripts, 2600);
     if ("serviceWorker" in navigator) {
       const hadController = Boolean(navigator.serviceWorker.controller);
-      const releaseKey = "origoRuntimeReload-v152";
+      const releaseKey = "origoRuntimeReload-v153";
       navigator.serviceWorker.addEventListener("controllerchange", () => {
         if (!hadController || sessionStorage.getItem(releaseKey)) return;
         sessionStorage.setItem(releaseKey, "1");

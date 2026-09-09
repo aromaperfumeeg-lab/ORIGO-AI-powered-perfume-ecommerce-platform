@@ -70,13 +70,23 @@ test("product studio click passes through both asynchronous loaders exactly once
 
 test("home loads production storefront core without admin editor or finder runtimes", async () => {
   const [html, loader, core] = await Promise.all([read("../index.html"), read("../runtime-loader.js"), read("../chunks/storefront-core.min.js")]);
-  assert.match(html, /chunks\/storefront-core\.min\.js\?v=43/);
+  assert.match(html, /chunks\/storefront-core\.min\.js\?v=45/);
   assert.match(html, /runtime-loader\.js\?v=18/);
   assert.doesNotMatch(html, /<script[^>]+(?:admin-runtime|product-editor-runtime|storefront-settings-runtime|fragrance-finder-(?:engine|i18n)|fragrance-finder\.js)/);
   assert.doesNotMatch(core, /function settingsMarkup\(|function renderImportReview\(|function overviewMarkup\(/);
   assert.match(core, /function homeHeroTargetHref\(/);
   assert.match(loader, /const promises = new Map\(\)/);
   assert.match(loader, /finder:\["fragrance-finder-engine\.js/);
+});
+
+test("storefront navigation avoids artificial catalog waits and warms deferred knowledge", async () => {
+  const [app, deferred] = await Promise.all([read("../app.js"), read("../deferred-modules.js")]);
+  assert.match(app, /function renderCatalog\(\{ skeleton = false \} = \{\}\)/);
+  assert.match(app, /else commitCatalog\(\)/);
+  assert.doesNotMatch(app, /skeleton \? 140 : 0/);
+  assert.match(deferred, /knowledgePromise = Promise\.all/);
+  assert.match(deferred, /idle\(loadKnowledgeResources, 700\)/);
+  assert.match(deferred, /addEventListener\("pointerdown"/);
 });
 
 test("runtime chunks and their CSS exist and Hostinger copies the chunks tree", async () => {
