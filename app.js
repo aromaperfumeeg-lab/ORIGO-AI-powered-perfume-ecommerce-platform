@@ -971,6 +971,14 @@ const defaultStoreSettings = {
     baseFontSize: 17,
     bodyFontWeight: 500,
     headingScale: 1,
+    displayTitleSize: 48,
+    sectionTitleSize: 30,
+    productTitleSize: 18,
+    bodyTextSize: 17,
+    descriptionTextSize: 16,
+    smallTextSize: 14,
+    controlTextSize: 16,
+    priceTextSize: 20,
     iconScale: 1,
     imageScale: 1,
     imageRadius: 12,
@@ -1002,7 +1010,7 @@ const defaultStoreSettings = {
     sectionGap: 20,
     productCardHeight: 500,
     adminScale: 1.1,
-    layoutTuningVersion: 2
+    layoutTuningVersion: 3
   },
   footerImage: "assets/origo-hero.png",
   footerDescriptionAr: "في أوريجو، نؤمن أن العطر ليس مجرد رائحة، بل هو توقيعك الخاص الذي يترك أثرًا لا يُنسى. اكتشف عالم العطور الفاخرة بين الأصالة والتميز.",
@@ -1091,14 +1099,22 @@ function mergeStoreSettings(saved = {}) {
     if (!mergedBenefits.some((item) => item.id === benefit.id || item.slug === benefit.slug)) mergedBenefits.push(structuredClone(benefit));
   }
   const savedAppearance = saved.appearance && typeof saved.appearance === "object" ? saved.appearance : {};
-  const migratedAppearance = Number(savedAppearance.layoutTuningVersion || 0) >= 2 ? savedAppearance : {
+  const migratedAppearance = Number(savedAppearance.layoutTuningVersion || 0) >= 3 ? savedAppearance : {
     ...savedAppearance,
     baseFontSize: 17,
     headerHeight: 104,
     sectionGap: 20,
     productCardHeight: 500,
     adminScale: 1.1,
-    layoutTuningVersion: 2
+    displayTitleSize: 48,
+    sectionTitleSize: 30,
+    productTitleSize: 18,
+    bodyTextSize: 17,
+    descriptionTextSize: 16,
+    smallTextSize: 14,
+    controlTextSize: 16,
+    priceTextSize: 20,
+    layoutTuningVersion: 3
   };
   return {
     ...defaultStoreSettings,
@@ -2734,7 +2750,7 @@ function settingsMarkup() {
     <label>${ar ? "العملة" : "Currency"}<select name="currency">${selectOptions([["EGP","EGP"],["USD","USD"],["SAR","SAR"]], settings.currency)}</select></label>
     <label>${ar ? "الضريبة %" : "Tax rate %"}<input name="taxRate" type="number" min="0" max="100" value="${settings.taxRate}" /></label></div>
     <div class="store-logo-settings">${logoFields.map(([key, arLabel, enLabel]) => `<label class="store-logo-field"><span>${ar ? arLabel : enLabel}</span><img id="store-logo-preview-${key}" src="${escapeHTML(settings.logos[key])}" alt=""/><input name="logo${key[0].toUpperCase()}${key.slice(1)}" value="${escapeHTML(settings.logos[key])}" dir="ltr"/><input type="file" accept="image/png,image/jpeg,image/webp,image/avif" data-logo-upload="${key}"/></label>`).join("")}</div></section>
-    <section class="appearance-settings"><input type="hidden" name="appearance.layoutTuningVersion" value="2"/><div class="review-section-head"><span>02</span><div><b>${ar ? "مظهر المتجر العام" : "Global store appearance"}</b><small>${ar ? "تحكم مركزي في الخطوط والصور والأيقونات والبطاقات مع معاينة فورية." : "Central control for typography, images, icons, and cards with live preview."}</small></div></div>
+    <section class="appearance-settings"><input type="hidden" name="appearance.layoutTuningVersion" value="3"/><div class="review-section-head"><span>02</span><div><b>${ar ? "مظهر المتجر العام" : "Global store appearance"}</b><small>${ar ? "تحكم مركزي في الخطوط والصور والأيقونات والبطاقات مع معاينة فورية." : "Central control for typography, images, icons, and cards with live preview."}</small></div></div>
       <div class="appearance-balance-studio">
         <label class="appearance-master-switch"><input type="checkbox" name="appearance.balancedLayoutEnabled" ${appearance.balancedLayoutEnabled !== false ? "checked" : ""}/><span class="appearance-switch-track" aria-hidden="true"><i></i></span><span><b>${ar ? "التوازن الذكي للمساحات والنصوص" : "Smart spacing and text balance"}</b><small>${ar ? "يضبط المسافات والمربعات والصور تلقائيًا، ويضمن نصوصًا واضحة في المتجر ولوحة التحكم." : "Automatically balances spacing, cards, and images while keeping storefront and admin text readable."}</small></span></label>
         <figure class="appearance-layout-preview" aria-label="${ar ? "صورة معاينة للشكل" : "Layout appearance preview"}">
@@ -2751,6 +2767,14 @@ function settingsMarkup() {
         ${appearanceRange("baseFontSize","حجم الخط الأساسي","Base font size",15,22,1,appearance.baseFontSize,"px")}
         ${appearanceRange("bodyFontWeight","سماكة الخط","Font weight",400,800,100,appearance.bodyFontWeight)}
         ${appearanceRange("headingScale","حجم العناوين","Heading scale",.85,1.35,.05,appearance.headingScale,"×")}
+        ${appearanceRange("displayTitleSize","العنوان الرئيسي والبانرات","Hero & banner titles",32,72,1,appearance.displayTitleSize,"px")}
+        ${appearanceRange("sectionTitleSize","عناوين الأقسام والصفحات","Section & page titles",22,44,1,appearance.sectionTitleSize,"px")}
+        ${appearanceRange("productTitleSize","أسماء المنتجات","Product names",15,26,1,appearance.productTitleSize,"px")}
+        ${appearanceRange("bodyTextSize","النصوص الأساسية","Body text",15,22,1,appearance.bodyTextSize,"px")}
+        ${appearanceRange("descriptionTextSize","الشرح والوصف","Descriptions",14,21,1,appearance.descriptionTextSize,"px")}
+        ${appearanceRange("smallTextSize","النصوص الثانوية والشارات","Secondary text & badges",13,18,1,appearance.smallTextSize,"px")}
+        ${appearanceRange("controlTextSize","الأزرار والقوائم والحقول","Buttons, navigation & fields",14,20,1,appearance.controlTextSize,"px")}
+        ${appearanceRange("priceTextSize","الأسعار","Prices",16,30,1,appearance.priceTextSize,"px")}
         ${appearanceRange("iconScale","حجم الأيقونات","Icon scale",.75,1.35,.05,appearance.iconScale,"×")}
         ${appearanceRange("imageScale","حجم الصور","Image scale",.8,1.25,.05,appearance.imageScale,"×")}
         ${appearanceRange("imageRadius","استدارة الصور","Image corners",0,36,1,appearance.imageRadius,"px")}
@@ -2983,7 +3007,7 @@ function alternativesAdminMarkup() {
       <label class="admin-toggle-row"><span><b>${ar ? "إظهار البانر" : "Show banner"}</b></span><input name="bannerEnabled" type="checkbox"${settings.bannerEnabled !== false ? " checked" : ""}/></label>
       <button class="button burgundy-button" type="submit">${ar ? "حفظ إعدادات الظهور" : "Save display settings"} ←</button>
     </section></form>
-    <section class="alternatives-admin-matches"><div class="review-section-head"><span>02</span><div><b>${ar ? "العطور المرجعية وربط البدائل" : "Reference fragrances & matches"}</b><small>${ar ? "المنتج البديل مرتبط مباشرة بكتالوج ORIGO؛ السعر والمخزون لا يتكرران هنا." : "Alternative products stay linked to the live ORIGO catalog."}</small></div></div><div class="alternatives-admin-tools"><a class="secondary-button" href="/api/admin/alternatives/export.csv" download>${ar?"تصدير CSV":"Export CSV"}</a><label class="secondary-button">${ar?"استيراد CSV":"Import CSV"}<input id="alternatives-import-file" type="file" accept=".csv,text/csv" hidden/></label></div>
+    <section class="alternatives-admin-matches"><div class="review-section-head"><span>02</span><div><b>${ar ? "العطور المرجعية وربط البدائل" : "Reference fragrances & matches"}</b><small>${ar ? "تُضاف تلقائيًا كل العلاقات الرسمية وغير الرسمية من بيانات المنتج، وتظل مرتبطة مباشرة بمنتج البراند وسعره ومخزونه." : "Every official and unofficial product relationship is added automatically and stays linked to its live brand product, price, and inventory."}</small></div></div><div class="alternatives-admin-tools"><a class="secondary-button" href="/api/admin/alternatives/export.csv" download>${ar?"تصدير CSV":"Export CSV"}</a><label class="secondary-button">${ar?"استيراد CSV":"Import CSV"}<input id="alternatives-import-file" type="file" accept=".csv,text/csv" hidden/></label></div>
       <details class="alternative-create-panel" open><summary>＋ ${ar ? "مكتبة العطور المرجعية وربط عدة بدائل" : "Reference library & multiple alternatives"}</summary><form id="admin-alternative-create">
         <div class="review-grid"><label>${ar ? "اسم العطر بالعربية" : "Arabic reference name"}<input name="nameAr" required maxlength="200"/></label><label>${ar ? "اسم العطر بالإنجليزية" : "English reference name"}<input name="nameEn" required maxlength="200"/></label></div>
         <div class="review-grid"><label>${ar ? "العلامة التجارية" : "Brand"}<input name="brand" required maxlength="160"/></label><label>${ar ? "الاسم المختصر/الاسم الشائع" : "Short/common name"}<input name="shortName" maxlength="120"/></label></div>
@@ -4200,6 +4224,14 @@ function applyAppearanceSettings(saved = {}) {
   root.style.setProperty("--origo-base-font-size", `${balancedLayoutEnabled ? Math.max(baseFontSize, 17) : baseFontSize}px`);
   root.style.setProperty("--origo-body-font-weight", String(appearanceNumber(appearance.bodyFontWeight, 500, 400, 800)));
   root.style.setProperty("--origo-heading-scale", String(appearanceNumber(appearance.headingScale, 1, .85, 1.35)));
+  root.style.setProperty("--origo-display-title-size", `${appearanceNumber(appearance.displayTitleSize, 48, 32, 72)}px`);
+  root.style.setProperty("--origo-section-title-size", `${appearanceNumber(appearance.sectionTitleSize, 30, 22, 44)}px`);
+  root.style.setProperty("--origo-product-title-size", `${appearanceNumber(appearance.productTitleSize, 18, 15, 26)}px`);
+  root.style.setProperty("--origo-body-text-size", `${appearanceNumber(appearance.bodyTextSize, 17, 15, 22)}px`);
+  root.style.setProperty("--origo-description-text-size", `${appearanceNumber(appearance.descriptionTextSize, 16, 14, 21)}px`);
+  root.style.setProperty("--origo-small-text-size", `${appearanceNumber(appearance.smallTextSize, 14, 13, 18)}px`);
+  root.style.setProperty("--origo-control-text-size", `${appearanceNumber(appearance.controlTextSize, 16, 14, 20)}px`);
+  root.style.setProperty("--origo-price-text-size", `${appearanceNumber(appearance.priceTextSize, 20, 16, 30)}px`);
   root.style.setProperty("--origo-icon-scale", String(appearanceNumber(appearance.iconScale, 1, .75, 1.35)));
   root.style.setProperty("--origo-image-scale", String(appearanceNumber(appearance.imageScale, 1, .8, 1.25)));
   root.style.setProperty("--origo-image-radius", `${appearanceNumber(appearance.imageRadius, 12, 0, 36)}px`);
@@ -4244,6 +4276,14 @@ function appearanceFromForm(form) {
     baseFontSize: Number(data.get("appearance.baseFontSize") || defaultStoreSettings.appearance.baseFontSize),
     bodyFontWeight: Number(data.get("appearance.bodyFontWeight") || defaultStoreSettings.appearance.bodyFontWeight),
     headingScale: Number(data.get("appearance.headingScale") || defaultStoreSettings.appearance.headingScale),
+    displayTitleSize: Number(data.get("appearance.displayTitleSize") || defaultStoreSettings.appearance.displayTitleSize),
+    sectionTitleSize: Number(data.get("appearance.sectionTitleSize") || defaultStoreSettings.appearance.sectionTitleSize),
+    productTitleSize: Number(data.get("appearance.productTitleSize") || defaultStoreSettings.appearance.productTitleSize),
+    bodyTextSize: Number(data.get("appearance.bodyTextSize") || defaultStoreSettings.appearance.bodyTextSize),
+    descriptionTextSize: Number(data.get("appearance.descriptionTextSize") || defaultStoreSettings.appearance.descriptionTextSize),
+    smallTextSize: Number(data.get("appearance.smallTextSize") || defaultStoreSettings.appearance.smallTextSize),
+    controlTextSize: Number(data.get("appearance.controlTextSize") || defaultStoreSettings.appearance.controlTextSize),
+    priceTextSize: Number(data.get("appearance.priceTextSize") || defaultStoreSettings.appearance.priceTextSize),
     iconScale: Number(data.get("appearance.iconScale") || defaultStoreSettings.appearance.iconScale),
     imageScale: Number(data.get("appearance.imageScale") || defaultStoreSettings.appearance.imageScale),
     imageRadius: Number(data.get("appearance.imageRadius") || defaultStoreSettings.appearance.imageRadius),
@@ -4275,7 +4315,7 @@ function appearanceFromForm(form) {
     sectionGap: Number(data.get("appearance.sectionGap") || defaultStoreSettings.appearance.sectionGap),
     productCardHeight: Number(data.get("appearance.productCardHeight") || defaultStoreSettings.appearance.productCardHeight),
     adminScale: Number(data.get("appearance.adminScale") || defaultStoreSettings.appearance.adminScale),
-    layoutTuningVersion: 2
+    layoutTuningVersion: 3
   };
 }
 

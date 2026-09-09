@@ -1586,6 +1586,7 @@ export function upsertProduct(input) {
   }
   syncProductNoteReferences(id, input);
   syncProductFilterValues(id, input);
+  syncProductInspirationAlternatives(id, input);
   return productFromRow(db.prepare("SELECT * FROM products WHERE id = ?").get(id), true);
 }
 
@@ -2213,6 +2214,64 @@ function normalizedAlternativeText(value) {
     .toLocaleLowerCase("ar").replace(/[^\p{L}\p{N}]+/gu, " ").trim();
 }
 
+function automaticReferenceId(relation = {}) {
+  const source = normalizedAlternativeText(`${relation.brandEn || relation.brandAr || ""} ${relation.nameEn || relation.nameAr || ""}`) || "fragrance";
+  let hash = 2166136261;
+  for (const character of source) { hash ^= character.codePointAt(0); hash = Math.imul(hash, 16777619); }
+  const slug = source.replace(/[^\p{L}\p{N}]+/gu, "-").replace(/^-+|-+$/g, "").slice(0, 72) || "fragrance";
+  return `auto-ref-${(hash >>> 0).toString(36)}-${slug}`;
+}
+
+function syncProductInspirationAlternatives(productId, productInput = {}) {
+  const inspiration = productInput.inspiration && typeof productInput.inspiration === "object" ? productInput.inspiration : {};
+  const groups = [
+    ["inspired_by", Array.isArray(inspiration.inspiredBy) ? inspiration.inspiredBy : []],
+    ["similar_character", Array.isArray(inspiration.closestMatches) ? inspiration.closestMatches : []]
+  ];
+  const relationships = groups.flatMap(([relationshipType, values]) => values.map((relation) => ({ relationshipType, relation })))
+    .filter(({ relation }) => relation && (clean(relation.nameAr, 200) || clean(relation.nameEn, 200)));
+  const desiredIds = new Set(relationships.map(({ relation }) => automaticReferenceId(relation)));
+  const automaticMatches = db.prepare("SELECT id, reference_id AS referenceId FROM alternative_matches WHERE product_id=? AND reference_id LIKE 'auto-ref-%'").all(clean(productId, 160));
+  for (const match of automaticMatches) if (!desiredIds.has(match.referenceId)) db.prepare("DELETE FROM alternative_matches WHERE id=?").run(match.id);
+
+  relationships.forEach(({ relationshipType, relation }, index) => {
+    const referenceId = automaticReferenceId(relation);
+    const rawSlug = referenceId.replace(/^auto-ref-[^-]+-/, "");
+    const nameAr = clean(relation.nameAr || relation.nameEn, 200);
+    const nameEn = clean(relation.nameEn || relation.nameAr, 200);
+    const brand = clean(relation.brandEn || relation.brandAr || "غير محدد", 160);
+    db.prepare(`INSERT INTO reference_perfumes
+      (id,slug,name_ar,name_en,brand,image,gender,status,record_status,updated_at)
+      VALUES (?,?,?,?,?,?,?,'active','active',CURRENT_TIMESTAMP)
+      ON CONFLICT(id) DO UPDATE SET slug=excluded.slug,name_ar=excluded.name_ar,name_en=excluded.name_en,
+      brand=excluded.brand,image=excluded.image,status='active',record_status='active',updated_at=CURRENT_TIMESTAMP`)
+      .run(referenceId, rawSlug, nameAr, nameEn, brand, clean(relation.imageUrl, 1000), clean(productInput.gender, 40) || "unisex");
+    const fallbackSimilarity = relationshipType === "inspired_by" ? 85 : 75;
+    const similarity = Math.round(Math.min(100, Math.max(0, Number(relation.similarityPercentage ?? fallbackSimilarity))));
+    const reasonAr = clean(relation.reasonAr || (relationshipType === "inspired_by" ? "مستوحى منه وفق بيانات المنتج." : "تقارب عطري تقديري غير رسمي."), 2000);
+    const reasonEn = clean(relation.reasonEn || (relationshipType === "inspired_by" ? "Inspired by this fragrance according to the product record." : "Unofficial estimated scent similarity."), 2000);
+    db.prepare(`INSERT INTO alternative_matches
+      (reference_id,product_id,similarity,confidence,reason_ar,reason_en,sort_order,status,
+       relationship_type,calculated_similarity,approved_similarity,is_primary_reference,visible,review_status,updated_at)
+      VALUES (?,?,?,?,?,?,?,'active',?,?,?,?,1,'approved',CURRENT_TIMESTAMP)
+      ON CONFLICT(reference_id,product_id) DO UPDATE SET similarity=excluded.similarity,confidence=excluded.confidence,
+      reason_ar=excluded.reason_ar,reason_en=excluded.reason_en,sort_order=excluded.sort_order,status='active',
+      relationship_type=excluded.relationship_type,calculated_similarity=excluded.calculated_similarity,
+      approved_similarity=excluded.approved_similarity,is_primary_reference=excluded.is_primary_reference,
+      visible=1,review_status='approved',updated_at=CURRENT_TIMESTAMP`)
+      .run(referenceId, clean(productId, 160), similarity, relationshipType === "inspired_by" ? 90 : 65,
+        reasonAr, reasonEn, index, relationshipType, similarity, similarity, index === 0 ? 1 : 0);
+  });
+  db.prepare("DELETE FROM reference_perfumes WHERE id LIKE 'auto-ref-%' AND NOT EXISTS (SELECT 1 FROM alternative_matches WHERE reference_id=reference_perfumes.id)").run();
+}
+
+// Backfill the alternatives library from every existing catalog product. This is
+// idempotent, so older products gain their links without a manual re-save.
+for (const row of db.prepare("SELECT id,catalog_json FROM products").all()) {
+  const product = parseJSON(row.catalog_json, {});
+  if (product?.inspiration) syncProductInspirationAlternatives(row.id, product);
+}
+
 function editDistance(a, b) {
   if (!a) return b.length;
   if (!b) return a.length;
@@ -2292,7 +2351,7 @@ export function getAlternative(referenceOrProduct) {
 
 export function alternativesPayload(options = {}) {
   const allItems = listAlternatives(options);
-  const pageSize = Math.min(60, Math.max(1, Number(options.pageSize || 24)));
+  const pageSize = Math.min(5000, Math.max(1, Number(options.pageSize || 5000)));
   const page = Math.max(1, Number(options.page || 1));
   const start = (page - 1) * pageSize;
   return { items: allItems.slice(start, start + pageSize), pagination: { page, pageSize, total: allItems.length, pages: Math.max(1, Math.ceil(allItems.length / pageSize)) }, settings: getHomepageAlternativesSettings(), disclaimerAr: "نسبة التشابه تقديرية مبنية على الخصائص العطرية والأداء، وقد يختلف إدراك الرائحة من شخص إلى آخر.", disclaimerEn: "Similarity is an estimate based on fragrance characteristics and performance. Scent perception may vary from person to person." };

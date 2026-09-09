@@ -76,3 +76,19 @@ test("admin can create a reference and link it to live catalog inventory without
   assert.equal(match.product.price, product.price);
   assert.ok(match.similarity >= 55 && match.similarity <= 98);
 });
+
+test("product inspiration records automatically populate official and unofficial alternatives", async () => {
+  const database = await import("../db.mjs");
+  database.upsertProduct({
+    id: "auto-linked-brand-product", sku: "AUTO-LINK-1", brand: "Brand House", nameAr: "عطر البراند", nameEn: "Brand Fragrance",
+    category: "perfume", status: "published", price: 1500, sizes: ["100 ML"], inventory: { quantity: 4 },
+    inspiration: {
+      inspiredBy: [{ nameAr: "المرجع الرسمي", nameEn: "Official Reference", brandEn: "Reference House", similarityPercentage: 91 }],
+      closestMatches: [{ nameAr: "المرجع غير الرسمي", nameEn: "Unofficial Reference", brandEn: "Another House", similarityPercentage: 78 }]
+    }
+  });
+  const matches = database.alternativesPayload().items.filter((item) => item.product.id === "auto-linked-brand-product");
+  assert.equal(matches.length, 2);
+  assert.deepEqual(new Set(matches.map((item) => item.relationshipType)), new Set(["inspired_by", "similar_character"]));
+  assert.ok(matches.every((item) => item.product.brand === "Brand House" && item.visible));
+});

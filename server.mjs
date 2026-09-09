@@ -1106,7 +1106,7 @@ async function handleAPI(request, response, url, origin) {
   if (url.pathname === "/api/alternatives" && request.method === "GET") {
     const query = url.searchParams.get("q") || "";
     const sort = url.searchParams.get("sort") || "recommended";
-    const payload = alternativesPayload({ query, sort, page: url.searchParams.get("page") || 1, pageSize: url.searchParams.get("pageSize") || 24,
+    const payload = alternativesPayload({ query, sort, page: url.searchParams.get("page") || 1, pageSize: url.searchParams.get("pageSize") || 5000,
       filters: { family: url.searchParams.get("family") || "", gender: url.searchParams.get("gender") || "",
         season: url.searchParams.get("season") || "", inStock: url.searchParams.get("inStock") || "" } });
     if (query) recordAlternativeEvent({ eventType: "search", query, resultsCount: payload.pagination.total,

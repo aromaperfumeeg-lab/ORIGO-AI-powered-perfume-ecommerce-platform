@@ -3754,6 +3754,61 @@ html body .product-overlay .origo-exact-product-card .product-card-top-actions .
   .pdp-recommendations .mobile-product-view-control{order:3}
 }
 
+/* Readable, centrally controlled storefront type scale. Keep this layer last so
+   old component-specific pixel sizes cannot make customer copy illegible. */
+:root{
+  --origo-display-title-size:48px;
+  --origo-section-title-size:30px;
+  --origo-product-title-size:18px;
+  --origo-body-text-size:17px;
+  --origo-description-text-size:16px;
+  --origo-small-text-size:14px;
+  --origo-control-text-size:16px;
+  --origo-price-text-size:20px;
+}
+:where(#storefront-main,.site-header,#site-footer,.origo-footer,.mobile-menu-panel,.store-bottom-nav,.drawer,.product-overlay){
+  font-size:var(--origo-body-text-size)!important;
+  line-height:1.65;
+}
+:where(#storefront-main,.product-overlay) :is(.origo-home-hero,.alternatives-hero,.benefit-detail-hero,.brands-route-hero,.catalog-hero,.account-hero,.commerce-hero) :is(h1,h2),
+:where(#storefront-main,.product-overlay) :is(.pdp-title,.product-detail-title){
+  font-size:clamp(var(--origo-section-title-size),5vw,var(--origo-display-title-size))!important;
+  line-height:1.2!important;
+}
+:where(#storefront-main,.product-overlay,#site-footer) :is(.home-section-head h2,.pdp-section-heading h2,.section-heading h2,.alternatives-title h1,.comparison-title h1,.inspired-section>header h2,.route-title,h1.page-title,h2.section-title){
+  font-size:var(--origo-section-title-size)!important;
+  line-height:1.3!important;
+}
+html body :where(#storefront-main,.product-overlay) :is(.product-card h3,.exact-card-product-name,.product-title,.alternative-card h3,.home-alt-card h3){
+  font-size:var(--origo-product-title-size)!important;
+  line-height:1.35!important;
+}
+:where(#storefront-main,.product-overlay,#site-footer,.origo-footer) :is(p,.description,.product-description,.alternative-narrative,.pdp-copy,.benefit-content-card p,.footer-description){
+  font-size:var(--origo-description-text-size)!important;
+  line-height:1.75!important;
+}
+html body :where(#storefront-main,.product-overlay,.site-header,#site-footer,.origo-footer,.mobile-menu-panel,.store-bottom-nav,.drawer) :is(small,.eyebrow,.kicker,.caption,.meta,.product-brand,.product-card-secondary-name,.product-badge,.product-feature-badge,.alt-relation-badge,.alt-compare-check,.exact-card-rating,.exact-card-rating small,figcaption){
+  font-size:var(--origo-small-text-size)!important;
+  line-height:1.45!important;
+}
+html body :where(#storefront-main,.product-overlay,.site-header,#site-footer,.origo-footer,.mobile-menu-panel,.store-bottom-nav,.drawer) :is(button,a.button,.button,input,select,textarea,label,.nav-link,.category-nav a,.category-nav button){
+  font-size:var(--origo-control-text-size)!important;
+  line-height:1.4!important;
+}
+html body :where(#storefront-main,.product-overlay) :is(.product-price,.current-price,.price,.exact-card-prices .product-price){
+  font-size:var(--origo-price-text-size)!important;
+  line-height:1.2!important;
+}
+html body :where(#storefront-main,.product-overlay) :is(.old-price,.compare-price,.exact-card-prices del){
+  font-size:var(--origo-small-text-size)!important;
+  line-height:1.2!important;
+}
+@media(max-width:700px){
+  :where(#storefront-main,.site-header,#site-footer,.origo-footer,.mobile-menu-panel,.store-bottom-nav,.drawer,.product-overlay){line-height:1.6}
+  html body :where(#storefront-main,.product-overlay) .product-card.origo-exact-product-card .product-info{gap:6px!important}
+  html body :where(#storefront-main,.product-overlay) .product-card.origo-exact-product-card .exact-card-actions .card-add-button{min-height:40px!important;padding:8px!important}
+}
+
 /* Transparent product photography: isolate the bottle and box on pure black in dark mode. */
 html[data-theme="dark"] body :is(#storefront-main,.product-overlay) .product-card .product-image,
 html[data-theme="dark"] body :is(#storefront-main,.product-overlay) .product-card .product-card-media-link,
@@ -4874,3 +4929,13 @@ body #storefront-main #home .home-gender-section .home-gender-card .gender-card-
     min-width:22px!important;
   }
 }
+
+/* Final typography authority: every customer-facing text role follows the
+   administrator's readable scale, including compact cards and phone layouts. */
+html body :where(#storefront-main,.product-overlay) :is(.product-card h3,.exact-card-product-name,.exact-card-product-name>a,.product-title,.alternative-card h3,.home-alt-card h3){font-size:var(--origo-product-title-size)!important;line-height:1.35!important}
+html body :where(#storefront-main,.product-overlay,.site-header,#site-footer,.origo-footer,.mobile-menu-panel,.store-bottom-nav,.drawer) :is(small,.eyebrow,.kicker,.caption,.meta,.product-brand,.product-card-secondary-name,.product-badge,.product-feature-badge,.alt-relation-badge,.alt-compare-check,.exact-card-rating,.exact-card-rating small,figcaption){font-size:var(--origo-small-text-size)!important;line-height:1.45!important}
+html body :where(#storefront-main,.product-overlay,.site-header,#site-footer,.origo-footer,.mobile-menu-panel,.store-bottom-nav,.drawer) :is(button,a.button,.button,input,select,textarea,label,.nav-link,.category-nav a,.category-nav button){font-size:var(--origo-control-text-size)!important;line-height:1.4!important}
+html body :where(#storefront-main,.product-overlay) :is(.product-price,.current-price,.price,.exact-card-prices .product-price){font-size:var(--origo-price-text-size)!important;line-height:1.2!important}
+html body :where(#storefront-main,.product-overlay) :is(.old-price,.compare-price,.exact-card-prices del){font-size:var(--origo-small-text-size)!important;line-height:1.2!important}
+html body :where(#storefront-main,.product-overlay) .product-price-discount{font-size:var(--origo-small-text-size)!important;min-height:26px!important}
+@media(max-width:700px){html body :where(#storefront-main,.product-overlay) .product-card.origo-exact-product-card .exact-card-actions .card-add-button{min-height:40px!important;padding:8px!important}}
