@@ -276,7 +276,7 @@
     "zhr-lsan-althwr":"zhr-lsan-althwr", "zhrh-alshykhh":"zhrh-alshykhh", sansyfyrya:"sansyfyrya",
     "srh-alard":"srh-alard", "swjandha-kwkyla":"swjandha-kwkyla", "shay-awwlwngh":"shay-awwlwngh",
     "shay-asam":"shay-asam", "shay-ayrl-ghray":"shay-ayrl-ghray", "shay-alhnth-alswda":"shay-alhnth-alswda",
-    "shay-alrwybws-alahmr":"shay-alrwybws-alahmr", "shay-almatsha":"shay-almatsha"
+    "shay-alrwybws-alahmr":"shay-alrwybws-alahmr", "shay-almatsha":"shay-almatsha", "shay-bwyr":"shay-bwyr", "shay-taylandy":"shay-taylandy", "shay-ty-jwan-yn":"shay-ty-jwan-yn", "shay-jywkwrw":"shay-jywkwrw", "shay-fdlat-albt-yashy-shyangh":"shay-fdlat-albt-yashy-shyangh", "shay-kymwn":"shay-kymwn", "shay-labsanj-swtshwnj":"shay-labsanj-swtshwnj", "shay-lwnghjyngh":"shay-lwnghjyngh", "shay-lyshan":"shay-lyshan", "shay-ywnan-alahmr":"shay-ywnan-alahmr", "shjyrh-alkrywzwt":"shjyrh-alkrywzwt", "shmr-bhry":"shmr-bhry", "shwan-shywnj":"shwan-shywnj", "shwk-alwrd":"shwk-alwrd", "shyzw":"shyzw", "ashb-alshaty-amwfyla":"ashb-alshaty-amwfyla"
   });
 
   function generatedImageFor(slug) {
