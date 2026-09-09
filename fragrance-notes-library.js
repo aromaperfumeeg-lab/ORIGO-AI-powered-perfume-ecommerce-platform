@@ -267,7 +267,11 @@
     alkrfs:"alkrfs", alkzbrh:"alkzbrh", allblab:"allblab", almrdqwsh:"almrdqwsh", alnkhalh:"alnkhalh",
     "alndgh-aljbly":"alndgh-aljbly", alnanaa:"alnanaa", "alnanaa-albry":"alnanaa-albry",
     "alnanaa-almdbb":"alnanaa-almdbb", alhlywn:"alhlywn", alwj:"alwj", alybrwh:"alybrwh",
-    "awraq-alanb":"awraq-alanb", balmarwza:"balmarwza", bandanws:"bandanws", "bdhwr-alkrfs":"bdhwr-alkrfs"
+    "awraq-alanb":"awraq-alanb", balmarwza:"balmarwza", bandanws:"bandanws", "bdhwr-alkrfs":"bdhwr-alkrfs",
+    btm:"btm", bqlh:"bqlh", bwrnywl:"bwrnywl", bwsydwnya:"bwsydwnya", "tbgh-ashqr":"tbgh-ashqr",
+    "twt-alarar":"twt-alarar", twrya:"twrya", twlsy:"twlsy", thwm:"thwm", "jajwmarw-banyan":"jajwmarw-banyan",
+    jambw:"jambw", "jdhr-allwfaj":"jdhr-allwfaj", "jdhr-almlak":"jdhr-almlak",
+    "jdhwr-khshb-alarz":"jdhwr-khshb-alarz", "jranywm-makwrwhyzwm-zdrafytz":"jranywm-makwrwhyzwm-zdrafytz", khs:"khs"
   });
 
   function generatedImageFor(slug) {
