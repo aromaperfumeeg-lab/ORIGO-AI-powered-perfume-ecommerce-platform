@@ -46,8 +46,20 @@ test("provides bilingual data, family metadata, and automatic artwork", () => {
   assert.equal(rose.nameEn, "Rose");
   assert.equal(rose.familyId, "flowers");
   assert.equal(rose.position, "heart");
-  assert.match(library.artwork(rose), /^data:image\/svg\+xml/);
+  assert.equal(library.artwork(rose), "/assets/notes/generated/rose.webp");
   assert.equal(library.validateNoteImage(rose).valid, false);
+  assert.equal(rose.imageStatus, "reference");
+});
+
+test("canonical reference artwork remains visible while awaiting final review", () => {
+  for (const slug of ["bergamot", "grapefruit", "lemon", "orange", "mandarin", "powdered-sugar", "incense"]) {
+    const note = library.find(slug);
+    assert.equal(note.imageStatus, "reference");
+    assert.equal(library.artwork(note), `/${note.image}`);
+  }
+  const reviewedDuplicateName = library.find("skr-bwdrh");
+  assert.equal(reviewedDuplicateName.imageStatus, "ready");
+  assert.equal(library.artwork(reviewedDuplicateName), `/${reviewedDuplicateName.image}`);
 });
 
 test("enriches English-only product notes without adding preview text to the review queue", () => {

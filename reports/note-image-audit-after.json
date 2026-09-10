@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-09-10T21:41:31.395Z",
+  "generatedAt": "2026-09-10T23:27:36.756Z",
   "scope": "Library plus persisted note overrides; SQLite opened read-only. Visual semantics are not certified by filenames or hashes.",
   "notes": 1883,
   "products": 5,
-  "valid": 64,
-  "missing": 746,
+  "valid": 80,
+  "missing": 730,
   "duplicateGroups": 9,
   "needsReview": 1055,
   "duplicates": [
@@ -8704,13 +8704,13 @@
     {
       "canonicalKey": "wrd-tayfy",
       "nameAr": "ورد طائفي",
-      "nameEn": "ورد طائفي",
+      "nameEn": "Taif rose",
       "sourceName": "ورد طائفي",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/wrd-tayfy.webp",
+      "filename": "wrd-tayfy.webp",
+      "hash": "65770c050cd58cceab53a3658af39c2a5d4c535d7d66c7d99de13450d5818225",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": []
     },
     {
@@ -14690,13 +14690,13 @@
     {
       "canonicalKey": "hlwy-hlamyh",
       "nameAr": "حلوى هلامية",
-      "nameEn": "حلوى هلامية",
+      "nameEn": "Gummy candy",
       "sourceName": "حلوى هلامية",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/hlwy-hlamyh.webp",
+      "filename": "hlwy-hlamyh.webp",
+      "hash": "7f9fbe9c076f5ba1321c187af0b218039ab7813ba4f044768f4d701c2b2bac0d",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "حلوى هلامية"
       ]
@@ -14732,13 +14732,13 @@
     {
       "canonicalKey": "hlwy-aljyly",
       "nameAr": "حلوي الجيلي",
-      "nameEn": "حلوي الجيلي",
+      "nameEn": "Jelly candy",
       "sourceName": "حلوي الجيلي",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/hlwy-aljyly.webp",
+      "filename": "hlwy-aljyly.webp",
+      "hash": "c1ed53870fb7d4ffb8a5461642e122c7d3a2c10e8449a67850c1961f1c8725df",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "حلوي الجيلي"
       ]
@@ -14760,13 +14760,13 @@
     {
       "canonicalKey": "hlwy-alzbdh",
       "nameAr": "حلوي الزبدة",
-      "nameEn": "حلوي الزبدة",
+      "nameEn": "Butterscotch candy",
       "sourceName": "حلوي الزبدة",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/hlwy-alzbdh.webp",
+      "filename": "hlwy-alzbdh.webp",
+      "hash": "8fa69de243bade5039d285107fe18fb7b1a8c10417ca8a850d670636e89ac732",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "حلوي الزبدة"
       ]
@@ -14788,13 +14788,13 @@
     {
       "canonicalKey": "hlwy-alkastr",
       "nameAr": "حلوي الكاستر",
-      "nameEn": "حلوي الكاستر",
+      "nameEn": "Custard candy",
       "sourceName": "حلوي الكاستر",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/hlwy-alkastr.webp",
+      "filename": "hlwy-alkastr.webp",
+      "hash": "745177218e2d49d3a38d482539ea670c52d2e4c16a9660ef4b4f667bc87bba97",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "حلوي الكاستر"
       ]
@@ -14802,13 +14802,13 @@
     {
       "canonicalKey": "hlwy-alkramyl",
       "nameAr": "حلوي الكراميل",
-      "nameEn": "حلوي الكراميل",
+      "nameEn": "Caramel candy",
       "sourceName": "حلوي الكراميل",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/hlwy-alkramyl.webp",
+      "filename": "hlwy-alkramyl.webp",
+      "hash": "be70eeeba34dfecedd949fe59d67857ba9613654f2d05c27a1fbb0a8eb3067cd",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "حلوي الكراميل"
       ]
@@ -14830,13 +14830,13 @@
     {
       "canonicalKey": "hlwy-allwz",
       "nameAr": "حلوي اللوز",
-      "nameEn": "حلوي اللوز",
+      "nameEn": "Almond candy",
       "sourceName": "حلوي اللوز",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/hlwy-allwz.webp",
+      "filename": "hlwy-allwz.webp",
+      "hash": "714be9c483c4e4a54142fe91391a054d3877f217420d1fbaee66cac600a8b9e4",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "حلوي اللوز"
       ]
@@ -14858,13 +14858,13 @@
     {
       "canonicalKey": "hlwy-almrmalad",
       "nameAr": "حلوي المرمالاد",
-      "nameEn": "حلوي المرمالاد",
+      "nameEn": "Marmalade candy",
       "sourceName": "حلوي المرمالاد",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/hlwy-almrmalad.webp",
+      "filename": "hlwy-almrmalad.webp",
+      "hash": "4c72b7a6b3d280347e4f4f21b2a926d4cc7a11c483b63c5fe2b586de7d59632c",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "حلوي المرمالاد"
       ]
@@ -14872,13 +14872,13 @@
     {
       "canonicalKey": "hlwy-frnsyh",
       "nameAr": "حلوي فرنسيه",
-      "nameEn": "حلوي فرنسيه",
+      "nameEn": "French confectionery",
       "sourceName": "حلوي فرنسيه",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/hlwy-frnsyh.webp",
+      "filename": "hlwy-frnsyh.webp",
+      "hash": "7e2bd7da40d7fab48d527be4d67f3a73cf89fddab72f19262536f429bb9403c7",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "حلوي فرنسيه"
       ]
@@ -14900,13 +14900,13 @@
     {
       "canonicalKey": "hlwy-mws-allbn",
       "nameAr": "حلوي موس اللبن",
-      "nameEn": "حلوي موس اللبن",
+      "nameEn": "Milk mousse candy",
       "sourceName": "حلوي موس اللبن",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/hlwy-mws-allbn.webp",
+      "filename": "hlwy-mws-allbn.webp",
+      "hash": "208be82688bec70220e6ac5830acb708541acd253b4df8ebaf5ea573e5e1ea30",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "حلوي موس اللبن"
       ]
@@ -14914,13 +14914,13 @@
     {
       "canonicalKey": "hlyb-alshwfan",
       "nameAr": "حليب الشوفان",
-      "nameEn": "حليب الشوفان",
+      "nameEn": "Oat milk",
       "sourceName": "حليب الشوفان",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/hlyb-alshwfan.webp",
+      "filename": "hlyb-alshwfan.webp",
+      "hash": "636a11caad0e7ee07c0578a33cc873f8ec6e370dfc6e52eea6c3f4104d170226",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "حليب الشوفان"
       ]
@@ -14928,13 +14928,13 @@
     {
       "canonicalKey": "hlyb-alkrz",
       "nameAr": "حليب الكرز",
-      "nameEn": "حليب الكرز",
+      "nameEn": "Cherry milk",
       "sourceName": "حليب الكرز",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/hlyb-alkrz.webp",
+      "filename": "hlyb-alkrz.webp",
+      "hash": "9f5648efad60cc5d7151da0b2dd8d6689e1129022a8e3be92dacdd758256d3e7",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "حليب الكرز"
       ]
@@ -14942,13 +14942,13 @@
     {
       "canonicalKey": "hlyb-alwrd",
       "nameAr": "حليب الورد",
-      "nameEn": "حليب الورد",
+      "nameEn": "Rose milk",
       "sourceName": "حليب الورد",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/hlyb-alwrd.webp",
+      "filename": "hlyb-alwrd.webp",
+      "hash": "236d4a75c3118301fd8a046563b9dd87413f841c13ea586e584ccca0a6999cef",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "حليب الورد"
       ]
@@ -14998,13 +14998,13 @@
     {
       "canonicalKey": "khbz-almwty",
       "nameAr": "خبز الموتى",
-      "nameEn": "خبز الموتى",
+      "nameEn": "Pan de muerto",
       "sourceName": "خبز الموتى",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/khbz-almwty.webp",
+      "filename": "khbz-almwty.webp",
+      "hash": "9a784d99ea2cdd6d172d487ab114070d009b90704ec53e618b2b91b6e5940d9c",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "خبز الموتى"
       ]
@@ -15040,13 +15040,13 @@
     {
       "canonicalKey": "drajybws",
       "nameAr": "دراجيبوس",
-      "nameEn": "دراجيبوس",
+      "nameEn": "Dragibus candy",
       "sourceName": "دراجيبوس",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/drajybws.webp",
+      "filename": "drajybws.webp",
+      "hash": "57eded2a5b015164afe3dd71ae5857997f8fe826783b8994099fd4aaedc43e5a",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "دراجيبوس"
       ]
@@ -15068,13 +15068,13 @@
     {
       "canonicalKey": "rhyq",
       "nameAr": "رحيق",
-      "nameEn": "رحيق",
+      "nameEn": "Flower nectar",
       "sourceName": "رحيق",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/rhyq.webp",
+      "filename": "rhyq.webp",
+      "hash": "377c10bad7042608eea904acfd8c91cf60f91d163268b7b4b8eca4e9d134d3fe",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "رحيق"
       ]
