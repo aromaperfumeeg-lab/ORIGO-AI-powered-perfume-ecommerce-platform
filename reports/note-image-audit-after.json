@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-09-10T20:53:51.561Z",
+  "generatedAt": "2026-09-10T21:41:31.395Z",
   "scope": "Library plus persisted note overrides; SQLite opened read-only. Visual semantics are not certified by filenames or hashes.",
   "notes": 1883,
   "products": 5,
-  "valid": 48,
-  "missing": 762,
+  "valid": 64,
+  "missing": 746,
   "duplicateGroups": 9,
   "needsReview": 1055,
   "duplicates": [
@@ -15586,13 +15586,13 @@
     {
       "canonicalKey": "fwghasyt",
       "nameAr": "فوغاسيت",
-      "nameEn": "فوغاسيت",
+      "nameEn": "Fougassette",
       "sourceName": "فوغاسيت",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/fwghasyt.webp",
+      "filename": "fwghasyt.webp",
+      "hash": "a6d778c5bd14db2223149e622e52c053e4447872d6ab3f4775c6922695d144c2",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "فوغاسيت"
       ]
@@ -15600,13 +15600,13 @@
     {
       "canonicalKey": "qrs-alasl",
       "nameAr": "قرص العسل",
-      "nameEn": "قرص العسل",
+      "nameEn": "Honeycomb",
       "sourceName": "قرص العسل",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/qrs-alasl.webp",
+      "filename": "qrs-alasl.webp",
+      "hash": "c8b6d2dd46b783a1d64d0d01b13f6249e82ff59e16f84370f1127a73a58ab71c",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "قرص العسل"
       ]
@@ -15614,13 +15614,13 @@
     {
       "canonicalKey": "qhwh-afwjatw",
       "nameAr": "قهوة أفوجاتو",
-      "nameEn": "قهوة أفوجاتو",
+      "nameEn": "Affogato coffee",
       "sourceName": "قهوة أفوجاتو",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/qhwh-afwjatw.webp",
+      "filename": "qhwh-afwjatw.webp",
+      "hash": "5a141f00622bb7783ed84382101a04cbb93937de5820197f6cc0b01b7a50dea0",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "قهوة أفوجاتو"
       ]
@@ -15628,13 +15628,13 @@
     {
       "canonicalKey": "qhwh-balhlyb",
       "nameAr": "قهوة بالحليب",
-      "nameEn": "قهوة بالحليب",
+      "nameEn": "Coffee with milk",
       "sourceName": "قهوة بالحليب",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/qhwh-balhlyb.webp",
+      "filename": "qhwh-balhlyb.webp",
+      "hash": "fdc748d18716c8e99924c8cf67a04febe9bd82917ea1abbbfd4a66180ad8f743",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "قهوة بالحليب"
       ]
@@ -15642,13 +15642,13 @@
     {
       "canonicalKey": "kasata-sqlyh",
       "nameAr": "كاساتا صقلية",
-      "nameEn": "كاساتا صقلية",
+      "nameEn": "Sicilian cassata",
       "sourceName": "كاساتا صقلية",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/kasata-sqlyh.webp",
+      "filename": "kasata-sqlyh.webp",
+      "hash": "5eaaf6d9c847601b60f0a3635b9889ca67aacecbfb98f5739c9b4406c89ad081",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "كاساتا صقلية"
       ]
@@ -15670,13 +15670,13 @@
     {
       "canonicalKey": "kalyswn-dyks",
       "nameAr": "كاليسون ديكس",
-      "nameEn": "كاليسون ديكس",
+      "nameEn": "Calisson d'Aix",
       "sourceName": "كاليسون ديكس",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/kalyswn-dyks.webp",
+      "filename": "kalyswn-dyks.webp",
+      "hash": "bd1a7700d3a2e931462d26d099ad05839564d107d8392f57273e1d174820265a",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "كاليسون ديكس"
       ]
@@ -15684,13 +15684,13 @@
     {
       "canonicalKey": "kramyl-mmlh",
       "nameAr": "كراميل مملح",
-      "nameEn": "كراميل مملح",
+      "nameEn": "Salted caramel",
       "sourceName": "كراميل مملح",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/kramyl-mmlh.webp",
+      "filename": "kramyl-mmlh.webp",
+      "hash": "49694af81543493b1018665f7696d9baf827537c9878dfba13fe799724db10c2",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "كراميل مملح"
       ]
@@ -15698,13 +15698,13 @@
     {
       "canonicalKey": "krz-ghrywt",
       "nameAr": "كرز غريوت",
-      "nameEn": "كرز غريوت",
+      "nameEn": "Griotte cherries",
       "sourceName": "كرز غريوت",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/krz-ghrywt.webp",
+      "filename": "krz-ghrywt.webp",
+      "hash": "e81a6ff98bd81a6f81ca2a917bf8fd160994a71691c5628ec9edbdfc74bf9efb",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "كرز غريوت"
       ]
@@ -15726,13 +15726,13 @@
     {
       "canonicalKey": "krym-alkhwkh",
       "nameAr": "كريم الخوخ",
-      "nameEn": "كريم الخوخ",
+      "nameEn": "Peach cream",
       "sourceName": "كريم الخوخ",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/krym-alkhwkh.webp",
+      "filename": "krym-alkhwkh.webp",
+      "hash": "862c8fadb5da82ec4522eb03a8fd910297b8e72d8c62d037a9b5ad70455b9f1b",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "كريم الخوخ"
       ]
@@ -15754,13 +15754,13 @@
     {
       "canonicalKey": "krym-shantyh",
       "nameAr": "كريم شانتيه",
-      "nameEn": "كريم شانتيه",
+      "nameEn": "Chantilly cream",
       "sourceName": "كريم شانتيه",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/krym-shantyh.webp",
+      "filename": "krym-shantyh.webp",
+      "hash": "5f1238b0d94abcc00e378320384ac01d2e46019ad1f2f7774e57edaf0e221aff",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "كريم شانتيه"
       ]
@@ -15768,13 +15768,13 @@
     {
       "canonicalKey": "krymh-albndq-walkakaw",
       "nameAr": "كريمة البندق والكاكاو",
-      "nameEn": "كريمة البندق والكاكاو",
+      "nameEn": "Hazelnut cocoa cream",
       "sourceName": "كريمة البندق والكاكاو",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/krymh-albndq-walkakaw.webp",
+      "filename": "krymh-albndq-walkakaw.webp",
+      "hash": "ae861f2ee0bc855f6e4d7b199262747652efc0e9f86d8949ed74cb216366938b",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "كريمة البندق والكاكاو"
       ]
@@ -15782,13 +15782,13 @@
     {
       "canonicalKey": "krymh-altzyyn-alwrdyh",
       "nameAr": "كريمة التزيين الوردية",
-      "nameEn": "كريمة التزيين الوردية",
+      "nameEn": "Pink frosting",
       "sourceName": "كريمة التزيين الوردية",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/krymh-altzyyn-alwrdyh.webp",
+      "filename": "krymh-altzyyn-alwrdyh.webp",
+      "hash": "ed0cc421eb5ff05b11510252671f3c05f9abbfc84fa05b5684f3af80b11279f7",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "كريمة التزيين الوردية"
       ]
@@ -15796,13 +15796,13 @@
     {
       "canonicalKey": "krymh-alhlyb",
       "nameAr": "كريمة الحليب",
-      "nameEn": "كريمة الحليب",
+      "nameEn": "Milk cream",
       "sourceName": "كريمة الحليب",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/krymh-alhlyb.webp",
+      "filename": "krymh-alhlyb.webp",
+      "hash": "6cab8c4f74d31f79d3df1143003d9613a7a0dfec31eb12c0d261054ec57fcd91",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "كريمة الحليب"
       ]
@@ -15810,13 +15810,13 @@
     {
       "canonicalKey": "krymh-alkhfq",
       "nameAr": "كريمة الخفق",
-      "nameEn": "كريمة الخفق",
+      "nameEn": "Whipping cream",
       "sourceName": "كريمة الخفق",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/krymh-alkhfq.webp",
+      "filename": "krymh-alkhfq.webp",
+      "hash": "3edbaf15b298c727402067805ae467d1f4fca91a279bf83e6b441e57c7a55dae",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "كريمة الخفق"
       ]
@@ -15824,13 +15824,13 @@
     {
       "canonicalKey": "krymh-alzbdh",
       "nameAr": "كريمة الزبدة",
-      "nameEn": "كريمة الزبدة",
+      "nameEn": "Buttercream",
       "sourceName": "كريمة الزبدة",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/krymh-alzbdh.webp",
+      "filename": "krymh-alzbdh.webp",
+      "hash": "1abffc47d3bdb3225a9d11da17ff4afce42414e0da253b61c161f5bb4a110f9f",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "كريمة الزبدة"
       ]
@@ -15838,13 +15838,13 @@
     {
       "canonicalKey": "krymh-alfstq",
       "nameAr": "كريمة الفستق",
-      "nameEn": "كريمة الفستق",
+      "nameEn": "Pistachio cream",
       "sourceName": "كريمة الفستق",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/krymh-alfstq.webp",
+      "filename": "krymh-alfstq.webp",
+      "hash": "34cee70972f7d5a7d9397dbec9313fdefdda70f43c589dcc37eccb868e4153f4",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "كريمة الفستق"
       ]
