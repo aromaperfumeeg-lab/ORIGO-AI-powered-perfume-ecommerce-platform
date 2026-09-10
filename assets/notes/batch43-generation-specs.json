@@ -1,0 +1,466 @@
+[
+  {
+    "canonicalKey": "ftyrh-myryngh-allymwn",
+    "canonicalNameEn": "Lemon meringue pie",
+    "positiveDescription": "A slice of lemon meringue pie with golden crust, bright yellow lemon custard, high white meringue with browned peaks.",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "other",
+    "generationPrompt": "ORIGO fragrance note ftyrh-myryngh-allymwn. Exact subject Lemon meringue pie. A slice of lemon meringue pie with golden crust, bright yellow lemon custard, high white meringue with browned peaks.",
+    "sourceImageId": "exec-df4ede65-eca9-447a-bc26-4d5eb6ff62ef",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "فطيرة ميرينغ الليمون",
+    "imageUrl": "assets/notes/generated/ftyrh-myryngh-allymwn.webp",
+    "noteKey": "ftyrh-myryngh-allymwn",
+    "noteAssetId": "origo-note-ftyrh-myryngh-allymwn",
+    "sha256": "afcbc45ab56730f4270941a378888f5c5463d7a09e06d8340ec4e4870e15d70f",
+    "visualReview": "Reviewed reports/batch43-review.jpg against the locked prompt: exact named food and required prepared state are clearly shown; no lettering, packaging, scenery or unrelated garnish.",
+    "contentHash": "fc6a1a0c3d25f4536927381928e0d2310a648aa0bda373b745e1a28ff70eadff",
+    "perceptualHash": "00013f7de35b0f0c",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 20420,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "fwdj-alshwkwlath",
+    "canonicalNameEn": "Chocolate fudge",
+    "positiveDescription": "Three dense soft dark chocolate fudge cubes, one cut face showing fine smooth fudge texture, no nuts.",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "other",
+    "generationPrompt": "ORIGO fragrance note fwdj-alshwkwlath. Exact subject Chocolate fudge. Three dense soft dark chocolate fudge cubes, one cut face showing fine smooth fudge texture, no nuts.",
+    "sourceImageId": "exec-344cc6ab-d48c-4319-b5a0-965a9f6c8423",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "فودج الشوكولاتة",
+    "imageUrl": "assets/notes/generated/fwdj-alshwkwlath.webp",
+    "noteKey": "fwdj-alshwkwlath",
+    "noteAssetId": "origo-note-fwdj-alshwkwlath",
+    "sha256": "3712027fa8fe69fa25f10813bf8f78a98827ea7f631685bf88e549b275b6eb37",
+    "visualReview": "Reviewed reports/batch43-review.jpg against the locked prompt: exact named food and required prepared state are clearly shown; no lettering, packaging, scenery or unrelated garnish.",
+    "contentHash": "74cc85c0f6f7a541723efa16c537325293992d92857280b8dbe6679d75dcb848",
+    "perceptualHash": "03051773731f1b0b",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 17654,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "krz-marashynw",
+    "canonicalNameEn": "Maraschino cherries",
+    "positiveDescription": "Glossy bright red preserved maraschino cherries with slender stems, syrup sheen, no fresh cherry leaves.",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "other",
+    "generationPrompt": "ORIGO fragrance note krz-marashynw. Exact subject Maraschino cherries. Glossy bright red preserved maraschino cherries with slender stems, syrup sheen, no fresh cherry leaves.",
+    "sourceImageId": "exec-ba1515fd-d2aa-4227-b061-77ea3ea411e2",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "كرز ماراشينو",
+    "imageUrl": "assets/notes/generated/krz-marashynw.webp",
+    "noteKey": "krz-marashynw",
+    "noteAssetId": "origo-note-krz-marashynw",
+    "sha256": "b50a7d07d8afa3a203c2f23817460e2fcbca22a13dda5ad9dac01117b17c444a",
+    "visualReview": "Reviewed reports/batch43-review.jpg against the locked prompt: exact named food and required prepared state are clearly shown; no lettering, packaging, scenery or unrelated garnish.",
+    "contentHash": "1e7d7e0c8d86caf79aa9239192cd5dd0a9893a8b450882705b615249ad17e99e",
+    "perceptualHash": "0919ca0e137b490d",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 23310,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "krym-brwlyh",
+    "canonicalNameEn": "Creme brulee",
+    "positiveDescription": "A freestanding small oval of pale vanilla custard topped with a thin cracked amber burnt-sugar crust. No ramekin.",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "other",
+    "generationPrompt": "ORIGO fragrance note krym-brwlyh. Exact subject Creme brulee. A freestanding small oval of pale vanilla custard topped with a thin cracked amber burnt-sugar crust. No ramekin.",
+    "sourceImageId": "exec-bb642514-2675-440f-b936-27736f87b921",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "كريم بروليه",
+    "imageUrl": "assets/notes/generated/krym-brwlyh.webp",
+    "noteKey": "krym-brwlyh",
+    "noteAssetId": "origo-note-krym-brwlyh",
+    "sha256": "6068556d562a30d85d41920452570c56d3701b2c5df688bc5708f2aa60a41b30",
+    "visualReview": "Reviewed reports/batch43-review.jpg against the locked prompt: exact named food and required prepared state are clearly shown; no lettering, packaging, scenery or unrelated garnish.",
+    "contentHash": "a57b9ed508e922ed76c5aeec280aa6b5579c886a1b8475d66e981c28c0638fd0",
+    "perceptualHash": "000703071b2b0f10",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 21226,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "kak-aldwnats",
+    "canonicalNameEn": "Doughnuts",
+    "positiveDescription": "Two golden fried ring doughnuts with a light plain sugar glaze. No sprinkles.",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "other",
+    "generationPrompt": "ORIGO fragrance note kak-aldwnats. Exact subject Doughnuts. Two golden fried ring doughnuts with a light plain sugar glaze. No sprinkles.",
+    "sourceImageId": "exec-ef235691-dc6d-4fe5-b9b9-d660a3a8014c",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "كعك الدوناتس",
+    "imageUrl": "assets/notes/generated/kak-aldwnats.webp",
+    "noteKey": "kak-aldwnats",
+    "noteAssetId": "origo-note-kak-aldwnats",
+    "sha256": "34125889cb61cdad6472bc5aa834e3e4315d01e2080990baf47f022e679cd4bf",
+    "visualReview": "Reviewed reports/batch43-review.jpg against the locked prompt: exact named food and required prepared state are clearly shown; no lettering, packaging, scenery or unrelated garnish.",
+    "contentHash": "2116c841ac92b911c920615ccab5eef4905cd4204180c5c3d94d2662b7207172",
+    "perceptualHash": "0022131f3f3b0b07",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 17960,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "kakh-wwby",
+    "canonicalNameEn": "Whoopie pie",
+    "positiveDescription": "One round chocolate whoopie pie sandwich and one cut half, soft dark cake disks with thick white cream filling.",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "other",
+    "generationPrompt": "ORIGO fragrance note kakh-wwby. Exact subject Whoopie pie. One round chocolate whoopie pie sandwich and one cut half, soft dark cake disks with thick white cream filling.",
+    "sourceImageId": "exec-c1e681a0-300d-40c6-89af-aa0f933e1fb3",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "كعكة ووبي",
+    "imageUrl": "assets/notes/generated/kakh-wwby.webp",
+    "noteKey": "kakh-wwby",
+    "noteAssetId": "origo-note-kakh-wwby",
+    "sha256": "3d68bff8ad29fc6e449c0bde5e74eeff0fd6ef3fe77a1dc672e749b7f9ff2b93",
+    "visualReview": "Reviewed reports/batch43-review.jpg against the locked prompt: exact named food and required prepared state are clearly shown; no lettering, packaging, scenery or unrelated garnish.",
+    "contentHash": "9ef0b11424dc9f25e7e995cda8bb33dab4e00e7f51a3705b11a54735b4f26b19",
+    "perceptualHash": "00000307374eb370",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 18914,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "kmthry-mkhbwzh",
+    "canonicalNameEn": "Baked pear",
+    "positiveDescription": "One caramelized baked pear half with stem and visibly softened golden flesh, lightly browned surface, no garnish.",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "other",
+    "generationPrompt": "Use case: product-mockup. ORIGO fragrance note kmthry-mkhbwzh. Exact subject: Baked pear. One caramelized baked pear half with stem and visibly softened golden flesh, lightly browned surface, no garnish. Photorealistic square cutout, centered with ample transparent margin. Genuinely transparent alpha background. No text, people, bottles, watermarks, packaging, plates, utensils, scenery or unrelated ingredients. Depict the exact named food and state.",
+    "sourceImageId": "exec-d3baa637-48b5-4c3b-88aa-6ee44e67d7bb",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "كمثرى مخبوزة",
+    "imageUrl": "assets/notes/generated/kmthry-mkhbwzh.webp",
+    "noteKey": "kmthry-mkhbwzh",
+    "noteAssetId": "origo-note-kmthry-mkhbwzh",
+    "sha256": "b78e66268f23ae57235e928dba6331e22837319f359c8d1faf86d305bc5562ae",
+    "visualReview": "Reviewed reports/batch43-review.jpg against the locked prompt: exact named food and required prepared state are clearly shown; no lettering, packaging, scenery or unrelated garnish.",
+    "contentHash": "586304f923d6c2a5811d6e48a30a201a20acc1e5fc65ce8fa14bb127518128d5",
+    "perceptualHash": "0003058926340d03",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 20850,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "lymwn-mskr",
+    "canonicalNameEn": "Candied lemon",
+    "positiveDescription": "Three translucent yellow candied lemon slices coated with fine sugar, including visible rind and citrus segments. No whole raw lemon.",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "other",
+    "generationPrompt": "Use case: product-mockup. ORIGO fragrance note lymwn-mskr. Exact subject: Candied lemon. Three translucent yellow candied lemon slices coated with fine sugar, including visible rind and citrus segments. No whole raw lemon. Photorealistic square cutout, centered with ample transparent margin. Genuinely transparent alpha background. No text, people, bottles, watermarks, packaging, plates, utensils, scenery or unrelated ingredients. Depict the exact named food and state.",
+    "sourceImageId": "exec-d5370ea5-6e49-4796-aea5-41bba342682f",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "ليمون مسكر",
+    "imageUrl": "assets/notes/generated/lymwn-mskr.webp",
+    "noteKey": "lymwn-mskr",
+    "noteAssetId": "origo-note-lymwn-mskr",
+    "sha256": "c13b67e9131bc9d5bc31f13f02c001470a8c3900490733921f0828e557fd95bd",
+    "visualReview": "Reviewed reports/batch43-review.jpg against the locked prompt: exact named food and required prepared state are clearly shown; no lettering, packaging, scenery or unrelated garnish.",
+    "contentHash": "68d8b1909116fb2ed6c83624f480a6b0cfebdd4bcadb9cba2a11c6258b46f880",
+    "perceptualHash": "030313090f1b070f",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 23760,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "marwn-ghlash",
+    "canonicalNameEn": "Marron glace",
+    "positiveDescription": "Two glazed candied chestnuts with recognizable lobed chestnut shape and amber sugar coating, one cut revealing dense golden chestnut flesh. No shell.",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "other",
+    "generationPrompt": "Use case: product-mockup. ORIGO fragrance note marwn-ghlash. Exact subject: Marron glace. Two glazed candied chestnuts with recognizable lobed chestnut shape and amber sugar coating, one cut revealing dense golden chestnut flesh. No shell. Photorealistic square cutout, centered with ample transparent margin. Genuinely transparent alpha background. No text, people, bottles, watermarks, packaging, plates, utensils, scenery or unrelated ingredients. Depict the exact named food and state.",
+    "sourceImageId": "exec-6db05605-be14-41fb-a0b7-24a12ecf10f3",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "مارون غلاسه",
+    "imageUrl": "assets/notes/generated/marwn-ghlash.webp",
+    "noteKey": "marwn-ghlash",
+    "noteAssetId": "origo-note-marwn-ghlash",
+    "sha256": "e8c2ba1318752cab7d5aca4bdc8f8a39002f048e552c0a5bc58f4d609d5a4dfc",
+    "visualReview": "Reviewed reports/batch43-review.jpg against the locked prompt: exact named food and required prepared state are clearly shown; no lettering, packaging, scenery or unrelated garnish.",
+    "contentHash": "3be53687000610acbc0c898854398ac4a05a7589a997ab81a4911ab4bc14ea11",
+    "perceptualHash": "0006072777933840",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 20832,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "makrwn-alfanylya",
+    "canonicalNameEn": "Vanilla macaron",
+    "positiveDescription": "Two ivory French vanilla macarons with ruffled feet and pale vanilla cream filling, no other flavors or garnish.",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "other",
+    "generationPrompt": "Use case: product-mockup. ORIGO fragrance note makrwn-alfanylya. Exact subject: Vanilla macaron. Two ivory French vanilla macarons with ruffled feet and pale vanilla cream filling, no other flavors or garnish. Photorealistic square cutout, centered with ample transparent margin. Genuinely transparent alpha background. No text, people, bottles, watermarks, packaging, plates, utensils, scenery or unrelated ingredients. Depict the exact named food and state.",
+    "sourceImageId": "exec-2fbc329d-0f3e-423d-9d13-6ae4fb539a8f",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "ماكرون الفانيليا",
+    "imageUrl": "assets/notes/generated/makrwn-alfanylya.webp",
+    "noteKey": "makrwn-alfanylya",
+    "noteAssetId": "origo-note-makrwn-alfanylya",
+    "sha256": "98e82f68553470dda6c36ae31c7ff99bb57b1562f1ff8b46af06ef957d1757e3",
+    "visualReview": "Reviewed reports/batch43-review.jpg against the locked prompt: exact named food and required prepared state are clearly shown; no lettering, packaging, scenery or unrelated garnish.",
+    "contentHash": "38031a50486af9386ccbecf9b0346c3fea9b9e3b9c8c4bc06962ba8e6f5b6828",
+    "perceptualHash": "030113132706060e",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 13432,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "mrby-altwt-alazrq",
+    "canonicalNameEn": "Blueberry jam",
+    "positiveDescription": "A thick glossy deep blue-purple blueberry jam dollop with visible cooked blueberry fragments, no fresh fruits or container.",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "other",
+    "generationPrompt": "Use case: product-mockup. ORIGO fragrance note mrby-altwt-alazrq. Exact subject: Blueberry jam. A thick glossy deep blue-purple blueberry jam dollop with visible cooked blueberry fragments, no fresh fruits or container. Photorealistic square cutout, centered with ample transparent margin. Genuinely transparent alpha background. No text, people, bottles, watermarks, packaging, plates, utensils, scenery or unrelated ingredients. Depict the exact named food and state.",
+    "sourceImageId": "exec-813da4b5-6e82-4700-a713-ba09595a2e4a",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "مربى التوت الأزرق",
+    "imageUrl": "assets/notes/generated/mrby-altwt-alazrq.webp",
+    "noteKey": "mrby-altwt-alazrq",
+    "noteAssetId": "origo-note-mrby-altwt-alazrq",
+    "sha256": "9c49cc75817042f7a1cf9b2387dbfccc7c01af77f3183f473a792df5a48b84c2",
+    "visualReview": "Reviewed reports/batch43-review.jpg against the locked prompt: exact named food and required prepared state are clearly shown; no lettering, packaging, scenery or unrelated garnish.",
+    "contentHash": "3ddb69be59714e7ce6164080c13f5b258c38dcacff57bc3544c33c302c091182",
+    "perceptualHash": "060f2b09252f0708",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 25180,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "mrby-almshmsh",
+    "canonicalNameEn": "Apricot jam",
+    "positiveDescription": "A thick glossy orange apricot jam dollop showing softened apricot pulp and small cooked fruit pieces, no fresh fruits or container.",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "other",
+    "generationPrompt": "Use case: product-mockup. ORIGO fragrance note mrby-almshmsh. Exact subject: Apricot jam. A thick glossy orange apricot jam dollop showing softened apricot pulp and small cooked fruit pieces, no fresh fruits or container. Photorealistic square cutout, centered with ample transparent margin. Genuinely transparent alpha background. No text, people, bottles, watermarks, packaging, plates, utensils, scenery or unrelated ingredients. Depict the exact named food and state.",
+    "sourceImageId": "exec-ea4b2eb6-e8a7-4164-9609-64b4c7d3d751",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "مربى المشمش",
+    "imageUrl": "assets/notes/generated/mrby-almshmsh.webp",
+    "noteKey": "mrby-almshmsh",
+    "noteAssetId": "origo-note-mrby-almshmsh",
+    "sha256": "8a433ed051dd73eab116bf166cb7da5c5709aec507b50a1e140fcb40de660b70",
+    "visualReview": "Reviewed reports/batch43-review.jpg against the locked prompt: exact named food and required prepared state are clearly shown; no lettering, packaging, scenery or unrelated garnish.",
+    "contentHash": "bb1c8ae638b034bc18f8780d541dcae5bedf1d35443388b55c4af62449c4a0f0",
+    "perceptualHash": "0e072b570d1b1f0f",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 24980,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "mrby-alkywy",
+    "canonicalNameEn": "Kiwi jam",
+    "positiveDescription": "A thick translucent yellow-green kiwi jam dollop with abundant tiny black kiwi seeds, no fresh fruit or container.",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "other",
+    "generationPrompt": "Use case: product-mockup. ORIGO fragrance note mrby-alkywy. Exact subject: Kiwi jam. A thick translucent yellow-green kiwi jam dollop with abundant tiny black kiwi seeds, no fresh fruit or container. Photorealistic square cutout, centered with ample transparent margin. Genuinely transparent alpha background. No text, people, bottles, watermarks, packaging, plates, utensils, scenery or unrelated ingredients. Depict the exact named food and state.",
+    "sourceImageId": "exec-6c3bb8e4-161b-4115-b8d0-d732885cdb5c",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "مربي الكيوي",
+    "imageUrl": "assets/notes/generated/mrby-alkywy.webp",
+    "noteKey": "mrby-alkywy",
+    "noteAssetId": "origo-note-mrby-alkywy",
+    "sha256": "cdefe56bdae9d529b02c061b4fb8d2c11e5a88577e1ccddb94909c751bd85c18",
+    "visualReview": "Reviewed reports/batch43-review.jpg against the locked prompt: exact named food and required prepared state are clearly shown; no lettering, packaging, scenery or unrelated garnish.",
+    "contentHash": "eac588610be578c1584243e0e4b96437b9cf5e84ea50131a3cb46aedff26e980",
+    "perceptualHash": "080e074b0f070f0c",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 22256,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "wafl-mkhrwty",
+    "canonicalNameEn": "Waffle cone",
+    "positiveDescription": "One empty golden-brown waffle ice cream cone with crisp crosshatch texture and open top. No ice cream.",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "other",
+    "generationPrompt": "Use case: product-mockup. ORIGO fragrance note wafl-mkhrwty. Exact subject: Waffle cone. One empty golden-brown waffle ice cream cone with crisp crosshatch texture and open top. No ice cream. Photorealistic square cutout, centered with ample transparent margin. Genuinely transparent alpha background. No text, people, bottles, watermarks, packaging, plates, utensils, scenery or unrelated ingredients. Depict the exact named food and state.",
+    "sourceImageId": "exec-f9289f0c-2cc6-45f3-a981-371b4d047ab0",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "وافل مخروطي",
+    "imageUrl": "assets/notes/generated/wafl-mkhrwty.webp",
+    "noteKey": "wafl-mkhrwty",
+    "noteAssetId": "origo-note-wafl-mkhrwty",
+    "sha256": "672328bdae00c8acc5551dc460f07a81bfe8c32235467b66a96b365effd1770f",
+    "visualReview": "Reviewed reports/batch43-review.jpg against the locked prompt: exact named food and required prepared state are clearly shown; no lettering, packaging, scenery or unrelated garnish.",
+    "contentHash": "91da9aa059ff9c9702aeb0855170dab8597e2aab0086115aeb64d3e767f68e17",
+    "perceptualHash": "00000101010d0301",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 14160,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "kafyar-alfanylya",
+    "canonicalNameEn": "Vanilla caviar",
+    "positiveDescription": "A small mound of moist black vanilla caviar, tiny scraped vanilla pod seeds in dark sticky paste. No pods, flowers or bowl.",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "other",
+    "generationPrompt": "Use case: product-mockup. ORIGO fragrance note kafyar-alfanylya. Exact subject: Vanilla caviar. A small mound of moist black vanilla caviar, tiny scraped vanilla pod seeds in dark sticky paste. No pods, flowers or bowl. Photorealistic square cutout, centered with ample transparent margin. Genuinely transparent alpha background. No text, people, bottles, watermarks, packaging, plates, utensils, scenery or unrelated ingredients. Depict the exact named food and state.",
+    "sourceImageId": "exec-1d9c6e72-f79f-498e-9060-0a793317751e",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "كافيار الفانيليا",
+    "imageUrl": "assets/notes/generated/kafyar-alfanylya.webp",
+    "noteKey": "kafyar-alfanylya",
+    "noteAssetId": "origo-note-kafyar-alfanylya",
+    "sha256": "01edea1ef1816640d15bc740cbfe4afba1c6e399e311856290ea51f10c496629",
+    "visualReview": "Reviewed reports/batch43-review.jpg against the locked prompt: exact named food and required prepared state are clearly shown; no lettering, packaging, scenery or unrelated garnish.",
+    "contentHash": "071ebb579df2686714f2f1315b18963f99eeb63f5fa3beb91cdd2a1df322c9bf",
+    "perceptualHash": "00000c0e17171717",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 18618,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "mrby-alwrd",
+    "canonicalNameEn": "Rose jam",
+    "positiveDescription": "A small glossy rose-pink preserve dollop with visible thin cooked rose petal strips suspended in translucent syrup. No fresh rose flower or leaves.",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "other",
+    "generationPrompt": "Use case: product-mockup. ORIGO fragrance note mrby-alwrd. Exact subject: Rose jam. A small glossy rose-pink preserve dollop with visible thin cooked rose petal strips suspended in translucent syrup. No fresh rose flower or leaves. Photorealistic square cutout, centered with ample transparent margin. Genuinely transparent alpha background. No text, people, bottles, watermarks, packaging, plates, utensils, scenery or unrelated ingredients. Depict the exact named food and state.",
+    "sourceImageId": "exec-ac7d2d16-33e8-44ef-9e56-02f8d998bdb6",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "مربي الورد",
+    "imageUrl": "assets/notes/generated/mrby-alwrd.webp",
+    "noteKey": "mrby-alwrd",
+    "noteAssetId": "origo-note-mrby-alwrd",
+    "sha256": "e976875b75c613315d12ae0f7746eacbee82a2c9941632ff75c7842378cc6d52",
+    "visualReview": "Reviewed reports/batch43-review.jpg against the locked prompt: exact named food and required prepared state are clearly shown; no lettering, packaging, scenery or unrelated garnish.",
+    "contentHash": "9ab34e05a758ae4b2040f57fbd00ff72d461d1359d5e8206b998c686c869b25f",
+    "perceptualHash": "000707150f13070e",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 24232,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  }
+]

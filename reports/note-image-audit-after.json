@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-09-10T16:06:23.376Z",
+  "generatedAt": "2026-09-10T20:53:51.561Z",
   "scope": "Library plus persisted note overrides; SQLite opened read-only. Visual semantics are not certified by filenames or hashes.",
   "notes": 1883,
   "products": 5,
-  "valid": 32,
-  "missing": 778,
+  "valid": 48,
+  "missing": 762,
   "duplicateGroups": 9,
   "needsReview": 1055,
   "duplicates": [
@@ -15558,13 +15558,13 @@
     {
       "canonicalKey": "ftyrh-myryngh-allymwn",
       "nameAr": "فطيرة ميرينغ الليمون",
-      "nameEn": "فطيرة ميرينغ الليمون",
+      "nameEn": "Lemon meringue pie",
       "sourceName": "فطيرة ميرينغ الليمون",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/ftyrh-myryngh-allymwn.webp",
+      "filename": "ftyrh-myryngh-allymwn.webp",
+      "hash": "afcbc45ab56730f4270941a378888f5c5463d7a09e06d8340ec4e4870e15d70f",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "فطيرة ميرينغ الليمون"
       ]
@@ -15572,13 +15572,13 @@
     {
       "canonicalKey": "fwdj-alshwkwlath",
       "nameAr": "فودج الشوكولاتة",
-      "nameEn": "فودج الشوكولاتة",
+      "nameEn": "Chocolate fudge",
       "sourceName": "فودج الشوكولاتة",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/fwdj-alshwkwlath.webp",
+      "filename": "fwdj-alshwkwlath.webp",
+      "hash": "3712027fa8fe69fa25f10813bf8f78a98827ea7f631685bf88e549b275b6eb37",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "فودج الشوكولاتة"
       ]
@@ -15656,13 +15656,13 @@
     {
       "canonicalKey": "kafyar-alfanylya",
       "nameAr": "كافيار الفانيليا",
-      "nameEn": "كافيار الفانيليا",
+      "nameEn": "Vanilla caviar",
       "sourceName": "كافيار الفانيليا",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/kafyar-alfanylya.webp",
+      "filename": "kafyar-alfanylya.webp",
+      "hash": "01edea1ef1816640d15bc740cbfe4afba1c6e399e311856290ea51f10c496629",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "كافيار الفانيليا"
       ]
@@ -15712,13 +15712,13 @@
     {
       "canonicalKey": "krz-marashynw",
       "nameAr": "كرز ماراشينو",
-      "nameEn": "كرز ماراشينو",
+      "nameEn": "Maraschino cherries",
       "sourceName": "كرز ماراشينو",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/krz-marashynw.webp",
+      "filename": "krz-marashynw.webp",
+      "hash": "b50a7d07d8afa3a203c2f23817460e2fcbca22a13dda5ad9dac01117b17c444a",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "كرز ماراشينو"
       ]
@@ -15740,13 +15740,13 @@
     {
       "canonicalKey": "krym-brwlyh",
       "nameAr": "كريم بروليه",
-      "nameEn": "كريم بروليه",
+      "nameEn": "Creme brulee",
       "sourceName": "كريم بروليه",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/krym-brwlyh.webp",
+      "filename": "krym-brwlyh.webp",
+      "hash": "6068556d562a30d85d41920452570c56d3701b2c5df688bc5708f2aa60a41b30",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "كريم بروليه"
       ]
@@ -15880,13 +15880,13 @@
     {
       "canonicalKey": "kak-aldwnats",
       "nameAr": "كعك الدوناتس",
-      "nameEn": "كعك الدوناتس",
+      "nameEn": "Doughnuts",
       "sourceName": "كعك الدوناتس",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/kak-aldwnats.webp",
+      "filename": "kak-aldwnats.webp",
+      "hash": "34125889cb61cdad6472bc5aa834e3e4315d01e2080990baf47f022e679cd4bf",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "كعك الدوناتس"
       ]
@@ -15908,13 +15908,13 @@
     {
       "canonicalKey": "kakh-wwby",
       "nameAr": "كعكة ووبي",
-      "nameEn": "كعكة ووبي",
+      "nameEn": "Whoopie pie",
       "sourceName": "كعكة ووبي",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/kakh-wwby.webp",
+      "filename": "kakh-wwby.webp",
+      "hash": "3d68bff8ad29fc6e449c0bde5e74eeff0fd6ef3fe77a1dc672e749b7f9ff2b93",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "كعكة ووبي"
       ]
@@ -15922,13 +15922,13 @@
     {
       "canonicalKey": "kmthry-mkhbwzh",
       "nameAr": "كمثرى مخبوزة",
-      "nameEn": "كمثرى مخبوزة",
+      "nameEn": "Baked pear",
       "sourceName": "كمثرى مخبوزة",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/kmthry-mkhbwzh.webp",
+      "filename": "kmthry-mkhbwzh.webp",
+      "hash": "b78e66268f23ae57235e928dba6331e22837319f359c8d1faf86d305bc5562ae",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "كمثرى مخبوزة"
       ]
@@ -16006,13 +16006,13 @@
     {
       "canonicalKey": "lymwn-mskr",
       "nameAr": "ليمون مسكر",
-      "nameEn": "ليمون مسكر",
+      "nameEn": "Candied lemon",
       "sourceName": "ليمون مسكر",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/lymwn-mskr.webp",
+      "filename": "lymwn-mskr.webp",
+      "hash": "c13b67e9131bc9d5bc31f13f02c001470a8c3900490733921f0828e557fd95bd",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "ليمون مسكر"
       ]
@@ -16020,13 +16020,13 @@
     {
       "canonicalKey": "marwn-ghlash",
       "nameAr": "مارون غلاسه",
-      "nameEn": "مارون غلاسه",
+      "nameEn": "Marron glace",
       "sourceName": "مارون غلاسه",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/marwn-ghlash.webp",
+      "filename": "marwn-ghlash.webp",
+      "hash": "e8c2ba1318752cab7d5aca4bdc8f8a39002f048e552c0a5bc58f4d609d5a4dfc",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "مارون غلاسه"
       ]
@@ -16062,13 +16062,13 @@
     {
       "canonicalKey": "makrwn-alfanylya",
       "nameAr": "ماكرون الفانيليا",
-      "nameEn": "ماكرون الفانيليا",
+      "nameEn": "Vanilla macaron",
       "sourceName": "ماكرون الفانيليا",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/makrwn-alfanylya.webp",
+      "filename": "makrwn-alfanylya.webp",
+      "hash": "98e82f68553470dda6c36ae31c7ff99bb57b1562f1ff8b46af06ef957d1757e3",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "ماكرون الفانيليا"
       ]
@@ -16090,13 +16090,13 @@
     {
       "canonicalKey": "mrby-altwt-alazrq",
       "nameAr": "مربى التوت الأزرق",
-      "nameEn": "مربى التوت الأزرق",
+      "nameEn": "Blueberry jam",
       "sourceName": "مربى التوت الأزرق",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/mrby-altwt-alazrq.webp",
+      "filename": "mrby-altwt-alazrq.webp",
+      "hash": "9c49cc75817042f7a1cf9b2387dbfccc7c01af77f3183f473a792df5a48b84c2",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "مربى التوت الأزرق"
       ]
@@ -16104,13 +16104,13 @@
     {
       "canonicalKey": "mrby-almshmsh",
       "nameAr": "مربى المشمش",
-      "nameEn": "مربى المشمش",
+      "nameEn": "Apricot jam",
       "sourceName": "مربى المشمش",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/mrby-almshmsh.webp",
+      "filename": "mrby-almshmsh.webp",
+      "hash": "8a433ed051dd73eab116bf166cb7da5c5709aec507b50a1e140fcb40de660b70",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "مربى المشمش"
       ]
@@ -16118,13 +16118,13 @@
     {
       "canonicalKey": "mrby-alkywy",
       "nameAr": "مربي الكيوي",
-      "nameEn": "مربي الكيوي",
+      "nameEn": "Kiwi jam",
       "sourceName": "مربي الكيوي",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/mrby-alkywy.webp",
+      "filename": "mrby-alkywy.webp",
+      "hash": "cdefe56bdae9d529b02c061b4fb8d2c11e5a88577e1ccddb94909c751bd85c18",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "مربي الكيوي"
       ]
@@ -16132,13 +16132,13 @@
     {
       "canonicalKey": "mrby-alwrd",
       "nameAr": "مربي الورد",
-      "nameEn": "مربي الورد",
+      "nameEn": "Rose jam",
       "sourceName": "مربي الورد",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/mrby-alwrd.webp",
+      "filename": "mrby-alwrd.webp",
+      "hash": "e976875b75c613315d12ae0f7746eacbee82a2c9941632ff75c7842378cc6d52",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "مربي الورد"
       ]
@@ -16230,13 +16230,13 @@
     {
       "canonicalKey": "wafl-mkhrwty",
       "nameAr": "وافل مخروطي",
-      "nameEn": "وافل مخروطي",
+      "nameEn": "Waffle cone",
       "sourceName": "وافل مخروطي",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/wafl-mkhrwty.webp",
+      "filename": "wafl-mkhrwty.webp",
+      "hash": "672328bdae00c8acc5551dc460f07a81bfe8c32235467b66a96b365effd1770f",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "وافل مخروطي"
       ]
