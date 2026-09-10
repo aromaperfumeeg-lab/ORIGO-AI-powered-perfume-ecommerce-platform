@@ -20,6 +20,22 @@
   };
 
   const generatedNoteImages = Object.freeze({
+    "khbz-alznjbyl":"khbz-alznjbyl",
+    "khbz-mhms":"khbz-mhms",
+    "rshat":"rshat",
+    "zbdh-alfwl-alswdany":"zbdh-alfwl-alswdany",
+    "zbdh-alkakaw":"zbdh-alkakaw",
+    "zbdh-mmlhh":"zbdh-mmlhh",
+    "sbykwlws":"sbykwlws",
+    "skr-bwdrh":"skr-bwdrh",
+    "skwn":"skwn",
+    "smwrz-alfrawlh":"smwrz-alfrawlh",
+    "ajynh-altart":"ajynh-altart",
+    "ajynh-alkwkyz":"ajynh-alkwkyz",
+    "ajynh-bf-bastry":"ajynh-bf-bastry",
+    "ghzl-albnat":"ghzl-albnat",
+    "ftyrh-altfah":"ftyrh-altfah",
+    "ftyrh-alyqtyn":"ftyrh-alyqtyn",
     "hlwy-aljyly-byn":"hlwy-aljyly-byn",
     "hlwy-alhlyb":"hlwy-alhlyb",
     "hlwy-alfrawlh-alfwarh":"hlwy-alfrawlh-alfwarh",
@@ -523,6 +539,470 @@
   // Only reviewed, version-controlled evidence can authorize storefront artwork.
   // Uploads and imported `validated:true` flags are not review evidence.
   const reviewedAssets = Object.freeze({
+  "khbz-alznjbyl": {
+    "canonicalKey": "khbz-alznjbyl",
+    "canonicalNameEn": "Gingerbread",
+    "positiveDescription": "A cut square of dark moist gingerbread cake with characteristic brown spiced crumb, no icing, no ginger root garnish.",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "other",
+    "generationPrompt": "Use case: product-mockup. ORIGO fragrance note identity khbz-alznjbyl, exact ingredient Gingerbread. A cut square of dark moist gingerbread cake with characteristic brown spiced crumb, no icing, no ginger root garnish. Photorealistic square isolated cutout on genuine transparent alpha background, centered, generous transparent margins. No plate, bowl, utensils, text, watermark, people, bottles, scenery, packaging or unrelated ingredients. The named ingredient only.",
+    "sourceImageId": "exec-e73d615e-0d16-40a3-a868-648c1e7c2b66",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/khbz-alznjbyl.webp",
+    "noteKey": "khbz-alznjbyl",
+    "noteAssetId": "origo-note-khbz-alznjbyl",
+    "sha256": "a3b424bc7b0066c5e23610edf5bf4634afb73c4db29be9aae972b998e7f2a94b",
+    "canonicalNameAr": "خبز الزنجبيل",
+    "visualReview": "Reviewed reports/batch42-review.jpg against the locked prompt: named food, raw/baked state, texture and integral filling match; no lettering, packaging, scenery or unrelated garnish.",
+    "contentHash": "6660d5130e1b61ddb96a1aa219a0c2883b7fc70415a8abc9fe2e3981980c69fb",
+    "perceptualHash": "000e076155170e00",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 25044,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  "khbz-mhms": {
+    "canonicalKey": "khbz-mhms",
+    "canonicalNameEn": "Toast",
+    "positiveDescription": "Two golden brown toasted sliced-bread pieces, crisp browned surfaces, no toppings.",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "other",
+    "generationPrompt": "Use case: product-mockup. ORIGO fragrance note identity khbz-mhms, exact ingredient Toast. Two golden brown toasted sliced-bread pieces, crisp browned surfaces, no toppings. Photorealistic square isolated cutout on genuine transparent alpha background, centered, generous transparent margins. No plate, bowl, utensils, text, watermark, people, bottles, scenery, packaging or unrelated ingredients. The named ingredient only.",
+    "sourceImageId": "exec-d3ebf972-b36d-49ae-bd11-d544d06e3370",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/khbz-mhms.webp",
+    "noteKey": "khbz-mhms",
+    "noteAssetId": "origo-note-khbz-mhms",
+    "sha256": "3dcc8607d2e50c2fa268dcd813a1a9dac74c57e62c48ee572ee7ca0015298ad0",
+    "canonicalNameAr": "خبز محمص",
+    "visualReview": "Reviewed reports/batch42-review.jpg against the locked prompt: named food, raw/baked state, texture and integral filling match; no lettering, packaging, scenery or unrelated garnish.",
+    "contentHash": "8bc15e42e4bf48d8075691def9b835103c89e3638cc85d415ce6eb3c8e6f711c",
+    "perceptualHash": "010303436b6d4f0c",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 26322,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  "rshat": {
+    "canonicalKey": "rshat",
+    "canonicalNameEn": "Sprinkles",
+    "positiveDescription": "A small heap of tiny multicolored cylindrical confectionery sugar sprinkles.",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "other",
+    "generationPrompt": "Use case: product-mockup. ORIGO fragrance note identity rshat, exact ingredient Sprinkles. A small heap of tiny multicolored cylindrical confectionery sugar sprinkles. Photorealistic square isolated cutout on genuine transparent alpha background, centered, generous transparent margins. No plate, bowl, utensils, text, watermark, people, bottles, scenery, packaging or unrelated ingredients. The named ingredient only.",
+    "sourceImageId": "exec-a4270336-1777-4630-8429-b0ae0c19bd2a",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/rshat.webp",
+    "noteKey": "rshat",
+    "noteAssetId": "origo-note-rshat",
+    "sha256": "24132a95cc394180b98b4f5cb248bb2bdb540ea5a12bdb296bb4680168c504a6",
+    "canonicalNameAr": "رشّات",
+    "visualReview": "Reviewed reports/batch42-review.jpg against the locked prompt: named food, raw/baked state, texture and integral filling match; no lettering, packaging, scenery or unrelated garnish.",
+    "contentHash": "971e37d9853dad5074ae0ca34dca479aa4010013218694591ab90f372cba9fae",
+    "perceptualHash": "0607032309170f07",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 20432,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  "zbdh-alfwl-alswdany": {
+    "canonicalKey": "zbdh-alfwl-alswdany",
+    "canonicalNameEn": "Peanut butter",
+    "positiveDescription": "A thick tan peanut butter dollop with smooth swirled ridges and slightly grainy peanut texture; no peanuts, no jar.",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "other",
+    "generationPrompt": "Use case: product-mockup. ORIGO fragrance note identity zbdh-alfwl-alswdany, exact ingredient Peanut butter. A thick tan peanut butter dollop with smooth swirled ridges and slightly grainy peanut texture; no peanuts, no jar. Photorealistic square isolated cutout on genuine transparent alpha background, centered, generous transparent margins. No plate, bowl, utensils, text, watermark, people, bottles, scenery, packaging or unrelated ingredients. The named ingredient only.",
+    "sourceImageId": "exec-2bfaf490-4c02-4ba3-8c84-2940f4322186",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/zbdh-alfwl-alswdany.webp",
+    "noteKey": "zbdh-alfwl-alswdany",
+    "noteAssetId": "origo-note-zbdh-alfwl-alswdany",
+    "sha256": "b8dd6da408292b6578369a74c9c767f1dedf512a07aaab706980f8675e16c96d",
+    "canonicalNameAr": "زبدة الفول السوداني",
+    "visualReview": "Reviewed reports/batch42-review.jpg against the locked prompt: named food, raw/baked state, texture and integral filling match; no lettering, packaging, scenery or unrelated garnish.",
+    "contentHash": "055b669d9322cdf5bd0c340a465157aed8b835ca517038a7df7bd257ff09a6a6",
+    "perceptualHash": "06172313070b071c",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 19812,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  "zbdh-alkakaw": {
+    "canonicalKey": "zbdh-alkakaw",
+    "canonicalNameEn": "Cocoa butter",
+    "positiveDescription": "Several pale ivory solid cocoa butter chunks, waxy texture, broken irregular edges; no chocolate or cocoa beans.",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "other",
+    "generationPrompt": "Use case: product-mockup. ORIGO fragrance note identity zbdh-alkakaw, exact ingredient Cocoa butter. Several pale ivory solid cocoa butter chunks, waxy texture, broken irregular edges; no chocolate or cocoa beans. Photorealistic square isolated cutout on genuine transparent alpha background, centered, generous transparent margins. No plate, bowl, utensils, text, watermark, people, bottles, scenery, packaging or unrelated ingredients. The named ingredient only.",
+    "sourceImageId": "exec-d2ec060c-574d-4f43-85a7-e59ce17cd76d",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/zbdh-alkakaw.webp",
+    "noteKey": "zbdh-alkakaw",
+    "noteAssetId": "origo-note-zbdh-alkakaw",
+    "sha256": "614da3aa3ec3237860f867d5496b93cdf53ee3402e1f9738536c8201555a9f4e",
+    "canonicalNameAr": "زبدة الكاكاو",
+    "visualReview": "Reviewed reports/batch42-review.jpg against the locked prompt: named food, raw/baked state, texture and integral filling match; no lettering, packaging, scenery or unrelated garnish.",
+    "contentHash": "5c86af1cf6cbc45f90b524709efc4814c9063f1b226d6c12020fbca91aa4e58d",
+    "perceptualHash": "0703070d0b090707",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 15130,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  "zbdh-mmlhh": {
+    "canonicalKey": "zbdh-mmlhh",
+    "canonicalNameEn": "Salted butter",
+    "positiveDescription": "A pale yellow butter block with a soft butter curl and a few coarse salt crystals on its surface.",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "other",
+    "generationPrompt": "Use case: product-mockup. ORIGO fragrance note identity zbdh-mmlhh, exact ingredient Salted butter. A pale yellow butter block with a soft butter curl and a few coarse salt crystals on its surface. Photorealistic square isolated cutout on genuine transparent alpha background, centered, generous transparent margins. No plate, bowl, utensils, text, watermark, people, bottles, scenery, packaging or unrelated ingredients. The named ingredient only.",
+    "sourceImageId": "exec-85717630-4aea-496c-8beb-2f69c18b3e04",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/zbdh-mmlhh.webp",
+    "noteKey": "zbdh-mmlhh",
+    "noteAssetId": "origo-note-zbdh-mmlhh",
+    "sha256": "fd86a65d3bac5e1e549fdd79cf079c3431a5330054591663a000a79b06fa96f6",
+    "canonicalNameAr": "زبدة مملحة",
+    "visualReview": "Reviewed reports/batch42-review.jpg against the locked prompt: named food, raw/baked state, texture and integral filling match; no lettering, packaging, scenery or unrelated garnish.",
+    "contentHash": "de478b20c1f312802a92ca31273045ddb57e7fe0cc9674eb6430da05a2465664",
+    "perceptualHash": "060303311133070e",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 11614,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  "sbykwlws": {
+    "canonicalKey": "sbykwlws",
+    "canonicalNameEn": "Speculoos",
+    "positiveDescription": "Three thin rectangular caramel brown speculoos biscuits with embossed decorative relief, one snapped showing crisp interior; no lettering.",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "other",
+    "generationPrompt": "Use case: product-mockup. ORIGO fragrance note identity sbykwlws, exact ingredient Speculoos. Three thin rectangular caramel brown speculoos biscuits with embossed decorative relief, one snapped showing crisp interior; no lettering. Photorealistic square isolated cutout on genuine transparent alpha background, centered, generous transparent margins. No plate, bowl, utensils, text, watermark, people, bottles, scenery, packaging or unrelated ingredients. The named ingredient only.",
+    "sourceImageId": "exec-6aa993b5-afe5-4aca-9efd-cc9c942996e8",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/sbykwlws.webp",
+    "noteKey": "sbykwlws",
+    "noteAssetId": "origo-note-sbykwlws",
+    "sha256": "af5bfb9b37c66540912e54e1556e946de4e1f4e50c5973fe5e997d2c0a38dcc3",
+    "canonicalNameAr": "سبيكولوس",
+    "visualReview": "Reviewed reports/batch42-review.jpg against the locked prompt: named food, raw/baked state, texture and integral filling match; no lettering, packaging, scenery or unrelated garnish.",
+    "contentHash": "34ec6d563368d895beb3c4ea02d3cf568449f88e45b7478298baed1d5685dc73",
+    "perceptualHash": "000607375f5d7300",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 22010,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  "skr-bwdrh": {
+    "canonicalKey": "skr-bwdrh",
+    "canonicalNameEn": "Powdered sugar",
+    "positiveDescription": "A compact small mound of brilliant white fine confectioners powdered sugar, soft powder texture, no cubes, no bowl.",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "other",
+    "generationPrompt": "Use case: product-mockup. ORIGO fragrance note identity skr-bwdrh, exact ingredient Powdered sugar. A compact small mound of brilliant white fine confectioners powdered sugar, soft powder texture, no cubes, no bowl. Photorealistic square isolated cutout on genuine transparent alpha background, centered, generous transparent margins. No plate, bowl, utensils, text, watermark, people, bottles, scenery, packaging or unrelated ingredients. The named ingredient only.",
+    "sourceImageId": "exec-bda0e011-5908-4c11-9160-a33c366b50ba",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/skr-bwdrh.webp",
+    "noteKey": "skr-bwdrh",
+    "noteAssetId": "origo-note-skr-bwdrh",
+    "sha256": "87d64d38e64f8720b8b2cf2109820dfb5f4d8473599036e39597df6d4fa548c5",
+    "canonicalNameAr": "سكر بودرة",
+    "visualReview": "Reviewed reports/batch42-review.jpg against the locked prompt: named food, raw/baked state, texture and integral filling match; no lettering, packaging, scenery or unrelated garnish.",
+    "contentHash": "426a79cc555932ccd091ec8538af3e9d3cb6e6678b730e18c2ba35c379141607",
+    "perceptualHash": "000c0707070e0c00",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 15080,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  "skwn": {
+    "canonicalKey": "skwn",
+    "canonicalNameEn": "Scone",
+    "positiveDescription": "A plain round golden British scone, one torn half revealing pale crumb. No raisins, jam or cream.",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "other",
+    "generationPrompt": "Use case: product-mockup. ORIGO fragrance note identity skwn, exact ingredient Scone. A plain round golden British scone, one torn half revealing pale crumb. No raisins, jam or cream. Photorealistic square isolated cutout on genuine transparent alpha background, centered, generous transparent margins. No plate, bowl, utensils, text, watermark, people, bottles, scenery, packaging or unrelated ingredients. The named ingredient only.",
+    "sourceImageId": "exec-48230765-d7c2-4a1c-ae63-f6bcd366c7be",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/skwn.webp",
+    "noteKey": "skwn",
+    "noteAssetId": "origo-note-skwn",
+    "sha256": "cac74e3e6ff713ef5d1d710d13cfff7b438c27cdf4698d5f2255fce0f5a33c3c",
+    "canonicalNameAr": "سكون",
+    "visualReview": "Reviewed reports/batch42-review.jpg against the locked prompt: named food, raw/baked state, texture and integral filling match; no lettering, packaging, scenery or unrelated garnish.",
+    "contentHash": "45274c116effd8fe941ab2ea45c96e8c7253181ed347a96ef85edcee4ea4ff2c",
+    "perceptualHash": "0003274797276700",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 19764,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  "smwrz-alfrawlh": {
+    "canonicalKey": "smwrz-alfrawlh",
+    "canonicalNameEn": "Strawberry smores",
+    "positiveDescription": "One strawberry smore sandwich: square graham crackers enclosing toasted marshmallow, chocolate and visible thin strawberry slices; these are integral filling, no loose garnish.",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "other",
+    "generationPrompt": "Use case: product-mockup. ORIGO fragrance note identity smwrz-alfrawlh, exact ingredient Strawberry smores. One strawberry smore sandwich: square graham crackers enclosing toasted marshmallow, chocolate and visible thin strawberry slices; these are integral filling, no loose garnish. Photorealistic square isolated cutout on genuine transparent alpha background, centered, generous transparent margins. No plate, bowl, utensils, text, watermark, people, bottles, scenery, packaging or unrelated ingredients. The named ingredient only.",
+    "sourceImageId": "exec-93e94305-133e-488b-882e-4160439467fe",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/smwrz-alfrawlh.webp",
+    "noteKey": "smwrz-alfrawlh",
+    "noteAssetId": "origo-note-smwrz-alfrawlh",
+    "sha256": "2fc9ed650b0ae6f0f859210ca2de30433ea614deff6a6dc77ef892c3e955e766",
+    "canonicalNameAr": "سمورز الفراولة",
+    "visualReview": "Reviewed reports/batch42-review.jpg against the locked prompt: named food, raw/baked state, texture and integral filling match; no lettering, packaging, scenery or unrelated garnish.",
+    "contentHash": "348af56b1ad1926aad80bc2640d8abd003a43497c550e2d5a61bd5447bfb91e2",
+    "perceptualHash": "00062713710f0e00",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 22204,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  "ajynh-altart": {
+    "canonicalKey": "ajynh-altart",
+    "canonicalNameEn": "Tart dough",
+    "positiveDescription": "Raw shortcrust tart pastry dough, pale beige round disk with a small cut section revealing dense unbaked texture. No filling, no baked pie.",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "other",
+    "generationPrompt": "Use case: product-mockup. ORIGO fragrance note identity ajynh-altart, exact ingredient Tart dough. Raw shortcrust tart pastry dough, pale beige round disk with a small cut section revealing dense unbaked texture. No filling, no baked pie. Photorealistic square isolated cutout on genuine transparent alpha background, centered, generous transparent margins. No plate, bowl, utensils, text, watermark, people, bottles, scenery, packaging or unrelated ingredients. The named ingredient only.",
+    "sourceImageId": "exec-2fa022d1-7458-4417-9b59-901f768b7246",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/ajynh-altart.webp",
+    "noteKey": "ajynh-altart",
+    "noteAssetId": "origo-note-ajynh-altart",
+    "sha256": "19c0226e6bef1e0da10711418ba3ceb77a68a0b93bfa52aa365ab8af31ae25e6",
+    "canonicalNameAr": "عجينة التارت",
+    "visualReview": "Reviewed reports/batch42-review.jpg against the locked prompt: named food, raw/baked state, texture and integral filling match; no lettering, packaging, scenery or unrelated garnish.",
+    "contentHash": "8b948268be4b45e77c15da41089cdf78dfc156aeee450f84c25ad1026bdfa73d",
+    "perceptualHash": "000c0d310639230f",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 13578,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  "ajynh-alkwkyz": {
+    "canonicalKey": "ajynh-alkwkyz",
+    "canonicalNameEn": "Cookie dough",
+    "positiveDescription": "Two scoops of raw chocolate-chip cookie dough with clearly visible embedded small chocolate chips. No baked cookies.",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "other",
+    "generationPrompt": "Use case: product-mockup. ORIGO fragrance note identity ajynh-alkwkyz, exact ingredient Cookie dough. Two scoops of raw chocolate-chip cookie dough with clearly visible embedded small chocolate chips. No baked cookies. Photorealistic square isolated cutout on genuine transparent alpha background, centered, generous transparent margins. No plate, bowl, utensils, text, watermark, people, bottles, scenery, packaging or unrelated ingredients. The named ingredient only.",
+    "sourceImageId": "exec-190d4e2b-e48c-4452-9afb-5d8f5d6794cb",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/ajynh-alkwkyz.webp",
+    "noteKey": "ajynh-alkwkyz",
+    "noteAssetId": "origo-note-ajynh-alkwkyz",
+    "sha256": "8b14142cf63288d6b8ea4eeee16f47be73ad56522938078de0af1a261c4ad9eb",
+    "canonicalNameAr": "عجينة الكوكيز",
+    "visualReview": "Reviewed reports/batch42-review.jpg against the locked prompt: named food, raw/baked state, texture and integral filling match; no lettering, packaging, scenery or unrelated garnish.",
+    "contentHash": "3509ac27402e646bfb20ddc890d1c5cf85982f07106899e5a7c219251376b3b3",
+    "perceptualHash": "030f0f153f2e2e1c",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 20336,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  "ajynh-bf-bastry": {
+    "canonicalKey": "ajynh-bf-bastry",
+    "canonicalNameEn": "Puff pastry dough",
+    "positiveDescription": "Raw laminated puff pastry dough folded rectangular block with a cut edge showing numerous thin layers. Unbaked pale dough, no cooked pastry.",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "other",
+    "generationPrompt": "Use case: product-mockup. ORIGO fragrance note identity ajynh-bf-bastry, exact ingredient Puff pastry dough. Raw laminated puff pastry dough folded rectangular block with a cut edge showing numerous thin layers. Unbaked pale dough, no cooked pastry. Photorealistic square isolated cutout on genuine transparent alpha background, centered, generous transparent margins. No plate, bowl, utensils, text, watermark, people, bottles, scenery, packaging or unrelated ingredients. The named ingredient only.",
+    "sourceImageId": "exec-a818cad7-26c7-44f4-a00f-d93c34ba0c37",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/ajynh-bf-bastry.webp",
+    "noteKey": "ajynh-bf-bastry",
+    "noteAssetId": "origo-note-ajynh-bf-bastry",
+    "sha256": "a0d59b6c85386e22525fd00966b182870a5e00a8366526d2d845c94282223520",
+    "canonicalNameAr": "عجينة بف باستري",
+    "visualReview": "Reviewed reports/batch42-review.jpg against the locked prompt: named food, raw/baked state, texture and integral filling match; no lettering, packaging, scenery or unrelated garnish.",
+    "contentHash": "c6f169f697436dce9028e27c2290394c54a820ce8d362fd5114ab8996f68dec7",
+    "perceptualHash": "00030359201f1000",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 13090,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  "ghzl-albnat": {
+    "canonicalKey": "ghzl-albnat",
+    "canonicalNameEn": "Cotton candy",
+    "positiveDescription": "A fluffy pale pink cloud of cotton candy, visibly delicate spun sugar threads, no stick.",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "other",
+    "generationPrompt": "Use case: product-mockup. ORIGO fragrance note identity ghzl-albnat, exact ingredient Cotton candy. A fluffy pale pink cloud of cotton candy, visibly delicate spun sugar threads, no stick. Photorealistic square isolated cutout on genuine transparent alpha background, centered, generous transparent margins. No plate, bowl, utensils, text, watermark, people, bottles, scenery, packaging or unrelated ingredients. The named ingredient only.",
+    "sourceImageId": "exec-6c1f5d86-f64f-49e3-a323-0610d512669f",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/ghzl-albnat.webp",
+    "noteKey": "ghzl-albnat",
+    "noteAssetId": "origo-note-ghzl-albnat",
+    "sha256": "aa0d45bac1f1c1bb272a9fcc5c8b6e6a4c2d96aafee3ac8f535d93299d1e0f60",
+    "canonicalNameAr": "غزل البنات",
+    "visualReview": "Reviewed reports/batch42-review.jpg against the locked prompt: named food, raw/baked state, texture and integral filling match; no lettering, packaging, scenery or unrelated garnish.",
+    "contentHash": "bb7f2f68a4dc2445362bdaa927f0ce4792feeda5cf54b302ebdd3493207b8e0a",
+    "perceptualHash": "0407032113130f0c",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 19728,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  "ftyrh-altfah": {
+    "canonicalKey": "ftyrh-altfah",
+    "canonicalNameEn": "Apple pie",
+    "positiveDescription": "A slice of baked apple pie with golden lattice crust and clearly visible cooked apple slices inside. No whole apples or garnish.",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "other",
+    "generationPrompt": "Use case: product-mockup. ORIGO fragrance note identity ftyrh-altfah, exact ingredient Apple pie. A slice of baked apple pie with golden lattice crust and clearly visible cooked apple slices inside. No whole apples or garnish. Photorealistic square isolated cutout on genuine transparent alpha background, centered, generous transparent margins. No plate, bowl, utensils, text, watermark, people, bottles, scenery, packaging or unrelated ingredients. The named ingredient only.",
+    "sourceImageId": "exec-181ab965-19de-4bf4-bec7-a162909d862d",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/ftyrh-altfah.webp",
+    "noteKey": "ftyrh-altfah",
+    "noteAssetId": "origo-note-ftyrh-altfah",
+    "sha256": "e352b05030973d45361f65d35c64cf4da5833078a05a8db0b9d7a3d6674cc631",
+    "canonicalNameAr": "فطيرة التفاح",
+    "visualReview": "Reviewed reports/batch42-review.jpg against the locked prompt: named food, raw/baked state, texture and integral filling match; no lettering, packaging, scenery or unrelated garnish.",
+    "contentHash": "785bc914c5661f5f788df80f00daa15ddde99f5332972335d835d926a9c39ddc",
+    "perceptualHash": "0001050d73671e0c",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 21644,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  "ftyrh-alyqtyn": {
+    "canonicalKey": "ftyrh-alyqtyn",
+    "canonicalNameEn": "Pumpkin pie",
+    "positiveDescription": "A slice of pumpkin pie with smooth orange pumpkin custard filling and golden shortcrust edge. No cream topping or pumpkin garnish.",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "other",
+    "generationPrompt": "Use case: product-mockup. ORIGO fragrance note identity ftyrh-alyqtyn, exact ingredient Pumpkin pie. A slice of pumpkin pie with smooth orange pumpkin custard filling and golden shortcrust edge. No cream topping or pumpkin garnish. Photorealistic square isolated cutout on genuine transparent alpha background, centered, generous transparent margins. No plate, bowl, utensils, text, watermark, people, bottles, scenery, packaging or unrelated ingredients. The named ingredient only.",
+    "sourceImageId": "exec-19d2788c-cbf0-4a94-9415-05aadd02c3b7",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/ftyrh-alyqtyn.webp",
+    "noteKey": "ftyrh-alyqtyn",
+    "noteAssetId": "origo-note-ftyrh-alyqtyn",
+    "sha256": "b95c219b3acfc392e135d4ce419f692c93f6f6bdf7fc6f36529e3d92432aa15c",
+    "canonicalNameAr": "فطيرة اليقطين",
+    "visualReview": "Reviewed reports/batch42-review.jpg against the locked prompt: named food, raw/baked state, texture and integral filling match; no lettering, packaging, scenery or unrelated garnish.",
+    "contentHash": "5957b0fedf230b03c0e8fea4c3a9948070f9e3b3b03006e5275776555569fa5d",
+    "perceptualHash": "0001013b37160c0c",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 18184,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
   "hlwy-aljyly-byn": {
     "canonicalKey": "hlwy-aljyly-byn",
     "canonicalNameEn": "Jelly beans",

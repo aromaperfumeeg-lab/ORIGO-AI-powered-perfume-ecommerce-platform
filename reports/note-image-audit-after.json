@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-09-10T10:20:34.396Z",
+  "generatedAt": "2026-09-10T16:06:23.376Z",
   "scope": "Library plus persisted note overrides; SQLite opened read-only. Visual semantics are not certified by filenames or hashes.",
   "notes": 1883,
   "products": 5,
-  "valid": 16,
-  "missing": 794,
+  "valid": 32,
+  "missing": 778,
   "duplicateGroups": 9,
   "needsReview": 1055,
   "duplicates": [
@@ -14984,13 +14984,13 @@
     {
       "canonicalKey": "khbz-alznjbyl",
       "nameAr": "خبز الزنجبيل",
-      "nameEn": "خبز الزنجبيل",
+      "nameEn": "Gingerbread",
       "sourceName": "خبز الزنجبيل",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/khbz-alznjbyl.webp",
+      "filename": "khbz-alznjbyl.webp",
+      "hash": "a3b424bc7b0066c5e23610edf5bf4634afb73c4db29be9aae972b998e7f2a94b",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "خبز الزنجبيل"
       ]
@@ -15026,13 +15026,13 @@
     {
       "canonicalKey": "khbz-mhms",
       "nameAr": "خبز محمص",
-      "nameEn": "خبز محمص",
+      "nameEn": "Toast",
       "sourceName": "خبز محمص",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/khbz-mhms.webp",
+      "filename": "khbz-mhms.webp",
+      "hash": "3dcc8607d2e50c2fa268dcd813a1a9dac74c57e62c48ee572ee7ca0015298ad0",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "خبز محمص"
       ]
@@ -15082,13 +15082,13 @@
     {
       "canonicalKey": "rshat",
       "nameAr": "رشّات",
-      "nameEn": "رشّات",
+      "nameEn": "Sprinkles",
       "sourceName": "رشّات",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/rshat.webp",
+      "filename": "rshat.webp",
+      "hash": "24132a95cc394180b98b4f5cb248bb2bdb540ea5a12bdb296bb4680168c504a6",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "رشّات"
       ]
@@ -15096,13 +15096,13 @@
     {
       "canonicalKey": "zbdh-alfwl-alswdany",
       "nameAr": "زبدة الفول السوداني",
-      "nameEn": "زبدة الفول السوداني",
+      "nameEn": "Peanut butter",
       "sourceName": "زبدة الفول السوداني",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/zbdh-alfwl-alswdany.webp",
+      "filename": "zbdh-alfwl-alswdany.webp",
+      "hash": "b8dd6da408292b6578369a74c9c767f1dedf512a07aaab706980f8675e16c96d",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "زبدة الفول السوداني"
       ]
@@ -15110,13 +15110,13 @@
     {
       "canonicalKey": "zbdh-alkakaw",
       "nameAr": "زبدة الكاكاو",
-      "nameEn": "زبدة الكاكاو",
+      "nameEn": "Cocoa butter",
       "sourceName": "زبدة الكاكاو",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/zbdh-alkakaw.webp",
+      "filename": "zbdh-alkakaw.webp",
+      "hash": "614da3aa3ec3237860f867d5496b93cdf53ee3402e1f9738536c8201555a9f4e",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "زبدة الكاكاو"
       ]
@@ -15124,13 +15124,13 @@
     {
       "canonicalKey": "zbdh-mmlhh",
       "nameAr": "زبدة مملحة",
-      "nameEn": "زبدة مملحة",
+      "nameEn": "Salted butter",
       "sourceName": "زبدة مملحة",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/zbdh-mmlhh.webp",
+      "filename": "zbdh-mmlhh.webp",
+      "hash": "fd86a65d3bac5e1e549fdd79cf079c3431a5330054591663a000a79b06fa96f6",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "زبدة مملحة"
       ]
@@ -15166,13 +15166,13 @@
     {
       "canonicalKey": "sbykwlws",
       "nameAr": "سبيكولوس",
-      "nameEn": "سبيكولوس",
+      "nameEn": "Speculoos",
       "sourceName": "سبيكولوس",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/sbykwlws.webp",
+      "filename": "sbykwlws.webp",
+      "hash": "af5bfb9b37c66540912e54e1556e946de4e1f4e50c5973fe5e997d2c0a38dcc3",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "سبيكولوس"
       ]
@@ -15194,13 +15194,13 @@
     {
       "canonicalKey": "skr-bwdrh",
       "nameAr": "سكر بودرة",
-      "nameEn": "سكر بودرة",
+      "nameEn": "Powdered sugar",
       "sourceName": "سكر بودرة",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/skr-bwdrh.webp",
+      "filename": "skr-bwdrh.webp",
+      "hash": "87d64d38e64f8720b8b2cf2109820dfb5f4d8473599036e39597df6d4fa548c5",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "سكر بودرة"
       ]
@@ -15222,13 +15222,13 @@
     {
       "canonicalKey": "skwn",
       "nameAr": "سكون",
-      "nameEn": "سكون",
+      "nameEn": "Scone",
       "sourceName": "سكون",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/skwn.webp",
+      "filename": "skwn.webp",
+      "hash": "cac74e3e6ff713ef5d1d710d13cfff7b438c27cdf4698d5f2255fce0f5a33c3c",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "سكون"
       ]
@@ -15236,13 +15236,13 @@
     {
       "canonicalKey": "smwrz-alfrawlh",
       "nameAr": "سمورز الفراولة",
-      "nameEn": "سمورز الفراولة",
+      "nameEn": "Strawberry smores",
       "sourceName": "سمورز الفراولة",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/smwrz-alfrawlh.webp",
+      "filename": "smwrz-alfrawlh.webp",
+      "hash": "2fc9ed650b0ae6f0f859210ca2de30433ea614deff6a6dc77ef892c3e955e766",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "سمورز الفراولة"
       ]
@@ -15418,13 +15418,13 @@
     {
       "canonicalKey": "ajynh-altart",
       "nameAr": "عجينة التارت",
-      "nameEn": "عجينة التارت",
+      "nameEn": "Tart dough",
       "sourceName": "عجينة التارت",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/ajynh-altart.webp",
+      "filename": "ajynh-altart.webp",
+      "hash": "19c0226e6bef1e0da10711418ba3ceb77a68a0b93bfa52aa365ab8af31ae25e6",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "عجينة التارت"
       ]
@@ -15432,13 +15432,13 @@
     {
       "canonicalKey": "ajynh-alkwkyz",
       "nameAr": "عجينة الكوكيز",
-      "nameEn": "عجينة الكوكيز",
+      "nameEn": "Cookie dough",
       "sourceName": "عجينة الكوكيز",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/ajynh-alkwkyz.webp",
+      "filename": "ajynh-alkwkyz.webp",
+      "hash": "8b14142cf63288d6b8ea4eeee16f47be73ad56522938078de0af1a261c4ad9eb",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "عجينة الكوكيز"
       ]
@@ -15446,13 +15446,13 @@
     {
       "canonicalKey": "ajynh-bf-bastry",
       "nameAr": "عجينة بف باستري",
-      "nameEn": "عجينة بف باستري",
+      "nameEn": "Puff pastry dough",
       "sourceName": "عجينة بف باستري",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/ajynh-bf-bastry.webp",
+      "filename": "ajynh-bf-bastry.webp",
+      "hash": "a0d59b6c85386e22525fd00966b182870a5e00a8366526d2d845c94282223520",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "عجينة بف باستري"
       ]
@@ -15460,13 +15460,13 @@
     {
       "canonicalKey": "ghzl-albnat",
       "nameAr": "غزل البنات",
-      "nameEn": "غزل البنات",
+      "nameEn": "Cotton candy",
       "sourceName": "غزل البنات",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/ghzl-albnat.webp",
+      "filename": "ghzl-albnat.webp",
+      "hash": "aa0d45bac1f1c1bb272a9fcc5c8b6e6a4c2d96aafee3ac8f535d93299d1e0f60",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "غزل البنات"
       ]
@@ -15488,13 +15488,13 @@
     {
       "canonicalKey": "ftyrh-altfah",
       "nameAr": "فطيرة التفاح",
-      "nameEn": "فطيرة التفاح",
+      "nameEn": "Apple pie",
       "sourceName": "فطيرة التفاح",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/ftyrh-altfah.webp",
+      "filename": "ftyrh-altfah.webp",
+      "hash": "e352b05030973d45361f65d35c64cf4da5833078a05a8db0b9d7a3d6674cc631",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "فطيرة التفاح"
       ]
@@ -15516,13 +15516,13 @@
     {
       "canonicalKey": "ftyrh-alyqtyn",
       "nameAr": "فطيرة اليقطين",
-      "nameEn": "فطيرة اليقطين",
+      "nameEn": "Pumpkin pie",
       "sourceName": "فطيرة اليقطين",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/ftyrh-alyqtyn.webp",
+      "filename": "ftyrh-alyqtyn.webp",
+      "hash": "b95c219b3acfc392e135d4ce419f692c93f6f6bdf7fc6f36529e3d92432aa15c",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "فطيرة اليقطين"
       ]
