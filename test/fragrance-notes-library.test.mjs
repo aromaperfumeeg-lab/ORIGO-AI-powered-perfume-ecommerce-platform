@@ -37,7 +37,7 @@ test("resolves Arabic, English, and alias spellings to one note", () => {
   const slugs = ["Oud", "Oudh", "Agarwood", "عود"].map((value) => library.find(value)?.slug);
   assert.deepEqual([...new Set(slugs)], ["oud"]);
   assert.equal(library.find("ورد")?.slug, "rose");
-  assert.equal(library.find("Taif Rose")?.slug, "rose");
+  assert.notEqual(library.find("Taif Rose")?.slug, "rose");
 });
 
 test("provides bilingual data, family metadata, and automatic artwork", () => {
@@ -46,7 +46,8 @@ test("provides bilingual data, family metadata, and automatic artwork", () => {
   assert.equal(rose.nameEn, "Rose");
   assert.equal(rose.familyId, "flowers");
   assert.equal(rose.position, "heart");
-  assert.equal(library.artwork(rose), "/assets/notes/generated/rose.webp");
+  assert.match(library.artwork(rose), /^data:image\/svg\+xml/);
+  assert.equal(library.validateNoteImage(rose).valid, false);
 });
 
 test("enriches English-only product notes without adding preview text to the review queue", () => {

@@ -6453,7 +6453,7 @@ function productCardAuraNotes(product, isArabic = state.lang === "ar") {
   const seen = new Set();
   const notes = candidates.map((value) => {
     const lookup = typeof value === "object" ? value.id || value.nameEn || value.nameAr : value;
-    const note = window.ORIGOFragranceNotes?.find(lookup);
+    const note = window.ORIGOFragranceNotes?.resolveReference(value);
     const nameAr = note?.nameAr || value?.nameAr || String(value);
     const nameEn = note?.nameEn || value?.nameEn || String(value);
     const label = isArabic ? nameAr : nameEn;
@@ -6464,7 +6464,7 @@ function productCardAuraNotes(product, isArabic = state.lang === "ar") {
       label,
       nameAr,
       nameEn,
-      image: value?.image || (note ? window.ORIGOFragranceNotes.artwork(note) : "")
+      image: note ? window.ORIGOFragranceNotes.artwork(note) : ""
     };
   }).filter(Boolean);
   return notes.slice(0, 6);
@@ -6555,13 +6555,13 @@ let productCardRenderSerial = 0;
 function normalizeProductCardNote(value, isArabic) {
   const source = value && typeof value === "object" ? value : { id: value, nameAr: value, nameEn: value };
   const lookup = source.id || source.slug || source.nameEn || source.nameAr;
-  const libraryNote = window.ORIGOFragranceNotes?.find?.(lookup);
+  const libraryNote = window.ORIGOFragranceNotes?.resolveReference?.(value);
   const nameAr = source.nameAr || libraryNote?.nameAr || String(value || "");
   const nameEn = source.nameEn || libraryNote?.nameEn || String(value || "");
   return {
     id: source.id || libraryNote?.id || ORIGOCatalog.normalize(nameEn || nameAr),
     label: isArabic ? nameAr : nameEn,
-    image: source.image || libraryNote?.image || ""
+    image: libraryNote ? window.ORIGOFragranceNotes.artwork(libraryNote) : ""
   };
 }
 

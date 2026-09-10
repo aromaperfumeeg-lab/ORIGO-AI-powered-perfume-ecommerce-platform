@@ -84,8 +84,10 @@ test("database migrates old users and structured notes override stale flat notes
     assert.equal(savedNote.metadata.descriptionEn, "Soft floral");
     assert.equal(database.upsertProductOption({ ...savedNote, nameEn: "Egyptian Jasmine Absolute" }).id, savedNote.id);
     assert.equal(database.listProductOptions("note", true).filter((item) => item.slug === "egyptian-jasmine").length, 1);
-    const noteState = database.saveFragranceNotesState({ notes: [{ slug: savedNote.slug, nameAr: savedNote.nameAr, nameEn: savedNote.nameEn, image: noteImage }] });
+    const noteState = database.saveFragranceNotesState({ notes: [{ slug: savedNote.slug, nameAr: savedNote.nameAr, nameEn: savedNote.nameEn, image: noteImage, validated:true, imageValidationStatus:'VALID' }] });
     assert.equal(noteState.notes[0].image, noteImage);
+    assert.equal(noteState.notes[0].validated, false);
+    assert.equal(noteState.notes[0].imageValidationStatus, 'NEEDS_REVIEW');
 
     const staff = database.createUser({
       name: "Product Manager",

@@ -2114,7 +2114,13 @@ export function getStorefrontMedia(id) {
 }
 
 export function saveFragranceNotesState(payload) {
-  const value = payload && typeof payload === "object" ? payload : {};
+  const value = structuredClone(payload && typeof payload === "object" ? payload : {});
+  // A client upload or import cannot attest its own semantic verification.
+  for (const note of [...(Array.isArray(value.notes) ? value.notes : []), ...Object.values(value.overrides || {})]) {
+    if (!note || typeof note !== 'object') continue;
+    note.validated = false;
+    note.imageValidationStatus = note.image ? 'NEEDS_REVIEW' : 'MISSING_IMAGE';
+  }
   const serialized = JSON.stringify(value);
   // Uploaded note artwork is stored with the bilingual note record. Keep the
   // limit below the server request ceiling while allowing a practical library.

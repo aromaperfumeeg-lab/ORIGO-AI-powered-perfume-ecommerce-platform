@@ -1,0 +1,466 @@
+[
+  {
+    "canonicalKey": "hlwy-aljyly-byn",
+    "canonicalNameEn": "Jelly beans",
+    "positiveDescription": "Small glossy bean-shaped jelly bean candies in several colors.",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "other",
+    "generationPrompt": "Use case: product-mockup. ORIGO note icon. Identity hlwy-aljyly-byn: Jelly beans. Subject: Small glossy bean-shaped jelly bean candies in several colors. Photorealistic isolated food cutout centered in a square, generous transparent margin. Actual transparent alpha background. No plate, utensils, packaging, text, watermark, people, bottles, backdrop, or unrelated ingredients. Exact named food only.",
+    "sourceImageId": "exec-714ce651-c74f-4fa8-ab1a-33992b3c0a90",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/hlwy-aljyly-byn.webp",
+    "noteKey": "hlwy-aljyly-byn",
+    "noteAssetId": "origo-note-hlwy-aljyly-byn",
+    "sha256": "4bf82feaf2a66b8d74ff71feb678283c3cb11ba7b6fa46a35dafbdc7f6680f62",
+    "canonicalNameAr": "حلوى الجيلي بين",
+    "visualReview": "Reviewed in reports/batch41-review.jpg: exact named food form and characteristic interior/texture match the locked prompt; no conflicting ingredients, lettering, packaging or scenery.",
+    "contentHash": "5fdc91535a5fcc214129f35db38751c480ec96e829f016fd65ede3af611f26fb",
+    "perceptualHash": "0016175131191d2c",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 14862,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "hlwy-alhlyb",
+    "canonicalNameEn": "Milk candy",
+    "positiveDescription": "Creamy white milk candy chews, small rectangular pieces with milky matte surface.",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "other",
+    "generationPrompt": "Use case: product-mockup. ORIGO note icon. Identity hlwy-alhlyb: Milk candy. Subject: Creamy white milk candy chews, small rectangular pieces with milky matte surface. Photorealistic isolated food cutout centered in a square, generous transparent margin. Actual transparent alpha background. No plate, utensils, packaging, text, watermark, people, bottles, backdrop, or unrelated ingredients. Exact named food only.",
+    "sourceImageId": "exec-e281b876-11e7-4c6d-9062-7f4c2577f74b",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/hlwy-alhlyb.webp",
+    "noteKey": "hlwy-alhlyb",
+    "noteAssetId": "origo-note-hlwy-alhlyb",
+    "sha256": "2efdb66b924a7ec2edafa6c3bea946ae9e871bb8999abddf5e42fcca44b5d6d9",
+    "canonicalNameAr": "حلوى الحليب",
+    "visualReview": "Reviewed in reports/batch41-review.jpg: exact named food form and characteristic interior/texture match the locked prompt; no conflicting ingredients, lettering, packaging or scenery.",
+    "contentHash": "6e6a7e7c06abe7451883bacaa6c60e76bd5e8e240fa9a8b43f0788471b04b810",
+    "perceptualHash": "030b0b250d090706",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 9316,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "hlwy-alfrawlh-alfwarh",
+    "canonicalNameEn": "Fizzy strawberry candy",
+    "positiveDescription": "Red strawberry-shaped fizzy candy pieces covered with visible fine sour sugar crystals.",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "other",
+    "generationPrompt": "Use case: product-mockup. ORIGO note icon. Identity hlwy-alfrawlh-alfwarh: Fizzy strawberry candy. Subject: Red strawberry-shaped fizzy candy pieces covered with visible fine sour sugar crystals. Photorealistic isolated food cutout centered in a square, generous transparent margin. Actual transparent alpha background. No plate, utensils, packaging, text, watermark, people, bottles, backdrop, or unrelated ingredients. Exact named food only.",
+    "sourceImageId": "exec-e9e3577c-299a-41a5-9cda-5a77f6788930",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/hlwy-alfrawlh-alfwarh.webp",
+    "noteKey": "hlwy-alfrawlh-alfwarh",
+    "noteAssetId": "origo-note-hlwy-alfrawlh-alfwarh",
+    "sha256": "63a0d72176332a23dce75d06b6fe9535387bde02c2f8507a13f089b04f3b9ee9",
+    "canonicalNameAr": "حلوى الفراولة الفوارة",
+    "visualReview": "Reviewed in reports/batch41-review.jpg: exact named food form and characteristic interior/texture match the locked prompt; no conflicting ingredients, lettering, packaging or scenery.",
+    "contentHash": "75f44d5945e3fe63d925e84f2ad21b537d514075e1f674b1dbed09ec569653ab",
+    "perceptualHash": "000c1f177b5dcd0c",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 26718,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "hlwy-alkramyl-almmlh",
+    "canonicalNameEn": "Salted caramel candy",
+    "positiveDescription": "Golden soft caramel cubes topped with a few coarse white salt crystals.",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "other",
+    "generationPrompt": "Use case: product-mockup. ORIGO note icon. Identity hlwy-alkramyl-almmlh: Salted caramel candy. Subject: Golden soft caramel cubes topped with a few coarse white salt crystals. Photorealistic isolated food cutout centered in a square, generous transparent margin. Actual transparent alpha background. No plate, utensils, packaging, text, watermark, people, bottles, backdrop, or unrelated ingredients. Exact named food only.",
+    "sourceImageId": "exec-f6d703f7-35b2-49ef-b77a-a75f88dafc29",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/hlwy-alkramyl-almmlh.webp",
+    "noteKey": "hlwy-alkramyl-almmlh",
+    "noteAssetId": "origo-note-hlwy-alkramyl-almmlh",
+    "sha256": "3a4d703d1c0fef0d02e92dc381b575b3ae9d6df71f1925ebe9e6b8dd3fba3be2",
+    "canonicalNameAr": "حلوى الكراميل المملح",
+    "visualReview": "Reviewed in reports/batch41-review.jpg: exact named food form and characteristic interior/texture match the locked prompt; no conflicting ingredients, lettering, packaging or scenery.",
+    "contentHash": "80136d29c027692e2837aac5ae37b8a8fe594d5f4f60390b40da6b6fdced4baa",
+    "perceptualHash": "000e1723131b070e",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 16284,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "hlwy-starbrst",
+    "canonicalNameEn": "Starburst candy",
+    "positiveDescription": "Unwrapped square fruit chew candies in red pink orange yellow, characteristic soft square shape. No wrappers or logos.",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "other",
+    "generationPrompt": "Use case: product-mockup. ORIGO note icon. Identity hlwy-starbrst: Starburst candy. Subject: Unwrapped square fruit chew candies in red pink orange yellow, characteristic soft square shape. No wrappers or logos. Photorealistic isolated food cutout centered in a square, generous transparent margin. Actual transparent alpha background. No plate, utensils, packaging, text, watermark, people, bottles, backdrop, or unrelated ingredients. Exact named food only.",
+    "sourceImageId": "exec-6bac4f44-4f26-41eb-95f4-7a515b35da94",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/hlwy-starbrst.webp",
+    "noteKey": "hlwy-starbrst",
+    "noteAssetId": "origo-note-hlwy-starbrst",
+    "sha256": "920f3e5aba3a0a769e0ef98645a639ec70759064dd9718a6c649dd78d5989530",
+    "canonicalNameAr": "حلوى ستاربرست",
+    "visualReview": "Reviewed in reports/batch41-review.jpg: exact named food form and characteristic interior/texture match the locked prompt; no conflicting ingredients, lettering, packaging or scenery.",
+    "contentHash": "d34ad4d53901c7e681a66b0fb61cd256c01a82b442fbced93c4df3bdca4f6db8",
+    "perceptualHash": "000a13333b334b00",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 15578,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "hlwy-albrtqal",
+    "canonicalNameEn": "Orange candy",
+    "positiveDescription": "Orange-flavored hard candy orange wedges, translucent orange color with citrus-segment molding.",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "other",
+    "generationPrompt": "Use case: product-mockup. ORIGO note icon. Identity hlwy-albrtqal: Orange candy. Subject: Orange-flavored hard candy orange wedges, translucent orange color with citrus-segment molding. Photorealistic isolated food cutout centered in a square, generous transparent margin. Actual transparent alpha background. No plate, utensils, packaging, text, watermark, people, bottles, backdrop, or unrelated ingredients. Exact named food only.",
+    "sourceImageId": "exec-eaa7fc4b-2097-4fc1-a3f9-eb985048ba8b",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/hlwy-albrtqal.webp",
+    "noteKey": "hlwy-albrtqal",
+    "noteAssetId": "origo-note-hlwy-albrtqal",
+    "sha256": "279378c432b7be50b649e4b15201d4bda669aee08e7c309319fce5255d3acdcd",
+    "canonicalNameAr": "حلوي البرتقال",
+    "visualReview": "Reviewed in reports/batch41-review.jpg: exact named food form and characteristic interior/texture match the locked prompt; no conflicting ingredients, lettering, packaging or scenery.",
+    "contentHash": "e231b674c64929ecfaafd57d6f80331d79c95d718d3fed4de5f4490291257df7",
+    "perceptualHash": "000c0f651b2f0c0c",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 15272,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "hlwy-altyramysw",
+    "canonicalNameEn": "Tiramisu",
+    "positiveDescription": "A single square slice of tiramisu, cocoa dusting, mascarpone layers and coffee-soaked ladyfinger layers.",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "other",
+    "generationPrompt": "Use case: product-mockup. ORIGO note icon. Identity hlwy-altyramysw: Tiramisu. Subject: A single square slice of tiramisu, cocoa dusting, mascarpone layers and coffee-soaked ladyfinger layers. Photorealistic isolated food cutout centered in a square, generous transparent margin. Actual transparent alpha background. No plate, utensils, packaging, text, watermark, people, bottles, backdrop, or unrelated ingredients. Exact named food only.",
+    "sourceImageId": "exec-fdd8efa7-571c-4988-8ecc-8ad85a65d706",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/hlwy-altyramysw.webp",
+    "noteKey": "hlwy-altyramysw",
+    "noteAssetId": "origo-note-hlwy-altyramysw",
+    "sha256": "dde174298c1426b2c42c0600a45a016700d0cc68378bca64a02c0985a17a77d2",
+    "canonicalNameAr": "حلوي التيراميسو",
+    "visualReview": "Reviewed in reports/batch41-review.jpg: exact named food form and characteristic interior/texture match the locked prompt; no conflicting ingredients, lettering, packaging or scenery.",
+    "contentHash": "f249d68f853c3bc3fbd0869852e3a9a41ca57e0b1454cc51220fd64c4287ee44",
+    "perceptualHash": "000e071f71351f18",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 26040,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "hlwy-alhlqwm",
+    "canonicalNameEn": "Turkish delight",
+    "positiveDescription": "Rose-colored Turkish delight cubes dusted with powdered sugar, one cut cube showing soft translucent pink interior. No nuts.",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "other",
+    "generationPrompt": "Use case: product-mockup. ORIGO note icon. Identity hlwy-alhlqwm: Turkish delight. Subject: Rose-colored Turkish delight cubes dusted with powdered sugar, one cut cube showing soft translucent pink interior. No nuts. Photorealistic isolated food cutout centered in a square, generous transparent margin. Actual transparent alpha background. No plate, utensils, packaging, text, watermark, people, bottles, backdrop, or unrelated ingredients. Exact named food only.",
+    "sourceImageId": "exec-86add174-3263-4918-b171-b9dd24521149",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/hlwy-alhlqwm.webp",
+    "noteKey": "hlwy-alhlqwm",
+    "noteAssetId": "origo-note-hlwy-alhlqwm",
+    "sha256": "e342b78b7f3003cfade0e447aaccfc9b116c65abf7d69d07ac449873b49f8c79",
+    "canonicalNameAr": "حلوي الحلقوم",
+    "visualReview": "Reviewed in reports/batch41-review.jpg: exact named food form and characteristic interior/texture match the locked prompt; no conflicting ingredients, lettering, packaging or scenery.",
+    "contentHash": "308135b7b68664ecbc77eed70fc8feaf9bdf60d22800d09a7413564e0f116e76",
+    "perceptualHash": "000e060fc51f1b20",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 21190,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "hlwy-alshw",
+    "canonicalNameEn": "Choux pastry",
+    "positiveDescription": "Three golden choux cream puffs, one cut open to show pale pastry cream.",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "other",
+    "generationPrompt": "Use case: product-mockup. ORIGO note icon. Identity hlwy-alshw: Choux pastry. Subject: Three golden choux cream puffs, one cut open to show pale pastry cream. Photorealistic isolated food cutout centered in a square, generous transparent margin. Actual transparent alpha background. No plate, utensils, packaging, text, watermark, people, bottles, backdrop, or unrelated ingredients. Exact named food only.",
+    "sourceImageId": "exec-3fb4c0d6-5327-4313-8f13-3bdafb6f5269",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/hlwy-alshw.webp",
+    "noteKey": "hlwy-alshw",
+    "noteAssetId": "origo-note-hlwy-alshw",
+    "sha256": "830240a2dbea11835841c87ff2f8e10d4d5b97d0b0ee3bdb1084f358293f5208",
+    "canonicalNameAr": "حلوي الشو",
+    "visualReview": "Reviewed in reports/batch41-review.jpg: exact named food form and characteristic interior/texture match the locked prompt; no conflicting ingredients, lettering, packaging or scenery.",
+    "contentHash": "71024a5902f4c18cf3f3bf4a25b2a1db4077ea4f77312787c7463acc8d400805",
+    "perceptualHash": "00232743733b1708",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 20862,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "hlwy-alkwlfy",
+    "canonicalNameEn": "Kulfi",
+    "positiveDescription": "Traditional plain milk kulfi, dense ivory frozen tapered cylinder with one cut slice. No nuts garnish, no stick.",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "other",
+    "generationPrompt": "Use case: product-mockup. ORIGO note icon. Identity hlwy-alkwlfy: Kulfi. Subject: Traditional plain milk kulfi, dense ivory frozen tapered cylinder with one cut slice. No nuts garnish, no stick. Photorealistic isolated food cutout centered in a square, generous transparent margin. Actual transparent alpha background. No plate, utensils, packaging, text, watermark, people, bottles, backdrop, or unrelated ingredients. Exact named food only.",
+    "sourceImageId": "exec-75d9f383-a5e9-4ea7-9b80-918237725b35",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/hlwy-alkwlfy.webp",
+    "noteKey": "hlwy-alkwlfy",
+    "noteAssetId": "origo-note-hlwy-alkwlfy",
+    "sha256": "9f25eac877df7831b3ef01f6b87888258de2398a30d70d80d2e5eec55bd382ad",
+    "canonicalNameAr": "حلوي الكولفي",
+    "visualReview": "Reviewed in reports/batch41-review.jpg: exact named food form and characteristic interior/texture match the locked prompt; no conflicting ingredients, lettering, packaging or scenery.",
+    "contentHash": "872bf42e263524afb8179fd716b6c669b58032df6d00e047be4b36c0400efdf1",
+    "perceptualHash": "000101010d040201",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 11998,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "hlwy-almarzyban",
+    "canonicalNameEn": "Marzipan",
+    "positiveDescription": "Ivory almond marzipan log with two cut slices showing dense smooth almond paste.",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "other",
+    "generationPrompt": "Use case: product-mockup. ORIGO note icon. Identity hlwy-almarzyban: Marzipan. Subject: Ivory almond marzipan log with two cut slices showing dense smooth almond paste. Photorealistic isolated food cutout centered in a square, generous transparent margin. Actual transparent alpha background. No plate, utensils, packaging, text, watermark, people, bottles, backdrop, or unrelated ingredients. Exact named food only.",
+    "sourceImageId": "exec-b4500a78-f351-44b0-8ec2-7265ed5c302c",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/hlwy-almarzyban.webp",
+    "noteKey": "hlwy-almarzyban",
+    "noteAssetId": "origo-note-hlwy-almarzyban",
+    "sha256": "2ab7ebbb7d2672540fa0b1ea1b611bc7d02d4eb7336a4e3a4aada44f54b034df",
+    "canonicalNameAr": "حلوي المارزيبان",
+    "visualReview": "Reviewed in reports/batch41-review.jpg: exact named food form and characteristic interior/texture match the locked prompt; no conflicting ingredients, lettering, packaging or scenery.",
+    "contentHash": "d954cda9af6f3aa6218215bfb572cf785f2fe88d0f0585bfb5128498c8435173",
+    "perceptualHash": "0001030d096f3e38",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 10526,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "hlwy-kwnfyty-allwz-almskr",
+    "canonicalNameEn": "Sugar coated almonds",
+    "positiveDescription": "Pastel sugar-coated almond dragees, one broken open revealing actual almond kernel.",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "other",
+    "generationPrompt": "Use case: product-mockup. ORIGO note icon. Identity hlwy-kwnfyty-allwz-almskr: Sugar coated almonds. Subject: Pastel sugar-coated almond dragees, one broken open revealing actual almond kernel. Photorealistic isolated food cutout centered in a square, generous transparent margin. Actual transparent alpha background. No plate, utensils, packaging, text, watermark, people, bottles, backdrop, or unrelated ingredients. Exact named food only.",
+    "sourceImageId": "exec-634ed2af-0db9-4a29-9564-b5081440be35",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/hlwy-kwnfyty-allwz-almskr.webp",
+    "noteKey": "hlwy-kwnfyty-allwz-almskr",
+    "noteAssetId": "origo-note-hlwy-kwnfyty-allwz-almskr",
+    "sha256": "f06f4d1e420b76f127b7c92cf2c6746ac9fd5b95b1bcd1b443415ba223d00edf",
+    "canonicalNameAr": "حلوي كونفيتي (اللوز المسكر)",
+    "visualReview": "Reviewed in reports/batch41-review.jpg: exact named food form and characteristic interior/texture match the locked prompt; no conflicting ingredients, lettering, packaging or scenery.",
+    "contentHash": "d4c9caaa3d8de3fad4361e56d5587421ac19e1149685be0c59eb7e49835070a6",
+    "perceptualHash": "03030d09112d0909",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 11372,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "khbz-albaghyt",
+    "canonicalNameEn": "Baguette",
+    "positiveDescription": "A short section of French baguette with diagonal scoring and two slices showing airy crumb.",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "other",
+    "generationPrompt": "Use case: product-mockup. ORIGO note icon. Identity khbz-albaghyt: Baguette. Subject: A short section of French baguette with diagonal scoring and two slices showing airy crumb. Photorealistic isolated food cutout centered in a square, generous transparent margin. Actual transparent alpha background. No plate, utensils, packaging, text, watermark, people, bottles, backdrop, or unrelated ingredients. Exact named food only.",
+    "sourceImageId": "exec-093cc128-27e4-430f-814b-a3cdf6f3d538",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/khbz-albaghyt.webp",
+    "noteKey": "khbz-albaghyt",
+    "noteAssetId": "origo-note-khbz-albaghyt",
+    "sha256": "455967b8d7ee7667069e85619eab004bd9f27f5c12b8d22664751a7d68a40a02",
+    "canonicalNameAr": "خبز الباغيت",
+    "visualReview": "Reviewed in reports/batch41-review.jpg: exact named food form and characteristic interior/texture match the locked prompt; no conflicting ingredients, lettering, packaging or scenery.",
+    "contentHash": "bf574556727fd494bd8637dcb7c7eb8910fe2781de5d7dee3c61ae1a68973bf1",
+    "perceptualHash": "0003030f5f030500",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 21104,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "khbz-albrywsh",
+    "canonicalNameEn": "Brioche",
+    "positiveDescription": "Golden glossy brioche bread with rounded lobes and a torn piece revealing soft buttery yellow crumb.",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "other",
+    "generationPrompt": "Use case: product-mockup. ORIGO note icon. Identity khbz-albrywsh: Brioche. Subject: Golden glossy brioche bread with rounded lobes and a torn piece revealing soft buttery yellow crumb. Photorealistic isolated food cutout centered in a square, generous transparent margin. Actual transparent alpha background. No plate, utensils, packaging, text, watermark, people, bottles, backdrop, or unrelated ingredients. Exact named food only.",
+    "sourceImageId": "exec-b8d23420-d4bd-47a1-b332-0d0e7f09441f",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/khbz-albrywsh.webp",
+    "noteKey": "khbz-albrywsh",
+    "noteAssetId": "origo-note-khbz-albrywsh",
+    "sha256": "8dc83479ab7df52c5aa6ea94e4c51812aec6c5a01b6f24396979c40b1021312d",
+    "canonicalNameAr": "خبز البريوش",
+    "visualReview": "Reviewed in reports/batch41-review.jpg: exact named food form and characteristic interior/texture match the locked prompt; no conflicting ingredients, lettering, packaging or scenery.",
+    "contentHash": "6934dab65da6454f3b8f49eef511c0c5c3183ecca5680b421cdf4b67ad01363f",
+    "perceptualHash": "03001b336d65130f",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 25754,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "khbz-almwz",
+    "canonicalNameEn": "Banana bread",
+    "positiveDescription": "Banana bread loaf segment with two moist brown slices, no garnish or other ingredients.",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "other",
+    "generationPrompt": "Use case: product-mockup. ORIGO note icon. Identity khbz-almwz: Banana bread. Subject: Banana bread loaf segment with two moist brown slices, no garnish or other ingredients. Photorealistic isolated food cutout centered in a square, generous transparent margin. Actual transparent alpha background. No plate, utensils, packaging, text, watermark, people, bottles, backdrop, or unrelated ingredients. Exact named food only.",
+    "sourceImageId": "exec-2841a13f-8cf0-46b1-bf76-075d654a2acd",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/khbz-almwz.webp",
+    "noteKey": "khbz-almwz",
+    "noteAssetId": "origo-note-khbz-almwz",
+    "sha256": "8d312492f2515e4b981964b22bb1e3a49837d48a6b0a0f4c4c2f0192f982bc72",
+    "canonicalNameAr": "خبز الموز",
+    "visualReview": "Reviewed in reports/batch41-review.jpg: exact named food form and characteristic interior/texture match the locked prompt; no conflicting ingredients, lettering, packaging or scenery.",
+    "contentHash": "dd8ce4c8581cebc8b0d505c524826d20e4905e5fc5d1a4b1da802298f28a7180",
+    "perceptualHash": "02070319230f0c08",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 26320,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "dwrayaky",
+    "canonicalNameEn": "Dorayaki",
+    "positiveDescription": "Japanese dorayaki pancake sandwich, one whole and one cut revealing dark red bean paste filling.",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "other",
+    "generationPrompt": "Use case: product-mockup. ORIGO note icon. Identity dwrayaky: Dorayaki. Subject: Japanese dorayaki pancake sandwich, one whole and one cut revealing dark red bean paste filling. Photorealistic isolated food cutout centered in a square, generous transparent margin. Actual transparent alpha background. No plate, utensils, packaging, text, watermark, people, bottles, backdrop, or unrelated ingredients. Exact named food only.",
+    "sourceImageId": "exec-5649fd7e-f188-4d26-8315-3366a8f0c478",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/dwrayaky.webp",
+    "noteKey": "dwrayaky",
+    "noteAssetId": "origo-note-dwrayaky",
+    "sha256": "923f78ee76ebc3591af0f53b5082a717cfddb46360ed4e76ddfcff936be9196b",
+    "canonicalNameAr": "دوراياكي",
+    "visualReview": "Reviewed in reports/batch41-review.jpg: exact named food form and characteristic interior/texture match the locked prompt; no conflicting ingredients, lettering, packaging or scenery.",
+    "contentHash": "d8bee6b892fdf41610636ab7b39976ead4f7f5c52db0f56e089895e2be4e7bbb",
+    "perceptualHash": "000111373f0e1800",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 16194,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  }
+]
