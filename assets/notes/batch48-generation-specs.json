@@ -1,0 +1,466 @@
+[
+  {
+    "canonicalKey": "msash-mthljh",
+    "canonicalNameEn": "Ice pop",
+    "positiveDescription": "One simple translucent fruit ice pop in red-orange color on a plain wooden stick, frosty surface, no wrapper.",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "other",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject Ice pop. Subject: One simple translucent fruit ice pop in red-orange color on a plain wooden stick, frosty surface, no wrapper. Style: photorealistic catalog specimen. Composition: centered square with ample transparent margin. Constraints: genuine transparent alpha; only the named note; no text, watermark, people, perfume bottles, branded packaging, scenery, background or unrelated objects.",
+    "sourceImageId": "exec-93904cf2-976d-4e15-a8b1-8cbc47a2c5d0",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "مصاصة مثلجة",
+    "imageUrl": "assets/notes/generated/msash-mthljh.webp",
+    "noteKey": "msash-mthljh",
+    "noteAssetId": "origo-note-msash-mthljh",
+    "sha256": "f373e82ac5e109dec918dcfb93db2b2c84e4be52ca3b89aae16c6ba317434aa9",
+    "visualReview": "Reviewed reports/batch48-review.jpg against the locked prompt: exact named subject, species or material is clearly shown; no lettering, perfume bottle, branded packaging, scenery or unrelated objects.",
+    "contentHash": "932423b65699d493c199cd470f61586cd1d63c650c776dec50a426ce9acd6ee8",
+    "perceptualHash": "0000060f67260000",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 10992,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "mlbs",
+    "canonicalNameEn": "Sugar dragées",
+    "positiveDescription": "A small cluster of smooth oval sugar-coated dragée candies in white and pale pastel colors, one cut showing a firm candy center.",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "other",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject Sugar dragées. Subject: A small cluster of smooth oval sugar-coated dragée candies in white and pale pastel colors, one cut showing a firm candy center. Style: photorealistic catalog specimen. Composition: centered square with ample transparent margin. Constraints: genuine transparent alpha; only the named note; no text, watermark, people, perfume bottles, branded packaging, scenery, background or unrelated objects.",
+    "sourceImageId": "exec-8f053daf-24ba-41e5-8c1b-ecc654e7af29",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "ملبس",
+    "imageUrl": "assets/notes/generated/mlbs.webp",
+    "noteKey": "mlbs",
+    "noteAssetId": "origo-note-mlbs",
+    "sha256": "deffaefe25e72951ee14f0139b582aa17be30db9196d48f900e79efa39c134fc",
+    "visualReview": "Reviewed reports/batch48-review.jpg against the locked prompt: exact named subject, species or material is clearly shown; no lettering, perfume bottle, branded packaging, scenery or unrelated objects.",
+    "contentHash": "1b7b4cba061cad07230c94b588a1f28975070011ec97b1bc8da96183bd45cff9",
+    "perceptualHash": "000013270d352700",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 9802,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "mylk-shyk",
+    "canonicalNameEn": "Vanilla milkshake",
+    "positiveDescription": "A compact clear glass filled with thick pale vanilla milkshake with a softly swirled creamy top, no straw or garnish.",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "other",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject Vanilla milkshake. Subject: A compact clear glass filled with thick pale vanilla milkshake with a softly swirled creamy top, no straw or garnish. Style: photorealistic catalog specimen. Composition: centered square with ample transparent margin. Constraints: genuine transparent alpha; only the named note; no text, watermark, people, perfume bottles, branded packaging, scenery, background or unrelated objects.",
+    "sourceImageId": "exec-1196540d-d5e4-4d53-8879-6c9e147a8aac",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "ميلك شيك",
+    "imageUrl": "assets/notes/generated/mylk-shyk.webp",
+    "noteKey": "mylk-shyk",
+    "noteAssetId": "origo-note-mylk-shyk",
+    "sha256": "bc94669c135b66c837805e86a872b1b6603470c79c0aea01a63ccf93ddbbd440",
+    "visualReview": "Reviewed reports/batch48-review.jpg against the locked prompt: exact named subject, species or material is clearly shown; no lettering, perfume bottle, branded packaging, scenery or unrelated objects.",
+    "contentHash": "67365fb6576d5921b4b16c185054dd274927a5afb0a9c67a0132fa1c0a069569",
+    "perceptualHash": "03474f5fddcf7b03",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 11184,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "nwtyla",
+    "canonicalNameEn": "Hazelnut cocoa spread",
+    "positiveDescription": "A glossy chocolate-hazelnut spread dollop with smooth ribbon folds, no jar, label, bread, nuts or chocolate pieces.",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "other",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject Hazelnut cocoa spread. Subject: A glossy chocolate-hazelnut spread dollop with smooth ribbon folds, no jar, label, bread, nuts or chocolate pieces. Style: photorealistic catalog specimen. Composition: centered square with ample transparent margin. Constraints: genuine transparent alpha; only the named note; no text, watermark, people, perfume bottles, branded packaging, scenery, background or unrelated objects.",
+    "sourceImageId": "exec-3d95d31f-78d1-4ed2-b4f9-10f2780ef8c3",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "نوتيلا",
+    "imageUrl": "assets/notes/generated/nwtyla.webp",
+    "noteKey": "nwtyla",
+    "noteAssetId": "origo-note-nwtyla",
+    "sha256": "9ebc164cb0bf8052732d12f3e78e12fb1c661b7d9d8f3cb03ed8adbf71ef1230",
+    "visualReview": "Reviewed reports/batch48-review.jpg against the locked prompt: exact named subject, species or material is clearly shown; no lettering, perfume bottle, branded packaging, scenery or unrelated objects.",
+    "contentHash": "87ce0d61f1c8f0fd3eefcf66230ff48ddd94bce3d804b144bc9f23e9789a0081",
+    "perceptualHash": "0407130519430b07",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 20146,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "hwrtshata",
+    "canonicalNameEn": "Horchata",
+    "positiveDescription": "A compact clear glass of creamy ivory rice horchata with a light cinnamon dusting on the surface, no straw or garnish.",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "other",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject Horchata. Subject: A compact clear glass of creamy ivory rice horchata with a light cinnamon dusting on the surface, no straw or garnish. Style: photorealistic catalog specimen. Composition: centered square with ample transparent margin. Constraints: genuine transparent alpha; only the named note; no text, watermark, people, perfume bottles, branded packaging, scenery, background or unrelated objects.",
+    "sourceImageId": "exec-13afa7b3-ad7c-429b-bd15-e646cc5aeb9e",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "هورتشاتا",
+    "imageUrl": "assets/notes/generated/hwrtshata.webp",
+    "noteKey": "hwrtshata",
+    "noteAssetId": "origo-note-hwrtshata",
+    "sha256": "31401d882b1d8a931b1c735a8d896d67825e36583fd253c423d9d2ab11a55e5d",
+    "visualReview": "Reviewed reports/batch48-review.jpg against the locked prompt: exact named subject, species or material is clearly shown; no lettering, perfume bottle, branded packaging, scenery or unrelated objects.",
+    "contentHash": "5449a6048fee104edd4a3be437cc825e6958023e628ba937b9d715318f53983a",
+    "perceptualHash": "055d793979796921",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 15730,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "thwja-shjrh-alhyah",
+    "canonicalNameEn": "Thuja tree of life",
+    "positiveDescription": "A fresh botanical sprig of Thuja occidentalis with flattened scale-like evergreen foliage and two small oval cones.",
+    "scientificName": null,
+    "entityType": "plant",
+    "plantPart": "other",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject Thuja tree of life. Subject: A fresh botanical sprig of Thuja occidentalis with flattened scale-like evergreen foliage and two small oval cones. Style: photorealistic catalog specimen. Composition: centered square with ample transparent margin. Constraints: genuine transparent alpha; only the named note; no text, watermark, people, perfume bottles, branded packaging, scenery, background or unrelated objects.",
+    "sourceImageId": "exec-4fb57f66-93f1-44ae-98a4-27331028453c",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "ثوجا - شجرة الحياة",
+    "imageUrl": "assets/notes/generated/thwja-shjrh-alhyah.webp",
+    "noteKey": "thwja-shjrh-alhyah",
+    "noteAssetId": "origo-note-thwja-shjrh-alhyah",
+    "sha256": "d856580304de8894ee46b4b73de3cc7be27c9d003173e83cd557d40e35d53c2b",
+    "visualReview": "Reviewed reports/batch48-review.jpg against the locked prompt: exact named subject, species or material is clearly shown; no lettering, perfume bottle, branded packaging, scenery or unrelated objects.",
+    "contentHash": "a6a35bc749221a69ddd9a35f5903dda2ccffede26c05804022fa77f0301797e6",
+    "perceptualHash": "0607032b2f061717",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 42512,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "apricot-wood",
+    "canonicalNameEn": "Apricot wood",
+    "positiveDescription": "A clean cut section of pale warm apricot-tree wood showing fine close grain and a thin reddish-brown bark edge, no fruit.",
+    "scientificName": null,
+    "entityType": "plant",
+    "plantPart": "wood",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject Apricot wood. Subject: A clean cut section of pale warm apricot-tree wood showing fine close grain and a thin reddish-brown bark edge, no fruit. Style: photorealistic catalog specimen. Composition: centered square with ample transparent margin. Constraints: genuine transparent alpha; only the named note; no text, watermark, people, perfume bottles, branded packaging, scenery, background or unrelated objects.",
+    "sourceImageId": "exec-6dad7030-1987-4e43-bd39-12ecfb6a1a75",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "خشب المشمش",
+    "imageUrl": "assets/notes/generated/apricot-wood.webp",
+    "noteKey": "apricot-wood",
+    "noteAssetId": "origo-note-apricot-wood",
+    "sha256": "34621324da69793ba22dcd6032624a2147d7109ef48724f26ba7ef08ea7477d2",
+    "visualReview": "Reviewed reports/batch48-review.jpg against the locked prompt: exact named subject, species or material is clearly shown; no lettering, perfume bottle, branded packaging, scenery or unrelated objects.",
+    "contentHash": "307cbdfc08919b1386e622ca09953b201f575ecb8652e59de1059b23214fc01e",
+    "perceptualHash": "0633198d4c46130b",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 23480,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "ghaf-tree",
+    "canonicalNameEn": "Ghaf tree",
+    "positiveDescription": "A young Prosopis cineraria desert tree branch with fine bipinnate green leaves and a few slender pale pods, botanically accurate.",
+    "scientificName": null,
+    "entityType": "plant",
+    "plantPart": "other",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject Ghaf tree. Subject: A young Prosopis cineraria desert tree branch with fine bipinnate green leaves and a few slender pale pods, botanically accurate. Style: photorealistic catalog specimen. Composition: centered square with ample transparent margin. Constraints: genuine transparent alpha; only the named note; no text, watermark, people, perfume bottles, branded packaging, scenery, background or unrelated objects.",
+    "sourceImageId": "exec-b6c9ae5f-0c0c-4b13-8bfb-2173d0ba3c1a",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "شجرة الغاف",
+    "imageUrl": "assets/notes/generated/ghaf-tree.webp",
+    "noteKey": "ghaf-tree",
+    "noteAssetId": "origo-note-ghaf-tree",
+    "sha256": "c57a0e715686d0cfbd13ba3936a6224403604169f98b2da2d3b1e851e766cd99",
+    "visualReview": "Reviewed reports/batch48-review.jpg against the locked prompt: exact named subject, species or material is clearly shown; no lettering, perfume bottle, branded packaging, scenery or unrelated objects.",
+    "contentHash": "12f9c167238a18a2a1efa7aad747a03130653e9076d2267bf5f0566c173b6d93",
+    "perceptualHash": "050723354e692522",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 45566,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "incienso",
+    "canonicalNameEn": "Incense resin",
+    "positiveDescription": "Several irregular translucent golden-brown frankincense resin tears with natural matte crystalline surfaces, no smoke or burner.",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "other",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject Incense resin. Subject: Several irregular translucent golden-brown frankincense resin tears with natural matte crystalline surfaces, no smoke or burner. Style: photorealistic catalog specimen. Composition: centered square with ample transparent margin. Constraints: genuine transparent alpha; only the named note; no text, watermark, people, perfume bottles, branded packaging, scenery, background or unrelated objects.",
+    "sourceImageId": "exec-d178f1d3-333c-416d-9301-e6d6ac3bb8b1",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "بخور",
+    "imageUrl": "assets/notes/generated/incienso.webp",
+    "noteKey": "incienso",
+    "noteAssetId": "origo-note-incienso",
+    "sha256": "9dd9930d33c952d81b3304a2987a522d4903020312df8803e5f99cd26a3dbc87",
+    "visualReview": "Reviewed reports/batch48-review.jpg against the locked prompt: exact named subject, species or material is clearly shown; no lettering, perfume bottle, branded packaging, scenery or unrelated objects.",
+    "contentHash": "1027fab1bb3b68d579d78614529978f607e6289b705b11b987146c0dd0121a63",
+    "perceptualHash": "03031717090b0b0e",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 22244,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "kowhai",
+    "canonicalNameEn": "Kōwhai flower",
+    "positiveDescription": "A botanical spray of New Zealand kōwhai with hanging golden-yellow tubular pea flowers and small pinnate green leaves.",
+    "scientificName": null,
+    "entityType": "plant",
+    "plantPart": "flower",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject Kōwhai flower. Subject: A botanical spray of New Zealand kōwhai with hanging golden-yellow tubular pea flowers and small pinnate green leaves. Style: photorealistic catalog specimen. Composition: centered square with ample transparent margin. Constraints: genuine transparent alpha; only the named note; no text, watermark, people, perfume bottles, branded packaging, scenery, background or unrelated objects.",
+    "sourceImageId": "exec-deed6a2b-6732-4d55-a659-8d36f9eb9aa2",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "كوهـاي",
+    "imageUrl": "assets/notes/generated/kowhai.webp",
+    "noteKey": "kowhai",
+    "noteAssetId": "origo-note-kowhai",
+    "sha256": "fe27fa29e06b3ac922827428729d75d3da3c5b96996e9a71311405bbf25ac7b8",
+    "visualReview": "Reviewed reports/batch48-review.jpg against the locked prompt: exact named subject, species or material is clearly shown; no lettering, perfume bottle, branded packaging, scenery or unrelated objects.",
+    "contentHash": "034258f10e3a5c5b8d354b6169e5fe5160affbc0ab830410803d9cd5d5429b02",
+    "perceptualHash": "07171323272b63e6",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 37174,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "taiwan-incense-cedar",
+    "canonicalNameEn": "Taiwan incense cedar",
+    "positiveDescription": "A botanical sprig of Calocedrus formosana with flattened glossy dark-green scale foliage and one small woody cone.",
+    "scientificName": null,
+    "entityType": "plant",
+    "plantPart": "other",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject Taiwan incense cedar. Subject: A botanical sprig of Calocedrus formosana with flattened glossy dark-green scale foliage and one small woody cone. Style: photorealistic catalog specimen. Composition: centered square with ample transparent margin. Constraints: genuine transparent alpha; only the named note; no text, watermark, people, perfume bottles, branded packaging, scenery, background or unrelated objects.",
+    "sourceImageId": "exec-0f16d4d5-9175-4c51-a164-8d82fd43294d",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "أرز البخور التايواني",
+    "imageUrl": "assets/notes/generated/taiwan-incense-cedar.webp",
+    "noteKey": "taiwan-incense-cedar",
+    "noteAssetId": "origo-note-taiwan-incense-cedar",
+    "sha256": "27b8a91277c14ce53252ba9ae6082ce095990858a2b000436f7505578b3cfb75",
+    "visualReview": "Reviewed reports/batch48-review.jpg against the locked prompt: exact named subject, species or material is clearly shown; no lettering, perfume bottle, branded packaging, scenery or unrelated objects.",
+    "contentHash": "cb352163a43769264e7c3a1ffcc370929ff731e044db814cd4435b173ffeb45c",
+    "perceptualHash": "07071d37270d0f0c",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 36856,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "z11tm",
+    "canonicalNameEn": "Z11 woody aroma material",
+    "positiveDescription": "Several clean translucent amber-beige synthetic aroma resin crystals representing the woody amber molecule Z11, laboratory material without equipment.",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "other",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject Z11 woody aroma material. Subject: Several clean translucent amber-beige synthetic aroma resin crystals representing the woody amber molecule Z11, laboratory material without equipment. Style: photorealistic catalog specimen. Composition: centered square with ample transparent margin. Constraints: genuine transparent alpha; only the named note; no text, watermark, people, perfume bottles, branded packaging, scenery, background or unrelated objects.",
+    "sourceImageId": "exec-55d778f7-b200-4edb-bd27-307d0b6e6206",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "زي 11",
+    "imageUrl": "assets/notes/generated/z11tm.webp",
+    "noteKey": "z11tm",
+    "noteAssetId": "origo-note-z11tm",
+    "sha256": "8db4eeeff23b58eea5bf3e49e549f19ac5c26748792d35f1494bd5b0130513ab",
+    "visualReview": "Reviewed reports/batch48-review.jpg against the locked prompt: exact named subject, species or material is clearly shown; no lettering, perfume bottle, branded packaging, scenery or unrelated objects.",
+    "contentHash": "dc7e23b0e0c98d35408414d813c2cfb89f8b78274c69b938e6811abdcfada980",
+    "perceptualHash": "0606072f1b170f06",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 23538,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "akhshab-albtwla",
+    "canonicalNameEn": "Birch wood",
+    "positiveDescription": "Two clean pieces of pale birch wood with fine grain and distinctive white papery bark with dark horizontal markings.",
+    "scientificName": null,
+    "entityType": "plant",
+    "plantPart": "wood",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject Birch wood. Subject: Two clean pieces of pale birch wood with fine grain and distinctive white papery bark with dark horizontal markings. Style: photorealistic catalog specimen. Composition: centered square with ample transparent margin. Constraints: genuine transparent alpha; only the named note; no text, watermark, people, perfume bottles, branded packaging, scenery, background or unrelated objects.",
+    "sourceImageId": "exec-b6325b79-3e21-41df-bfec-c1f3bb37b54d",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "أخشاب البتولا",
+    "imageUrl": "assets/notes/generated/akhshab-albtwla.webp",
+    "noteKey": "akhshab-albtwla",
+    "noteAssetId": "origo-note-akhshab-albtwla",
+    "sha256": "1286b52df52dffdf8a628837a100e4f9c6d35e94b2d51e4a3e2e26e4b2db7631",
+    "visualReview": "Reviewed reports/batch48-review.jpg against the locked prompt: exact named subject, species or material is clearly shown; no lettering, perfume bottle, branded packaging, scenery or unrelated objects.",
+    "contentHash": "c5bd8ce56aff141d42face9e19295171f60bb6685280b72d03617dc73760779f",
+    "perceptualHash": "030311231b0d3333",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 22792,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "akhshab-alghayak",
+    "canonicalNameEn": "Guaiac wood",
+    "positiveDescription": "Two dense dark olive-brown guaiac wood chips with close interlocked grain and one fresh cut face.",
+    "scientificName": null,
+    "entityType": "plant",
+    "plantPart": "wood",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject Guaiac wood. Subject: Two dense dark olive-brown guaiac wood chips with close interlocked grain and one fresh cut face. Style: photorealistic catalog specimen. Composition: centered square with ample transparent margin. Constraints: genuine transparent alpha; only the named note; no text, watermark, people, perfume bottles, branded packaging, scenery, background or unrelated objects.",
+    "sourceImageId": "exec-1a147728-557c-4e41-8422-7144e5b59a47",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "أخشاب الغاياك",
+    "imageUrl": "assets/notes/generated/akhshab-alghayak.webp",
+    "noteKey": "akhshab-alghayak",
+    "noteAssetId": "origo-note-akhshab-alghayak",
+    "sha256": "360abd2da886164461a8b768be9dfdfde722be30cb2ac9649a9d384b6fa3c7c6",
+    "visualReview": "Reviewed reports/batch48-review.jpg against the locked prompt: exact named subject, species or material is clearly shown; no lettering, perfume bottle, branded packaging, scenery or unrelated objects.",
+    "contentHash": "c881339b7dd619a03fd543c613d6b365e4f92ff9c54f0d2a7b1ceff263d14eac",
+    "perceptualHash": "02030b170f2d6743",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 23674,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "akhshab-alflfl",
+    "canonicalNameEn": "Pepperwood",
+    "positiveDescription": "A small cut branch of pepperwood showing warm tan wood grain, dark bark and a few glossy lance-shaped green leaves.",
+    "scientificName": null,
+    "entityType": "plant",
+    "plantPart": "wood",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject Pepperwood. Subject: A small cut branch of pepperwood showing warm tan wood grain, dark bark and a few glossy lance-shaped green leaves. Style: photorealistic catalog specimen. Composition: centered square with ample transparent margin. Constraints: genuine transparent alpha; only the named note; no text, watermark, people, perfume bottles, branded packaging, scenery, background or unrelated objects.",
+    "sourceImageId": "exec-548afb58-1f43-47dd-b29e-0759c7c192db",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "أخشاب الفلفل",
+    "imageUrl": "assets/notes/generated/akhshab-alflfl.webp",
+    "noteKey": "akhshab-alflfl",
+    "noteAssetId": "origo-note-akhshab-alflfl",
+    "sha256": "35fde8c50ac4a97088ba2fb0f19849697b16c656f9a34d5c76fb1cec1977bd06",
+    "visualReview": "Reviewed reports/batch48-review.jpg against the locked prompt: exact named subject, species or material is clearly shown; no lettering, perfume bottle, branded packaging, scenery or unrelated objects.",
+    "contentHash": "609e4a8a4a6b62a66b0c369c3932e9eee7021850d3360db2e6d9e2a55c28dd89",
+    "perceptualHash": "02060c19374c2c24",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 21064,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "akhshab-alkshmyr",
+    "canonicalNameEn": "Cashmere wood accord",
+    "positiveDescription": "Several elegant pale beige and warm taupe abstract wood slivers with velvety matte fibrous surfaces representing cashmere wood perfume material.",
+    "scientificName": null,
+    "entityType": "plant",
+    "plantPart": "wood",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject Cashmere wood accord. Subject: Several elegant pale beige and warm taupe abstract wood slivers with velvety matte fibrous surfaces representing cashmere wood perfume material. Style: photorealistic catalog specimen. Composition: centered square with ample transparent margin. Constraints: genuine transparent alpha; only the named note; no text, watermark, people, perfume bottles, branded packaging, scenery, background or unrelated objects.",
+    "sourceImageId": "exec-a24c2310-5407-44e5-aa25-d4d6e6839fec",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "أخشاب الكشمير",
+    "imageUrl": "assets/notes/generated/akhshab-alkshmyr.webp",
+    "noteKey": "akhshab-alkshmyr",
+    "noteAssetId": "origo-note-akhshab-alkshmyr",
+    "sha256": "6d18c010c1d246b539b18769e4ed342d967994174998849b3dead38eb0515490",
+    "visualReview": "Reviewed reports/batch48-review.jpg against the locked prompt: exact named subject, species or material is clearly shown; no lettering, perfume bottle, branded packaging, scenery or unrelated objects.",
+    "contentHash": "c135886a6dc27802b3e5594650f8e513139fc7b748430f821c52ccd5ba8284e7",
+    "perceptualHash": "01331b0923061331",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 23144,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  }
+]

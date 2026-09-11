@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-09-11T08:39:42.790Z",
+  "generatedAt": "2026-09-11T09:14:11.263Z",
   "scope": "Library plus persisted note overrides; SQLite opened read-only. Visual semantics are not certified by filenames or hashes.",
   "notes": 1883,
   "products": 5,
-  "valid": 112,
-  "missing": 698,
+  "valid": 128,
+  "missing": 682,
   "duplicateGroups": 9,
   "needsReview": 1055,
   "duplicates": [
@@ -16160,13 +16160,13 @@
     {
       "canonicalKey": "msash-mthljh",
       "nameAr": "مصاصة مثلجة",
-      "nameEn": "مصاصة مثلجة",
+      "nameEn": "Ice pop",
       "sourceName": "مصاصة مثلجة",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/msash-mthljh.webp",
+      "filename": "msash-mthljh.webp",
+      "hash": "f373e82ac5e109dec918dcfb93db2b2c84e4be52ca3b89aae16c6ba317434aa9",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "مصاصة مثلجة"
       ]
@@ -16174,13 +16174,13 @@
     {
       "canonicalKey": "mlbs",
       "nameAr": "ملبس",
-      "nameEn": "ملبس",
+      "nameEn": "Sugar dragées",
       "sourceName": "ملبس",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/mlbs.webp",
+      "filename": "mlbs.webp",
+      "hash": "deffaefe25e72951ee14f0139b582aa17be30db9196d48f900e79efa39c134fc",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "ملبس"
       ]
@@ -16188,13 +16188,13 @@
     {
       "canonicalKey": "mylk-shyk",
       "nameAr": "ميلك شيك",
-      "nameEn": "ميلك شيك",
+      "nameEn": "Vanilla milkshake",
       "sourceName": "ميلك شيك",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/mylk-shyk.webp",
+      "filename": "mylk-shyk.webp",
+      "hash": "bc94669c135b66c837805e86a872b1b6603470c79c0aea01a63ccf93ddbbd440",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "ميلك شيك"
       ]
@@ -16202,13 +16202,13 @@
     {
       "canonicalKey": "nwtyla",
       "nameAr": "نوتيلا",
-      "nameEn": "نوتيلا",
+      "nameEn": "Hazelnut cocoa spread",
       "sourceName": "نوتيلا",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/nwtyla.webp",
+      "filename": "nwtyla.webp",
+      "hash": "9ebc164cb0bf8052732d12f3e78e12fb1c661b7d9d8f3cb03ed8adbf71ef1230",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "نوتيلا"
       ]
@@ -16216,13 +16216,13 @@
     {
       "canonicalKey": "hwrtshata",
       "nameAr": "هورتشاتا",
-      "nameEn": "هورتشاتا",
+      "nameEn": "Horchata",
       "sourceName": "هورتشاتا",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/hwrtshata.webp",
+      "filename": "hwrtshata.webp",
+      "hash": "31401d882b1d8a931b1c735a8d896d67825e36583fd253c423d9d2ab11a55e5d",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "هورتشاتا"
       ]
@@ -16244,13 +16244,13 @@
     {
       "canonicalKey": "thwja-shjrh-alhyah",
       "nameAr": "ثوجا - شجرة الحياة",
-      "nameEn": "ثوجا - شجرة الحياة",
+      "nameEn": "Thuja tree of life",
       "sourceName": "ثوجا - شجرة الحياة",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/thwja-shjrh-alhyah.webp",
+      "filename": "thwja-shjrh-alhyah.webp",
+      "hash": "d856580304de8894ee46b4b73de3cc7be27c9d003173e83cd557d40e35d53c2b",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "ثوجا - شجرة الحياة"
       ]
@@ -16258,13 +16258,13 @@
     {
       "canonicalKey": "apricot-wood",
       "nameAr": "خشب المشمش",
-      "nameEn": "Apricot Wood",
+      "nameEn": "Apricot wood",
       "sourceName": "Apricot Wood",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/apricot-wood.webp",
+      "filename": "apricot-wood.webp",
+      "hash": "34621324da69793ba22dcd6032624a2147d7109ef48724f26ba7ef08ea7477d2",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "Apricot Wood"
       ]
@@ -16274,11 +16274,11 @@
       "nameAr": "شجرة الغاف",
       "nameEn": "Ghaf tree",
       "sourceName": "Ghaf tree",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/ghaf-tree.webp",
+      "filename": "ghaf-tree.webp",
+      "hash": "c57a0e715686d0cfbd13ba3936a6224403604169f98b2da2d3b1e851e766cd99",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "Ghaf tree"
       ]
@@ -16286,13 +16286,13 @@
     {
       "canonicalKey": "incienso",
       "nameAr": "بخور",
-      "nameEn": "Incienso",
+      "nameEn": "Incense resin",
       "sourceName": "Incienso",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/incienso.webp",
+      "filename": "incienso.webp",
+      "hash": "9dd9930d33c952d81b3304a2987a522d4903020312df8803e5f99cd26a3dbc87",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "Incienso"
       ]
@@ -16300,13 +16300,13 @@
     {
       "canonicalKey": "kowhai",
       "nameAr": "كوهـاي",
-      "nameEn": "Kowhai",
+      "nameEn": "Kōwhai flower",
       "sourceName": "Kowhai",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/kowhai.webp",
+      "filename": "kowhai.webp",
+      "hash": "fe27fa29e06b3ac922827428729d75d3da3c5b96996e9a71311405bbf25ac7b8",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "Kowhai"
       ]
@@ -16314,13 +16314,13 @@
     {
       "canonicalKey": "taiwan-incense-cedar",
       "nameAr": "أرز البخور التايواني",
-      "nameEn": "Taiwan Incense-cedar",
+      "nameEn": "Taiwan incense cedar",
       "sourceName": "Taiwan Incense-cedar",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/taiwan-incense-cedar.webp",
+      "filename": "taiwan-incense-cedar.webp",
+      "hash": "27b8a91277c14ce53252ba9ae6082ce095990858a2b000436f7505578b3cfb75",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "Taiwan Incense-cedar"
       ]
@@ -16328,13 +16328,13 @@
     {
       "canonicalKey": "z11tm",
       "nameAr": "زي 11",
-      "nameEn": "Z11™",
+      "nameEn": "Z11 woody aroma material",
       "sourceName": "Z11™",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/z11tm.webp",
+      "filename": "z11tm.webp",
+      "hash": "8db4eeeff23b58eea5bf3e49e549f19ac5c26748792d35f1494bd5b0130513ab",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "Z11™"
       ]
@@ -16342,13 +16342,13 @@
     {
       "canonicalKey": "akhshab-albtwla",
       "nameAr": "أخشاب البتولا",
-      "nameEn": "أخشاب البتولا",
+      "nameEn": "Birch wood",
       "sourceName": "أخشاب البتولا",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/akhshab-albtwla.webp",
+      "filename": "akhshab-albtwla.webp",
+      "hash": "1286b52df52dffdf8a628837a100e4f9c6d35e94b2d51e4a3e2e26e4b2db7631",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "أخشاب البتولا"
       ]
@@ -16356,13 +16356,13 @@
     {
       "canonicalKey": "akhshab-alghayak",
       "nameAr": "أخشاب الغاياك",
-      "nameEn": "أخشاب الغاياك",
+      "nameEn": "Guaiac wood",
       "sourceName": "أخشاب الغاياك",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/akhshab-alghayak.webp",
+      "filename": "akhshab-alghayak.webp",
+      "hash": "360abd2da886164461a8b768be9dfdfde722be30cb2ac9649a9d384b6fa3c7c6",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "أخشاب الغاياك"
       ]
@@ -16370,13 +16370,13 @@
     {
       "canonicalKey": "akhshab-alflfl",
       "nameAr": "أخشاب الفلفل",
-      "nameEn": "أخشاب الفلفل",
+      "nameEn": "Pepperwood",
       "sourceName": "أخشاب الفلفل",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/akhshab-alflfl.webp",
+      "filename": "akhshab-alflfl.webp",
+      "hash": "35fde8c50ac4a97088ba2fb0f19849697b16c656f9a34d5c76fb1cec1977bd06",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "أخشاب الفلفل"
       ]
@@ -16384,13 +16384,13 @@
     {
       "canonicalKey": "akhshab-alkshmyr",
       "nameAr": "أخشاب الكشمير",
-      "nameEn": "أخشاب الكشمير",
+      "nameEn": "Cashmere wood accord",
       "sourceName": "أخشاب الكشمير",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/akhshab-alkshmyr.webp",
+      "filename": "akhshab-alkshmyr.webp",
+      "hash": "6d18c010c1d246b539b18769e4ed342d967994174998849b3dead38eb0515490",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "أخشاب الكشمير"
       ]
