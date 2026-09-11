@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-09-11T19:41:25.490Z",
+  "generatedAt": "2026-09-11T19:57:53.737Z",
   "scope": "Library plus persisted note overrides; SQLite opened read-only. Visual semantics are not certified by filenames or hashes.",
   "notes": 1883,
   "products": 5,
-  "valid": 1263,
-  "missing": 602,
+  "valid": 1279,
+  "missing": 586,
   "duplicateGroups": 9,
   "needsReview": 0,
   "duplicates": [
@@ -17566,13 +17566,13 @@
     {
       "canonicalKey": "khshb-alhdyd",
       "nameAr": "خشب الحديد",
-      "nameEn": "خشب الحديد",
+      "nameEn": "ironwood",
       "sourceName": "خشب الحديد",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/khshb-alhdyd.webp",
+      "filename": "khshb-alhdyd.webp",
+      "hash": "3ef0cc9f62856ce3624514569b7f3172c868c9cd6cbc2fd8c723d9f07430b98a",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "خشب الحديد"
       ]
@@ -17580,13 +17580,13 @@
     {
       "canonicalKey": "khshb-alhlm",
       "nameAr": "خشب الحلم",
-      "nameEn": "خشب الحلم",
+      "nameEn": "Dreamwood perfumery material",
       "sourceName": "خشب الحلم",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/khshb-alhlm.webp",
+      "filename": "khshb-alhlm.webp",
+      "hash": "ae53f97afdfec1f3611c7cd66b289ad88d16749d539049f87d0d6f8435d90ff2",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "خشب الحلم"
       ]
@@ -17594,13 +17594,13 @@
     {
       "canonicalKey": "khshb-aldytaks",
       "nameAr": "خشب الديتاكس",
-      "nameEn": "خشب الديتاكس",
+      "nameEn": "Ditax wood Detarium senegalense",
       "sourceName": "خشب الديتاكس",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/khshb-aldytaks.webp",
+      "filename": "khshb-aldytaks.webp",
+      "hash": "65a81c7ee2d0c6df706e98d976c004ebbe1695ffce5ea0dd07f35384b80469fc",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "خشب الديتاكس"
       ]
@@ -17608,13 +17608,13 @@
     {
       "canonicalKey": "khshb-aldhyb",
       "nameAr": "خشب الذئب",
-      "nameEn": "خشب الذئب",
+      "nameEn": "wolfwood fragrance accord",
       "sourceName": "خشب الذئب",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/khshb-aldhyb.webp",
+      "filename": "khshb-aldhyb.webp",
+      "hash": "ce8dc0af21b9b34dd7e81b5cf5b4e3fc86e79ca078e534a9366d4b9d6677aadd",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "خشب الذئب"
       ]
@@ -17622,13 +17622,13 @@
     {
       "canonicalKey": "khshb-alzan",
       "nameAr": "خشب الزان",
-      "nameEn": "خشب الزان",
+      "nameEn": "beech wood Fagus sylvatica",
       "sourceName": "خشب الزان",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/khshb-alzan.webp",
+      "filename": "khshb-alzan.webp",
+      "hash": "5eb0159d2e29cd8458876da9b17b447b16dee38fd5460a9ea2ef6c4fed586617",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "خشب الزان"
       ]
@@ -17636,13 +17636,13 @@
     {
       "canonicalKey": "khshb-alsatan",
       "nameAr": "خشب الساتان",
-      "nameEn": "خشب الساتان",
+      "nameEn": "satinwood",
       "sourceName": "خشب الساتان",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/khshb-alsatan.webp",
+      "filename": "khshb-alsatan.webp",
+      "hash": "b2db1dd69c6e16f8891b42f1ec654268e34b3fc510fbe78942059b824c2706a7",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "خشب الساتان"
       ]
@@ -17650,13 +17650,13 @@
     {
       "canonicalKey": "khshb-alsaj",
       "nameAr": "خشب الساج",
-      "nameEn": "خشب الساج",
+      "nameEn": "teak wood Tectona grandis",
       "sourceName": "خشب الساج",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/khshb-alsaj.webp",
+      "filename": "khshb-alsaj.webp",
+      "hash": "c2bef51497cc6d3d88e4d2f1eabf73fe678416c7ddb9eaf170af9158f2c421a8",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "خشب الساج"
       ]
@@ -17679,13 +17679,13 @@
     {
       "canonicalKey": "khshb-alsndl-alakhdr-albaraghwany",
       "nameAr": "خشب الصندل الأخضر الباراغواني",
-      "nameEn": "خشب الصندل الأخضر الباراغواني",
+      "nameEn": "Paraguayan green sandalwood Bulnesia sarmientoi",
       "sourceName": "خشب الصندل الأخضر الباراغواني",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/khshb-alsndl-alakhdr-albaraghwany.webp",
+      "filename": "khshb-alsndl-alakhdr-albaraghwany.webp",
+      "hash": "20e27c346ae54f3fa13ff8b94aed0302f8db74ae49e9e622a7fadae7ec3824c7",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "خشب الصندل الأخضر الباراغواني"
       ]
@@ -17693,13 +17693,13 @@
     {
       "canonicalKey": "khshb-alsndl-alhndy",
       "nameAr": "خشب الصندل الهندي",
-      "nameEn": "خشب الصندل الهندي",
+      "nameEn": "Indian sandalwood Santalum album",
       "sourceName": "خشب الصندل الهندي",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/khshb-alsndl-alhndy.webp",
+      "filename": "khshb-alsndl-alhndy.webp",
+      "hash": "75096c6b4550b78f92a7d914341a8309ea765dc9e9e26422c4033b02d05ccf58",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "خشب الصندل الهندي"
       ]
@@ -17707,13 +17707,13 @@
     {
       "canonicalKey": "khshb-alsndl-myswr",
       "nameAr": "خشب الصندل ميسور",
-      "nameEn": "خشب الصندل ميسور",
+      "nameEn": "Mysore sandalwood",
       "sourceName": "خشب الصندل ميسور",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/khshb-alsndl-myswr.webp",
+      "filename": "khshb-alsndl-myswr.webp",
+      "hash": "56e155f4b58c17e61d7e75c1c632b84910bedb2c915c1c07f67d61f140d13f50",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "خشب الصندل ميسور"
       ]
@@ -17721,13 +17721,13 @@
     {
       "canonicalKey": "khshb-alkyara",
       "nameAr": "خشب الكيارا",
-      "nameEn": "خشب الكيارا",
+      "nameEn": "Kyara agarwood",
       "sourceName": "خشب الكيارا",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/khshb-alkyara.webp",
+      "filename": "khshb-alkyara.webp",
+      "hash": "e6501089dce48233f5ec775224a86992934e639cce79bb5544385a912c95706b",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "خشب الكيارا"
       ]
@@ -17735,13 +17735,13 @@
     {
       "canonicalKey": "khshb-almskyt",
       "nameAr": "خشب المسكيت",
-      "nameEn": "خشب المسكيت",
+      "nameEn": "mesquite wood Prosopis",
       "sourceName": "خشب المسكيت",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/khshb-almskyt.webp",
+      "filename": "khshb-almskyt.webp",
+      "hash": "1a681814564ed1eb01231db23aabfbf8d8459e4dd52a482e941fe3526f40b4d8",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "خشب المسكيت"
       ]
@@ -17749,13 +17749,13 @@
     {
       "canonicalKey": "khshb-alwrd-albalysandr",
       "nameAr": "خشب الورد الباليساندر",
-      "nameEn": "خشب الورد الباليساندر",
+      "nameEn": "palisander rosewood",
       "sourceName": "خشب الورد الباليساندر",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/khshb-alwrd-albalysandr.webp",
+      "filename": "khshb-alwrd-albalysandr.webp",
+      "hash": "a7fc9e0e0defa7dc404776fc2d5aa8bb01da2537122fad0478031fde858481a7",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "خشب الورد الباليساندر"
       ]
@@ -17763,13 +17763,13 @@
     {
       "canonicalKey": "khshb-alwrd-albrazyly",
       "nameAr": "خشب الورد البرازيلي",
-      "nameEn": "خشب الورد البرازيلي",
+      "nameEn": "Brazilian rosewood Dalbergia nigra",
       "sourceName": "خشب الورد البرازيلي",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/khshb-alwrd-albrazyly.webp",
+      "filename": "khshb-alwrd-albrazyly.webp",
+      "hash": "db1f0be18ea81f0bd53e6e35ae54f4ba0279a80e16600ab3292baa581b3f880f",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "خشب الورد البرازيلي"
       ]
@@ -17777,13 +17777,13 @@
     {
       "canonicalKey": "khshb-alwrd-alkyny",
       "nameAr": "خشب الورد الكيني",
-      "nameEn": "خشب الورد الكيني",
+      "nameEn": "Kenyan rosewood",
       "sourceName": "خشب الورد الكيني",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/khshb-alwrd-alkyny.webp",
+      "filename": "khshb-alwrd-alkyny.webp",
+      "hash": "c767cb905936e0bd5375c94428acd61309d15ae1f1ec4251e9b0c3b9d88a04ce",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "خشب الورد الكيني"
       ]
@@ -17791,13 +17791,13 @@
     {
       "canonicalKey": "khshb-bambl",
       "nameAr": "خشب بامبل",
-      "nameEn": "خشب بامبل",
+      "nameEn": "Bumble wood fragrance material",
       "sourceName": "خشب بامبل",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/khshb-bambl.webp",
+      "filename": "khshb-bambl.webp",
+      "hash": "180609e40aaacd253bdfecb7aabeccc647e2f12d7a8df9e09dcf6387700999ea",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "خشب بامبل"
       ]
