@@ -5523,14 +5523,14 @@ function renderNotesLibrary() {
       </div>
       <div class="notes-page-stats">
         <div class="notes-page-stat"><strong>${formatNumber(library.notes.length)}</strong><span>${state.lang === "ar" ? "إجمالي النوتات" : "total notes"}</span></div>
-        <div class="notes-page-stat complete"><strong>${formatNumber(readyCount)}</strong><span>${state.lang === "ar" ? "صور معتمدة" : "approved artwork"}</span></div>
-        ${staffView ? `<div class="notes-page-stat pending"><strong>${formatNumber(pendingCount)}</strong><span>${state.lang === "ar" ? "بانتظار صورة" : "awaiting artwork"}</span></div>` : `<div class="notes-page-stat"><strong>${formatNumber(familyCards.length)}</strong><span>${state.lang === "ar" ? "عائلة عطرية" : "scent families"}</span></div>`}
+        <div class="notes-page-stat"><strong>${formatNumber(familyCards.length)}</strong><span>${state.lang === "ar" ? "عائلة عطرية" : "scent families"}</span></div>
       </div>
     </header>
-    <section class="notes-family-showcase" aria-label="${state.lang === "ar" ? "عائلات النوتات العطرية" : "Fragrance note families"}">
+    <div class="notes-family-heading"><h2>${state.lang === "ar" ? "العائلات العطرية" : "Fragrance families"}</h2><button data-action="filter-note-family" data-family="all">${state.lang === "ar" ? "عرض كل العائلات" : "View all families"} <span>←</span></button></div>
+    <section class="notes-family-showcase" id="notes-family-showcase" aria-label="${state.lang === "ar" ? "عائلات النوتات العطرية" : "Fragrance note families"}">
       ${familyCards.map(({ family, notes }) => `<button data-action="filter-note-family" data-family="${escapeHTML(family.id)}" style="--family-color:${escapeHTML(family.color)};--family-accent:${escapeHTML(family.accent)}">
         <span><img src="${escapeHTML(library.artwork(notes.find((note) => note.imageStatus === "ready") || { ...notes[0], image: "" }))}" alt="" loading="lazy" /></span>
-        <i>${notes.length}</i><b>${escapeHTML(familyLabel(family))}</b><small>${notes.length} ${state.lang === "ar" ? "نوتة" : "notes"}</small>
+        <b>${escapeHTML(familyLabel(family))}</b><small>${notes.length} ${state.lang === "ar" ? "نوتة" : "notes"}</small>
       </button>`).join("")}
     </section>
     <div class="notes-library-toolbar">
@@ -5564,6 +5564,7 @@ function renderNotesLibrary() {
     </div>
     ${result.total > result.items.length ? `<button class="button secondary-button notes-load-more" data-action="load-more-notes">
       ${state.lang === "ar" ? "عرض المزيد" : "Load more"} <span>＋</span></button>` : ""}`;
+  bindHorizontalRail($("#notes-family-showcase"));
   updateNotesMeta();
   $("#notes-library-search")?.focus({ preventScroll: true });
 }
@@ -12407,7 +12408,8 @@ function bindHorizontalRail(rail) {
     // A fresh physical press is intentional; only a click emitted without a
     // new pointerdown belongs to the preceding drag gesture.
     suppressClickUntil = 0;
-    if (event.target.closest(blockedStart) && !(rail.id === "home-benefits-track" && event.target.closest(".benefit-slider-card"))) return;
+    const draggableCardRail = rail.id === "notes-family-showcase" || (rail.id === "home-benefits-track" && event.target.closest(".benefit-slider-card"));
+    if (event.target.closest(blockedStart) && !draggableCardRail) return;
     candidate = true;
     dragging = false;
     moved = false;

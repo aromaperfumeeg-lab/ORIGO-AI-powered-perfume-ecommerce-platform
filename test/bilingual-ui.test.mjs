@@ -317,6 +317,17 @@ test("fragrance notes library is public in desktop and mobile navigation", () =>
   assert.match(app, /if \(!staffView\) state\.notesImageFilter = "available"/);
 });
 
+test("public notes hero reports only notes and families while family cards form a draggable rail", () => {
+  const notesView = app.slice(app.indexOf("function renderNotesLibrary()"), app.indexOf("function renderNoteDetail("));
+  const hero = notesView.slice(notesView.indexOf('<div class="notes-page-stats">'), notesView.indexOf("</header>"));
+  assert.match(hero, /إجمالي النوتات/);
+  assert.match(hero, /عائلة عطرية/);
+  assert.doesNotMatch(hero, /صور معتمدة|بانتظار صورة|readyCount|pendingCount/);
+  assert.match(notesView, /id="notes-family-showcase"/);
+  assert.match(notesView, /bindHorizontalRail\(\$\("#notes-family-showcase"\)\)/);
+  assert.match(styles, /\.notes-family-showcase \{[\s\S]*?display: flex;[\s\S]*?overflow-x: auto;/);
+});
+
 test("product details lead with saved alternative and similar fragrance names", () => {
   assert.match(app, /const relationshipDetails = \[[\s\S]*?"العطر البديل"[\s\S]*?configuredRelationshipName\("alternativeIds"\)[\s\S]*?"العطر المشابه"[\s\S]*?configuredRelationshipName\("similarProductIds"\)/);
   assert.match(app, /const identityDetails = \[\s*\.\.\.relationshipDetails,/);
