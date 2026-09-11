@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-09-11T10:09:35.669Z",
+  "generatedAt": "2026-09-11T11:01:06.894Z",
   "scope": "Library plus persisted note overrides; SQLite opened read-only. Visual semantics are not certified by filenames or hashes.",
   "notes": 1883,
   "products": 5,
-  "valid": 1215,
-  "missing": 650,
+  "valid": 1231,
+  "missing": 634,
   "duplicateGroups": 9,
   "needsReview": 0,
   "duplicates": [
@@ -16862,13 +16862,13 @@
     {
       "canonicalKey": "alarzyh",
       "nameAr": "الأرزية",
-      "nameEn": "الأرزية",
+      "nameEn": "Cedrus atlantica cedarwood",
       "sourceName": "الأرزية",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alarzyh.webp",
+      "filename": "alarzyh.webp",
+      "hash": "5ffb45dc2324c93b4932fdef8e30d9bd7499cfbc90c125b51eab2182f992bc17",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الأرزية"
       ]
@@ -16876,13 +16876,13 @@
     {
       "canonicalKey": "alamyrys",
       "nameAr": "الأميريس",
-      "nameEn": "الأميريس",
+      "nameEn": "Amyris balsamifera wood",
       "sourceName": "الأميريس",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alamyrys.webp",
+      "filename": "alamyrys.webp",
+      "hash": "9e0692d0c5c987e55483b77c60f62109a8573a875186820f36243f38d66c9558",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الأميريس"
       ]
@@ -16890,13 +16890,13 @@
     {
       "canonicalKey": "alawkalybtws",
       "nameAr": "الأوكاليبتوس",
-      "nameEn": "الأوكاليبتوس",
+      "nameEn": "Eucalyptus globulus",
       "sourceName": "الأوكاليبتوس",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alawkalybtws.webp",
+      "filename": "alawkalybtws.webp",
+      "hash": "97b67169c6820ff4416e4dcbb268ab861359b3a638077bf1dfd3b7129a646f8b",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الأوكاليبتوس"
       ]
@@ -16904,13 +16904,13 @@
     {
       "canonicalKey": "alashnh",
       "nameAr": "الاشنة",
-      "nameEn": "الاشنة",
+      "nameEn": "oakmoss lichen Evernia prunastri",
       "sourceName": "الاشنة",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alashnh.webp",
+      "filename": "alashnh.webp",
+      "hash": "22e7d4d1b647f7d9c0267d570f78b08635ab1702934aa3b6dc3245d146d192b1",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الاشنة"
       ]
@@ -16933,13 +16933,13 @@
     {
       "canonicalKey": "albambw",
       "nameAr": "البامبو",
-      "nameEn": "البامبو",
+      "nameEn": "bamboo",
       "sourceName": "البامبو",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/albambw.webp",
+      "filename": "albambw.webp",
+      "hash": "8ff9c24070ba81057a2fa3916c07ac6da20c627507b5f9b100e7b07c87700a88",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "البامبو"
       ]
@@ -16947,13 +16947,13 @@
     {
       "canonicalKey": "albawbab-shjr-astwayy",
       "nameAr": "الباوباب شجر إستوائي",
-      "nameEn": "الباوباب شجر إستوائي",
+      "nameEn": "baobab tree Adansonia digitata",
       "sourceName": "الباوباب شجر إستوائي",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/albawbab-shjr-astwayy.webp",
+      "filename": "albawbab-shjr-astwayy.webp",
+      "hash": "a38dd3c51f314b65f8f3f96666dff1347ce5897fe4ca9d20dbba5eec469260fa",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الباوباب شجر إستوائي"
       ]
@@ -16961,13 +16961,13 @@
     {
       "canonicalKey": "alblwt",
       "nameAr": "البلوط",
-      "nameEn": "البلوط",
+      "nameEn": "oak Quercus",
       "sourceName": "البلوط",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alblwt.webp",
+      "filename": "alblwt.webp",
+      "hash": "74bb161157ccff7321cb7ea0becbf254b39e316b9d08ce0d3466d0716a5766df",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "البلوط"
       ]
@@ -16975,13 +16975,13 @@
     {
       "canonicalKey": "altswja",
       "nameAr": "التسوجا",
-      "nameEn": "التسوجا",
+      "nameEn": "Tsuga hemlock conifer",
       "sourceName": "التسوجا",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/altswja.webp",
+      "filename": "altswja.webp",
+      "hash": "9244e862062dd2131b20697595bd781341c1ea1ec1004eaf433bedb36d3b405f",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "التسوجا"
       ]
@@ -16989,13 +16989,13 @@
     {
       "canonicalKey": "altnwb",
       "nameAr": "التنوب",
-      "nameEn": "التنوب",
+      "nameEn": "fir Abies",
       "sourceName": "التنوب",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/altnwb.webp",
+      "filename": "altnwb.webp",
+      "hash": "dd1b928145b432ffbc0a33e26c262bb0860ea6d3e3ebe233ec7733eb5d5b29ca",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "التنوب"
       ]
@@ -17003,13 +17003,13 @@
     {
       "canonicalKey": "alhwr-alrjraj",
       "nameAr": "الحور الرجراج",
-      "nameEn": "الحور الرجراج",
+      "nameEn": "quaking aspen Populus tremuloides",
       "sourceName": "الحور الرجراج",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alhwr-alrjraj.webp",
+      "filename": "alhwr-alrjraj.webp",
+      "hash": "7df18a67859e93e86e5d67d497cb38716ef6f9b20d3b887120cf5ef1bac2b41e",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الحور الرجراج"
       ]
@@ -17017,13 +17017,13 @@
     {
       "canonicalKey": "alkhshb-alaswd",
       "nameAr": "الخشب الأسود",
-      "nameEn": "الخشب الأسود",
+      "nameEn": "African blackwood Dalbergia melanoxylon",
       "sourceName": "الخشب الأسود",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alkhshb-alaswd.webp",
+      "filename": "alkhshb-alaswd.webp",
+      "hash": "ccc539bb052e697b7701ab3b4e24c5b6f6bc9d22c40541f77bfd452e71182f64",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الخشب الأسود"
       ]
@@ -17031,13 +17031,13 @@
     {
       "canonicalKey": "aldrdar",
       "nameAr": "الدردار",
-      "nameEn": "الدردار",
+      "nameEn": "elm Ulmus",
       "sourceName": "الدردار",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/aldrdar.webp",
+      "filename": "aldrdar.webp",
+      "hash": "143d7a9cbc15c781d020a410393444ad158b36b4bb8f4eb335c08e3af43467f3",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الدردار"
       ]
@@ -17045,13 +17045,13 @@
     {
       "canonicalKey": "alsaman",
       "nameAr": "السامان",
-      "nameEn": "السامان",
+      "nameEn": "rain tree Samanea saman",
       "sourceName": "السامان",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alsaman.webp",
+      "filename": "alsaman.webp",
+      "hash": "196d5e69e1fd4ef02281e37b564ff7bedca913b250ab30c6305699dda5112e11",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "السامان"
       ]
@@ -17059,13 +17059,13 @@
     {
       "canonicalKey": "alsrw-alazrq-alastraly",
       "nameAr": "السرو الأزرق الأسترالي",
-      "nameEn": "السرو الأزرق الأسترالي",
+      "nameEn": "Australian blue cypress Callitris intratropica",
       "sourceName": "السرو الأزرق الأسترالي",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alsrw-alazrq-alastraly.webp",
+      "filename": "alsrw-alazrq-alastraly.webp",
+      "hash": "18384c9e006f03c5522fc67310ec47a1e98cf2c615e3c653e1ee73ea1fb9370c",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "السرو الأزرق الأسترالي"
       ]
@@ -17073,13 +17073,13 @@
     {
       "canonicalKey": "alsrw-alkadhb",
       "nameAr": "السرو الكاذب",
-      "nameEn": "السرو الكاذب",
+      "nameEn": "false cypress Chamaecyparis",
       "sourceName": "السرو الكاذب",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alsrw-alkadhb.webp",
+      "filename": "alsrw-alkadhb.webp",
+      "hash": "482616f84e7a097cc293e48867eaabaebc77ce13620f3c72f57354da5cb400b5",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "السرو الكاذب"
       ]
@@ -17087,13 +17087,13 @@
     {
       "canonicalKey": "alskwyh-ashjar",
       "nameAr": "السكويه اشجار",
-      "nameEn": "السكويه اشجار",
+      "nameEn": "giant sequoia Sequoiadendron giganteum",
       "sourceName": "السكويه اشجار",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alskwyh-ashjar.webp",
+      "filename": "alskwyh-ashjar.webp",
+      "hash": "053cb8f93e0cff9ce41dd223a6e01d1c78def6564568030e1d4d909901181c2d",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "السكويه اشجار"
       ]
