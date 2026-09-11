@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-09-10T23:27:36.756Z",
+  "generatedAt": "2026-09-11T00:12:40.339Z",
   "scope": "Library plus persisted note overrides; SQLite opened read-only. Visual semantics are not certified by filenames or hashes.",
   "notes": 1883,
   "products": 5,
-  "valid": 80,
-  "missing": 730,
+  "valid": 96,
+  "missing": 714,
   "duplicateGroups": 9,
   "needsReview": 1055,
   "duplicates": [
@@ -15138,13 +15138,13 @@
     {
       "canonicalKey": "zfyr",
       "nameAr": "زفير",
-      "nameEn": "زفير",
+      "nameEn": "Zephyr marshmallow confection",
       "sourceName": "زفير",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/zfyr.webp",
+      "filename": "zfyr.webp",
+      "hash": "40d5dee1ccb6642f0a7ad33c75f21948560821148fe964ba4fea80271cf2c8c8",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "زفير"
       ]
@@ -15152,13 +15152,13 @@
     {
       "canonicalKey": "zhwr-mskrh",
       "nameAr": "زهور مسكرة",
-      "nameEn": "زهور مسكرة",
+      "nameEn": "Candied flowers",
       "sourceName": "زهور مسكرة",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/zhwr-mskrh.webp",
+      "filename": "zhwr-mskrh.webp",
+      "hash": "8e39be7ab48ee6fa1f6803b1dc356b3a61d68d5af814f034e7ef7e31b2562b2d",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "زهور مسكرة"
       ]
@@ -15180,13 +15180,13 @@
     {
       "canonicalKey": "skr-alnkhyl",
       "nameAr": "سكر النخيل",
-      "nameEn": "سكر النخيل",
+      "nameEn": "Palm sugar",
       "sourceName": "سكر النخيل",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/skr-alnkhyl.webp",
+      "filename": "skr-alnkhyl.webp",
+      "hash": "110a776e97edbeb1b032be5de50f5a81616a6eaa914a184e1d623a1ca0b2f069",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "سكر النخيل"
       ]
@@ -15208,13 +15208,13 @@
     {
       "canonicalKey": "skr-mhrwq",
       "nameAr": "سكر محروق",
-      "nameEn": "سكر محروق",
+      "nameEn": "Burnt sugar",
       "sourceName": "سكر محروق",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/skr-mhrwq.webp",
+      "filename": "skr-mhrwq.webp",
+      "hash": "42ce7b47ebb542639f9eabea50c7e4d800183bf5ae020d0bf2fba9dbb09d9a5d",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "سكر محروق"
       ]
@@ -15250,13 +15250,13 @@
     {
       "canonicalKey": "swrbyh",
       "nameAr": "سوربيه",
-      "nameEn": "سوربيه",
+      "nameEn": "Fruit sorbet",
       "sourceName": "سوربيه",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/swrbyh.webp",
+      "filename": "swrbyh.webp",
+      "hash": "661b8919de00c67b13fd86bd56129a4fc64a74cbaaabd4fe00967988e2853c78",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "سوربيه"
       ]
@@ -15264,13 +15264,13 @@
     {
       "canonicalKey": "swrbyh-alfwakh-alhmra",
       "nameAr": "سوربيه الفواكه الحمراء",
-      "nameEn": "سوربيه الفواكه الحمراء",
+      "nameEn": "Red berry sorbet",
       "sourceName": "سوربيه الفواكه الحمراء",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/swrbyh-alfwakh-alhmra.webp",
+      "filename": "swrbyh-alfwakh-alhmra.webp",
+      "hash": "a40ef586567099fe2026e6d2034cb2df89a8c2b66ee5007e8b19d61a1ebdc11d",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "سوربيه الفواكه الحمراء"
       ]
@@ -15278,13 +15278,13 @@
     {
       "canonicalKey": "swrbyh-qws-qzh",
       "nameAr": "سوربيه قوس قزح",
-      "nameEn": "سوربيه قوس قزح",
+      "nameEn": "Rainbow sorbet",
       "sourceName": "سوربيه قوس قزح",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/swrbyh-qws-qzh.webp",
+      "filename": "swrbyh-qws-qzh.webp",
+      "hash": "bfd8069a447dfcbf2c981273635295b8f1a423fa7866e00568cd6cb91cba209e",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "سوربيه قوس قزح"
       ]
@@ -15292,13 +15292,13 @@
     {
       "canonicalKey": "shrab-albyd",
       "nameAr": "شراب البيض",
-      "nameEn": "شراب البيض",
+      "nameEn": "Eggnog",
       "sourceName": "شراب البيض",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/shrab-albyd.webp",
+      "filename": "shrab-albyd.webp",
+      "hash": "0076e9d33e07068724e0d37f3e11151c9747d8c45c8219894aa92f337dbd72a7",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "شراب البيض"
       ]
@@ -15306,13 +15306,13 @@
     {
       "canonicalKey": "shrab-alskr",
       "nameAr": "شراب السكر",
-      "nameEn": "شراب السكر",
+      "nameEn": "Sugar syrup",
       "sourceName": "شراب السكر",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/shrab-alskr.webp",
+      "filename": "shrab-alskr.webp",
+      "hash": "837d655d028df14f40596e62e139dab1c80f875b5ec0bc02c8f3a2339bca282d",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "شراب السكر"
       ]
@@ -15320,13 +15320,13 @@
     {
       "canonicalKey": "shrab-alfrawlh",
       "nameAr": "شراب الفراولة",
-      "nameEn": "شراب الفراولة",
+      "nameEn": "Strawberry syrup",
       "sourceName": "شراب الفراولة",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/shrab-alfrawlh.webp",
+      "filename": "shrab-alfrawlh.webp",
+      "hash": "8433d7a8c9760c53ba6bf95fed929ea0c7ca14068b3e4ecb3a9a35be7e4a6741",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "شراب الفراولة"
       ]
@@ -15334,13 +15334,13 @@
     {
       "canonicalKey": "shrab-alqyqb",
       "nameAr": "شراب القيقب",
-      "nameEn": "شراب القيقب",
+      "nameEn": "Maple syrup",
       "sourceName": "شراب القيقب",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/shrab-alqyqb.webp",
+      "filename": "shrab-alqyqb.webp",
+      "hash": "6e0e09be3587e6c5bff06d2d5fd4c322cffd60b0d9a35741c7952dc54bee44eb",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "شراب القيقب"
       ]
@@ -15348,13 +15348,13 @@
     {
       "canonicalKey": "shrab-alkrz",
       "nameAr": "شراب الكرز",
-      "nameEn": "شراب الكرز",
+      "nameEn": "Cherry syrup",
       "sourceName": "شراب الكرز",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/shrab-alkrz.webp",
+      "filename": "shrab-alkrz.webp",
+      "hash": "556dafafcebe89ca929b7ce3143b6a724d2f7acadbb6dd316b27b8ecad16db73",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "شراب الكرز"
       ]
@@ -15362,13 +15362,13 @@
     {
       "canonicalKey": "shymalw",
       "nameAr": "شيمالو",
-      "nameEn": "شيمالو",
+      "nameEn": "Chamallow marshmallow",
       "sourceName": "شيمالو",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/shymalw.webp",
+      "filename": "shymalw.webp",
+      "hash": "8938bd998f8c5388f35cb7693c6e19d8ab3cc752d18f93de9b0db1af39b41588",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "شيمالو"
       ]
@@ -15376,13 +15376,13 @@
     {
       "canonicalKey": "slsh-alfanylya",
       "nameAr": "صلصة الفانيليا",
-      "nameEn": "صلصة الفانيليا",
+      "nameEn": "Vanilla sauce",
       "sourceName": "صلصة الفانيليا",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/slsh-alfanylya.webp",
+      "filename": "slsh-alfanylya.webp",
+      "hash": "bbf91098b6691afaaad5c368f8fa674a5e3586d9f04357450979bc9b28eae24b",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "صلصة الفانيليا"
       ]
@@ -15390,13 +15390,13 @@
     {
       "canonicalKey": "sws-alshwkwlath",
       "nameAr": "صوص الشوكولاتة",
-      "nameEn": "صوص الشوكولاتة",
+      "nameEn": "Chocolate sauce",
       "sourceName": "صوص الشوكولاتة",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/sws-alshwkwlath.webp",
+      "filename": "sws-alshwkwlath.webp",
+      "hash": "ce29a1df29ed89f81b563b1fe9923f98388df76144c153fb8f72621778ed808a",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "صوص الشوكولاتة"
       ]
@@ -15404,13 +15404,13 @@
     {
       "canonicalKey": "swflyh",
       "nameAr": "صوفليه",
-      "nameEn": "صوفليه",
+      "nameEn": "Soufflé",
       "sourceName": "صوفليه",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/swflyh.webp",
+      "filename": "swflyh.webp",
+      "hash": "6049d32c72190ceb5f82d3b6aa83e669e8e3958c92716a02c4bda3a503ff8cf2",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "صوفليه"
       ]
