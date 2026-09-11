@@ -70,7 +70,7 @@ test("product studio click passes through both asynchronous loaders exactly once
 
 test("home loads production storefront core without admin editor or finder runtimes", async () => {
   const [html, loader, core] = await Promise.all([read("../index.html"), read("../runtime-loader.js"), read("../chunks/storefront-core.min.js")]);
-  assert.match(html, /chunks\/storefront-core\.min\.js\?v=45/);
+  assert.match(html, /chunks\/storefront-core\.min\.js\?v=47/);
   assert.match(html, /runtime-loader\.js\?v=18/);
   assert.doesNotMatch(html, /<script[^>]+(?:admin-runtime|product-editor-runtime|storefront-settings-runtime|fragrance-finder-(?:engine|i18n)|fragrance-finder\.js)/);
   assert.doesNotMatch(core, /function settingsMarkup\(|function renderImportReview\(|function overviewMarkup\(/);
@@ -87,6 +87,21 @@ test("storefront navigation avoids artificial catalog waits and warms deferred k
   assert.match(deferred, /knowledgePromise = Promise\.all/);
   assert.match(deferred, /idle\(loadKnowledgeResources, 700\)/);
   assert.match(deferred, /addEventListener\("pointerdown"/);
+});
+
+test("shared fragrance note persistence stays in the storefront core", async () => {
+  const [core, editor] = await Promise.all([read("../chunks/storefront-core.min.js"), read("../chunks/product-editor-runtime.min.js")]);
+  assert.match(core, /function safelyPersistFragranceNotes\(/);
+  assert.doesNotMatch(editor, /function safelyPersistFragranceNotes\(/);
+});
+
+test("standalone routes skip homepage rendering and catalog filters preserve their UI state", async () => {
+  const source = await read("../app.js");
+  assert.match(source, /const standaloneStorefrontRoute = \/\^\\\/\(\?:perfume/);
+  assert.match(source, /if \(!standaloneStorefrontRoute\) \{[\s\S]*?renderHomeNavigation\(\)/);
+  assert.match(source, /function catalogFilterUiSnapshot\(holder\)/);
+  assert.match(source, /restoreCatalogFilterUi\(holder, snapshot\)/);
+  assert.match(source, /document\.body\.classList\.remove\("notes-route", "benefit-route", "benefits-route", "brands-route"\)/);
 });
 
 test("runtime chunks and their CSS exist and Hostinger copies the chunks tree", async () => {

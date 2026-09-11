@@ -309,6 +309,14 @@ test("customers get direct access to fragrance notes and fragrance groups", () =
   assert.match(app, /pdp-profile-section is-open/);
 });
 
+test("fragrance notes library is public in desktop and mobile navigation", () => {
+  assert.equal((index.match(/href="\/notes" data-action="open-notes"/g) || []).length >= 2, true);
+  const actions = app.slice(app.indexOf('if (action === "open-notes")'), app.indexOf('if (action === "notes-home")'));
+  assert.match(actions, /navigateNotes\(\)/);
+  assert.doesNotMatch(actions, /isStaffUser\(\)/);
+  assert.match(app, /if \(!staffView\) state\.notesImageFilter = "available"/);
+});
+
 test("product details lead with saved alternative and similar fragrance names", () => {
   assert.match(app, /const relationshipDetails = \[[\s\S]*?"العطر البديل"[\s\S]*?configuredRelationshipName\("alternativeIds"\)[\s\S]*?"العطر المشابه"[\s\S]*?configuredRelationshipName\("similarProductIds"\)/);
   assert.match(app, /const identityDetails = \[\s*\.\.\.relationshipDetails,/);

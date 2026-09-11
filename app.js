@@ -1552,6 +1552,22 @@ function scheduleStorefrontIdle(task, timeout = 2500) {
   return setTimeout(task, Math.min(timeout, 1200));
 }
 
+function safelyPersistFragranceNotes() {
+  try {
+    const value = JSON.stringify(window.ORIGOFragranceNotes?.getState?.() || {});
+    localStorage.setItem("origoFragranceNotesState", value);
+    return true;
+  } catch (error) {
+    if (error?.name === "QuotaExceededError" || /quota/i.test(String(error?.message || ""))) {
+      localStorage.removeItem("origoFragranceNotesState");
+      console.warn("[ORIGO NOTES STORAGE] Local note cache was cleared because it exceeded browser storage.");
+      return false;
+    }
+    console.warn("[ORIGO NOTES STORAGE]", error);
+    return false;
+  }
+}
+
 async function hydrateDeferredStorefront(total = 0) {
   const supplemental = await Promise.allSettled([
     api("/api/notes/state"),
@@ -4485,6 +4501,7 @@ function handleBenefitRoute({ replace = false } = {}) {
   $("#catalog-page").hidden = true;
   $("#notes-library-page").hidden = true;
   $("#benefits-page").hidden = true;
+  $("#brands-page").hidden = true;
   page.hidden = false;
   closeDrawers();
   $$(".overlay.open").forEach(closeOverlay);
@@ -4693,6 +4710,47 @@ function catalogFilterSection(key, title, content, open = false) {
   return `<section class="catalog-filter-section" data-filter-section="${key}"><button type="button" data-action="catalog-filter-accordion" aria-expanded="${open}"><b>${title}</b><i>⌃</i></button><div class="catalog-filter-panel"${open ? "" : " hidden"}>${content || `<small>${state.lang === "ar" ? "لا توجد خيارات متاحة" : "No options available"}</small>`}</div></section>`;
 }
 
+function catalogFilterUiSnapshot(holder) {
+  const sections = [...holder.querySelectorAll(".catalog-filter-section")];
+  const brandSearch = holder.querySelector("[data-catalog-brand-search]");
+  const scrollContainer = holder.closest(".catalog-filter-drawer") || holder;
+  return {
+    initialized: sections.length > 0,
+    openSections: new Set(sections.filter((section) => section.querySelector(":scope > button")?.getAttribute("aria-expanded") === "true").map((section) => section.dataset.filterSection)),
+    brandQuery: brandSearch?.value || "",
+    brandSearchFocused: document.activeElement === brandSearch,
+    brandSearchSelection: brandSearch ? [brandSearch.selectionStart, brandSearch.selectionEnd] : null,
+    scrollTop: scrollContainer.scrollTop
+  };
+}
+
+function restoreCatalogFilterUi(holder, snapshot) {
+  if (!snapshot.initialized) return;
+  holder.querySelectorAll(".catalog-filter-section").forEach((section) => {
+    const expanded = snapshot.openSections.has(section.dataset.filterSection);
+    const button = section.querySelector(":scope > button");
+    const panel = section.querySelector(":scope > .catalog-filter-panel");
+    button?.setAttribute("aria-expanded", String(expanded));
+    if (panel) panel.hidden = !expanded;
+  });
+  const brandSearch = holder.querySelector("[data-catalog-brand-search]");
+  if (brandSearch && snapshot.brandQuery) {
+    brandSearch.value = snapshot.brandQuery;
+    const normalized = ORIGOCatalog.normalize(snapshot.brandQuery);
+    brandSearch.closest(".catalog-filter-panel")?.querySelectorAll(".catalog-check").forEach((label) => {
+      label.hidden = !ORIGOCatalog.normalize(label.textContent).includes(normalized);
+    });
+  }
+  const scrollContainer = holder.closest(".catalog-filter-drawer") || holder;
+  requestAnimationFrame(() => {
+    scrollContainer.scrollTop = snapshot.scrollTop;
+    if (snapshot.brandSearchFocused && brandSearch) {
+      brandSearch.focus({ preventScroll: true });
+      if (snapshot.brandSearchSelection) brandSearch.setSelectionRange(...snapshot.brandSearchSelection);
+    }
+  });
+}
+
 function renderCatalogFilters() {
   const perfumeOnly = mergeStoreSettings(state.adminWorkspace.settings || {}).perfumeOnlyMode !== false;
   const products = state.products.filter((product) => (!perfumeOnly || product.category === "perfume") && (state.storefrontCategory === "all" || product.category === state.storefrontCategory));
@@ -4727,7 +4785,12 @@ function renderCatalogFilters() {
     catalogFilterSection("projection", state.lang === "ar" ? "الفوحان" : "Projection", catalogCheckboxes("projection", projection)),
     catalogFilterSection("rating", state.lang === "ar" ? "التقييم" : "Rating", catalogCheckboxes("rating", ratings))
   ].join("");
-  [$("#catalog-sidebar-filters"), $("#catalog-mobile-filters")].forEach((holder) => { if (holder) holder.innerHTML = markup; });
+  [$("#catalog-sidebar-filters"), $("#catalog-mobile-filters")].forEach((holder) => {
+    if (!holder) return;
+    const snapshot = catalogFilterUiSnapshot(holder);
+    holder.innerHTML = markup;
+    restoreCatalogFilterUi(holder, snapshot);
+  });
 }
 
 function catalogSortMarkup() {
@@ -4896,11 +4959,13 @@ function handleCatalogRoute({ replace = false } = {}) {
   } else {
     state.seoCatalogBrand=null;
   }
-  document.body.classList.remove("notes-route", "benefit-route", "brands-route");
+  document.body.classList.remove("notes-route", "benefit-route", "benefits-route", "brands-route");
   document.body.classList.add("catalog-route");
   page.hidden = false;
   $("#notes-library-page").hidden = true;
   $("#benefit-detail-page").hidden = true;
+  $("#benefits-page").hidden = true;
+  $("#brands-page").hidden = true;
   closeDrawers();
   $$(".overlay.open").forEach(closeOverlay);
   renderCatalog();
@@ -5432,6 +5497,8 @@ function restoreStoreMeta() {
 
 function renderNotesLibrary() {
   const library = window.ORIGOFragranceNotes;
+  const staffView = isStaffUser();
+  if (!staffView) state.notesImageFilter = "available";
   const readyCount = library.notes.filter((note) => note.imageStatus === "ready").length;
   const referenceCount = library.notes.filter((note) => note.imageStatus === "reference").length;
   const missingCount = library.notes.filter((note) => note.imageStatus === "missing").length;
@@ -5457,7 +5524,7 @@ function renderNotesLibrary() {
       <div class="notes-page-stats">
         <div class="notes-page-stat"><strong>${formatNumber(library.notes.length)}</strong><span>${state.lang === "ar" ? "إجمالي النوتات" : "total notes"}</span></div>
         <div class="notes-page-stat complete"><strong>${formatNumber(readyCount)}</strong><span>${state.lang === "ar" ? "صور معتمدة" : "approved artwork"}</span></div>
-        <div class="notes-page-stat pending"><strong>${formatNumber(pendingCount)}</strong><span>${state.lang === "ar" ? "بانتظار صورة" : "awaiting artwork"}</span></div>
+        ${staffView ? `<div class="notes-page-stat pending"><strong>${formatNumber(pendingCount)}</strong><span>${state.lang === "ar" ? "بانتظار صورة" : "awaiting artwork"}</span></div>` : `<div class="notes-page-stat"><strong>${formatNumber(familyCards.length)}</strong><span>${state.lang === "ar" ? "عائلة عطرية" : "scent families"}</span></div>`}
       </div>
     </header>
     <section class="notes-family-showcase" aria-label="${state.lang === "ar" ? "عائلات النوتات العطرية" : "Fragrance note families"}">
@@ -5469,12 +5536,12 @@ function renderNotesLibrary() {
     <div class="notes-library-toolbar">
       <label class="notes-library-search"><span>⌕</span><input id="notes-library-search" type="search"
         value="${escapeHTML(state.notesSearchQuery)}" placeholder="${state.lang === "ar" ? "ابحث: ورد، Oud، برغموت…" : "Search: Rose, Oud, Bergamot…"}" /></label>
-      <div class="notes-image-filters" role="group" aria-label="${state.lang === "ar" ? "حالة صور النوتات" : "Artwork status"}">
+      ${staffView ? `<div class="notes-image-filters" role="group" aria-label="${state.lang === "ar" ? "حالة صور النوتات" : "Artwork status"}">
         <button data-action="filter-note-images" data-images="available" class="${state.notesImageFilter === "available" ? "active" : ""}">${state.lang === "ar" ? "صور معتمدة" : "Artwork ready"} <small>${readyCount}</small></button>
         <button data-action="filter-note-images" data-images="all" class="${state.notesImageFilter === "all" ? "active" : ""}">${state.lang === "ar" ? "كل النوتات" : "All notes"} <small>${library.notes.length}</small></button>
         <button data-action="filter-note-images" data-images="reference" class="${state.notesImageFilter === "reference" ? "active" : ""}">${state.lang === "ar" ? "مراجع تحتاج إعادة توليد" : "References to regenerate"} <small>${referenceCount}</small></button>
         <button data-action="filter-note-images" data-images="missing" class="${state.notesImageFilter === "missing" ? "active" : ""}">${state.lang === "ar" ? "صور غير مضافة" : "Missing artwork"} <small>${missingCount}</small></button>
-      </div>
+      </div>` : ""}
       <div class="notes-family-filters" role="group" aria-label="${state.lang === "ar" ? "فلترة حسب العائلة" : "Filter by family"}">
         <button data-action="filter-note-family" data-family="all" class="${state.notesFamilyFilter === "all" ? "active" : ""}">${state.lang === "ar" ? "كل العائلات" : "All families"} <small>${library.notes.length}</small></button>
         ${families.map((family) => {
@@ -5564,10 +5631,12 @@ function handleNotesRoute({ replace = false } = {}) {
     if (!replace) restoreStoreMeta();
     return false;
   }
-  document.body.classList.remove("benefit-route", "catalog-route");
+  document.body.classList.remove("benefit-route", "benefits-route", "brands-route", "catalog-route");
   document.body.classList.add("notes-route");
   page.hidden = false;
   $("#benefit-detail-page").hidden = true;
+  $("#benefits-page").hidden = true;
+  $("#brands-page").hidden = true;
   $("#catalog-page").hidden = true;
   closeDrawers();
   $$(".overlay.open").forEach(closeOverlay);
@@ -8238,22 +8307,6 @@ function applyPerfumeBundleToEditor(form, normalized) {
   updateProductEditorPreview(form);
 }
 
-function safelyPersistFragranceNotes() {
-  try {
-    const value = JSON.stringify(window.ORIGOFragranceNotes?.getState?.() || {});
-    localStorage.setItem("origoFragranceNotesState", value);
-    return true;
-  } catch (error) {
-    if (error?.name === "QuotaExceededError" || /quota/i.test(String(error?.message || ""))) {
-      localStorage.removeItem("origoFragranceNotesState");
-      console.warn("[ORIGO NOTES STORAGE] Local note cache was cleared because it exceeded browser storage.");
-      return false;
-    }
-    console.warn("[ORIGO NOTES STORAGE]", error);
-    return false;
-  }
-}
-
 function productEditorStatus(form, type, title, detail = "", field = null) {
   const holder = form?.querySelector("[data-product-editor-status]");
   if (holder) {
@@ -9601,11 +9654,12 @@ document.addEventListener("click", async (event) => {
 
   if (action === "open-notes") {
     event.preventDefault();
-    if (isStaffUser()) navigateNotes();
+    closeDrawers();
+    toggleMobileMenu(false);
+    navigateNotes();
   }
   if (action === "open-note") {
     event.preventDefault();
-    if (!isStaffUser()) return;
     const overlay = actionElement.closest(".overlay");
     if (overlay) closeOverlay(overlay);
     navigateNotes(actionElement.dataset.slug);
@@ -12531,6 +12585,7 @@ window.ORIGOStore = {
 };
 checkoutFormMarkup = $("#checkout-overlay .checkout-grid").innerHTML;
 const directProductRoute = /^\/perfume\/[^/]+\/?$/i.test(location.pathname);
+const standaloneStorefrontRoute = /^\/(?:perfume(?:\/|$)|perfumes(?:\/|$)|search(?:\/|$)|brands(?:\/|$)|benefits(?:\/|$)|notes(?:\/|$)|alternatives(?:\/|$)|fragrance-finder(?:\/|$)|performance(?:\/|$)|cart(?:\/|$)|checkout(?:\/|$)|account(?:\/|$)|orders?(?:\/|$)|tracking?(?:\/|$)|login(?:\/|$)|register(?:\/|$)|profile(?:\/|$))/i.test(location.pathname);
 setupTheme();
 saveNavigationSnapshot();
 updateLanguage();
@@ -12542,14 +12597,14 @@ handleBenefitsRoute({ replace: true });
 handleNotesRoute({ replace: true });
 handleBrandsRoute({ replace: true });
 handleCatalogRoute({ replace: true });
-if (!directProductRoute) {
+if (!standaloneStorefrontRoute) {
   renderHomeNavigation();
   renderHomeHero();
   renderBrandCarousel();
   renderProducts($(".chip.active")?.dataset.filter || "all");
 }
 initializeMobileProductColumns();
-if (!directProductRoute) renderHomepageCommerce();
+if (!standaloneStorefrontRoute) renderHomepageCommerce();
 normalizeRenderedLatinDigits(document);
 latinDigitObserver.observe(document.documentElement, { childList:true, subtree:true });
 observeReveals();
