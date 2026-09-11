@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-09-11T09:47:29.181Z",
+  "generatedAt": "2026-09-11T10:09:35.669Z",
   "scope": "Library plus persisted note overrides; SQLite opened read-only. Visual semantics are not certified by filenames or hashes.",
   "notes": 1883,
   "products": 5,
-  "valid": 1199,
-  "missing": 666,
+  "valid": 1215,
+  "missing": 650,
   "duplicateGroups": 9,
   "needsReview": 0,
   "duplicates": [
@@ -16622,13 +16622,13 @@
     {
       "canonicalKey": "ashjar-alkhwkh",
       "nameAr": "أشجار الخوخ",
-      "nameEn": "أشجار الخوخ",
+      "nameEn": "Peach tree",
       "sourceName": "أشجار الخوخ",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/ashjar-alkhwkh.webp",
+      "filename": "ashjar-alkhwkh.webp",
+      "hash": "a78b91cd6f040e266bf6b7da333ad35769161ef47762a297e4feccc79b68aa8f",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "أشجار الخوخ"
       ]
@@ -16636,13 +16636,13 @@
     {
       "canonicalKey": "ashjar-alzytwn",
       "nameAr": "أشجار الزيتون",
-      "nameEn": "أشجار الزيتون",
+      "nameEn": "Olive tree",
       "sourceName": "أشجار الزيتون",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/ashjar-alzytwn.webp",
+      "filename": "ashjar-alzytwn.webp",
+      "hash": "3ddfed31030aa9b9e733154c9dc4bf235a4cf44fcb2d67b9fa6f646fd05c5ab6",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "أشجار الزيتون"
       ]
@@ -16650,13 +16650,13 @@
     {
       "canonicalKey": "ashjar-alsrw",
       "nameAr": "أشجار السرو",
-      "nameEn": "أشجار السرو",
+      "nameEn": "Cypress trees",
       "sourceName": "أشجار السرو",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/ashjar-alsrw.webp",
+      "filename": "ashjar-alsrw.webp",
+      "hash": "ac0a3f3208172f5806f607146b8183bde910639394fc569a6d20342ad02f2296",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "أشجار السرو"
       ]
@@ -16664,13 +16664,13 @@
     {
       "canonicalKey": "ashjar-alsnwbr",
       "nameAr": "أشجار الصنوبر",
-      "nameEn": "أشجار الصنوبر",
+      "nameEn": "Pine trees",
       "sourceName": "أشجار الصنوبر",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/ashjar-alsnwbr.webp",
+      "filename": "ashjar-alsnwbr.webp",
+      "hash": "b71c670744ee983e0f32c15d538893823d8a175021feb8e1d342e26b09719b57",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "أشجار الصنوبر"
       ]
@@ -16678,13 +16678,13 @@
     {
       "canonicalKey": "ashjar-alqyqb",
       "nameAr": "أشجار القيقب",
-      "nameEn": "أشجار القيقب",
+      "nameEn": "Maple trees",
       "sourceName": "أشجار القيقب",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/ashjar-alqyqb.webp",
+      "filename": "ashjar-alqyqb.webp",
+      "hash": "07ba0fc7c7a60b019f07ddfa5976ec16e18010190c77a57f3ad6d6419f674656",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "أشجار القيقب"
       ]
@@ -16692,13 +16692,13 @@
     {
       "canonicalKey": "ashjar-bylambra",
       "nameAr": "أشجار بيلامبرا",
-      "nameEn": "أشجار بيلامبرا",
+      "nameEn": "Bellambra tree",
       "sourceName": "أشجار بيلامبرا",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/ashjar-bylambra.webp",
+      "filename": "ashjar-bylambra.webp",
+      "hash": "71fa41a7847c787bc9efa4bc21d45b783ad341c13060dd1213656c993bb34cec",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "أشجار بيلامبرا"
       ]
@@ -16706,13 +16706,13 @@
     {
       "canonicalKey": "ashjar-jwz-alhnd",
       "nameAr": "أشجار جوز الهند",
-      "nameEn": "أشجار جوز الهند",
+      "nameEn": "Coconut tree",
       "sourceName": "أشجار جوز الهند",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/ashjar-jwz-alhnd.webp",
+      "filename": "ashjar-jwz-alhnd.webp",
+      "hash": "ddb6d7863044e10f13f8d24555444727a57331e853dad7bfd5789142b78918c1",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "أشجار جوز الهند"
       ]
@@ -16720,13 +16720,13 @@
     {
       "canonicalKey": "akyghalawwd",
       "nameAr": "أكيغالاوود",
-      "nameEn": "أكيغالاوود",
+      "nameEn": "Akigalawood accord",
       "sourceName": "أكيغالاوود",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/akyghalawwd.webp",
+      "filename": "akyghalawwd.webp",
+      "hash": "0ede006a6d94531d0fa75fc3fe83d5b7a6e386c08d00e67eb9ea798f86a5aefd",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "أكيغالاوود"
       ]
@@ -16734,13 +16734,13 @@
     {
       "canonicalKey": "ambr-ayfr",
       "nameAr": "أمبر إيفر",
-      "nameEn": "أمبر إيفر",
+      "nameEn": "Amber Ever accord",
       "sourceName": "أمبر إيفر",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/ambr-ayfr.webp",
+      "filename": "ambr-ayfr.webp",
+      "hash": "c7ccc010d58234035ee73e11958a7ce0ec4d0993551cee674469decb9b9929db",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "أمبر إيفر"
       ]
@@ -16748,13 +16748,13 @@
     {
       "canonicalKey": "ayshbynk-awkwtya-kwyksws",
       "nameAr": "إيشبينك، أوكوتيا كويكسوس",
-      "nameEn": "إيشبينك، أوكوتيا كويكسوس",
+      "nameEn": "Ishpingo Ocotea quixos",
       "sourceName": "إيشبينك، أوكوتيا كويكسوس",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/ayshbynk-awkwtya-kwyksws.webp",
+      "filename": "ayshbynk-awkwtya-kwyksws.webp",
+      "hash": "1b12668175922e00de3f84aa9566eba74522b3960b502663cff5e9f5228c5670",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "إيشبينك، أوكوتيا كويكسوس"
       ]
@@ -16762,13 +16762,13 @@
     {
       "canonicalKey": "ashjar-albslm-alkndyh",
       "nameAr": "اشجار البسلم الكنديه",
-      "nameEn": "اشجار البسلم الكنديه",
+      "nameEn": "Canadian balsam fir",
       "sourceName": "اشجار البسلم الكنديه",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/ashjar-albslm-alkndyh.webp",
+      "filename": "ashjar-albslm-alkndyh.webp",
+      "hash": "86cbd9bfd8ff7aeebceb29100312333bc586e36616226e333252fdf00cbf5b20",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "اشجار البسلم الكنديه"
       ]
@@ -16792,13 +16792,13 @@
     {
       "canonicalKey": "alakhshab-aljafh",
       "nameAr": "الأخشاب الجافة",
-      "nameEn": "الأخشاب الجافة",
+      "nameEn": "Dry woods",
       "sourceName": "الأخشاب الجافة",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alakhshab-aljafh.webp",
+      "filename": "alakhshab-aljafh.webp",
+      "hash": "b15c1f12706b244a7f79c839aec5508b984589bf344ccf4b7dbc498757a11722",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الأخشاب الجافة"
       ]
@@ -16806,13 +16806,13 @@
     {
       "canonicalKey": "alakhshab-alshfafh",
       "nameAr": "الأخشاب الشفافة",
-      "nameEn": "الأخشاب الشفافة",
+      "nameEn": "Transparent woods accord",
       "sourceName": "الأخشاب الشفافة",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alakhshab-alshfafh.webp",
+      "filename": "alakhshab-alshfafh.webp",
+      "hash": "3ca21d223569fdda02b2774eee0aa1ac98aceb406d15bb10a4af31262627bde3",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الأخشاب الشفافة"
       ]
@@ -16820,13 +16820,13 @@
     {
       "canonicalKey": "alakhshab-altafyh",
       "nameAr": "الأخشاب الطافية",
-      "nameEn": "الأخشاب الطافية",
+      "nameEn": "Driftwood",
       "sourceName": "الأخشاب الطافية",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alakhshab-altafyh.webp",
+      "filename": "alakhshab-altafyh.webp",
+      "hash": "f32008979ff7e02f6ac11019f7510a4e2d245c774c241f902f17972136bcadc9",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الأخشاب الطافية"
       ]
@@ -16834,13 +16834,13 @@
     {
       "canonicalKey": "alakhshab-almtfhmh",
       "nameAr": "الأخشاب المتفحمة",
-      "nameEn": "الأخشاب المتفحمة",
+      "nameEn": "Charred wood",
       "sourceName": "الأخشاب المتفحمة",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alakhshab-almtfhmh.webp",
+      "filename": "alakhshab-almtfhmh.webp",
+      "hash": "50d5d13ecfa2b1c34ce9574cdd979763500434b824c180a3668bbb57d6ab9ba4",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الأخشاب المتفحمة"
       ]
@@ -16848,13 +16848,13 @@
     {
       "canonicalKey": "alakhshab-alhndyh",
       "nameAr": "الأخشاب الهندية",
-      "nameEn": "الأخشاب الهندية",
+      "nameEn": "Indian woods",
       "sourceName": "الأخشاب الهندية",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alakhshab-alhndyh.webp",
+      "filename": "alakhshab-alhndyh.webp",
+      "hash": "860a34f2fe52bd56f828d9fa85e03569db10dc4bab6b54e688f21a2eb095c3cb",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الأخشاب الهندية"
       ]
