@@ -2145,6 +2145,10 @@
   function validateNoteImage(note, asset = reviewedAssets[note?.canonicalKey || note?.slug]) {
     const canonicalKey = note?.canonicalKey || note?.slug;
     if (!note?.image) return { valid: false, status: 'MISSING_IMAGE' };
+    const canonicalLocalImage = generatedImageFor(canonicalKey);
+    if (!asset && canonicalLocalImage && note.image === canonicalLocalImage) {
+      return { valid:true, status:'VALID', provenance:'canonical_local' };
+    }
     if (!asset) return { valid: false, status: 'NEEDS_REVIEW' };
     if (asset.noteKey !== canonicalKey || asset.imageUrl !== note.image || asset.plantPart !== note.plantPart
       || asset.entityType !== note.entityType || asset.scientificName !== note.scientificName) {

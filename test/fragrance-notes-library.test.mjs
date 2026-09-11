@@ -47,15 +47,17 @@ test("provides bilingual data, family metadata, and automatic artwork", () => {
   assert.equal(rose.familyId, "flowers");
   assert.equal(rose.position, "heart");
   assert.equal(library.artwork(rose), "/assets/notes/generated/rose.webp");
-  assert.equal(library.validateNoteImage(rose).valid, false);
-  assert.equal(rose.imageStatus, "reference");
+  assert.equal(library.validateNoteImage(rose).status, "VALID");
+  assert.equal(library.validateNoteImage(rose).provenance, "canonical_local");
+  assert.equal(rose.imageStatus, "ready");
 });
 
-test("canonical reference artwork remains visible while awaiting final review", () => {
+test("canonical local artwork stays visible and never re-enters regeneration", () => {
   for (const slug of ["bergamot", "grapefruit", "lemon", "orange", "mandarin", "powdered-sugar", "incense"]) {
     const note = library.find(slug);
-    assert.equal(note.imageStatus, "reference");
+    assert.equal(note.imageStatus, "ready");
     assert.equal(library.artwork(note), `/${note.image}`);
+    assert.equal(library.validateNoteImage(note).valid, true);
   }
   const reviewedDuplicateName = library.find("skr-bwdrh");
   assert.equal(reviewedDuplicateName.imageStatus, "ready");
