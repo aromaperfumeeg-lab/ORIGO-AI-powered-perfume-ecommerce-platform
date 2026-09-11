@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-09-11T00:12:40.339Z",
+  "generatedAt": "2026-09-11T08:39:42.790Z",
   "scope": "Library plus persisted note overrides; SQLite opened read-only. Visual semantics are not certified by filenames or hashes.",
   "notes": 1883,
   "products": 5,
-  "valid": 96,
-  "missing": 714,
+  "valid": 112,
+  "missing": 698,
   "duplicateGroups": 9,
   "needsReview": 1055,
   "duplicates": [
@@ -15474,13 +15474,13 @@
     {
       "canonicalKey": "ftyrh",
       "nameAr": "فطيرة",
-      "nameEn": "فطيرة",
+      "nameEn": "Sweet pie",
       "sourceName": "فطيرة",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/ftyrh.webp",
+      "filename": "ftyrh.webp",
+      "hash": "fd0758ec8fb93617622b2cd476deb15f6682d8babcd4c0d040ac327047f4c0cb",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "فطيرة"
       ]
@@ -15502,13 +15502,13 @@
     {
       "canonicalKey": "ftyrh-allymwn",
       "nameAr": "فطيرة الليمون",
-      "nameEn": "فطيرة الليمون",
+      "nameEn": "Lemon pie",
       "sourceName": "فطيرة الليمون",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/ftyrh-allymwn.webp",
+      "filename": "ftyrh-allymwn.webp",
+      "hash": "a44d4449f4884482393afc5b76e05c746bd6092fa1fc69fa3f5cf2695498b92f",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "فطيرة الليمون"
       ]
@@ -15530,13 +15530,13 @@
     {
       "canonicalKey": "ftyrh-jwzalhnd",
       "nameAr": "فطيرة جوزالهند",
-      "nameEn": "فطيرة جوزالهند",
+      "nameEn": "Coconut pie",
       "sourceName": "فطيرة جوزالهند",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/ftyrh-jwzalhnd.webp",
+      "filename": "ftyrh-jwzalhnd.webp",
+      "hash": "6cfd356ea26acadd2d90e1f59f65bdd18d009388c7c8c163ffd1e1fd1782e148",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "فطيرة جوزالهند"
       ]
@@ -15544,13 +15544,13 @@
     {
       "canonicalKey": "ftyrh-hlwh",
       "nameAr": "فطيرة حلوة",
-      "nameEn": "فطيرة حلوة",
+      "nameEn": "Sweet tart",
       "sourceName": "فطيرة حلوة",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/ftyrh-hlwh.webp",
+      "filename": "ftyrh-hlwh.webp",
+      "hash": "94d7e10aa092eabda972b657ebc47a83554ee47bd92f11ff95a1ec3e7eb00028",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "فطيرة حلوة"
       ]
@@ -15852,13 +15852,13 @@
     {
       "canonicalKey": "krymh-hamdh",
       "nameAr": "كريمة حامضة",
-      "nameEn": "كريمة حامضة",
+      "nameEn": "Sour cream",
       "sourceName": "كريمة حامضة",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/krymh-hamdh.webp",
+      "filename": "krymh-hamdh.webp",
+      "hash": "2b66f5c7ff410c80890e256cd15e53412e60ff16ab98a0e9de519c8a6c55a5a5",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "كريمة حامضة"
       ]
@@ -15866,13 +15866,13 @@
     {
       "canonicalKey": "kak-alarz",
       "nameAr": "كعك الأرز",
-      "nameEn": "كعك الأرز",
+      "nameEn": "Rice cakes",
       "sourceName": "كعك الأرز",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/kak-alarz.webp",
+      "filename": "kak-alarz.webp",
+      "hash": "f11318f1f5c0ab59fd896dc9e882df4ee6c7ab86a4aa222841100e81f72e03c9",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "كعك الأرز"
       ]
@@ -15894,13 +15894,13 @@
     {
       "canonicalKey": "kakh",
       "nameAr": "كعكة",
-      "nameEn": "كعكة",
+      "nameEn": "Layer cake",
       "sourceName": "كعكة",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/kakh.webp",
+      "filename": "kakh.webp",
+      "hash": "6111a54c1a31fc123f37ff76ac2f140d4886d2f3241daba3314ca84032b4860e",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "كعكة"
       ]
@@ -15936,13 +15936,13 @@
     {
       "canonicalKey": "kwzmwfrwt",
       "nameAr": "كوزموفروت",
-      "nameEn": "كوزموفروت",
+      "nameEn": "Cosmofruit confection",
       "sourceName": "كوزموفروت",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/kwzmwfrwt.webp",
+      "filename": "kwzmwfrwt.webp",
+      "hash": "94d2ee05482280165b5825fa53051f34931a366c1e8c16854a698888abd70878",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "كوزموفروت"
       ]
@@ -15950,13 +15950,13 @@
     {
       "canonicalKey": "kwkw-bals",
       "nameAr": "كوكو بالس",
-      "nameEn": "كوكو بالس",
+      "nameEn": "Coco Balls",
       "sourceName": "كوكو بالس",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/kwkw-bals.webp",
+      "filename": "kwkw-bals.webp",
+      "hash": "2f47748a785592f32ef580cd0a499af9bdc709c457b538721b1b524c33059519",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "كوكو بالس"
       ]
@@ -15964,13 +15964,13 @@
     {
       "canonicalKey": "lhm-alkhnzyr",
       "nameAr": "لحم الخنزير",
-      "nameEn": "لحم الخنزير",
+      "nameEn": "Cooked pork",
       "sourceName": "لحم الخنزير",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/lhm-alkhnzyr.webp",
+      "filename": "lhm-alkhnzyr.webp",
+      "hash": "4d8a37addf83a569b997e7a9403b30fc04b687ffd01783cc6806f07085a2af75",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "لحم الخنزير"
       ]
@@ -15978,13 +15978,13 @@
     {
       "canonicalKey": "lykwr-alshwkwlath-aldaknh",
       "nameAr": "ليكور الشوكولاتة الداكنة",
-      "nameEn": "ليكور الشوكولاتة الداكنة",
+      "nameEn": "Dark chocolate liqueur",
       "sourceName": "ليكور الشوكولاتة الداكنة",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/lykwr-alshwkwlath-aldaknh.webp",
+      "filename": "lykwr-alshwkwlath-aldaknh.webp",
+      "hash": "b0baf3063152b4880cfc84e88ab1857df4c2267271c02e035b1bf9cb48d213ee",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "ليكور الشوكولاتة الداكنة"
       ]
@@ -15992,13 +15992,13 @@
     {
       "canonicalKey": "lykywr-altfah",
       "nameAr": "ليكيور التفاح",
-      "nameEn": "ليكيور التفاح",
+      "nameEn": "Apple liqueur",
       "sourceName": "ليكيور التفاح",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/lykywr-altfah.webp",
+      "filename": "lykywr-altfah.webp",
+      "hash": "f89c2014ac0a788a73504cfdb658632b4287bc9af6b187575f293a5b97f44da7",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "ليكيور التفاح"
       ]
@@ -16034,13 +16034,13 @@
     {
       "canonicalKey": "makrwn",
       "nameAr": "ماكرون",
-      "nameEn": "ماكرون",
+      "nameEn": "French macaron",
       "sourceName": "ماكرون",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/makrwn.webp",
+      "filename": "makrwn.webp",
+      "hash": "326d268267789c9d8cdbe27df9c50eabb08b2dee802d8c6f2a938821534622bb",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "ماكرون"
       ]
@@ -16048,13 +16048,13 @@
     {
       "canonicalKey": "makrwn-altwt",
       "nameAr": "ماكرون التوت",
-      "nameEn": "ماكرون التوت",
+      "nameEn": "Berry macarons",
       "sourceName": "ماكرون التوت",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/makrwn-altwt.webp",
+      "filename": "makrwn-altwt.webp",
+      "hash": "39dd7877bea672fd48a355126942b871c5546318248170358b93292d8beaa6b3",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "ماكرون التوت"
       ]
@@ -16076,13 +16076,13 @@
     {
       "canonicalKey": "mrby-albrtqal",
       "nameAr": "مربى البرتقال",
-      "nameEn": "مربى البرتقال",
+      "nameEn": "Orange marmalade",
       "sourceName": "مربى البرتقال",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/mrby-albrtqal.webp",
+      "filename": "mrby-albrtqal.webp",
+      "hash": "0c1e9d174b1c2ac75490792b30bd29419b7525585e1a6eca330bd29d1f5495e0",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "مربى البرتقال"
       ]
@@ -16146,13 +16146,13 @@
     {
       "canonicalKey": "msash-albrtqal-balkrymh",
       "nameAr": "مصاصة البرتقال بالكريمة",
-      "nameEn": "مصاصة البرتقال بالكريمة",
+      "nameEn": "Orange cream lollipop",
       "sourceName": "مصاصة البرتقال بالكريمة",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/msash-albrtqal-balkrymh.webp",
+      "filename": "msash-albrtqal-balkrymh.webp",
+      "hash": "54b15cec4cbc37b1d0abc93db820de8572760a158072769c80fb3abf16a7b428",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "مصاصة البرتقال بالكريمة"
       ]
