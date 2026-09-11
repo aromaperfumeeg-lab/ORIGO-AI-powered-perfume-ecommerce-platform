@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-09-11T19:57:53.737Z",
+  "generatedAt": "2026-09-11T20:21:06.711Z",
   "scope": "Library plus persisted note overrides; SQLite opened read-only. Visual semantics are not certified by filenames or hashes.",
   "notes": 1883,
   "products": 5,
-  "valid": 1279,
-  "missing": 586,
+  "valid": 1295,
+  "missing": 570,
   "duplicateGroups": 9,
   "needsReview": 0,
   "duplicates": [
@@ -17805,13 +17805,13 @@
     {
       "canonicalKey": "khshb-bwdha",
       "nameAr": "خشب بوذا",
-      "nameEn": "خشب بوذا",
+      "nameEn": "Buddha wood Eremophila mitchellii",
       "sourceName": "خشب بوذا",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/khshb-bwdha.webp",
+      "filename": "khshb-bwdha.webp",
+      "hash": "097c8ae9bbc9e29e197eb3d5908a73d8866cd07f448d477a4dac65c317d0f171",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "خشب بوذا"
       ]
@@ -17819,13 +17819,13 @@
     {
       "canonicalKey": "khshb-syam",
       "nameAr": "خشب سيام",
-      "nameEn": "خشب سيام",
+      "nameEn": "Siam wood",
       "sourceName": "خشب سيام",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/khshb-syam.webp",
+      "filename": "khshb-syam.webp",
+      "hash": "64ea6170f13b77c529a6d3f26dc65391cfce3de968037da5d7fa4ff20dbd2040",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "خشب سيام"
       ]
@@ -17833,13 +17833,13 @@
     {
       "canonicalKey": "dartanwl",
       "nameAr": "دارتانول",
-      "nameEn": "دارتانول",
+      "nameEn": "Dartanol perfumery material",
       "sourceName": "دارتانول",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/dartanwl.webp",
+      "filename": "dartanwl.webp",
+      "hash": "7a45b27376fa7eaeb041ba5811de95a880a941c6c8b0a83e1ac6e2ce5caa64b6",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "دارتانول"
       ]
@@ -17847,13 +17847,13 @@
     {
       "canonicalKey": "dwky",
       "nameAr": "دوكي",
-      "nameEn": "دوكي",
+      "nameEn": "Douky aromatic wood",
       "sourceName": "دوكي",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/dwky.webp",
+      "filename": "dwky.webp",
+      "hash": "e4baee466e580789e1a7221d3f2fe041465ff54e0136f9f9398cba226b940467",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "دوكي"
       ]
@@ -17861,13 +17861,13 @@
     {
       "canonicalKey": "rafynala",
       "nameAr": "رافينالا",
-      "nameEn": "رافينالا",
+      "nameEn": "Ravenala madagascariensis",
       "sourceName": "رافينالا",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/rafynala.webp",
+      "filename": "rafynala.webp",
+      "hash": "438460a753e7d93bfaea0015afc596153c96cf569870395327d21b20cb44dce1",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "رافينالا"
       ]
@@ -17875,13 +17875,13 @@
     {
       "canonicalKey": "rafynsara",
       "nameAr": "رافينسارا",
-      "nameEn": "رافينسارا",
+      "nameEn": "Ravensara aromatica",
       "sourceName": "رافينسارا",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/rafynsara.webp",
+      "filename": "rafynsara.webp",
+      "hash": "f92ead7d1c9a0cc6dd963c4c58db7290f1ed65a17a3d15b53be36147aa95ef8e",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "رافينسارا"
       ]
@@ -17889,13 +17889,13 @@
     {
       "canonicalKey": "zbdh-alawd",
       "nameAr": "زبدة العود",
-      "nameEn": "زبدة العود",
+      "nameEn": "oud butter",
       "sourceName": "زبدة العود",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/zbdh-alawd.webp",
+      "filename": "zbdh-alawd.webp",
+      "hash": "5f5ef8afef9e14590a5d58b8263ff16ae42f60a4e778a181220ab00675691d85",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "زبدة العود"
       ]
@@ -17903,13 +17903,13 @@
     {
       "canonicalKey": "zhwr-takamaka",
       "nameAr": "زهور تاكاماكا",
-      "nameEn": "زهور تاكاماكا",
+      "nameEn": "tamanu Calophyllum inophyllum flowers",
       "sourceName": "زهور تاكاماكا",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/zhwr-takamaka.webp",
+      "filename": "zhwr-takamaka.webp",
+      "hash": "4cc4ac68910327535915a3b3860a8f753be98291e5c97e3ef8993d1212656ddb",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "زهور تاكاماكا"
       ]
@@ -17917,13 +17917,13 @@
     {
       "canonicalKey": "sasafras",
       "nameAr": "ساسافراس",
-      "nameEn": "ساسافراس",
+      "nameEn": "sassafras Sassafras albidum",
       "sourceName": "ساسافراس",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/sasafras.webp",
+      "filename": "sasafras.webp",
+      "hash": "9bfa124760e7b4f5c26cee6dbdbc7aeb4ab1af6c77d96a10e3f3d29c6b7644db",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "ساسافراس"
       ]
@@ -17931,13 +17931,13 @@
     {
       "canonicalKey": "sandalwrtm",
       "nameAr": "ساندالور™",
-      "nameEn": "ساندالور™",
+      "nameEn": "Sandalore perfumery molecule",
       "sourceName": "ساندالور™",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/sandalwrtm.webp",
+      "filename": "sandalwrtm.webp",
+      "hash": "5082204478bcca1cf50ec206c26400267b5003d70b2a886751514edd3416abc1",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "ساندالور™"
       ]
@@ -17945,13 +17945,13 @@
     {
       "canonicalKey": "syam",
       "nameAr": "سيام",
-      "nameEn": "سيام",
+      "nameEn": "Siam benzoin resin",
       "sourceName": "سيام",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/syam.webp",
+      "filename": "syam.webp",
+      "hash": "b29341b84e2eed7e4b02ed3c81f722cbcdd207a382d1efcfbd538404d9e58885",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "سيام"
       ]
@@ -17959,13 +17959,13 @@
     {
       "canonicalKey": "sylajynyla-tamarysyna",
       "nameAr": "سيلاجينيلا تاماريسينا",
-      "nameEn": "سيلاجينيلا تاماريسينا",
+      "nameEn": "Selaginella tamariscina",
       "sourceName": "سيلاجينيلا تاماريسينا",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/sylajynyla-tamarysyna.webp",
+      "filename": "sylajynyla-tamarysyna.webp",
+      "hash": "b8a393f08c07cbfebe87ef47d742ac6eb20f5e2b1cbccf17d32300419c3c907d",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "سيلاجينيلا تاماريسينا"
       ]
@@ -17973,13 +17973,13 @@
     {
       "canonicalKey": "shjr-alkrz",
       "nameAr": "شجر الكرز",
-      "nameEn": "شجر الكرز",
+      "nameEn": "cherry tree Prunus",
       "sourceName": "شجر الكرز",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/shjr-alkrz.webp",
+      "filename": "shjr-alkrz.webp",
+      "hash": "9315ec64e03f6897934d78635c6b43cebf7caa7bc657c69d9476cad05c5a8134",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "شجر الكرز"
       ]
@@ -17987,13 +17987,13 @@
     {
       "canonicalKey": "shjr-allwz",
       "nameAr": "شجر اللوز",
-      "nameEn": "شجر اللوز",
+      "nameEn": "almond tree Prunus dulcis",
       "sourceName": "شجر اللوز",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/shjr-allwz.webp",
+      "filename": "shjr-allwz.webp",
+      "hash": "a307bd5604778aec762ca7ed3a76ac2175e2def92be60ed0e841f2a118c4b868",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "شجر اللوز"
       ]
@@ -18001,13 +18001,13 @@
     {
       "canonicalKey": "shjrh-ayby-alwrdyh",
       "nameAr": "شجرة إيبي الوردية",
-      "nameEn": "شجرة إيبي الوردية",
+      "nameEn": "pink ipe tree Handroanthus impetiginosus",
       "sourceName": "شجرة إيبي الوردية",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/shjrh-ayby-alwrdyh.webp",
+      "filename": "shjrh-ayby-alwrdyh.webp",
+      "hash": "1711fd97242aef7a85f7a98451b3dea8e8a425a041c5b9829bed1bb6a3502cc6",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "شجرة إيبي الوردية"
       ]
@@ -18015,13 +18015,13 @@
     {
       "canonicalKey": "shjrh-alarjan",
       "nameAr": "شجرة الأرجان",
-      "nameEn": "شجرة الأرجان",
+      "nameEn": "argan tree Argania spinosa",
       "sourceName": "شجرة الأرجان",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/shjrh-alarjan.webp",
+      "filename": "shjrh-alarjan.webp",
+      "hash": "230b49225f22abb4f3e1e377bcd318b1c226b1ae8e2532e27e920a5139b86873",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "شجرة الأرجان"
       ]

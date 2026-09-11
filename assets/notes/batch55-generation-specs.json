@@ -1,0 +1,466 @@
+[
+  {
+    "canonicalKey": "khshb-bwdha",
+    "canonicalNameEn": "Buddha wood Eremophila mitchellii",
+    "positiveDescription": "a small split piece of Australian Buddha wood with deep brown resinous heartwood, fine wavy grain and pale bark edge",
+    "scientificName": null,
+    "entityType": "wood",
+    "plantPart": "wood",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject Buddha wood Eremophila mitchellii. Subject: a small split piece of Australian Buddha wood with deep brown resinous heartwood, fine wavy grain and pale bark edge. Style: high-end photorealistic botanical or material catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, morphology, material and natural color; only the named note; no backdrop, floor, scenery, frame, text, label, logo, trademark lettering, watermark, people, hands, perfume bottle, container, branded packaging or unrelated objects.",
+    "sourceImageId": "exec-4a992dbd-c93c-4179-9bb5-33bb18386cd3",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "خشب بوذا",
+    "imageUrl": "assets/notes/generated/khshb-bwdha.webp",
+    "noteKey": "khshb-bwdha",
+    "noteAssetId": "origo-note-khshb-bwdha",
+    "sha256": "097c8ae9bbc9e29e197eb3d5908a73d8866cd07f448d477a4dac65c317d0f171",
+    "visualReview": "Reviewed reports/batch55-review.jpg against the locked prompt: exact botanical, wood, resin or perfumery material is clearly shown; no lettering, perfume bottle, branded packaging, scenery or unrelated objects.",
+    "contentHash": "beb28a73ddd86772d693b7dc3d1fbb26d5168bc3fa563878e8bd513cc635d568",
+    "perceptualHash": "00010d733f270f06",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 25726,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "khshb-syam",
+    "canonicalNameEn": "Siam wood",
+    "positiveDescription": "a compact piece of warm reddish-golden Siamese aromatic wood with dark resin lines and rough tropical bark",
+    "scientificName": null,
+    "entityType": "wood",
+    "plantPart": "wood",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject Siam wood. Subject: a compact piece of warm reddish-golden Siamese aromatic wood with dark resin lines and rough tropical bark. Style: high-end photorealistic botanical or material catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, morphology, material and natural color; only the named note; no backdrop, floor, scenery, frame, text, label, logo, trademark lettering, watermark, people, hands, perfume bottle, container, branded packaging or unrelated objects.",
+    "sourceImageId": "exec-b51e56da-62e8-4cf6-825a-da44c8d75d13",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "خشب سيام",
+    "imageUrl": "assets/notes/generated/khshb-syam.webp",
+    "noteKey": "khshb-syam",
+    "noteAssetId": "origo-note-khshb-syam",
+    "sha256": "64ea6170f13b77c529a6d3f26dc65391cfce3de968037da5d7fa4ff20dbd2040",
+    "visualReview": "Reviewed reports/batch55-review.jpg against the locked prompt: exact botanical, wood, resin or perfumery material is clearly shown; no lettering, perfume bottle, branded packaging, scenery or unrelated objects.",
+    "contentHash": "5087ec74effaf353a1a324374ec7688bc8665035340c07dfba07792ea3cf551a",
+    "perceptualHash": "030b4965371b1e1c",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 26168,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "dartanwl",
+    "canonicalNameEn": "Dartanol perfumery material",
+    "positiveDescription": "a clean abstract cluster of pale creamy sandalwood-like waxy facets and smooth aromatic wood shavings representing Dartanol",
+    "scientificName": null,
+    "entityType": "synthetic accord",
+    "plantPart": "synthetic accord",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject Dartanol perfumery material. Subject: a clean abstract cluster of pale creamy sandalwood-like waxy facets and smooth aromatic wood shavings representing Dartanol. Style: high-end photorealistic botanical or material catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, morphology, material and natural color; only the named note; no backdrop, floor, scenery, frame, text, label, logo, trademark lettering, watermark, people, hands, perfume bottle, container, branded packaging or unrelated objects.",
+    "sourceImageId": "exec-7c53eba1-64c1-49ea-8a8f-80ed1dba0030",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "دارتانول",
+    "imageUrl": "assets/notes/generated/dartanwl.webp",
+    "noteKey": "dartanwl",
+    "noteAssetId": "origo-note-dartanwl",
+    "sha256": "7a45b27376fa7eaeb041ba5811de95a880a941c6c8b0a83e1ac6e2ce5caa64b6",
+    "visualReview": "Reviewed reports/batch55-review.jpg against the locked prompt: exact botanical, wood, resin or perfumery material is clearly shown; no lettering, perfume bottle, branded packaging, scenery or unrelated objects.",
+    "contentHash": "63b0a34d15864fc303c8025cb23215d9ba34a2a83fa68b7d5615421668033491",
+    "perceptualHash": "070b064501112523",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 23434,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "dwky",
+    "canonicalNameEn": "Douky aromatic wood",
+    "positiveDescription": "a natural dark honey-brown aromatic Douky wood chip with coarse fibrous grain and a small rugged bark edge",
+    "scientificName": null,
+    "entityType": "wood",
+    "plantPart": "wood",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject Douky aromatic wood. Subject: a natural dark honey-brown aromatic Douky wood chip with coarse fibrous grain and a small rugged bark edge. Style: high-end photorealistic botanical or material catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, morphology, material and natural color; only the named note; no backdrop, floor, scenery, frame, text, label, logo, trademark lettering, watermark, people, hands, perfume bottle, container, branded packaging or unrelated objects.",
+    "sourceImageId": "exec-8dd563db-25d0-47cb-8b1a-c6c7cd3bfa0f",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "دوكي",
+    "imageUrl": "assets/notes/generated/dwky.webp",
+    "noteKey": "dwky",
+    "noteAssetId": "origo-note-dwky",
+    "sha256": "e4baee466e580789e1a7221d3f2fe041465ff54e0136f9f9398cba226b940467",
+    "visualReview": "Reviewed reports/batch55-review.jpg against the locked prompt: exact botanical, wood, resin or perfumery material is clearly shown; no lettering, perfume bottle, branded packaging, scenery or unrelated objects.",
+    "contentHash": "61483bc5ad25fa0d678b3fe195a5676294ae7c477ca4fc71eb7e8eed2b64fde7",
+    "perceptualHash": "0101070d134f4e0c",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 20942,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "rafynala",
+    "canonicalNameEn": "Ravenala madagascariensis",
+    "positiveDescription": "a recognizable folded fan segment of broad glossy green traveler palm leaves with one short pale leaf stalk",
+    "scientificName": null,
+    "entityType": "leaf",
+    "plantPart": "leaf",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject Ravenala madagascariensis. Subject: a recognizable folded fan segment of broad glossy green traveler palm leaves with one short pale leaf stalk. Style: high-end photorealistic botanical or material catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, morphology, material and natural color; only the named note; no backdrop, floor, scenery, frame, text, label, logo, trademark lettering, watermark, people, hands, perfume bottle, container, branded packaging or unrelated objects.",
+    "sourceImageId": "exec-c66d60df-dfea-474c-a773-c213130761b0",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "رافينالا",
+    "imageUrl": "assets/notes/generated/rafynala.webp",
+    "noteKey": "rafynala",
+    "noteAssetId": "origo-note-rafynala",
+    "sha256": "438460a753e7d93bfaea0015afc596153c96cf569870395327d21b20cb44dce1",
+    "visualReview": "Reviewed reports/batch55-review.jpg against the locked prompt: exact botanical, wood, resin or perfumery material is clearly shown; no lettering, perfume bottle, branded packaging, scenery or unrelated objects.",
+    "contentHash": "d77e3762e1b710aab03f986612d7246cf614e883f05185de6f80fd3658caed62",
+    "perceptualHash": "060f0f070f070b0c",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 24882,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "rafynsara",
+    "canonicalNameEn": "Ravensara aromatica",
+    "positiveDescription": "a botanical Ravensara twig with glossy oval green leaves and several small round dark berries",
+    "scientificName": null,
+    "entityType": "leaf",
+    "plantPart": "leaf",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject Ravensara aromatica. Subject: a botanical Ravensara twig with glossy oval green leaves and several small round dark berries. Style: high-end photorealistic botanical or material catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, morphology, material and natural color; only the named note; no backdrop, floor, scenery, frame, text, label, logo, trademark lettering, watermark, people, hands, perfume bottle, container, branded packaging or unrelated objects.",
+    "sourceImageId": "exec-0a4e117d-acc3-47f4-97e4-b45ca49d849b",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "رافينسارا",
+    "imageUrl": "assets/notes/generated/rafynsara.webp",
+    "noteKey": "rafynsara",
+    "noteAssetId": "origo-note-rafynsara",
+    "sha256": "f92ead7d1c9a0cc6dd963c4c58db7290f1ed65a17a3d15b53be36147aa95ef8e",
+    "visualReview": "Reviewed reports/batch55-review.jpg against the locked prompt: exact botanical, wood, resin or perfumery material is clearly shown; no lettering, perfume bottle, branded packaging, scenery or unrelated objects.",
+    "contentHash": "eb7e28a3dfe02dea4f16acd4eef1077ee1c72f7206ac3ffef3ee6a0af13cf707",
+    "perceptualHash": "0363361311130f06",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 29896,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "zbdh-alawd",
+    "canonicalNameEn": "oud butter",
+    "positiveDescription": "a small soft mound of dense dark amber-brown oud butter balm with a satin waxy texture and one tiny agarwood chip pressed into it, no container",
+    "scientificName": null,
+    "entityType": "extract",
+    "plantPart": "extract",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject oud butter. Subject: a small soft mound of dense dark amber-brown oud butter balm with a satin waxy texture and one tiny agarwood chip pressed into it, no container. Style: high-end photorealistic botanical or material catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, morphology, material and natural color; only the named note; no backdrop, floor, scenery, frame, text, label, logo, trademark lettering, watermark, people, hands, perfume bottle, container, branded packaging or unrelated objects.",
+    "sourceImageId": "exec-4fd88233-bbe0-48aa-9f56-57896c279292",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "زبدة العود",
+    "imageUrl": "assets/notes/generated/zbdh-alawd.webp",
+    "noteKey": "zbdh-alawd",
+    "noteAssetId": "origo-note-zbdh-alawd",
+    "sha256": "5f5ef8afef9e14590a5d58b8263ff16ae42f60a4e778a181220ab00675691d85",
+    "visualReview": "Reviewed reports/batch55-review.jpg against the locked prompt: exact botanical, wood, resin or perfumery material is clearly shown; no lettering, perfume bottle, branded packaging, scenery or unrelated objects.",
+    "contentHash": "48769fd22556f1a06a39630cf98bea10fceb5148392220d89bd38f1df2635586",
+    "perceptualHash": "00060f2b13070f0e",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 24110,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "zhwr-takamaka",
+    "canonicalNameEn": "tamanu Calophyllum inophyllum flowers",
+    "positiveDescription": "a fresh cluster of delicate white tamanu flowers with golden yellow stamens and two glossy oval green leaves",
+    "scientificName": null,
+    "entityType": "flower",
+    "plantPart": "flower",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject tamanu Calophyllum inophyllum flowers. Subject: a fresh cluster of delicate white tamanu flowers with golden yellow stamens and two glossy oval green leaves. Style: high-end photorealistic botanical or material catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, morphology, material and natural color; only the named note; no backdrop, floor, scenery, frame, text, label, logo, trademark lettering, watermark, people, hands, perfume bottle, container, branded packaging or unrelated objects.",
+    "sourceImageId": "exec-0d10a9df-a090-44d8-9ee6-6009f4fea85d",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "زهور تاكاماكا",
+    "imageUrl": "assets/notes/generated/zhwr-takamaka.webp",
+    "noteKey": "zhwr-takamaka",
+    "noteAssetId": "origo-note-zhwr-takamaka",
+    "sha256": "4cc4ac68910327535915a3b3860a8f753be98291e5c97e3ef8993d1212656ddb",
+    "visualReview": "Reviewed reports/batch55-review.jpg against the locked prompt: exact botanical, wood, resin or perfumery material is clearly shown; no lettering, perfume bottle, branded packaging, scenery or unrelated objects.",
+    "contentHash": "ac4716e6339335b7f53b96461ec7f14e31fef7dc60e95c393a89b18068f19e1e",
+    "perceptualHash": "010713233f0e0b23",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 26454,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "sasafras",
+    "canonicalNameEn": "sassafras Sassafras albidum",
+    "positiveDescription": "a botanical sassafras twig showing three distinctive leaf shapes and a small piece of cinnamon-brown aromatic root bark",
+    "scientificName": null,
+    "entityType": "leaf and bark",
+    "plantPart": "leaf and bark",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject sassafras Sassafras albidum. Subject: a botanical sassafras twig showing three distinctive leaf shapes and a small piece of cinnamon-brown aromatic root bark. Style: high-end photorealistic botanical or material catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, morphology, material and natural color; only the named note; no backdrop, floor, scenery, frame, text, label, logo, trademark lettering, watermark, people, hands, perfume bottle, container, branded packaging or unrelated objects.",
+    "sourceImageId": "exec-380c8fa5-1847-44e1-a3cf-fa87998d3d7a",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "ساسافراس",
+    "imageUrl": "assets/notes/generated/sasafras.webp",
+    "noteKey": "sasafras",
+    "noteAssetId": "origo-note-sasafras",
+    "sha256": "9bfa124760e7b4f5c26cee6dbdbc7aeb4ab1af6c77d96a10e3f3d29c6b7644db",
+    "visualReview": "Reviewed reports/batch55-review.jpg against the locked prompt: exact botanical, wood, resin or perfumery material is clearly shown; no lettering, perfume bottle, branded packaging, scenery or unrelated objects.",
+    "contentHash": "a00eed94548a6b68cfa61e8ffc74629761baf3a38f832c2b7e8d34954aca79a5",
+    "perceptualHash": "07032b313b2dae0c",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 27214,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "sandalwrtm",
+    "canonicalNameEn": "Sandalore perfumery molecule",
+    "positiveDescription": "a refined abstract pale cream and honey-gold sandalwood-like crystalline wax facets with smooth woody curves representing Sandalore",
+    "scientificName": null,
+    "entityType": "synthetic accord",
+    "plantPart": "synthetic accord",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject Sandalore perfumery molecule. Subject: a refined abstract pale cream and honey-gold sandalwood-like crystalline wax facets with smooth woody curves representing Sandalore. Style: high-end photorealistic botanical or material catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, morphology, material and natural color; only the named note; no backdrop, floor, scenery, frame, text, label, logo, trademark lettering, watermark, people, hands, perfume bottle, container, branded packaging or unrelated objects.",
+    "sourceImageId": "exec-7fb58295-f575-4709-8b1d-2c5b2e9acafb",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "ساندالور™",
+    "imageUrl": "assets/notes/generated/sandalwrtm.webp",
+    "noteKey": "sandalwrtm",
+    "noteAssetId": "origo-note-sandalwrtm",
+    "sha256": "5082204478bcca1cf50ec206c26400267b5003d70b2a886751514edd3416abc1",
+    "visualReview": "Reviewed reports/batch55-review.jpg against the locked prompt: exact botanical, wood, resin or perfumery material is clearly shown; no lettering, perfume bottle, branded packaging, scenery or unrelated objects.",
+    "contentHash": "fc9cbb9b07a664077fd17ad8152c723672d06028f6767364033f18c9b9b93146",
+    "perceptualHash": "06131145458d1533",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 18552,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "syam",
+    "canonicalNameEn": "Siam benzoin resin",
+    "positiveDescription": "several warm amber-brown Siam benzoin resin tears with milky cream inclusions and one tiny bark fragment",
+    "scientificName": null,
+    "entityType": "resin",
+    "plantPart": "resin",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject Siam benzoin resin. Subject: several warm amber-brown Siam benzoin resin tears with milky cream inclusions and one tiny bark fragment. Style: high-end photorealistic botanical or material catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, morphology, material and natural color; only the named note; no backdrop, floor, scenery, frame, text, label, logo, trademark lettering, watermark, people, hands, perfume bottle, container, branded packaging or unrelated objects.",
+    "sourceImageId": "exec-b30def7f-985f-416e-b24a-e79e03a33259",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "سيام",
+    "imageUrl": "assets/notes/generated/syam.webp",
+    "noteKey": "syam",
+    "noteAssetId": "origo-note-syam",
+    "sha256": "b29341b84e2eed7e4b02ed3c81f722cbcdd207a382d1efcfbd538404d9e58885",
+    "visualReview": "Reviewed reports/batch55-review.jpg against the locked prompt: exact botanical, wood, resin or perfumery material is clearly shown; no lettering, perfume bottle, branded packaging, scenery or unrelated objects.",
+    "contentHash": "f4ff58140726e5e8b0401001cc8bb31a6f64d05a2f6b4029ed29c9337334a89c",
+    "perceptualHash": "030f17254d150b06",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 26972,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "sylajynyla-tamarysyna",
+    "canonicalNameEn": "Selaginella tamariscina",
+    "positiveDescription": "a compact resurrection fern rosette with intricate scale-like green fronds curling from a brown central base",
+    "scientificName": null,
+    "entityType": "plant",
+    "plantPart": "plant",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject Selaginella tamariscina. Subject: a compact resurrection fern rosette with intricate scale-like green fronds curling from a brown central base. Style: high-end photorealistic botanical or material catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, morphology, material and natural color; only the named note; no backdrop, floor, scenery, frame, text, label, logo, trademark lettering, watermark, people, hands, perfume bottle, container, branded packaging or unrelated objects.",
+    "sourceImageId": "exec-c9140f72-17b2-41d5-8c6a-6a9edf628013",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "سيلاجينيلا تاماريسينا",
+    "imageUrl": "assets/notes/generated/sylajynyla-tamarysyna.webp",
+    "noteKey": "sylajynyla-tamarysyna",
+    "noteAssetId": "origo-note-sylajynyla-tamarysyna",
+    "sha256": "b8a393f08c07cbfebe87ef47d742ac6eb20f5e2b1cbccf17d32300419c3c907d",
+    "visualReview": "Reviewed reports/batch55-review.jpg against the locked prompt: exact botanical, wood, resin or perfumery material is clearly shown; no lettering, perfume bottle, branded packaging, scenery or unrelated objects.",
+    "contentHash": "ace37e65dc486a6d572b3b2e76d84467ef326909748f0fa7a5c1f976a11097c5",
+    "perceptualHash": "0c0d0f0b0f2f1716",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 41394,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "shjr-alkrz",
+    "canonicalNameEn": "cherry tree Prunus",
+    "positiveDescription": "a cherry tree twig with serrated green leaves, two delicate pale pink blossoms and one pair of ripe red cherries",
+    "scientificName": null,
+    "entityType": "branch",
+    "plantPart": "branch",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject cherry tree Prunus. Subject: a cherry tree twig with serrated green leaves, two delicate pale pink blossoms and one pair of ripe red cherries. Style: high-end photorealistic botanical or material catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, morphology, material and natural color; only the named note; no backdrop, floor, scenery, frame, text, label, logo, trademark lettering, watermark, people, hands, perfume bottle, container, branded packaging or unrelated objects.",
+    "sourceImageId": "exec-bc9c9186-b708-4ad3-a0e6-25516b51d5a0",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "شجر الكرز",
+    "imageUrl": "assets/notes/generated/shjr-alkrz.webp",
+    "noteKey": "shjr-alkrz",
+    "noteAssetId": "origo-note-shjr-alkrz",
+    "sha256": "9315ec64e03f6897934d78635c6b43cebf7caa7bc657c69d9476cad05c5a8134",
+    "visualReview": "Reviewed reports/batch55-review.jpg against the locked prompt: exact botanical, wood, resin or perfumery material is clearly shown; no lettering, perfume bottle, branded packaging, scenery or unrelated objects.",
+    "contentHash": "399300e942fe703509700337b8aa9eac9c975120a032594a453a6c9071a14e31",
+    "perceptualHash": "038b4969230d0c0e",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 27736,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "shjr-allwz",
+    "canonicalNameEn": "almond tree Prunus dulcis",
+    "positiveDescription": "an almond tree twig with narrow serrated leaves, pale pink-white blossoms and one green fuzzy almond hull",
+    "scientificName": null,
+    "entityType": "branch",
+    "plantPart": "branch",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject almond tree Prunus dulcis. Subject: an almond tree twig with narrow serrated leaves, pale pink-white blossoms and one green fuzzy almond hull. Style: high-end photorealistic botanical or material catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, morphology, material and natural color; only the named note; no backdrop, floor, scenery, frame, text, label, logo, trademark lettering, watermark, people, hands, perfume bottle, container, branded packaging or unrelated objects.",
+    "sourceImageId": "exec-e2b53abf-bcd3-4e37-85b5-ed4bbba1e5a0",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "شجر اللوز",
+    "imageUrl": "assets/notes/generated/shjr-allwz.webp",
+    "noteKey": "shjr-allwz",
+    "noteAssetId": "origo-note-shjr-allwz",
+    "sha256": "a307bd5604778aec762ca7ed3a76ac2175e2def92be60ed0e841f2a118c4b868",
+    "visualReview": "Reviewed reports/batch55-review.jpg against the locked prompt: exact botanical, wood, resin or perfumery material is clearly shown; no lettering, perfume bottle, branded packaging, scenery or unrelated objects.",
+    "contentHash": "99eff24c358a51c50315748659aa00d13a52749fc560acaef20d73c9c32226be",
+    "perceptualHash": "026737432b1d18d8",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 31044,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "shjrh-ayby-alwrdyh",
+    "canonicalNameEn": "pink ipe tree Handroanthus impetiginosus",
+    "positiveDescription": "a botanical twig bearing a cluster of trumpet-shaped pink ipe flowers and a few palmate green leaflets",
+    "scientificName": null,
+    "entityType": "flowering branch",
+    "plantPart": "flowering branch",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject pink ipe tree Handroanthus impetiginosus. Subject: a botanical twig bearing a cluster of trumpet-shaped pink ipe flowers and a few palmate green leaflets. Style: high-end photorealistic botanical or material catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, morphology, material and natural color; only the named note; no backdrop, floor, scenery, frame, text, label, logo, trademark lettering, watermark, people, hands, perfume bottle, container, branded packaging or unrelated objects.",
+    "sourceImageId": "exec-9c5a5d1d-e2a0-4977-97cd-7498cc517947",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "شجرة إيبي الوردية",
+    "imageUrl": "assets/notes/generated/shjrh-ayby-alwrdyh.webp",
+    "noteKey": "shjrh-ayby-alwrdyh",
+    "noteAssetId": "origo-note-shjrh-ayby-alwrdyh",
+    "sha256": "1711fd97242aef7a85f7a98451b3dea8e8a425a041c5b9829bed1bb6a3502cc6",
+    "visualReview": "Reviewed reports/batch55-review.jpg against the locked prompt: exact botanical, wood, resin or perfumery material is clearly shown; no lettering, perfume bottle, branded packaging, scenery or unrelated objects.",
+    "contentHash": "4ccd208dae71c8bfd9fe2c110e9d57f91bcf66d3dc0bba4787b4d7af7b797508",
+    "perceptualHash": "0703270f231f2eec",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 33662,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "shjrh-alarjan",
+    "canonicalNameEn": "argan tree Argania spinosa",
+    "positiveDescription": "an argan tree twig with small oval green leaves, short thorns and two oval yellow-green argan fruits",
+    "scientificName": null,
+    "entityType": "branch",
+    "plantPart": "branch",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject argan tree Argania spinosa. Subject: an argan tree twig with small oval green leaves, short thorns and two oval yellow-green argan fruits. Style: high-end photorealistic botanical or material catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, morphology, material and natural color; only the named note; no backdrop, floor, scenery, frame, text, label, logo, trademark lettering, watermark, people, hands, perfume bottle, container, branded packaging or unrelated objects.",
+    "sourceImageId": "exec-468b76d0-ad36-410d-be90-4fe718d03440",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "شجرة الأرجان",
+    "imageUrl": "assets/notes/generated/shjrh-alarjan.webp",
+    "noteKey": "shjrh-alarjan",
+    "noteAssetId": "origo-note-shjrh-alarjan",
+    "sha256": "230b49225f22abb4f3e1e377bcd318b1c226b1ae8e2532e27e920a5139b86873",
+    "visualReview": "Reviewed reports/batch55-review.jpg against the locked prompt: exact botanical, wood, resin or perfumery material is clearly shown; no lettering, perfume bottle, branded packaging, scenery or unrelated objects.",
+    "contentHash": "bf603434a4f9664f9df2fc54b425b1646ca219338b0fe1c22cf0d3815d4b9f07",
+    "perceptualHash": "0505254625551909",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 31920,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  }
+]
