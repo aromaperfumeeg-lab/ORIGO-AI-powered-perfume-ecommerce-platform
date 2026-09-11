@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-09-11T11:01:06.894Z",
+  "generatedAt": "2026-09-11T19:00:50.989Z",
   "scope": "Library plus persisted note overrides; SQLite opened read-only. Visual semantics are not certified by filenames or hashes.",
   "notes": 1883,
   "products": 5,
-  "valid": 1231,
-  "missing": 634,
+  "valid": 1247,
+  "missing": 618,
   "duplicateGroups": 9,
   "needsReview": 0,
   "duplicates": [
@@ -17101,13 +17101,13 @@
     {
       "canonicalKey": "alsybrwl-alnajramwtha",
       "nameAr": "السيبرول (الناجراموثا)",
-      "nameEn": "السيبرول (الناجراموثا)",
+      "nameEn": "Cypriol nagarmotha Cyperus scariosus",
       "sourceName": "السيبرول (الناجراموثا)",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alsybrwl-alnajramwtha.webp",
+      "filename": "alsybrwl-alnajramwtha.webp",
+      "hash": "ccb3b538be261bf528b15c1b0cb801fdec5d238819d62fe04d46b2942d6fc077",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "السيبرول (الناجراموثا)"
       ]
@@ -17115,13 +17115,13 @@
     {
       "canonicalKey": "alsfsaf-alabyd",
       "nameAr": "الصفصاف الابيض",
-      "nameEn": "الصفصاف الابيض",
+      "nameEn": "white willow Salix alba",
       "sourceName": "الصفصاف الابيض",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alsfsaf-alabyd.webp",
+      "filename": "alsfsaf-alabyd.webp",
+      "hash": "97f3841d8986304d5a1cfb5677e033767253bdcce5d3736481f204dce85746e0",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الصفصاف الابيض"
       ]
@@ -17146,13 +17146,13 @@
     {
       "canonicalKey": "alawd-alandwnysy",
       "nameAr": "العود الإندونيسي",
-      "nameEn": "العود الإندونيسي",
+      "nameEn": "Indonesian agarwood oud",
       "sourceName": "العود الإندونيسي",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alawd-alandwnysy.webp",
+      "filename": "alawd-alandwnysy.webp",
+      "hash": "cdee23af378099bd3fea72e9b28c624a1cc6e1d288c7d13f6fcf372865500f1b",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "العود الإندونيسي"
       ]
@@ -17160,13 +17160,13 @@
     {
       "canonicalKey": "alawd-alabyd",
       "nameAr": "العود الابيض",
-      "nameEn": "العود الابيض",
+      "nameEn": "white oud agarwood",
       "sourceName": "العود الابيض",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alawd-alabyd.webp",
+      "filename": "alawd-alabyd.webp",
+      "hash": "de7b09c521dfbd17651648af5bbb908d19ae4bad72afe9cd1c51a228042376dc",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "العود الابيض"
       ]
@@ -17174,13 +17174,13 @@
     {
       "canonicalKey": "alawd-alastraly",
       "nameAr": "العود الاسترالي",
-      "nameEn": "العود الاسترالي",
+      "nameEn": "Australian agarwood",
       "sourceName": "العود الاسترالي",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alawd-alastraly.webp",
+      "filename": "alawd-alastraly.webp",
+      "hash": "744e4afac893679de46472976292f720d9a4374c1045252162566dd52dfe18f1",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "العود الاسترالي"
       ]
@@ -17188,13 +17188,13 @@
     {
       "canonicalKey": "alawd-altaylandy",
       "nameAr": "العود التايلاندي",
-      "nameEn": "العود التايلاندي",
+      "nameEn": "Thai agarwood oud",
       "sourceName": "العود التايلاندي",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alawd-altaylandy.webp",
+      "filename": "alawd-altaylandy.webp",
+      "hash": "e4469d784f1ced0909a1f49e5fe86ff8d7301aa69a4afa3408e4a99c6bdbddbd",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "العود التايلاندي"
       ]
@@ -17202,13 +17202,13 @@
     {
       "canonicalKey": "alawd-alkmbwdy",
       "nameAr": "العود الكمبودى",
-      "nameEn": "العود الكمبودى",
+      "nameEn": "Cambodian agarwood oud",
       "sourceName": "العود الكمبودى",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alawd-alkmbwdy.webp",
+      "filename": "alawd-alkmbwdy.webp",
+      "hash": "c0f0e99e22a6ef3b5d8e8511248b3d96b22ce9a3c04ad352656b193fb91597bb",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "العود الكمبودى"
       ]
@@ -17216,13 +17216,13 @@
     {
       "canonicalKey": "alawd-allawsy",
       "nameAr": "العود اللاوسي",
-      "nameEn": "العود اللاوسي",
+      "nameEn": "Laotian agarwood oud",
       "sourceName": "العود اللاوسي",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alawd-allawsy.webp",
+      "filename": "alawd-allawsy.webp",
+      "hash": "508738afb911b8173aaf06cbe9d44ae6fc7dcba8b8f534173818746e46c4b0e7",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "العود اللاوسي"
       ]
@@ -17230,13 +17230,13 @@
     {
       "canonicalKey": "alawd-alhndy",
       "nameAr": "العود الهندى",
-      "nameEn": "العود الهندى",
+      "nameEn": "Indian agarwood oud",
       "sourceName": "العود الهندى",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alawd-alhndy.webp",
+      "filename": "alawd-alhndy.webp",
+      "hash": "5fb82dfa93fc25053a5817ff90b6355868853245c6d4f9d8df0eb02e3063a8be",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "العود الهندى"
       ]
@@ -17244,13 +17244,13 @@
     {
       "canonicalKey": "alflyn",
       "nameAr": "الفلين",
-      "nameEn": "الفلين",
+      "nameEn": "cork bark",
       "sourceName": "الفلين",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alflyn.webp",
+      "filename": "alflyn.webp",
+      "hash": "b2550eb0af143eab18cd5ae16a539c69863a2aa693d79da360bb3ecae0b40aa5",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الفلين"
       ]
@@ -17258,13 +17258,13 @@
     {
       "canonicalKey": "almaswya",
       "nameAr": "الماسويا",
-      "nameEn": "الماسويا",
+      "nameEn": "Massoia bark Cryptocarya massoy",
       "sourceName": "الماسويا",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/almaswya.webp",
+      "filename": "almaswya.webp",
+      "hash": "0f471f4958888063277b13bc795a7bfff452abaec88336d1c2e6270797949f37",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الماسويا"
       ]
@@ -17272,13 +17272,13 @@
     {
       "canonicalKey": "almskyt",
       "nameAr": "المسكيت",
-      "nameEn": "المسكيت",
+      "nameEn": "mesquite Prosopis wood",
       "sourceName": "المسكيت",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/almskyt.webp",
+      "filename": "almskyt.webp",
+      "hash": "a0a46bafb324b688c8d420f81f2353c39a1a2762c3e71eb080429b1b0c1808d6",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "المسكيت"
       ]
@@ -17286,13 +17286,13 @@
     {
       "canonicalKey": "almwhwhw",
       "nameAr": "الموهوهو",
-      "nameEn": "الموهوهو",
+      "nameEn": "Muhuhu African sandalwood Brachylaena hutchinsii",
       "sourceName": "الموهوهو",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/almwhwhw.webp",
+      "filename": "almwhwhw.webp",
+      "hash": "18ed4a5e14514750a36286b27c1ec664b4b687961caa0899da4130c997aaffac",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الموهوهو"
       ]
@@ -17300,13 +17300,13 @@
     {
       "canonicalKey": "alnwtat-alshybr",
       "nameAr": "النوتات الشيبر",
-      "nameEn": "النوتات الشيبر",
+      "nameEn": "classic chypre accord",
       "sourceName": "النوتات الشيبر",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alnwtat-alshybr.webp",
+      "filename": "alnwtat-alshybr.webp",
+      "hash": "489490a751b637e9e9a86a8850cf75c9356da4fd2fe108ac89660952ec8ec2d0",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "النوتات الشيبر"
       ]
@@ -17314,13 +17314,13 @@
     {
       "canonicalKey": "alnym",
       "nameAr": "النيم",
-      "nameEn": "النيم",
+      "nameEn": "neem Azadirachta indica",
       "sourceName": "النيم",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alnym.webp",
+      "filename": "alnym.webp",
+      "hash": "24e031e2f303de935806c560c3f3e0a7370e3841a3d9cbd101b62069fb8d772a",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "النيم"
       ]
@@ -17328,13 +17328,13 @@
     {
       "canonicalKey": "batshwly-akhdr",
       "nameAr": "باتشولي أخضر",
-      "nameEn": "باتشولي أخضر",
+      "nameEn": "green patchouli Pogostemon cablin",
       "sourceName": "باتشولي أخضر",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/batshwly-akhdr.webp",
+      "filename": "batshwly-akhdr.webp",
+      "hash": "4ada021e61d1a0199d7440e81f2fbcde045e51b85e23af9d3f59afd7abd05555",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "باتشولي أخضر"
       ]
