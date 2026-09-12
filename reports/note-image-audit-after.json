@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-09-12T13:31:29.535Z",
+  "generatedAt": "2026-09-12T14:16:51.179Z",
   "scope": "Library plus persisted note overrides; SQLite opened read-only. Visual semantics are not certified by filenames or hashes.",
   "notes": 1883,
   "products": 5,
-  "valid": 1358,
-  "missing": 507,
+  "valid": 1374,
+  "missing": 491,
   "duplicateGroups": 9,
   "needsReview": 0,
   "duplicates": [
@@ -12088,13 +12088,13 @@
     {
       "canonicalKey": "nwtat-atryh",
       "nameAr": "نوتات عطرية",
-      "nameEn": "نوتات عطرية",
+      "nameEn": "generic aromatic fragrance notes",
       "sourceName": "نوتات عطرية",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/nwtat-atryh.webp",
+      "filename": "nwtat-atryh.webp",
+      "hash": "bc1fe107dfc71f0613a925b21d8f3113214600e89a63e71467cd23d2fc040292",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "نوتات عطرية"
       ]
@@ -18970,13 +18970,13 @@
     {
       "canonicalKey": "qtran-alsnwbr",
       "nameAr": "قطران الصنوبر",
-      "nameEn": "قطران الصنوبر",
+      "nameEn": "pine tar",
       "sourceName": "قطران الصنوبر",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/qtran-alsnwbr.webp",
+      "filename": "qtran-alsnwbr.webp",
+      "hash": "b3c7180662ad2bf73bc0ef1b5eff4a8b5bc383c7022f45ccc0f0441b08642eac",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "قطران الصنوبر"
       ]
@@ -18984,13 +18984,13 @@
     {
       "canonicalKey": "qtran-alfhm",
       "nameAr": "قطران الفحم",
-      "nameEn": "قطران الفحم",
+      "nameEn": "coal tar fragrance material",
       "sourceName": "قطران الفحم",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/qtran-alfhm.webp",
+      "filename": "qtran-alfhm.webp",
+      "hash": "b33a24aad3b3cca1bf2313123151d3c2f15cff59ab2345cd099be771a40faff3",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "قطران الفحم"
       ]
@@ -18998,13 +18998,13 @@
     {
       "canonicalKey": "qtran-khshb-albtwla",
       "nameAr": "قطران خشب البتولا",
-      "nameEn": "قطران خشب البتولا",
+      "nameEn": "birch tar",
       "sourceName": "قطران خشب البتولا",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/qtran-khshb-albtwla.webp",
+      "filename": "qtran-khshb-albtwla.webp",
+      "hash": "abf6275124da5851d9d3dddb2a57d0b09d6b3ec92ef1f2fb8b58b32f3e07830e",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "قطران خشب البتولا"
       ]
@@ -19012,13 +19012,13 @@
     {
       "canonicalKey": "kabal",
       "nameAr": "كابال",
-      "nameEn": "كابال",
+      "nameEn": "Cabale perfume base",
       "sourceName": "كابال",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/kabal.webp",
+      "filename": "kabal.webp",
+      "hash": "5b3aa50b941dabb4bd60382d640844c4bc7f75fcfdde916638772f55331e8f88",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "كابال"
       ]
@@ -19026,13 +19026,13 @@
     {
       "canonicalKey": "lban-shwya",
       "nameAr": "لبان شويا",
-      "nameEn": "لبان شويا",
+      "nameEn": "Choya loban",
       "sourceName": "لبان شويا",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/lban-shwya.webp",
+      "filename": "lban-shwya.webp",
+      "hash": "2da89f28cfa1b4bbd4e0768f61ac1e345244341eab38e0669be90a71acb6999d",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "لبان شويا"
       ]
@@ -19040,13 +19040,13 @@
     {
       "canonicalKey": "naj-tshamba",
       "nameAr": "ناج تشامبا",
-      "nameEn": "ناج تشامبا",
+      "nameEn": "Nag Champa",
       "sourceName": "ناج تشامبا",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/naj-tshamba.webp",
+      "filename": "naj-tshamba.webp",
+      "hash": "37e502abc2424b849dfeffa3b1f0d645aab62621e6e368c62691c624311e3c07",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "ناج تشامبا"
       ]
@@ -19054,13 +19054,13 @@
     {
       "canonicalKey": "nwtat-blsmyh",
       "nameAr": "نوتات بلسمية",
-      "nameEn": "نوتات بلسمية",
+      "nameEn": "balsamic notes",
       "sourceName": "نوتات بلسمية",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/nwtat-blsmyh.webp",
+      "filename": "nwtat-blsmyh.webp",
+      "hash": "d5c32a6209437156f9a2d258dcd6e77f671723342d8afc9fce60d529b49a969a",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "نوتات بلسمية"
       ]
@@ -19068,13 +19068,13 @@
     {
       "canonicalKey": "alanbr-ambrarwm",
       "nameAr": "(العنبر)آمبراروم",
-      "nameEn": "(العنبر)آمبراروم",
+      "nameEn": "Ambrarome amber fragrance material",
       "sourceName": "(العنبر)آمبراروم",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alanbr-ambrarwm.webp",
+      "filename": "alanbr-ambrarwm.webp",
+      "hash": "cf002385e9d17c1c77cc742b72f1cf4478d95abdf5ba4e0b930a0b312671be00",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "(العنبر)آمبراروم"
       ]
@@ -19082,13 +19082,13 @@
     {
       "canonicalKey": "ambrexolide",
       "nameAr": "أمبريكسوليد",
-      "nameEn": "AmbreXolide",
+      "nameEn": "Ambrexolide fragrance molecule",
       "sourceName": "AmbreXolide",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/ambrexolide.webp",
+      "filename": "ambrexolide.webp",
+      "hash": "d5649d5b0540552e007512f950138b4f53e02d2d3c669f871353316bd04b350b",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "AmbreXolide"
       ]
@@ -19096,13 +19096,13 @@
     {
       "canonicalKey": "ambr-akstrym",
       "nameAr": "آمبر اكستريم",
-      "nameEn": "آمبر اكستريم",
+      "nameEn": "Amber Xtreme fragrance molecule",
       "sourceName": "آمبر اكستريم",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/ambr-akstrym.webp",
+      "filename": "ambr-akstrym.webp",
+      "hash": "ab968f5d9949927ae12d536a04f2ce92d8ecf686dc40fc1375c572658ed7c14a",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "آمبر اكستريم"
       ]
@@ -19110,13 +19110,13 @@
     {
       "canonicalKey": "ambrtwnyk",
       "nameAr": "آمبرتونيك",
-      "nameEn": "آمبرتونيك",
+      "nameEn": "Ambertonic fragrance molecule",
       "sourceName": "آمبرتونيك",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/ambrtwnyk.webp",
+      "filename": "ambrtwnyk.webp",
+      "hash": "d5f576dbef0b8cdc2352994a51b6fe184f07e9516f7b8b08e96e2c8691e2419d",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "آمبرتونيك"
       ]
@@ -19124,13 +19124,13 @@
     {
       "canonicalKey": "arnb-alskhwr",
       "nameAr": "أرنب الصخور",
-      "nameEn": "أرنب الصخور",
+      "nameEn": "hyraceum rock hyrax fragrance material",
       "sourceName": "أرنب الصخور",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/arnb-alskhwr.webp",
+      "filename": "arnb-alskhwr.webp",
+      "hash": "49526443b4cbea67ef096a10265ec10435e18a6f33083027da59eaa4dbff4690",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "أرنب الصخور"
       ]
@@ -19138,13 +19138,13 @@
     {
       "canonicalKey": "asdaf-albhr",
       "nameAr": "أصداف البحر",
-      "nameEn": "أصداف البحر",
+      "nameEn": "natural seashells",
       "sourceName": "أصداف البحر",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/asdaf-albhr.webp",
+      "filename": "asdaf-albhr.webp",
+      "hash": "ca8da8288ebe0a4ec316f67137aa0b8130d248febb4362782e7f52c14aab69e2",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "أصداف البحر"
       ]
@@ -19152,13 +19152,13 @@
     {
       "canonicalKey": "azfar-altyb",
       "nameAr": "أظفار الطيب",
-      "nameEn": "أظفار الطيب",
+      "nameEn": "operculum onycha incense material",
       "sourceName": "أظفار الطيب",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/azfar-altyb.webp",
+      "filename": "azfar-altyb.webp",
+      "hash": "710baf27912e9d59b8fd39c4fb824cdd84e0476ef5c260f9b2f3f4a7a5c7aa65",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "أظفار الطيب"
       ]
@@ -19166,13 +19166,13 @@
     {
       "canonicalKey": "aldrwn",
       "nameAr": "ألدرون",
-      "nameEn": "ألدرون",
+      "nameEn": "Aldron synthetic fragrance material",
       "sourceName": "ألدرون",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/aldrwn.webp",
+      "filename": "aldrwn.webp",
+      "hash": "f2cc6025d9804fd28f996230b8d430ed4284f52a2cd1274fec666a4f1dc723e3",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "ألدرون"
       ]
