@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-09-12T08:51:20.226Z",
+  "generatedAt": "2026-09-12T09:40:00.798Z",
   "scope": "Library plus persisted note overrides; SQLite opened read-only. Visual semantics are not certified by filenames or hashes.",
   "notes": 1883,
   "products": 5,
-  "valid": 1327,
-  "missing": 538,
+  "valid": 1343,
+  "missing": 522,
   "duplicateGroups": 9,
   "needsReview": 0,
   "duplicates": [
@@ -18492,13 +18492,13 @@
     {
       "canonicalKey": "breu-branco",
       "nameAr": "راتنج بريو برانكو",
-      "nameEn": "Breu-Branco",
+      "nameEn": "Breu Branco resin from Protium tree",
       "sourceName": "Breu-Branco",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/breu-branco.webp",
+      "filename": "breu-branco.webp",
+      "hash": "b1137f906b57d2684ba9bae1c9379a0834a461e47975bafef187c49de236058f",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "Breu-Branco"
       ]
@@ -18506,13 +18506,13 @@
     {
       "canonicalKey": "copaiba-balm",
       "nameAr": "بلسم الكوبيبا",
-      "nameEn": "Copaiba balm",
+      "nameEn": "Copaiba balsam resin",
       "sourceName": "Copaiba balm",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/copaiba-balm.webp",
+      "filename": "copaiba-balm.webp",
+      "hash": "8d240bc66caee887038bbefd6ebcb4be97c014ca1e2105ff02cb120501eb04b4",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "Copaiba balm"
       ]
@@ -18520,13 +18520,13 @@
     {
       "canonicalKey": "mopane",
       "nameAr": "موباني",
-      "nameEn": "Mopane",
+      "nameEn": "Mopane wood Colophospermum mopane",
       "sourceName": "Mopane",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/mopane.webp",
+      "filename": "mopane.webp",
+      "hash": "9f6049ee014cf19397f5445120b8610e35c327cfd6ab5172332c0d3bd96d0fba",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "Mopane"
       ]
@@ -18534,13 +18534,13 @@
     {
       "canonicalKey": "andyrwba",
       "nameAr": "أنديروبا",
-      "nameEn": "أنديروبا",
+      "nameEn": "Andiroba Carapa guianensis",
       "sourceName": "أنديروبا",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/andyrwba.webp",
+      "filename": "andyrwba.webp",
+      "hash": "dbebb56031e7b095ae4ca86ec7a623c2507ab7ee3d350f07397d1b0e2a27f166",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "أنديروبا"
       ]
@@ -18548,13 +18548,13 @@
     {
       "canonicalKey": "alalymy",
       "nameAr": "الإليمي",
-      "nameEn": "الإليمي",
+      "nameEn": "Elemi resin Canarium luzonicum",
       "sourceName": "الإليمي",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alalymy.webp",
+      "filename": "alalymy.webp",
+      "hash": "ca19a4d9e27b4950b75e67f5876bcde94618affbb34922cfa93d4ad780b28fbc",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الإليمي"
       ]
@@ -18577,13 +18577,13 @@
     {
       "canonicalKey": "albkhwr-alyabany",
       "nameAr": "البخور الياباني",
-      "nameEn": "البخور الياباني",
+      "nameEn": "Japanese incense kodo material",
       "sourceName": "البخور الياباني",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/albkhwr-alyabany.webp",
+      "filename": "albkhwr-alyabany.webp",
+      "hash": "160b18101bdea6e6157bf2c66036d086e76fa971c963a75ad063e5a11c1d1522",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "البخور الياباني"
       ]
@@ -18591,13 +18591,13 @@
     {
       "canonicalKey": "aljawshyr",
       "nameAr": "الجاوشير",
-      "nameEn": "الجاوشير",
+      "nameEn": "Galbanum Ferula resin",
       "sourceName": "الجاوشير",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/aljawshyr.webp",
+      "filename": "aljawshyr.webp",
+      "hash": "eae953b009019152d17399336ed96c106b406f56f1584ca2abe96c3cd6c9f1de",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الجاوشير"
       ]
@@ -18605,13 +18605,13 @@
     {
       "canonicalKey": "alkhl-alblsmy",
       "nameAr": "الخل البلسمي",
-      "nameEn": "الخل البلسمي",
+      "nameEn": "balsamic vinegar fragrance note",
       "sourceName": "الخل البلسمي",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alkhl-alblsmy.webp",
+      "filename": "alkhl-alblsmy.webp",
+      "hash": "d84cdcc93c97e74d7bd452a0c1df9ca9c35a3d8cde3fada6c6188a94e1da3a66",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الخل البلسمي"
       ]
@@ -18619,13 +18619,13 @@
     {
       "canonicalKey": "alratynjat",
       "nameAr": "الراتينجات",
-      "nameEn": "الراتينجات",
+      "nameEn": "mixed natural aromatic resins",
       "sourceName": "الراتينجات",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alratynjat.webp",
+      "filename": "alratynjat.webp",
+      "hash": "b53bedf7424d99c5a7696a9d9879bf05ba70a5f13bc37e83983dc7bbf8581122",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الراتينجات"
       ]
@@ -18633,13 +18633,13 @@
     {
       "canonicalKey": "alstyraks",
       "nameAr": "الستيراكس",
-      "nameEn": "الستيراكس",
+      "nameEn": "Styrax resin",
       "sourceName": "الستيراكس",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alstyraks.webp",
+      "filename": "alstyraks.webp",
+      "hash": "cf6e08e5e72b1fe16efffc7db95a57f1074f8dd4698c7a9b55d1d16b0d068ef4",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الستيراكس"
       ]
@@ -18647,13 +18647,13 @@
     {
       "canonicalKey": "alshma",
       "nameAr": "الشمع",
-      "nameEn": "الشمع",
+      "nameEn": "natural beeswax",
       "sourceName": "الشمع",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alshma.webp",
+      "filename": "alshma.webp",
+      "hash": "31f91208e43437090e84b0e8b54c424bbcf52f89e4db8042631ff1ab0e0335b1",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الشمع"
       ]
@@ -18661,13 +18661,13 @@
     {
       "canonicalKey": "alanbr-alazrq",
       "nameAr": "العنبر الأزرق",
-      "nameEn": "العنبر الأزرق",
+      "nameEn": "blue amber resin",
       "sourceName": "العنبر الأزرق",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alanbr-alazrq.webp",
+      "filename": "alanbr-alazrq.webp",
+      "hash": "012b1582fafe4bf2908002f859b66b51d90b562af456ba7a7cd869bb17bb66e1",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "العنبر الأزرق"
       ]
@@ -18675,13 +18675,13 @@
     {
       "canonicalKey": "allabdanwm",
       "nameAr": "اللابدانوم",
-      "nameEn": "اللابدانوم",
+      "nameEn": "labdanum resin Cistus ladanifer",
       "sourceName": "اللابدانوم",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/allabdanwm.webp",
+      "filename": "allabdanwm.webp",
+      "hash": "f1476e5523aa19cb4b3251e22918d7a477f8d41b872a52ecb3184235cbdbae2d",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "اللابدانوم"
       ]
@@ -18689,13 +18689,13 @@
     {
       "canonicalKey": "allban",
       "nameAr": "اللبان",
-      "nameEn": "اللبان",
+      "nameEn": "frankincense Boswellia resin",
       "sourceName": "اللبان",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/allban.webp",
+      "filename": "allban.webp",
+      "hash": "049e54880148f29c7fedf642cbc669435d8c2327a6f2f2349a31c395fc5a5e74",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "اللبان"
       ]
@@ -18718,13 +18718,13 @@
     {
       "canonicalKey": "almryka",
       "nameAr": "المريكا",
-      "nameEn": "المريكا",
+      "nameEn": "myrrh Commiphora resin",
       "sourceName": "المريكا",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/almryka.webp",
+      "filename": "almryka.webp",
+      "hash": "558ac8601b57828ec82e2f92c46d96a4a6908398d888de95bcdd638436df1cd3",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "المريكا"
       ]
@@ -18732,13 +18732,13 @@
     {
       "canonicalKey": "almstkh",
       "nameAr": "المستكة",
-      "nameEn": "المستكة",
+      "nameEn": "mastic resin Pistacia lentiscus",
       "sourceName": "المستكة",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/almstkh.webp",
+      "filename": "almstkh.webp",
+      "hash": "3f459e8dfd0cb8fe8c6abe1b8870d53611ee39935f7e9853eab23b690af610c1",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "المستكة"
       ]
