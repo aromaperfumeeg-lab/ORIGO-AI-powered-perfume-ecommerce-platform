@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-09-12T08:11:41.395Z",
+  "generatedAt": "2026-09-12T08:51:20.226Z",
   "scope": "Library plus persisted note overrides; SQLite opened read-only. Visual semantics are not certified by filenames or hashes.",
   "notes": 1883,
   "products": 5,
-  "valid": 1311,
-  "missing": 554,
+  "valid": 1327,
+  "missing": 538,
   "duplicateGroups": 9,
   "needsReview": 0,
   "duplicates": [
@@ -18253,13 +18253,13 @@
     {
       "canonicalKey": "kaskaryla",
       "nameAr": "كاسكاريلا",
-      "nameEn": "كاسكاريلا",
+      "nameEn": "Cascarilla bark Croton eluteria",
       "sourceName": "كاسكاريلا",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/kaskaryla.webp",
+      "filename": "kaskaryla.webp",
+      "hash": "f4d7a3d143055f0a13401cde7ce7cb8ef4e130fd04c67a2051d26fc475f58a6b",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "كاسكاريلا"
       ]
@@ -18267,13 +18267,13 @@
     {
       "canonicalKey": "klyr-wwd",
       "nameAr": "كلير وود",
-      "nameEn": "كلير وود",
+      "nameEn": "Clearwood perfume note",
       "sourceName": "كلير وود",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/klyr-wwd.webp",
+      "filename": "klyr-wwd.webp",
+      "hash": "9ef6a1a360fcc0841c21a4909660855efaa2decb05abb05e6d10e9c9b91424ad",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "كلير وود"
       ]
@@ -18281,13 +18281,13 @@
     {
       "canonicalKey": "lha-alashjar",
       "nameAr": "لحاء الأشجار",
-      "nameEn": "لحاء الأشجار",
+      "nameEn": "tree bark",
       "sourceName": "لحاء الأشجار",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/lha-alashjar.webp",
+      "filename": "lha-alashjar.webp",
+      "hash": "a7e7f56201ca07371f00692a646afcca22394ef212d14ca4b4f505d06ecb7646",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "لحاء الأشجار"
       ]
@@ -18295,13 +18295,13 @@
     {
       "canonicalKey": "lha-alambwrana",
       "nameAr": "لحاء الأمبورانا",
-      "nameEn": "لحاء الأمبورانا",
+      "nameEn": "Amburana bark Amburana cearensis",
       "sourceName": "لحاء الأمبورانا",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/lha-alambwrana.webp",
+      "filename": "lha-alambwrana.webp",
+      "hash": "fdf57aae89d99f0bc3327c94b0f87a306fac0a536d5236bbbc24a568a2015faf",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "لحاء الأمبورانا"
       ]
@@ -18309,13 +18309,13 @@
     {
       "canonicalKey": "lha-alshalwd",
       "nameAr": "لحاء الشالود",
-      "nameEn": "لحاء الشالود",
+      "nameEn": "Shalood aromatic bark",
       "sourceName": "لحاء الشالود",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/lha-alshalwd.webp",
+      "filename": "lha-alshalwd.webp",
+      "hash": "bfe8332d65abc50e01ffc0c7abd2fb4b23e58a2152f5f325223d3428e192aed6",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "لحاء الشالود"
       ]
@@ -18323,13 +18323,13 @@
     {
       "canonicalKey": "lykwydambar",
       "nameAr": "ليكويدامبار",
-      "nameEn": "ليكويدامبار",
+      "nameEn": "Liquidambar sweetgum resin and bark",
       "sourceName": "ليكويدامبار",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/lykwydambar.webp",
+      "filename": "lykwydambar.webp",
+      "hash": "6bc040e7a6b97830c20a8b0808d476918de1ab5e0ad168025794ff4c931889e3",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "ليكويدامبار"
       ]
@@ -18337,13 +18337,13 @@
     {
       "canonicalKey": "malalywka",
       "nameAr": "مالاليوكا",
-      "nameEn": "مالاليوكا",
+      "nameEn": "Melaleuca tea tree",
       "sourceName": "مالاليوكا",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/malalywka.webp",
+      "filename": "malalywka.webp",
+      "hash": "5c72cf643c40038d17bcba9525eceab19cfcd1603fd95b449ef73681c67ad597",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "مالاليوكا"
       ]
@@ -18351,13 +18351,13 @@
     {
       "canonicalKey": "manwka",
       "nameAr": "مانوكا",
-      "nameEn": "مانوكا",
+      "nameEn": "Manuka Leptospermum scoparium",
       "sourceName": "مانوكا",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/manwka.webp",
+      "filename": "manwka.webp",
+      "hash": "76d3a22a425b765dbf9911d547690697b68a883b3c2bdd2e8302bb0d1827ccbe",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "مانوكا"
       ]
@@ -18365,13 +18365,13 @@
     {
       "canonicalKey": "mswak",
       "nameAr": "مسواك",
-      "nameEn": "مسواك",
+      "nameEn": "Miswak Salvadora persica",
       "sourceName": "مسواك",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/mswak.webp",
+      "filename": "mswak.webp",
+      "hash": "b84b966e6e9dc9dc50a32ed8b92f5063069a8aeef0172878bce5c1c09c6acf38",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "مسواك"
       ]
@@ -18379,13 +18379,13 @@
     {
       "canonicalKey": "nbat-altwt",
       "nameAr": "نبات التوت",
-      "nameEn": "نبات التوت",
+      "nameEn": "mulberry plant Morus",
       "sourceName": "نبات التوت",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/nbat-altwt.webp",
+      "filename": "nbat-altwt.webp",
+      "hash": "a634c323e5a5e1f8c52c232e47f956d323954b1774869153ba42912287db2c7f",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "نبات التوت"
       ]
@@ -18408,13 +18408,13 @@
     {
       "canonicalKey": "nsharh-alkhshb",
       "nameAr": "نشارة الخشب",
-      "nameEn": "نشارة الخشب",
+      "nameEn": "wood shavings",
       "sourceName": "نشارة الخشب",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/nsharh-alkhshb.webp",
+      "filename": "nsharh-alkhshb.webp",
+      "hash": "6f533ebe929825dea7c59621a72a8bdcafd0e3e555d7754116a3d138c81f169c",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "نشارة الخشب"
       ]
@@ -18422,13 +18422,13 @@
     {
       "canonicalKey": "nwtka",
       "nameAr": "نوتكا",
-      "nameEn": "نوتكا",
+      "nameEn": "Nootka cypress Callitropsis nootkatensis",
       "sourceName": "نوتكا",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/nwtka.webp",
+      "filename": "nwtka.webp",
+      "hash": "2bf511260b14625959c2dd166eb15b8f4d16676f8a46ec515f4c1cde33b55468",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "نوتكا"
       ]
@@ -18436,13 +18436,13 @@
     {
       "canonicalKey": "hyba",
       "nameAr": "هيبا",
-      "nameEn": "هيبا",
+      "nameEn": "Hiba arborvitae Thujopsis dolabrata",
       "sourceName": "هيبا",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/hyba.webp",
+      "filename": "hyba.webp",
+      "hash": "a7484eed33568284cc0d0306df6148943037c92a8eff03f505b8b4cf101c0813",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "هيبا"
       ]
@@ -18450,13 +18450,13 @@
     {
       "canonicalKey": "ywhymby",
       "nameAr": "يوهيمبي",
-      "nameEn": "يوهيمبي",
+      "nameEn": "Yohimbe bark Pausinystalia johimbe",
       "sourceName": "يوهيمبي",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/ywhymby.webp",
+      "filename": "ywhymby.webp",
+      "hash": "8fc232c5720d7635d8c5de25315a6b6e6b3f1f4aed3271cada9686a314d041ec",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "يوهيمبي"
       ]
@@ -18464,13 +18464,13 @@
     {
       "canonicalKey": "albnzwyn-aljawy",
       "nameAr": "البنزوين - الجاوي",
-      "nameEn": "البنزوين - الجاوي",
+      "nameEn": "benzoin resin from Styrax",
       "sourceName": "البنزوين - الجاوي",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/albnzwyn-aljawy.webp",
+      "filename": "albnzwyn-aljawy.webp",
+      "hash": "b9bae18c35415ae65d540921fe17d34a4602e62eb3d9c94e03d1ef89fbd3ff1a",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "البنزوين - الجاوي"
       ]
@@ -18478,13 +18478,13 @@
     {
       "canonicalKey": "styraks-alabhr",
       "nameAr": "ستيراكس (العبهر)",
-      "nameEn": "ستيراكس (العبهر)",
+      "nameEn": "Styrax tree",
       "sourceName": "ستيراكس (العبهر)",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/styraks-alabhr.webp",
+      "filename": "styraks-alabhr.webp",
+      "hash": "cf3298c79341dc39784500163bf6110dd19556b5188d1acde3587e0754a94759",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "ستيراكس (العبهر)"
       ]
