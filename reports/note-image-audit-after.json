@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-09-12T09:40:00.798Z",
+  "generatedAt": "2026-09-12T13:31:29.535Z",
   "scope": "Library plus persisted note overrides; SQLite opened read-only. Visual semantics are not certified by filenames or hashes.",
   "notes": 1883,
   "products": 5,
-  "valid": 1343,
-  "missing": 522,
+  "valid": 1358,
+  "missing": 507,
   "duplicateGroups": 9,
   "needsReview": 0,
   "duplicates": [
@@ -12086,17 +12086,17 @@
       ]
     },
     {
-      "canonicalKey": "mlahzat-atryh",
-      "nameAr": "ملاحظات عطرية",
-      "nameEn": "ملاحظات عطرية",
-      "sourceName": "ملاحظات عطرية",
-      "imageUrl": "assets/notes/generated/mlahzat-atryh.webp",
-      "filename": "mlahzat-atryh.webp",
-      "hash": "7f56383ec169a856025dc14a7286e16d3bea35d2aa1f3369dba22f9c4731b276",
-      "status": "VALID",
-      "validation": "VALID",
+      "canonicalKey": "nwtat-atryh",
+      "nameAr": "نوتات عطرية",
+      "nameEn": "نوتات عطرية",
+      "sourceName": "نوتات عطرية",
+      "imageUrl": "",
+      "filename": "",
+      "hash": null,
+      "status": "MISSING_IMAGE",
+      "validation": "MISSING_IMAGE",
       "aliases": [
-        "ملاحظات عطرية"
+        "نوتات عطرية"
       ]
     },
     {
@@ -18746,13 +18746,13 @@
     {
       "canonicalKey": "almtat",
       "nameAr": "المطاط",
-      "nameEn": "المطاط",
+      "nameEn": "natural rubber latex",
       "sourceName": "المطاط",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/almtat.webp",
+      "filename": "almtat.webp",
+      "hash": "414940cfbc44a9bbf684875a004c8458ceed68dd5f4b4238f082ff709ae9159d",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "المطاط"
       ]
@@ -18760,13 +18760,13 @@
     {
       "canonicalKey": "bkhwr-sangh",
       "nameAr": "بخور سانغ",
-      "nameEn": "بخور سانغ",
+      "nameEn": "Sang incense aromatic material",
       "sourceName": "بخور سانغ",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/bkhwr-sangh.webp",
+      "filename": "bkhwr-sangh.webp",
+      "hash": "8e39a3c5bbcfa9eabad90b3d2ce3f2e6bdd1bfab7427bd4fe6415e8a357d57ca",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "بخور سانغ"
       ]
@@ -18774,13 +18774,13 @@
     {
       "canonicalKey": "bslm-kwbahw",
       "nameAr": "بسلم كوباهو",
-      "nameEn": "بسلم كوباهو",
+      "nameEn": "Copaahu balsam resin",
       "sourceName": "بسلم كوباهو",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/bslm-kwbahw.webp",
+      "filename": "bslm-kwbahw.webp",
+      "hash": "a6f8d2a1eb3c3d9cc01281de6488206e43a4e084031ce9119d273034aeb0e9a3",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "بسلم كوباهو"
       ]
@@ -18788,13 +18788,13 @@
     {
       "canonicalKey": "blsm-byrw",
       "nameAr": "بلسم بيرو",
-      "nameEn": "بلسم بيرو",
+      "nameEn": "Peru balsam Myroxylon balsamum",
       "sourceName": "بلسم بيرو",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/blsm-byrw.webp",
+      "filename": "blsm-byrw.webp",
+      "hash": "e3c1556c73b0fbda6974aad1121e9a78aec161a372826acc11babbee85c1b287",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "بلسم بيرو"
       ]
@@ -18802,13 +18802,13 @@
     {
       "canonicalKey": "blsm-ghrjan",
       "nameAr": "بلسم غرجان",
-      "nameEn": "بلسم غرجان",
+      "nameEn": "Gurjan balsam Dipterocarpus",
       "sourceName": "بلسم غرجان",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/blsm-ghrjan.webp",
+      "filename": "blsm-ghrjan.webp",
+      "hash": "d62207e9217045b04a510a339db91642371e5742d513c5b8acbb63ef6d8b9916",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "بلسم غرجان"
       ]
@@ -18816,13 +18816,13 @@
     {
       "canonicalKey": "bysabwlyn",
       "nameAr": "بيسابولين",
-      "nameEn": "بيسابولين",
+      "nameEn": "bisabolene botanical representation",
       "sourceName": "بيسابولين",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/bysabwlyn.webp",
+      "filename": "bysabwlyn.webp",
+      "hash": "6ab1df2c8eeae8327180c8c4c3318b3fc4b5ce530accaa11ae973fa11374014c",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "بيسابولين"
       ]
@@ -18830,13 +18830,13 @@
     {
       "canonicalKey": "tshwya-ral",
       "nameAr": "تشويا رال",
-      "nameEn": "تشويا رال",
+      "nameEn": "Choya ral",
       "sourceName": "تشويا رال",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/tshwya-ral.webp",
+      "filename": "tshwya-ral.webp",
+      "hash": "46b54c455cdd1bf11ab9d0e061e819698a5f7799fb3c3d94e11ef88c2ffddf6e",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "تشويا رال"
       ]
@@ -18844,13 +18844,13 @@
     {
       "canonicalKey": "tshwya-nakh",
       "nameAr": "تشويا ناخ",
-      "nameEn": "تشويا ناخ",
+      "nameEn": "Choya nakh",
       "sourceName": "تشويا ناخ",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/tshwya-nakh.webp",
+      "filename": "tshwya-nakh.webp",
+      "hash": "e71a6f1554d500df52f3ceb122608f3b6813ff9f0d58b3bdb7531f426f90e01a",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "تشويا ناخ"
       ]
@@ -18858,13 +18858,13 @@
     {
       "canonicalKey": "khshb-albkhwr",
       "nameAr": "خشب البخور",
-      "nameEn": "خشب البخور",
+      "nameEn": "incense wood",
       "sourceName": "خشب البخور",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/khshb-albkhwr.webp",
+      "filename": "khshb-albkhwr.webp",
+      "hash": "16ead41d03201b6ff90e4c9cb8140a55cb588df99dcde321f8eecb40b47199de",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "خشب البخور"
       ]
@@ -18872,13 +18872,13 @@
     {
       "canonicalKey": "khshb-alanbr",
       "nameAr": "خشب العنبر",
-      "nameEn": "خشب العنبر",
+      "nameEn": "amberwood fragrance note",
       "sourceName": "خشب العنبر",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/khshb-alanbr.webp",
+      "filename": "khshb-alanbr.webp",
+      "hash": "10cd3a8c4a10fb4180eb10b7dd47e780fdc195b73a11fcf10b1c684f75c6d325",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "خشب العنبر"
       ]
@@ -18886,13 +18886,13 @@
     {
       "canonicalKey": "ratnj-dm-altnyn",
       "nameAr": "راتنج دم التنين",
-      "nameEn": "راتنج دم التنين",
+      "nameEn": "dragon's blood resin Daemonorops",
       "sourceName": "راتنج دم التنين",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/ratnj-dm-altnyn.webp",
+      "filename": "ratnj-dm-altnyn.webp",
+      "hash": "594a5c610f226041f406bc89cf8e4a899aa1c3116fdad0b455918c116cd92579",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "راتنج دم التنين"
       ]
@@ -18900,13 +18900,13 @@
     {
       "canonicalKey": "zhr-alhwr",
       "nameAr": "زهر الحور",
-      "nameEn": "زهر الحور",
+      "nameEn": "poplar blossom Populus",
       "sourceName": "زهر الحور",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/zhr-alhwr.webp",
+      "filename": "zhr-alhwr.webp",
+      "hash": "31acd069703c5c4991d98b0fa7f1ea27bb35207b9d6098efc10428faa15d23ec",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "زهر الحور"
       ]
@@ -18914,13 +18914,13 @@
     {
       "canonicalKey": "zyt-alkad",
       "nameAr": "زيت الكاد",
-      "nameEn": "زيت الكاد",
+      "nameEn": "cade oil Juniperus oxycedrus",
       "sourceName": "زيت الكاد",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/zyt-alkad.webp",
+      "filename": "zyt-alkad.webp",
+      "hash": "4cfe9bc88aa5b90ae8416cc756439b700f63f074ac57a08c882b58004704f4f1",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "زيت الكاد"
       ]
@@ -18928,13 +18928,13 @@
     {
       "canonicalKey": "zyt-shjrh-alshay",
       "nameAr": "زيت شجره الشاى",
-      "nameEn": "زيت شجره الشاى",
+      "nameEn": "tea tree oil Melaleuca alternifolia",
       "sourceName": "زيت شجره الشاى",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/zyt-shjrh-alshay.webp",
+      "filename": "zyt-shjrh-alshay.webp",
+      "hash": "a6ec8851182f501e0dc399d5cf9741ba4b5b40dfde124925d9a79da3f9a681bd",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "زيت شجره الشاى"
       ]
@@ -18942,13 +18942,13 @@
     {
       "canonicalKey": "shmah-albwshman",
       "nameAr": "شمعة البوشمان",
-      "nameEn": "شمعة البوشمان",
+      "nameEn": "Bushman candle Sarcocaulon",
       "sourceName": "شمعة البوشمان",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/shmah-albwshman.webp",
+      "filename": "shmah-albwshman.webp",
+      "hash": "bd0d1a03d71dbd3dd95b4c73e4e3d2eb55ac33409f4166f3bd750b6b6ad27653",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "شمعة البوشمان"
       ]
@@ -18956,13 +18956,13 @@
     {
       "canonicalKey": "anbr-allban-alakhdr-almqds",
       "nameAr": "عنبر اللبان الأخضر المقدس",
-      "nameEn": "عنبر اللبان الأخضر المقدس",
+      "nameEn": "sacred green frankincense amber",
       "sourceName": "عنبر اللبان الأخضر المقدس",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/anbr-allban-alakhdr-almqds.webp",
+      "filename": "anbr-allban-alakhdr-almqds.webp",
+      "hash": "87eea4d073903f9305f5cc1b7924a9477700afb830811a40f25ec102eba0e9b5",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "عنبر اللبان الأخضر المقدس"
       ]

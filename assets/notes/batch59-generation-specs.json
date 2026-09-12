@@ -1,0 +1,466 @@
+[
+  {
+    "canonicalKey": "almtat",
+    "canonicalNameEn": "natural rubber latex",
+    "positiveDescription": "an irregular matte ivory raw rubber sheet folded once with a tiny milky latex bead",
+    "scientificName": null,
+    "entityType": "material",
+    "plantPart": "latex",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject natural rubber latex. Subject: an irregular matte ivory raw rubber sheet folded once with a tiny milky latex bead. Style: high-end photorealistic botanical or material catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, morphology, grain, texture and natural color; only the named note; no backdrop, floor, scenery, frame, text, label, logo, watermark, people, hands, perfume bottle, container, branded packaging or unrelated objects.",
+    "sourceImageId": "exec-1af85ba7-8535-4435-9295-cf6fac2c672b",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "المطاط",
+    "imageUrl": "assets/notes/generated/almtat.webp",
+    "noteKey": "almtat",
+    "noteAssetId": "origo-note-almtat",
+    "sha256": "414940cfbc44a9bbf684875a004c8458ceed68dd5f4b4238f082ff709ae9159d",
+    "visualReview": "Reviewed reports/batch59-review.jpg against the locked identity prompt: the exact botanical or material is clearly shown; no lettering, bottle, packaging, scenery or unrelated objects.",
+    "contentHash": "04955fb819940d6a70185b79d9f9fb046f1c333af1ed76bff36f33dd2945564d",
+    "perceptualHash": "010707191e1f3c38",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 14678,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "bkhwr-sangh",
+    "canonicalNameEn": "Sang incense aromatic material",
+    "positiveDescription": "one dark resin-rich traditional fragrant wood chip with rugged grain",
+    "scientificName": null,
+    "entityType": "wood",
+    "plantPart": "wood",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject Sang incense aromatic material. Subject: one dark resin-rich traditional fragrant wood chip with rugged grain. Style: high-end photorealistic botanical or material catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, morphology, grain, texture and natural color; only the named note; no backdrop, floor, scenery, frame, text, label, logo, watermark, people, hands, perfume bottle, container, branded packaging or unrelated objects.",
+    "sourceImageId": "exec-0cc1bdba-326f-4206-83ec-0eca06da3188",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "بخور سانغ",
+    "imageUrl": "assets/notes/generated/bkhwr-sangh.webp",
+    "noteKey": "bkhwr-sangh",
+    "noteAssetId": "origo-note-bkhwr-sangh",
+    "sha256": "8e39a3c5bbcfa9eabad90b3d2ce3f2e6bdd1bfab7427bd4fe6415e8a357d57ca",
+    "visualReview": "Reviewed reports/batch59-review.jpg against the locked identity prompt: the exact botanical or material is clearly shown; no lettering, bottle, packaging, scenery or unrelated objects.",
+    "contentHash": "ea7bfe43f834adc5e089b05b733edc3d11fb438ac0dcf64e050c3f4a60333a03",
+    "perceptualHash": "000b073f7c787060",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 18634,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "bslm-kwbahw",
+    "canonicalNameEn": "Copaahu balsam resin",
+    "positiveDescription": "glossy warm amber balsam droplets on a small reddish tropical bark fragment",
+    "scientificName": null,
+    "entityType": "resin",
+    "plantPart": "resin",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject Copaahu balsam resin. Subject: glossy warm amber balsam droplets on a small reddish tropical bark fragment. Style: high-end photorealistic botanical or material catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, morphology, grain, texture and natural color; only the named note; no backdrop, floor, scenery, frame, text, label, logo, watermark, people, hands, perfume bottle, container, branded packaging or unrelated objects.",
+    "sourceImageId": "exec-6fdfeb16-90e3-496e-971f-2a768d329379",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "بسلم كوباهو",
+    "imageUrl": "assets/notes/generated/bslm-kwbahw.webp",
+    "noteKey": "bslm-kwbahw",
+    "noteAssetId": "origo-note-bslm-kwbahw",
+    "sha256": "a6f8d2a1eb3c3d9cc01281de6488206e43a4e084031ce9119d273034aeb0e9a3",
+    "visualReview": "Reviewed reports/batch59-review.jpg against the locked identity prompt: the exact botanical or material is clearly shown; no lettering, bottle, packaging, scenery or unrelated objects.",
+    "contentHash": "9c7ac7ba037c8d1ccf8aa9496c05f39c72bf78dcc07cd5d32273a3b1513d5e7a",
+    "perceptualHash": "000103072d1b7776",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 22630,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "blsm-byrw",
+    "canonicalNameEn": "Peru balsam Myroxylon balsamum",
+    "positiveDescription": "thick dark mahogany-brown glossy resin on a textured bark chip",
+    "scientificName": null,
+    "entityType": "resin",
+    "plantPart": "resin",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject Peru balsam Myroxylon balsamum. Subject: thick dark mahogany-brown glossy resin on a textured bark chip. Style: high-end photorealistic botanical or material catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, morphology, grain, texture and natural color; only the named note; no backdrop, floor, scenery, frame, text, label, logo, watermark, people, hands, perfume bottle, container, branded packaging or unrelated objects.",
+    "sourceImageId": "exec-d8a5e997-29b9-4079-ab9a-9627a1982779",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "بلسم بيرو",
+    "imageUrl": "assets/notes/generated/blsm-byrw.webp",
+    "noteKey": "blsm-byrw",
+    "noteAssetId": "origo-note-blsm-byrw",
+    "sha256": "e3c1556c73b0fbda6974aad1121e9a78aec161a372826acc11babbee85c1b287",
+    "visualReview": "Reviewed reports/batch59-review.jpg against the locked identity prompt: the exact botanical or material is clearly shown; no lettering, bottle, packaging, scenery or unrelated objects.",
+    "contentHash": "02bad3d458719f89d4ad13cedd196a224d11170683b750306a63a59203f0480d",
+    "perceptualHash": "030511274b1f0e0c",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 28104,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "blsm-ghrjan",
+    "canonicalNameEn": "Gurjan balsam Dipterocarpus",
+    "positiveDescription": "translucent honey-amber oleoresin droplets on a pale tropical wood and bark fragment",
+    "scientificName": null,
+    "entityType": "resin",
+    "plantPart": "resin",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject Gurjan balsam Dipterocarpus. Subject: translucent honey-amber oleoresin droplets on a pale tropical wood and bark fragment. Style: high-end photorealistic botanical or material catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, morphology, grain, texture and natural color; only the named note; no backdrop, floor, scenery, frame, text, label, logo, watermark, people, hands, perfume bottle, container, branded packaging or unrelated objects.",
+    "sourceImageId": "exec-44faa3b0-5e26-4803-9e05-b5747f9f49ed",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "بلسم غرجان",
+    "imageUrl": "assets/notes/generated/blsm-ghrjan.webp",
+    "noteKey": "blsm-ghrjan",
+    "noteAssetId": "origo-note-blsm-ghrjan",
+    "sha256": "d62207e9217045b04a510a339db91642371e5742d513c5b8acbb63ef6d8b9916",
+    "visualReview": "Reviewed reports/batch59-review.jpg against the locked identity prompt: the exact botanical or material is clearly shown; no lettering, bottle, packaging, scenery or unrelated objects.",
+    "contentHash": "999f9a37196ded1a9e0757cdb1b083d62c287cdca280a5104caed7c7db642380",
+    "perceptualHash": "0000232325b11b0b",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 23318,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "bysabwlyn",
+    "canonicalNameEn": "bisabolene botanical representation",
+    "positiveDescription": "a ginger-like aromatic plant rhizome slice and green leaf",
+    "scientificName": null,
+    "entityType": "rhizome",
+    "plantPart": "rhizome",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject bisabolene botanical representation. Subject: a ginger-like aromatic plant rhizome slice and green leaf. Style: high-end photorealistic botanical or material catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, morphology, grain, texture and natural color; only the named note; no backdrop, floor, scenery, frame, text, label, logo, watermark, people, hands, perfume bottle, container, branded packaging or unrelated objects.",
+    "sourceImageId": "exec-e277be7b-fc44-4fc1-a9be-11cc914d0fa2",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "بيسابولين",
+    "imageUrl": "assets/notes/generated/bysabwlyn.webp",
+    "noteKey": "bysabwlyn",
+    "noteAssetId": "origo-note-bysabwlyn",
+    "sha256": "6ab1df2c8eeae8327180c8c4c3318b3fc4b5ce530accaa11ae973fa11374014c",
+    "visualReview": "Reviewed reports/batch59-review.jpg against the locked identity prompt: the exact botanical or material is clearly shown; no lettering, bottle, packaging, scenery or unrelated objects.",
+    "contentHash": "c8759e3d14857dbe0f5714514775c64e3a3d697a5ce2306586f1623e12a63971",
+    "perceptualHash": "00311327271f0b03",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 21760,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "tshwya-ral",
+    "canonicalNameEn": "Choya ral",
+    "positiveDescription": "one charcoal-dark smoke-distilled Shorea robusta resinous wood chip with warm brown resin veins",
+    "scientificName": null,
+    "entityType": "wood",
+    "plantPart": "wood",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject Choya ral. Subject: one charcoal-dark smoke-distilled Shorea robusta resinous wood chip with warm brown resin veins. Style: high-end photorealistic botanical or material catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, morphology, grain, texture and natural color; only the named note; no backdrop, floor, scenery, frame, text, label, logo, watermark, people, hands, perfume bottle, container, branded packaging or unrelated objects.",
+    "sourceImageId": "exec-f47c4460-8bb7-466b-ad70-492cdf5ff3e6",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "تشويا رال",
+    "imageUrl": "assets/notes/generated/tshwya-ral.webp",
+    "noteKey": "tshwya-ral",
+    "noteAssetId": "origo-note-tshwya-ral",
+    "sha256": "46b54c455cdd1bf11ab9d0e061e819698a5f7799fb3c3d94e11ef88c2ffddf6e",
+    "visualReview": "Reviewed reports/batch59-review.jpg against the locked identity prompt: the exact botanical or material is clearly shown; no lettering, bottle, packaging, scenery or unrelated objects.",
+    "contentHash": "9a37bb18736f840ccddd807a5ee550cf915f16e84b0cebaa8a5b247c2a412358",
+    "perceptualHash": "030105193343870e",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 23746,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "tshwya-nakh",
+    "canonicalNameEn": "Choya nakh",
+    "positiveDescription": "one small dark charred roasted natural seashell fragment with pearly ridges",
+    "scientificName": null,
+    "entityType": "shell",
+    "plantPart": "shell",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject Choya nakh. Subject: one small dark charred roasted natural seashell fragment with pearly ridges. Style: high-end photorealistic botanical or material catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, morphology, grain, texture and natural color; only the named note; no backdrop, floor, scenery, frame, text, label, logo, watermark, people, hands, perfume bottle, container, branded packaging or unrelated objects.",
+    "sourceImageId": "exec-b2ac8999-d14b-4e08-bbac-f45fb722e75b",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "تشويا ناخ",
+    "imageUrl": "assets/notes/generated/tshwya-nakh.webp",
+    "noteKey": "tshwya-nakh",
+    "noteAssetId": "origo-note-tshwya-nakh",
+    "sha256": "e71a6f1554d500df52f3ceb122608f3b6813ff9f0d58b3bdb7531f426f90e01a",
+    "visualReview": "Reviewed reports/batch59-review.jpg against the locked identity prompt: the exact botanical or material is clearly shown; no lettering, bottle, packaging, scenery or unrelated objects.",
+    "contentHash": "3acdb77894f10392838c5f23daf1a16933b8d670b5b219c41cd18fb815178e60",
+    "perceptualHash": "00061e1d3733532e",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 19886,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "khshb-albkhwr",
+    "canonicalNameEn": "incense wood",
+    "positiveDescription": "one richly resinous dark aromatic wood chip with golden-brown layered grain",
+    "scientificName": null,
+    "entityType": "wood",
+    "plantPart": "wood",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject incense wood. Subject: one richly resinous dark aromatic wood chip with golden-brown layered grain. Style: high-end photorealistic botanical or material catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, morphology, grain, texture and natural color; only the named note; no backdrop, floor, scenery, frame, text, label, logo, watermark, people, hands, perfume bottle, container, branded packaging or unrelated objects.",
+    "sourceImageId": "exec-267cf7a5-d74c-4fee-9735-e5cae383a06f",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "خشب البخور",
+    "imageUrl": "assets/notes/generated/khshb-albkhwr.webp",
+    "noteKey": "khshb-albkhwr",
+    "noteAssetId": "origo-note-khshb-albkhwr",
+    "sha256": "16ead41d03201b6ff90e4c9cb8140a55cb588df99dcde321f8eecb40b47199de",
+    "visualReview": "Reviewed reports/batch59-review.jpg against the locked identity prompt: the exact botanical or material is clearly shown; no lettering, bottle, packaging, scenery or unrelated objects.",
+    "contentHash": "c3dfd2f5d09a9d9393f81875faa9cc90128fbcccab2399915a6e31491d7d718f",
+    "perceptualHash": "0001010301336f3c",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 23652,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "khshb-alanbr",
+    "canonicalNameEn": "amberwood fragrance note",
+    "positiveDescription": "a compact golden-brown weathered wood fragment with warm amber resin veins",
+    "scientificName": null,
+    "entityType": "wood",
+    "plantPart": "wood",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject amberwood fragrance note. Subject: a compact golden-brown weathered wood fragment with warm amber resin veins. Style: high-end photorealistic botanical or material catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, morphology, grain, texture and natural color; only the named note; no backdrop, floor, scenery, frame, text, label, logo, watermark, people, hands, perfume bottle, container, branded packaging or unrelated objects.",
+    "sourceImageId": "exec-7186190a-be84-4198-b8b0-7153c9428741",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "خشب العنبر",
+    "imageUrl": "assets/notes/generated/khshb-alanbr.webp",
+    "noteKey": "khshb-alanbr",
+    "noteAssetId": "origo-note-khshb-alanbr",
+    "sha256": "10cd3a8c4a10fb4180eb10b7dd47e780fdc195b73a11fcf10b1c684f75c6d325",
+    "visualReview": "Reviewed reports/batch59-review.jpg against the locked identity prompt: the exact botanical or material is clearly shown; no lettering, bottle, packaging, scenery or unrelated objects.",
+    "contentHash": "e2f734fff7879015d1e6977608e163673d9a3781a67ce52039e5ea61cb1c93c6",
+    "perceptualHash": "00040606251d4b16",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 21642,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "ratnj-dm-altnyn",
+    "canonicalNameEn": "dragon's blood resin Daemonorops",
+    "positiveDescription": "vivid deep crimson irregular resin tears with a small palm scale fragment",
+    "scientificName": null,
+    "entityType": "resin",
+    "plantPart": "resin",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject dragon's blood resin Daemonorops. Subject: vivid deep crimson irregular resin tears with a small palm scale fragment. Style: high-end photorealistic botanical or material catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, morphology, grain, texture and natural color; only the named note; no backdrop, floor, scenery, frame, text, label, logo, watermark, people, hands, perfume bottle, container, branded packaging or unrelated objects.",
+    "sourceImageId": "exec-10894059-45f5-4d12-9c5e-66e1d7fa22c0",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "راتنج دم التنين",
+    "imageUrl": "assets/notes/generated/ratnj-dm-altnyn.webp",
+    "noteKey": "ratnj-dm-altnyn",
+    "noteAssetId": "origo-note-ratnj-dm-altnyn",
+    "sha256": "594a5c610f226041f406bc89cf8e4a899aa1c3116fdad0b455918c116cd92579",
+    "visualReview": "Reviewed reports/batch59-review.jpg against the locked identity prompt: the exact botanical or material is clearly shown; no lettering, bottle, packaging, scenery or unrelated objects.",
+    "contentHash": "dde79cdbc9d86e9a24b6e63f26455a367e428b41457c59e4d4e383df92ba1674",
+    "perceptualHash": "03170f0b0b072f6e",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 29658,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "zhr-alhwr",
+    "canonicalNameEn": "poplar blossom Populus",
+    "positiveDescription": "a twig with reddish-brown resinous buds opening into soft pale catkins",
+    "scientificName": null,
+    "entityType": "flowering branch",
+    "plantPart": "flower",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject poplar blossom Populus. Subject: a twig with reddish-brown resinous buds opening into soft pale catkins. Style: high-end photorealistic botanical or material catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, morphology, grain, texture and natural color; only the named note; no backdrop, floor, scenery, frame, text, label, logo, watermark, people, hands, perfume bottle, container, branded packaging or unrelated objects.",
+    "sourceImageId": "exec-d6db5599-9b73-481f-89f3-995d6a90e429",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "زهر الحور",
+    "imageUrl": "assets/notes/generated/zhr-alhwr.webp",
+    "noteKey": "zhr-alhwr",
+    "noteAssetId": "origo-note-zhr-alhwr",
+    "sha256": "31acd069703c5c4991d98b0fa7f1ea27bb35207b9d6098efc10428faa15d23ec",
+    "visualReview": "Reviewed reports/batch59-review.jpg against the locked identity prompt: the exact botanical or material is clearly shown; no lettering, bottle, packaging, scenery or unrelated objects.",
+    "contentHash": "841da44c7024e25a2fabd4ca5c213d1b19c66d73744225eb8f083a222c667fb5",
+    "perceptualHash": "03270f515d0e0606",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 28544,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "zyt-alkad",
+    "canonicalNameEn": "cade oil Juniperus oxycedrus",
+    "positiveDescription": "a charred juniper wood chip with dark glossy tar-like oil beads and needle sprig",
+    "scientificName": null,
+    "entityType": "oil",
+    "plantPart": "wood",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject cade oil Juniperus oxycedrus. Subject: a charred juniper wood chip with dark glossy tar-like oil beads and needle sprig. Style: high-end photorealistic botanical or material catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, morphology, grain, texture and natural color; only the named note; no backdrop, floor, scenery, frame, text, label, logo, watermark, people, hands, perfume bottle, container, branded packaging or unrelated objects.",
+    "sourceImageId": "exec-474d0655-6628-4b98-9a56-691776846a88",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "زيت الكاد",
+    "imageUrl": "assets/notes/generated/zyt-alkad.webp",
+    "noteKey": "zyt-alkad",
+    "noteAssetId": "origo-note-zyt-alkad",
+    "sha256": "4cfe9bc88aa5b90ae8416cc756439b700f63f074ac57a08c882b58004704f4f1",
+    "visualReview": "Reviewed reports/batch59-review.jpg against the locked identity prompt: the exact botanical or material is clearly shown; no lettering, bottle, packaging, scenery or unrelated objects.",
+    "contentHash": "122143b624d0563ffa27e9ad0fd478c723bac20b7770647431a71a7e942c0444",
+    "perceptualHash": "0113134f175f4e06",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 33212,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "zyt-shjrh-alshay",
+    "canonicalNameEn": "tea tree oil Melaleuca alternifolia",
+    "positiveDescription": "fresh narrow green tea tree leaves with a clear oil droplet",
+    "scientificName": null,
+    "entityType": "oil",
+    "plantPart": "leaf",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject tea tree oil Melaleuca alternifolia. Subject: fresh narrow green tea tree leaves with a clear oil droplet. Style: high-end photorealistic botanical or material catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, morphology, grain, texture and natural color; only the named note; no backdrop, floor, scenery, frame, text, label, logo, watermark, people, hands, perfume bottle, container, branded packaging or unrelated objects.",
+    "sourceImageId": "exec-9f36e0fb-e346-4926-b0c7-f97cfffc8007",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "زيت شجره الشاى",
+    "imageUrl": "assets/notes/generated/zyt-shjrh-alshay.webp",
+    "noteKey": "zyt-shjrh-alshay",
+    "noteAssetId": "origo-note-zyt-shjrh-alshay",
+    "sha256": "a6ec8851182f501e0dc399d5cf9741ba4b5b40dfde124925d9a79da3f9a681bd",
+    "visualReview": "Reviewed reports/batch59-review.jpg against the locked identity prompt: the exact botanical or material is clearly shown; no lettering, bottle, packaging, scenery or unrelated objects.",
+    "contentHash": "932f0de098390e4d33ebcaef00cd71a74704daf7b7b33c26e4d6479da59e3bed",
+    "perceptualHash": "080c0d0b0b25cc88",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 30326,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "shmah-albwshman",
+    "canonicalNameEn": "Bushman candle Sarcocaulon",
+    "positiveDescription": "a waxy succulent stem fragment with small leaves and a tiny pale flower",
+    "scientificName": null,
+    "entityType": "plant",
+    "plantPart": "stem",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject Bushman candle Sarcocaulon. Subject: a waxy succulent stem fragment with small leaves and a tiny pale flower. Style: high-end photorealistic botanical or material catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, morphology, grain, texture and natural color; only the named note; no backdrop, floor, scenery, frame, text, label, logo, watermark, people, hands, perfume bottle, container, branded packaging or unrelated objects.",
+    "sourceImageId": "exec-50835f40-c935-4f25-8df2-72cbff89b684",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "شمعة البوشمان",
+    "imageUrl": "assets/notes/generated/shmah-albwshman.webp",
+    "noteKey": "shmah-albwshman",
+    "noteAssetId": "origo-note-shmah-albwshman",
+    "sha256": "bd0d1a03d71dbd3dd95b4c73e4e3d2eb55ac33409f4166f3bd750b6b6ad27653",
+    "visualReview": "Reviewed reports/batch59-review.jpg against the locked identity prompt: the exact botanical or material is clearly shown; no lettering, bottle, packaging, scenery or unrelated objects.",
+    "contentHash": "345d4d9711c53932d0f58cc87f080d3056ce762cf80e973a242875a17fd892f6",
+    "perceptualHash": "06ce5d78110b0b0d",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 23284,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "anbr-allban-alakhdr-almqds",
+    "canonicalNameEn": "sacred green frankincense amber",
+    "positiveDescription": "rare green-tinted Boswellia resin tears with subtle golden translucence and a small bark chip",
+    "scientificName": null,
+    "entityType": "resin",
+    "plantPart": "resin",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject sacred green frankincense amber. Subject: rare green-tinted Boswellia resin tears with subtle golden translucence and a small bark chip. Style: high-end photorealistic botanical or material catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, morphology, grain, texture and natural color; only the named note; no backdrop, floor, scenery, frame, text, label, logo, watermark, people, hands, perfume bottle, container, branded packaging or unrelated objects.",
+    "sourceImageId": "exec-2024713d-0cd7-4917-9a56-b63a598e4d95",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "عنبر اللبان الأخضر المقدس",
+    "imageUrl": "assets/notes/generated/anbr-allban-alakhdr-almqds.webp",
+    "noteKey": "anbr-allban-alakhdr-almqds",
+    "noteAssetId": "origo-note-anbr-allban-alakhdr-almqds",
+    "sha256": "87eea4d073903f9305f5cc1b7924a9477700afb830811a40f25ec102eba0e9b5",
+    "visualReview": "Reviewed reports/batch59-review.jpg against the locked identity prompt: the exact botanical or material is clearly shown; no lettering, bottle, packaging, scenery or unrelated objects.",
+    "contentHash": "1ae958a7c607aa26228b056c861620aca89d78c2a5b6d5571d897a979506f930",
+    "perceptualHash": "000c0f13630f1313",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 23176,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  }
+]
