@@ -4,7 +4,7 @@
   const cssPromises = new Map();
   const assets = {
     admin:["chunks/admin-runtime.min.js?v=11"],
-    productEditor:["chunks/product-editor-runtime.min.js?v=6"],
+    productEditor:["chunks/product-editor-runtime.min.js?v=7"],
     storefrontSettings:["chunks/storefront-settings-runtime.min.js?v=6"],
     finder:["fragrance-finder-engine.js?v=3","fragrance-finder-i18n.js?v=5","fragrance-finder.js?v=7"]
   };

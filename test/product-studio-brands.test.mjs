@@ -19,6 +19,13 @@ test("product studio opens with brands instead of an unassigned product draft", 
 test("studio brand add preselects the brand and runtime cache is bumped", () => {
   assert.match(app, /studio-add-brand-product"\) startManualProduct\(false, actionElement\.dataset\.brand/);
   assert.match(loader, /admin-runtime\.min\.js\?v=11/);
-  assert.match(loader, /product-editor-runtime\.min\.js\?v=6/);
+  assert.match(loader, /product-editor-runtime\.min\.js\?v=7/);
   assert.match(css, /\.studio-brand-product-grid\{display:grid/);
+});
+
+test("new branded products apply their brand before rendering without leaking draft-only variables", () => {
+  const start = app.slice(app.indexOf("function startManualProduct("), app.indexOf("function selectOptions("));
+  const collect = app.slice(app.indexOf("function collectReviewProduct("), app.indexOf("function fileAsDataURL("));
+  assert.match(start, /if \(!restore && brandValue\)/);
+  assert.doesNotMatch(collect, /\brestore\b|\bbrandValue\b/);
 });

@@ -46,8 +46,8 @@
   let knowledgePromise;
   function loadKnowledgeResources() {
     if (knowledgePromise) return knowledgePromise;
-    knowledgePromise = Promise.all([...document.querySelectorAll("script[data-knowledge-src]")]
-      .map((placeholder) => loadScript(placeholder.dataset.knowledgeSrc)))
+    knowledgePromise = [...document.querySelectorAll("script[data-knowledge-src]")]
+      .reduce((chain, placeholder) => chain.then(() => loadScript(placeholder.dataset.knowledgeSrc)), Promise.resolve())
       .then(() => window.dispatchEvent(new Event("origo:knowledge-ready")));
     return knowledgePromise;
   }
@@ -122,7 +122,7 @@
     idle(loadIdleScripts, 2600);
     if ("serviceWorker" in navigator) {
       const hadController = Boolean(navigator.serviceWorker.controller);
-      const releaseKey = "origoRuntimeReload-v156";
+      const releaseKey = "origoRuntimeReload-v158";
       navigator.serviceWorker.addEventListener("controllerchange", () => {
         if (!hadController || sessionStorage.getItem(releaseKey)) return;
         sessionStorage.setItem(releaseKey, "1");

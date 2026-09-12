@@ -7676,6 +7676,12 @@ function startManualProduct(restore = false, brandValue = "") {
     } catch {}
   }
   product.status = "draft";
+  if (!restore && brandValue) {
+    const option = productOptionItems("brand").find((item) => brandMatches(item, brandValue));
+    product.brand = option?.value || option?.slug || option?.nameEn || option?.nameAr || brandValue;
+    product.brandAr = option?.nameAr || "";
+    product.brandEn = option?.nameEn || product.brand;
+  }
   product.sourceLog.push({
     provider: "ORIGO",
     url: "",
@@ -8560,12 +8566,6 @@ function collectReviewProduct(form) {
       note: "Reviewed manually by manager",
       fetchedAt: new Date().toISOString()
     }];
-  }
-  if (!restore && brandValue) {
-    const option = productOptionItems("brand").find((item) => brandMatches(item, brandValue));
-    product.brand = option?.value || option?.slug || option?.nameEn || option?.nameAr || brandValue;
-    product.brandAr = option?.nameAr || "";
-    product.brandEn = option?.nameEn || product.brand;
   }
   product.images = normalizeProductImages(product.images || []);
   if (product.images.length) product.image = (product.images.find((item) => item.selected) || product.images[0]).url;

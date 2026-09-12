@@ -71,7 +71,7 @@ test("product studio click passes through both asynchronous loaders exactly once
 test("home loads production storefront core without admin editor or finder runtimes", async () => {
   const [html, loader, core] = await Promise.all([read("../index.html"), read("../runtime-loader.js"), read("../chunks/storefront-core.min.js")]);
   assert.match(html, /chunks\/storefront-core\.min\.js\?v=49/);
-  assert.match(html, /runtime-loader\.js\?v=18/);
+  assert.match(html, /runtime-loader\.js\?v=19/);
   assert.doesNotMatch(html, /<script[^>]+(?:admin-runtime|product-editor-runtime|storefront-settings-runtime|fragrance-finder-(?:engine|i18n)|fragrance-finder\.js)/);
   assert.doesNotMatch(core, /function settingsMarkup\(|function renderImportReview\(|function overviewMarkup\(/);
   assert.match(core, /function homeHeroTargetHref\(/);
@@ -84,7 +84,7 @@ test("storefront navigation avoids artificial catalog waits and warms deferred k
   assert.match(app, /function renderCatalog\(\{ skeleton = false \} = \{\}\)/);
   assert.match(app, /else commitCatalog\(\)/);
   assert.doesNotMatch(app, /skeleton \? 140 : 0/);
-  assert.match(deferred, /knowledgePromise = Promise\.all/);
+  assert.match(deferred, /knowledgePromise = \[\.\.\.document\.querySelectorAll/);
   assert.match(deferred, /idle\(loadKnowledgeResources, 700\)/);
   assert.match(deferred, /addEventListener\("pointerdown"/);
 });
@@ -116,6 +116,13 @@ test("note artwork has a safe fallback and resize observers defer layout writes"
   const deferred = await read("../deferred-modules.js");
   assert.match(deferred, /\^\\\/\(\?:perfume\|notes\)/);
   assert.match(source, /origo:knowledge-ready[\s\S]*?product-overlay[\s\S]*?showProductDetails/);
+});
+
+test("fragrance knowledge dependencies load sequentially before the product editor uses them", async () => {
+  const deferred = await read("../deferred-modules.js");
+  const notes = await read("../fragrance-notes-library.js");
+  assert.match(deferred, /querySelectorAll\("script\[data-knowledge-src\]"\)[\s\S]*?\.reduce\(\(chain, placeholder\) => chain\.then/);
+  assert.match(notes, /if \(!families\.length\) families\.push/);
 });
 
 test("runtime chunks and their CSS exist and Hostinger copies the chunks tree", async () => {
