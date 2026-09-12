@@ -3852,7 +3852,11 @@ function bindHomeBrandPagination(track, dotsSelector) {
   };
   track.addEventListener("scroll", update, { passive:true });
   if (dotsSelector === "#home-benefits-pagination" && typeof ResizeObserver !== "undefined") {
-    const observer = new ResizeObserver(update);
+    let resizeFrame = 0;
+    const observer = new ResizeObserver(() => {
+      cancelAnimationFrame(resizeFrame);
+      resizeFrame = requestAnimationFrame(update);
+    });
     observer.observe(track);
   }
   requestAnimationFrame(update);
@@ -5395,8 +5399,14 @@ function positionLabel(position) {
   return (labels[position] || labels.multiple)[state.lang === "ar" ? 0 : 1];
 }
 
+function fragranceNoteArtwork(note) {
+  const library = window.ORIGOFragranceNotes;
+  if (typeof library?.artwork === "function") return library.artwork(note || {});
+  return note?.image || PRODUCT_IMAGE_PLACEHOLDER;
+}
+
 function noteCardMarkup(note, compact = false) {
-  const family = window.ORIGOFragranceNotes.familyById(note.familyId);
+  const family = window.ORIGOFragranceNotes?.familyById?.(note.familyId);
   const secondaryName = state.lang === "ar" ? note.nameEn : note.nameAr;
   const secondaryLabel = note.nameAr === note.nameEn
     ? (state.lang === "ar" ? "اسم المصدر" : "SOURCE NAME")
@@ -5409,7 +5419,7 @@ function noteCardMarkup(note, compact = false) {
   return `
     <button class="library-note-card${compact ? " compact" : ""} image-${escapeHTML(note.imageStatus || "missing")}" data-action="open-note" data-slug="${escapeHTML(note.slug)}"
       style="--note-color:${escapeHTML(family?.color || "#77736e")}">
-      <span class="library-note-image"><img src="${escapeHTML(window.ORIGOFragranceNotes.artwork(note))}" alt="${escapeHTML(noteLabel(note))}" loading="lazy" data-note-artwork="true" data-note-slug="${escapeHTML(note.slug)}" /></span>
+      <span class="library-note-image"><img src="${escapeHTML(fragranceNoteArtwork(note))}" alt="${escapeHTML(noteLabel(note))}" loading="lazy" data-note-artwork="true" data-note-slug="${escapeHTML(note.slug)}" /></span>
       <span class="library-note-copy">
         <small>${escapeHTML(familyLabel(family) || "")}${imageStateLabel ? ` · ${escapeHTML(imageStateLabel)}` : ""}</small>
         <b>${escapeHTML(noteLabel(note))}</b>
@@ -5664,6 +5674,7 @@ function handleNotesRoute({ replace = false } = {}) {
 
 window.addEventListener("origo:knowledge-ready", () => {
   if (document.body.classList.contains("notes-route")) handleNotesRoute({ replace: true });
+  if ($("#product-overlay")?.classList.contains("open") && state.activeProductId) showProductDetails(getProduct(state.activeProductId), false);
 });
 
 function navigateNotes(slug = "") {
@@ -5729,7 +5740,7 @@ function productNotePyramid(product) {
           return `<span class="dialog-note-chip${ref ? " custom" : " unknown"}"><img src="${escapeHTML(ref?.image || library?.artwork?.(unknown) || PRODUCT_IMAGE_PLACEHOLDER)}" alt="${escapeHTML(label)}" data-note-artwork="true" data-note-name-ar="${escapeHTML(unknown.nameAr)}" data-note-name-en="${escapeHTML(unknown.nameEn)}" data-note-family="${escapeHTML(unknown.familyId)}" /><b>${escapeHTML(label)}</b>${ref ? "" : `<small>${state.lang === "ar" ? "غير مصنف" : "Unclassified"}</small>`}</span>`;
         }
         return `<button class="dialog-note-chip" data-action="open-note" data-slug="${escapeHTML(note.slug)}">
-          <img src="${escapeHTML(library.artwork(note))}" alt="${escapeHTML(noteLabel(note))}" data-note-artwork="true" data-note-slug="${escapeHTML(note.slug)}" /><b>${escapeHTML(noteLabel(note))}</b></button>`;
+          <img src="${escapeHTML(fragranceNoteArtwork(note))}" alt="${escapeHTML(noteLabel(note))}" data-note-artwork="true" data-note-slug="${escapeHTML(note.slug)}" /><b>${escapeHTML(noteLabel(note))}</b></button>`;
       }).join("")}</div>
     </div>`;
   }).join("");
@@ -5895,7 +5906,7 @@ function productIntelligenceMarkup(product) {
 function productIngredientsMarkup(product) {
   const values = Array.isArray(product.mainIngredients) ? product.mainIngredients : [];
   if (!values.length) return "";
-  return `<section class="pdp-main-ingredients"><div class="pdp-section-heading"><span>KEY INGREDIENTS</span><h2>${state.lang === "ar" ? "المكونات الأساسية" : "Key ingredients"}</h2><p>${state.lang === "ar" ? "المواد الأبرز التي تبني شخصية العطر، منفصلة عن هرم النوتات." : "The leading materials shaping the fragrance, separate from its note pyramid."}</p></div><div>${values.map((value) => { const note = window.ORIGOFragranceNotes?.find(value); const image = note ? window.ORIGOFragranceNotes.artwork(note) : useCaseArtwork("sparkles"); const label = note ? noteLabel(note) : value; return `<article><img src="${escapeHTML(image)}" alt="${escapeHTML(label)}" loading="lazy"/><b>${escapeHTML(label)}</b></article>`; }).join("")}</div></section>`;
+  return `<section class="pdp-main-ingredients"><div class="pdp-section-heading"><span>KEY INGREDIENTS</span><h2>${state.lang === "ar" ? "المكونات الأساسية" : "Key ingredients"}</h2><p>${state.lang === "ar" ? "المواد الأبرز التي تبني شخصية العطر، منفصلة عن هرم النوتات." : "The leading materials shaping the fragrance, separate from its note pyramid."}</p></div><div>${values.map((value) => { const note = window.ORIGOFragranceNotes?.find(value); const image = note ? fragranceNoteArtwork(note) : useCaseArtwork("sparkles"); const label = note ? noteLabel(note) : value; return `<article><img src="${escapeHTML(image)}" alt="${escapeHTML(label)}" loading="lazy"/><b>${escapeHTML(label)}</b></article>`; }).join("")}</div></section>`;
 }
 
 function productPublicDetailsMarkup(product) {
@@ -6221,7 +6232,7 @@ function resetNoteAdminForm(seed = {}) {
   preview.dataset.noteNameEn = seed.nameEn || "NEW NOTE";
   preview.dataset.noteFamily = seed.familyId || "uncategorized";
   delete preview.dataset.noteFallback;
-  preview.src = window.ORIGOFragranceNotes.artwork({
+  preview.src = fragranceNoteArtwork({
     nameAr: seed.nameAr || "مكوّن جديد", nameEn: seed.nameEn || "NEW NOTE",
     familyId: seed.familyId || "uncategorized", symbol: "✦"
   });
@@ -6260,7 +6271,7 @@ function populateNoteAdminForm(note) {
   preview.dataset.noteNameEn = note.nameEn || "";
   preview.dataset.noteFamily = note.familyId || "uncategorized";
   delete preview.dataset.noteFallback;
-  preview.src = window.ORIGOFragranceNotes.artwork(note);
+  preview.src = fragranceNoteArtwork(note);
   const imageStatus = $("#note-image-status");
   if (imageStatus) imageStatus.textContent = note.image
     ? adminCopy("الصورة الحالية جاهزة ويمكن استبدالها.", "Current artwork is ready and can be replaced.")
@@ -6534,7 +6545,7 @@ function productCardAuraNotes(product, isArabic = state.lang === "ar") {
       label,
       nameAr,
       nameEn,
-      image: note ? window.ORIGOFragranceNotes.artwork(note) : ""
+      image: note ? fragranceNoteArtwork(note) : ""
     };
   }).filter(Boolean);
   return notes.slice(0, 6);
@@ -6631,7 +6642,7 @@ function normalizeProductCardNote(value, isArabic) {
   return {
     id: source.id || libraryNote?.id || ORIGOCatalog.normalize(nameEn || nameAr),
     label: isArabic ? nameAr : nameEn,
-    image: libraryNote ? window.ORIGOFragranceNotes.artwork(libraryNote) : ""
+    image: libraryNote ? fragranceNoteArtwork(libraryNote) : ""
   };
 }
 
@@ -11702,7 +11713,7 @@ document.addEventListener("input", (event) => {
     preview.dataset.noteNameEn = draft.nameEn;
     preview.dataset.noteFamily = draft.familyId;
     delete preview.dataset.noteFallback;
-    preview.src = window.ORIGOFragranceNotes.artwork(draft);
+    preview.src = fragranceNoteArtwork(draft);
     const imageStatus = $("#note-image-status");
     if (imageStatus) imageStatus.textContent = event.target.value
       ? adminCopy("سيتم استخدام رابط الصورة عند الحفظ.", "The artwork URL will be used when saved.")
@@ -11750,7 +11761,7 @@ document.addEventListener("error", (event) => {
     symbol: "✦"
   };
   image.dataset.noteFallback = "true";
-  image.src = window.ORIGOFragranceNotes.artwork({ ...note, image: "" });
+  image.src = fragranceNoteArtwork({ ...note, image: "" });
 }, true);
 
 function imageUploadRequirement(input) {

@@ -337,7 +337,6 @@
   window.addEventListener("popstate", route);
   window.addEventListener("resize", syncFilterAccessibility, { passive: true });
   mobileFilterMedia.addEventListener?.("change", syncFilterAccessibility);
-  if ("ResizeObserver" in window) new ResizeObserver(syncFilterAccessibility).observe(document.documentElement);
   document.addEventListener("click", (event) => { if (event.target.closest("[data-action='language'],[data-action='theme']")) setTimeout(() => { renderHome(); if (document.body.classList.contains("alternatives-route")) route(); }, 0); });
   if (!sessionStorage.getItem("origoAltSession")) sessionStorage.setItem("origoAltSession", `${Date.now().toString(36)}-${Math.random().toString(36).slice(2,9)}`);
   window.ORIGOAlternatives = { route, renderHome, productPanel, refresh: () => load(true).then(() => route()) };

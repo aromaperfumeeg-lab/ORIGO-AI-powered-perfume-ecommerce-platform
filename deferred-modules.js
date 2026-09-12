@@ -3,7 +3,7 @@
   const loaded = new Set([...document.scripts].map((script) => script.src).filter(Boolean));
   const route = location.pathname;
   const routeScripts = [
-    ["alternatives.js?v=8", /\/(?:alternatives|perfume)(?:\/|$)/],
+    ["alternatives.js?v=9", /\/(?:alternatives|perfume)(?:\/|$)/],
     ["performance-insights.js?v=2", /\/performance(?:\/|$)/],
     ["commerce.js?v=3", /\/(?:cart|checkout|payment|track(?:ing)?|orders?)(?:\/|$)/],
     ["account.js?v=3", /\/(?:account|login|register|profile)(?:\/|$)/]
@@ -81,7 +81,7 @@
     if (/product|quick-view|note/.test(action) || /[?&]product=|\/notes(?:\/|$)/.test(href)) {
       loadStyles("link[data-deferred-href]");
       loadKnowledgeResources();
-      if (/product|quick-view/.test(action) || /[?&]product=|\/perfume(?:\/|$)/.test(href)) loadScript("alternatives.js?v=8");
+      if (/product|quick-view/.test(action) || /[?&]product=|\/perfume(?:\/|$)/.test(href)) loadScript("alternatives.js?v=9");
     }
     const match = routeScripts.find((entry) => entry[1].test(href));
     if (match) loadScript(match[0], match[2]);
@@ -122,7 +122,7 @@
     idle(loadIdleScripts, 2600);
     if ("serviceWorker" in navigator) {
       const hadController = Boolean(navigator.serviceWorker.controller);
-      const releaseKey = "origoRuntimeReload-v155";
+      const releaseKey = "origoRuntimeReload-v156";
       navigator.serviceWorker.addEventListener("controllerchange", () => {
         if (!hadController || sessionStorage.getItem(releaseKey)) return;
         sessionStorage.setItem(releaseKey, "1");
@@ -133,7 +133,7 @@
         .catch(() => {});
     }
   };
-  if (new URL(location.href).searchParams.has("product") || /^\/notes(?:\/|$)/.test(route)) loadKnowledgeResources();
+  if (new URL(location.href).searchParams.has("product") || /^\/(?:perfume|notes)(?:\/|$)/.test(route)) loadKnowledgeResources();
   if (document.readyState === "complete") afterLoad();
   else addEventListener("load", afterLoad, { once:true });
 })();

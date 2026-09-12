@@ -87,7 +87,7 @@ test("product alternatives panel renders only manager-saved canonical relationsh
   const panel = alternatives.slice(alternatives.indexOf("function productPanel"), alternatives.indexOf("function setRoute"));
   assert.match(panel,/renderFragranceRelationships/);
   assert.doesNotMatch(panel,/calculatedAlternatives|model\.payload|similarity|closestKeys/);
-  assert.match(deferred,/alternatives\.js\?v=7/);
+  assert.match(deferred,/alternatives\.js\?v=9/);
   assert.match(app,/managesLegacyAlternatives \? previousAlternativeMatches/);
 });
 

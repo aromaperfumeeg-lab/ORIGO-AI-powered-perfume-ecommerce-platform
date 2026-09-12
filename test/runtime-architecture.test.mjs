@@ -70,7 +70,7 @@ test("product studio click passes through both asynchronous loaders exactly once
 
 test("home loads production storefront core without admin editor or finder runtimes", async () => {
   const [html, loader, core] = await Promise.all([read("../index.html"), read("../runtime-loader.js"), read("../chunks/storefront-core.min.js")]);
-  assert.match(html, /chunks\/storefront-core\.min\.js\?v=48/);
+  assert.match(html, /chunks\/storefront-core\.min\.js\?v=49/);
   assert.match(html, /runtime-loader\.js\?v=18/);
   assert.doesNotMatch(html, /<script[^>]+(?:admin-runtime|product-editor-runtime|storefront-settings-runtime|fragrance-finder-(?:engine|i18n)|fragrance-finder\.js)/);
   assert.doesNotMatch(core, /function settingsMarkup\(|function renderImportReview\(|function overviewMarkup\(/);
@@ -102,6 +102,20 @@ test("standalone routes skip homepage rendering and catalog filters preserve the
   assert.match(source, /function catalogFilterUiSnapshot\(holder\)/);
   assert.match(source, /restoreCatalogFilterUi\(holder, snapshot\)/);
   assert.match(source, /document\.body\.classList\.remove\("notes-route", "benefit-route", "benefits-route", "brands-route"\)/);
+});
+
+test("note artwork has a safe fallback and resize observers defer layout writes", async () => {
+  const source = await read("../app.js");
+  const brands = await read("../home-brand-navigation.js");
+  const alternatives = await read("../alternatives.js");
+  assert.match(source, /function fragranceNoteArtwork\(note\)[\s\S]*?typeof library\?\.artwork === "function"/);
+  assert.doesNotMatch(source, /window\.ORIGOFragranceNotes\.artwork/);
+  assert.match(source, /new ResizeObserver\(\(\) => \{[\s\S]*?requestAnimationFrame\(update\)/);
+  assert.match(brands, /new ResizeObserver\(\(\) => \{[\s\S]*?requestAnimationFrame/);
+  assert.doesNotMatch(alternatives, /ResizeObserver/);
+  const deferred = await read("../deferred-modules.js");
+  assert.match(deferred, /\^\\\/\(\?:perfume\|notes\)/);
+  assert.match(source, /origo:knowledge-ready[\s\S]*?product-overlay[\s\S]*?showProductDetails/);
 });
 
 test("runtime chunks and their CSS exist and Hostinger copies the chunks tree", async () => {

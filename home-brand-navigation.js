@@ -67,9 +67,13 @@
     listen(document, "visibilitychange", schedule);
     listen(mobile, "change", () => { measure(); schedule(); });
     listen(reduced, "change", schedule);
-    const observer = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(() => { measure(); schedule(); });
+    let resizeFrame = 0;
+    const observer = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(() => {
+      cancelAnimationFrame(resizeFrame);
+      resizeFrame = requestAnimationFrame(() => { measure(); schedule(); });
+    });
     observer?.observe(track);
-    const controller = { step, setInterval(value) { delay = interval(value); schedule(); }, destroy() { cancelAnimationFrame(frame); observer?.disconnect(); abort.abort(); } };
+    const controller = { step, setInterval(value) { delay = interval(value); schedule(); }, destroy() { cancelAnimationFrame(frame); cancelAnimationFrame(resizeFrame); observer?.disconnect(); abort.abort(); } };
     controllers.set(track, controller);
     measure();
     schedule();
