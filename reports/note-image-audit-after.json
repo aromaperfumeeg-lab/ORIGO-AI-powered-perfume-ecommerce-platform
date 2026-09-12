@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-09-11T20:21:06.711Z",
+  "generatedAt": "2026-09-12T08:11:41.395Z",
   "scope": "Library plus persisted note overrides; SQLite opened read-only. Visual semantics are not certified by filenames or hashes.",
   "notes": 1883,
   "products": 5,
-  "valid": 1295,
-  "missing": 570,
+  "valid": 1311,
+  "missing": 554,
   "duplicateGroups": 9,
   "needsReview": 0,
   "duplicates": [
@@ -18029,13 +18029,13 @@
     {
       "canonicalKey": "shjrh-alashb",
       "nameAr": "شجرة العشب",
-      "nameEn": "شجرة العشب",
+      "nameEn": "Australian grass tree Xanthorrhoea",
       "sourceName": "شجرة العشب",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/shjrh-alashb.webp",
+      "filename": "shjrh-alashb.webp",
+      "hash": "8c5c61b7957876dbc5ede1f24e31acabd575b4d641d35309cf5061eacc5244f8",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "شجرة العشب"
       ]
@@ -18043,13 +18043,13 @@
     {
       "canonicalKey": "shjrh-alkmthry",
       "nameAr": "شجرة الكمثرى",
-      "nameEn": "شجرة الكمثرى",
+      "nameEn": "pear tree Pyrus communis",
       "sourceName": "شجرة الكمثرى",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/shjrh-alkmthry.webp",
+      "filename": "shjrh-alkmthry.webp",
+      "hash": "56da835ba058ffe827e66930892da4d4bed153dc9b26da7289dfd49a5ccf75be",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "شجرة الكمثرى"
       ]
@@ -18057,13 +18057,13 @@
     {
       "canonicalKey": "shjrh-almanjw",
       "nameAr": "شجرة المانجو",
-      "nameEn": "شجرة المانجو",
+      "nameEn": "mango tree Mangifera indica",
       "sourceName": "شجرة المانجو",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/shjrh-almanjw.webp",
+      "filename": "shjrh-almanjw.webp",
+      "hash": "192c537fe6276fa3853d746fcdd84c02a64dc3176217fa6c10e56aef87a1c072",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "شجرة المانجو"
       ]
@@ -18071,13 +18071,13 @@
     {
       "canonicalKey": "shjrh-balw-fyrdy",
       "nameAr": "شجرة بالو فيردي",
-      "nameEn": "شجرة بالو فيردي",
+      "nameEn": "Palo Verde tree Parkinsonia",
       "sourceName": "شجرة بالو فيردي",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/shjrh-balw-fyrdy.webp",
+      "filename": "shjrh-balw-fyrdy.webp",
+      "hash": "058952cfaef786a17113a4b0f7b63e2f8b569d6a7b5486886bf95be73fec755c",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "شجرة بالو فيردي"
       ]
@@ -18085,13 +18085,13 @@
     {
       "canonicalKey": "shyh-alshra",
       "nameAr": "شيح الصحراء",
-      "nameEn": "شيح الصحراء",
+      "nameEn": "desert wormwood Artemisia",
       "sourceName": "شيح الصحراء",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/shyh-alshra.webp",
+      "filename": "shyh-alshra.webp",
+      "hash": "fd1b236a480a7c157f35082acc801ec9b2134ce95bc9d4fac1f0bb96e27093cb",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "شيح الصحراء"
       ]
@@ -18099,13 +18099,13 @@
     {
       "canonicalKey": "sfsaf-ahmr",
       "nameAr": "صفصاف أحمر",
-      "nameEn": "صفصاف أحمر",
+      "nameEn": "red willow Salix laevigata",
       "sourceName": "صفصاف أحمر",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/sfsaf-ahmr.webp",
+      "filename": "sfsaf-ahmr.webp",
+      "hash": "90308c626133fb47defd8de15f1c29be10638308cce9f8495df096abaca8c700",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "صفصاف أحمر"
       ]
@@ -18113,13 +18113,13 @@
     {
       "canonicalKey": "snwbr-asktlndy",
       "nameAr": "صنوبر إسكتلندي",
-      "nameEn": "صنوبر إسكتلندي",
+      "nameEn": "Scots pine Pinus sylvestris",
       "sourceName": "صنوبر إسكتلندي",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/snwbr-asktlndy.webp",
+      "filename": "snwbr-asktlndy.webp",
+      "hash": "0b861bdaa4fc8e09299dc7fd21f4e33e357c46c7f9e6573d91ba0bee0fe774ad",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "صنوبر إسكتلندي"
       ]
@@ -18127,13 +18127,13 @@
     {
       "canonicalKey": "thlb-alblwt-thlb-alsndyan",
       "nameAr": "طحلب البلوط (طحلب السنديان)",
-      "nameEn": "طحلب البلوط (طحلب السنديان)",
+      "nameEn": "oakmoss Evernia prunastri",
       "sourceName": "طحلب البلوط (طحلب السنديان)",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/thlb-alblwt-thlb-alsndyan.webp",
+      "filename": "thlb-alblwt-thlb-alsndyan.webp",
+      "hash": "ca5978dbabdcdf0b11c92ad1b1874b6e584c978b6769dd388ca95afd12e7e02b",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "طحلب البلوط (طحلب السنديان)"
       ]
@@ -18141,13 +18141,13 @@
     {
       "canonicalKey": "awd-altmsah",
       "nameAr": "عود التمساح",
-      "nameEn": "عود التمساح",
+      "nameEn": "crocodile agarwood oud",
       "sourceName": "عود التمساح",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/awd-altmsah.webp",
+      "filename": "awd-altmsah.webp",
+      "hash": "1e9f8d053eca47562e298f5c1e8b1900fdd34b5f4fe63ac0a1e7926392199cac",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "عود التمساح"
       ]
@@ -18155,13 +18155,13 @@
     {
       "canonicalKey": "awd-trat",
       "nameAr": "عود ترات",
-      "nameEn": "عود ترات",
+      "nameEn": "Trat agarwood oud Thailand",
       "sourceName": "عود ترات",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/awd-trat.webp",
+      "filename": "awd-trat.webp",
+      "hash": "c8cfb84a22156bca3948ff51264d7c7f93077640e58514f64a6a9ab1236edbe0",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "عود ترات"
       ]
@@ -18169,13 +18169,13 @@
     {
       "canonicalKey": "awd-swmtrh",
       "nameAr": "عود سومطرة",
-      "nameEn": "عود سومطرة",
+      "nameEn": "Sumatran agarwood oud",
       "sourceName": "عود سومطرة",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/awd-swmtrh.webp",
+      "filename": "awd-swmtrh.webp",
+      "hash": "a523958956c096de26276ca01ef4b7baa886ef76bcb1283ea5139968856e371a",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "عود سومطرة"
       ]
@@ -18183,13 +18183,13 @@
     {
       "canonicalKey": "awd-syny",
       "nameAr": "عود صيني",
-      "nameEn": "عود صيني",
+      "nameEn": "Chinese agarwood oud",
       "sourceName": "عود صيني",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/awd-syny.webp",
+      "filename": "awd-syny.webp",
+      "hash": "469f23906cd523d0adf744eb137a9a09a3b147a8beda01294506be0dba11598d",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "عود صيني"
       ]
@@ -18197,13 +18197,13 @@
     {
       "canonicalKey": "awd-fytnamy",
       "nameAr": "عود فيتنامي",
-      "nameEn": "عود فيتنامي",
+      "nameEn": "Vietnamese agarwood oud",
       "sourceName": "عود فيتنامي",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/awd-fytnamy.webp",
+      "filename": "awd-fytnamy.webp",
+      "hash": "decf1d12374ce95495acf720d5a4fd6c103e5f39cfd36268a5b7137a7f226491",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "عود فيتنامي"
       ]
@@ -18211,13 +18211,13 @@
     {
       "canonicalKey": "awd-malyzy",
       "nameAr": "عود ماليزي",
-      "nameEn": "عود ماليزي",
+      "nameEn": "Malaysian agarwood oud",
       "sourceName": "عود ماليزي",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/awd-malyzy.webp",
+      "filename": "awd-malyzy.webp",
+      "hash": "e2b808bd5bab4add72255e35969a471683824206ae8fda334a8863ab1d842415",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "عود ماليزي"
       ]
@@ -18225,13 +18225,13 @@
     {
       "canonicalKey": "fyby-zynan",
       "nameAr": "فيبي زينان",
-      "nameEn": "فيبي زينان",
+      "nameEn": "Phoebe zhennan wood",
       "sourceName": "فيبي زينان",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/fyby-zynan.webp",
+      "filename": "fyby-zynan.webp",
+      "hash": "197190bf14528670ee35b46a8ed5d5a6fb88ce6651402cfb4eb4aae83c2e850e",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "فيبي زينان"
       ]
@@ -18239,13 +18239,13 @@
     {
       "canonicalKey": "kabrywfa",
       "nameAr": "كابريوفا",
-      "nameEn": "كابريوفا",
+      "nameEn": "Cabreuva wood Myrocarpus frondosus",
       "sourceName": "كابريوفا",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/kabrywfa.webp",
+      "filename": "kabrywfa.webp",
+      "hash": "c68f34c5efdc2d8c8ae9cd15d74c737b94b65f34fad7d0967f8dd850f94afe65",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "كابريوفا"
       ]

@@ -1,0 +1,466 @@
+[
+  {
+    "canonicalKey": "shjrh-alashb",
+    "canonicalNameEn": "Australian grass tree Xanthorrhoea",
+    "positiveDescription": "a compact Xanthorrhoea specimen detail with dense fountain of long narrow green leaves emerging from a short blackened fibrous trunk",
+    "scientificName": null,
+    "entityType": "plant",
+    "plantPart": "plant",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject Australian grass tree Xanthorrhoea. Subject: one compact Xanthorrhoea specimen with a dense fountain of long narrow green leaves emerging from a short blackened fibrous trunk. Style: high-end photorealistic botanical catalog specimen. Composition: isolated centered square object with generous empty margin. Mandatory output: genuine transparent RGBA alpha canvas, alpha value 0 in every corner and throughout all empty space; no white, gray or colored background pixels. No backdrop, ground, floor, shadow outside the object, scenery, frame, text, label, logo, watermark, people, hands, bottle, container or unrelated objects.",
+    "sourceImageId": "exec-1d98b6cc-9b64-44de-99f0-526e80228720",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "شجرة العشب",
+    "imageUrl": "assets/notes/generated/shjrh-alashb.webp",
+    "noteKey": "shjrh-alashb",
+    "noteAssetId": "origo-note-shjrh-alashb",
+    "sha256": "8c5c61b7957876dbc5ede1f24e31acabd575b4d641d35309cf5061eacc5244f8",
+    "visualReview": "Reviewed reports/batch56-review.jpg against the locked prompt: exact botanical, lichen or region-specific agarwood material is clearly shown; no lettering, perfume bottle, branded packaging, scenery or unrelated objects.",
+    "contentHash": "0d8f7815baee5d009a4721cd78dc0b5e7b9427c6f275e1d92b75b5490e52de92",
+    "perceptualHash": "040e0e0f0d0f060e",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 49984,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "shjrh-alkmthry",
+    "canonicalNameEn": "pear tree Pyrus communis",
+    "positiveDescription": "a pear tree twig with glossy oval serrated leaves, white blossoms and one small green pear attached",
+    "scientificName": null,
+    "entityType": "branch",
+    "plantPart": "branch",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject pear tree Pyrus communis. Subject: a pear tree twig with glossy oval serrated leaves, white blossoms and one small green pear attached. Style: high-end photorealistic botanical or material catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, morphology, grain, texture and natural color; only the named note; each wood specimen visually distinctive; no backdrop, floor, scenery, frame, text, label, logo, watermark, people, hands, perfume bottle, container, branded packaging or unrelated objects.",
+    "sourceImageId": "exec-e45a19e1-515d-45f4-82de-cd10f4037228",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "شجرة الكمثرى",
+    "imageUrl": "assets/notes/generated/shjrh-alkmthry.webp",
+    "noteKey": "shjrh-alkmthry",
+    "noteAssetId": "origo-note-shjrh-alkmthry",
+    "sha256": "56da835ba058ffe827e66930892da4d4bed153dc9b26da7289dfd49a5ccf75be",
+    "visualReview": "Reviewed reports/batch56-review.jpg against the locked prompt: exact botanical, lichen or region-specific agarwood material is clearly shown; no lettering, perfume bottle, branded packaging, scenery or unrelated objects.",
+    "contentHash": "b677ff7e2b27836ca3e944bac7977d0d924918576e4abd72a06d62201d7b9f22",
+    "perceptualHash": "163f092f1d19236d",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 34638,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "shjrh-almanjw",
+    "canonicalNameEn": "mango tree Mangifera indica",
+    "positiveDescription": "a mango tree twig with long glossy lance-shaped leaves, tiny cream flower panicle and one small green mango",
+    "scientificName": null,
+    "entityType": "branch",
+    "plantPart": "branch",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject mango tree Mangifera indica. Subject: a mango tree twig with long glossy lance-shaped leaves, tiny cream flower panicle and one small green mango. Style: high-end photorealistic botanical or material catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, morphology, grain, texture and natural color; only the named note; each wood specimen visually distinctive; no backdrop, floor, scenery, frame, text, label, logo, watermark, people, hands, perfume bottle, container, branded packaging or unrelated objects.",
+    "sourceImageId": "exec-45d6da3f-679a-46f4-95ce-0fb6ef1d1e09",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "شجرة المانجو",
+    "imageUrl": "assets/notes/generated/shjrh-almanjw.webp",
+    "noteKey": "shjrh-almanjw",
+    "noteAssetId": "origo-note-shjrh-almanjw",
+    "sha256": "192c537fe6276fa3853d746fcdd84c02a64dc3176217fa6c10e56aef87a1c072",
+    "visualReview": "Reviewed reports/batch56-review.jpg against the locked prompt: exact botanical, lichen or region-specific agarwood material is clearly shown; no lettering, perfume bottle, branded packaging, scenery or unrelated objects.",
+    "contentHash": "560295d87e6de207dfa1a4a459578ecf0dd1a0daff2794442b9d9b295dd271b5",
+    "perceptualHash": "04464f0d2d11090b",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 36644,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "shjrh-balw-fyrdy",
+    "canonicalNameEn": "Palo Verde tree Parkinsonia",
+    "positiveDescription": "a green-barked Palo Verde twig with tiny paired leaflets and bright yellow five-petaled flowers",
+    "scientificName": null,
+    "entityType": "flowering branch",
+    "plantPart": "flowering branch",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject Palo Verde tree Parkinsonia. Subject: a green-barked Palo Verde twig with tiny paired leaflets and bright yellow five-petaled flowers. Style: high-end photorealistic botanical or material catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, morphology, grain, texture and natural color; only the named note; each wood specimen visually distinctive; no backdrop, floor, scenery, frame, text, label, logo, watermark, people, hands, perfume bottle, container, branded packaging or unrelated objects.",
+    "sourceImageId": "exec-610c1198-9935-4a99-b056-b035c7fcc2d5",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "شجرة بالو فيردي",
+    "imageUrl": "assets/notes/generated/shjrh-balw-fyrdy.webp",
+    "noteKey": "shjrh-balw-fyrdy",
+    "noteAssetId": "origo-note-shjrh-balw-fyrdy",
+    "sha256": "058952cfaef786a17113a4b0f7b63e2f8b569d6a7b5486886bf95be73fec755c",
+    "visualReview": "Reviewed reports/batch56-review.jpg against the locked prompt: exact botanical, lichen or region-specific agarwood material is clearly shown; no lettering, perfume bottle, branded packaging, scenery or unrelated objects.",
+    "contentHash": "84d2b9c53439390973188e36f3f8ec6de8a61b32c7d206b8a2bb643ccb73d42f",
+    "perceptualHash": "041d0b165f913426",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 48346,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "shyh-alshra",
+    "canonicalNameEn": "desert wormwood Artemisia",
+    "positiveDescription": "a dry silver-gray desert Artemisia sprig with finely divided woolly leaves and tiny bead-like flower heads",
+    "scientificName": null,
+    "entityType": "herb",
+    "plantPart": "herb",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject desert wormwood Artemisia. Subject: a dry silver-gray desert Artemisia sprig with finely divided woolly leaves and tiny bead-like flower heads. Style: high-end photorealistic botanical or material catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, morphology, grain, texture and natural color; only the named note; each wood specimen visually distinctive; no backdrop, floor, scenery, frame, text, label, logo, watermark, people, hands, perfume bottle, container, branded packaging or unrelated objects.",
+    "sourceImageId": "exec-a406a01a-6987-4c66-b0d6-b94cc21acdfe",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "شيح الصحراء",
+    "imageUrl": "assets/notes/generated/shyh-alshra.webp",
+    "noteKey": "shyh-alshra",
+    "noteAssetId": "origo-note-shyh-alshra",
+    "sha256": "fd1b236a480a7c157f35082acc801ec9b2134ce95bc9d4fac1f0bb96e27093cb",
+    "visualReview": "Reviewed reports/batch56-review.jpg against the locked prompt: exact botanical, lichen or region-specific agarwood material is clearly shown; no lettering, perfume bottle, branded packaging, scenery or unrelated objects.",
+    "contentHash": "1df7ee1a3f8fd196a6dd489fe7a51244522cab37dd54a4789b096c0165b445dc",
+    "perceptualHash": "0612112717460b3d",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 35980,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "sfsaf-ahmr",
+    "canonicalNameEn": "red willow Salix laevigata",
+    "positiveDescription": "a slender reddish-barked willow twig with narrow glossy green leaves and a small catkin",
+    "scientificName": null,
+    "entityType": "branch",
+    "plantPart": "branch",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject red willow Salix laevigata. Subject: a slender reddish-barked willow twig with narrow glossy green leaves and a small catkin. Style: high-end photorealistic botanical or material catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, morphology, grain, texture and natural color; only the named note; each wood specimen visually distinctive; no backdrop, floor, scenery, frame, text, label, logo, watermark, people, hands, perfume bottle, container, branded packaging or unrelated objects.",
+    "sourceImageId": "exec-f25ea2dc-01ee-4af5-90fd-b0b062d46ff6",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "صفصاف أحمر",
+    "imageUrl": "assets/notes/generated/sfsaf-ahmr.webp",
+    "noteKey": "sfsaf-ahmr",
+    "noteAssetId": "origo-note-sfsaf-ahmr",
+    "sha256": "90308c626133fb47defd8de15f1c29be10638308cce9f8495df096abaca8c700",
+    "visualReview": "Reviewed reports/batch56-review.jpg against the locked prompt: exact botanical, lichen or region-specific agarwood material is clearly shown; no lettering, perfume bottle, branded packaging, scenery or unrelated objects.",
+    "contentHash": "5f7cf66e2cf0fa01c28f4129e1d03b7af5f90f9975c5947a7e3fed0dc44d9d8d",
+    "perceptualHash": "04128b67162f6938",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 26300,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "snwbr-asktlndy",
+    "canonicalNameEn": "Scots pine Pinus sylvestris",
+    "positiveDescription": "a Scots pine twig with paired blue-green needles, one small brown cone and orange-brown bark",
+    "scientificName": null,
+    "entityType": "branch",
+    "plantPart": "branch",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject Scots pine Pinus sylvestris. Subject: a Scots pine twig with paired blue-green needles, one small brown cone and orange-brown bark. Style: high-end photorealistic botanical or material catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, morphology, grain, texture and natural color; only the named note; each wood specimen visually distinctive; no backdrop, floor, scenery, frame, text, label, logo, watermark, people, hands, perfume bottle, container, branded packaging or unrelated objects.",
+    "sourceImageId": "exec-7b4b384f-d7a2-4569-b0e3-90833c2fa2e0",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "صنوبر إسكتلندي",
+    "imageUrl": "assets/notes/generated/snwbr-asktlndy.webp",
+    "noteKey": "snwbr-asktlndy",
+    "noteAssetId": "origo-note-snwbr-asktlndy",
+    "sha256": "0b861bdaa4fc8e09299dc7fd21f4e33e357c46c7f9e6573d91ba0bee0fe774ad",
+    "visualReview": "Reviewed reports/batch56-review.jpg against the locked prompt: exact botanical, lichen or region-specific agarwood material is clearly shown; no lettering, perfume bottle, branded packaging, scenery or unrelated objects.",
+    "contentHash": "68d39256192e470250e5af9f91326631bfe035008d8ae35cda0203177f3a5a72",
+    "perceptualHash": "0307171f1f3f9e9c",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 44710,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "thlb-alblwt-thlb-alsndyan",
+    "canonicalNameEn": "oakmoss Evernia prunastri",
+    "positiveDescription": "a loose natural tuft of branching gray-green oakmoss lichen with delicate flattened antler-like fronds",
+    "scientificName": null,
+    "entityType": "lichen",
+    "plantPart": "lichen",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject oakmoss Evernia prunastri. Subject: a loose natural tuft of branching gray-green oakmoss lichen with delicate flattened antler-like fronds. Style: high-end photorealistic botanical or material catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, morphology, grain, texture and natural color; only the named note; each wood specimen visually distinctive; no backdrop, floor, scenery, frame, text, label, logo, watermark, people, hands, perfume bottle, container, branded packaging or unrelated objects.",
+    "sourceImageId": "exec-c6aad04b-45bf-4947-95bc-b184f7f1088c",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "طحلب البلوط (طحلب السنديان)",
+    "imageUrl": "assets/notes/generated/thlb-alblwt-thlb-alsndyan.webp",
+    "noteKey": "thlb-alblwt-thlb-alsndyan",
+    "noteAssetId": "origo-note-thlb-alblwt-thlb-alsndyan",
+    "sha256": "ca5978dbabdcdf0b11c92ad1b1874b6e584c978b6769dd388ca95afd12e7e02b",
+    "visualReview": "Reviewed reports/batch56-review.jpg against the locked prompt: exact botanical, lichen or region-specific agarwood material is clearly shown; no lettering, perfume bottle, branded packaging, scenery or unrelated objects.",
+    "contentHash": "af19f2de450c27030b937bc7310e0f67170651340b814f74155d6cbaf7d76202",
+    "perceptualHash": "0626150f07472f4b",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 44762,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "awd-altmsah",
+    "canonicalNameEn": "crocodile agarwood oud",
+    "positiveDescription": "a rugged dark agarwood chip with pronounced reptile-scale-like resin pattern, deep brown heartwood and black aromatic veins",
+    "scientificName": null,
+    "entityType": "wood",
+    "plantPart": "wood",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject crocodile agarwood oud. Subject: a rugged dark agarwood chip with pronounced reptile-scale-like resin pattern, deep brown heartwood and black aromatic veins. Style: high-end photorealistic botanical or material catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, morphology, grain, texture and natural color; only the named note; each wood specimen visually distinctive; no backdrop, floor, scenery, frame, text, label, logo, watermark, people, hands, perfume bottle, container, branded packaging or unrelated objects.",
+    "sourceImageId": "exec-6e6471cf-a3b6-4907-8c73-c75b1c6554ec",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "عود التمساح",
+    "imageUrl": "assets/notes/generated/awd-altmsah.webp",
+    "noteKey": "awd-altmsah",
+    "noteAssetId": "origo-note-awd-altmsah",
+    "sha256": "1e9f8d053eca47562e298f5c1e8b1900fdd34b5f4fe63ac0a1e7926392199cac",
+    "visualReview": "Reviewed reports/batch56-review.jpg against the locked prompt: exact botanical, lichen or region-specific agarwood material is clearly shown; no lettering, perfume bottle, branded packaging, scenery or unrelated objects.",
+    "contentHash": "44bd227ad38d55489734b4fc1fb6ab753e8134dd0362b8fc696789e0f153c6a8",
+    "perceptualHash": "0011132f474b5f3e",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 26554,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "awd-trat",
+    "canonicalNameEn": "Trat agarwood oud Thailand",
+    "positiveDescription": "a resin-rich Trat agarwood chunk with deep black-brown resin channels through warm amber fibrous wood",
+    "scientificName": null,
+    "entityType": "wood",
+    "plantPart": "wood",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject Trat agarwood oud Thailand. Subject: a resin-rich Trat agarwood chunk with deep black-brown resin channels through warm amber fibrous wood. Style: high-end photorealistic botanical or material catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, morphology, grain, texture and natural color; only the named note; each wood specimen visually distinctive; no backdrop, floor, scenery, frame, text, label, logo, watermark, people, hands, perfume bottle, container, branded packaging or unrelated objects.",
+    "sourceImageId": "exec-1995ab5b-3f76-49e0-ad48-5541cd235bef",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "عود ترات",
+    "imageUrl": "assets/notes/generated/awd-trat.webp",
+    "noteKey": "awd-trat",
+    "noteAssetId": "origo-note-awd-trat",
+    "sha256": "c8cfb84a22156bca3948ff51264d7c7f93077640e58514f64a6a9ab1236edbe0",
+    "visualReview": "Reviewed reports/batch56-review.jpg against the locked prompt: exact botanical, lichen or region-specific agarwood material is clearly shown; no lettering, perfume bottle, branded packaging, scenery or unrelated objects.",
+    "contentHash": "f976a66614a20f5c9ec6b06310ab6e2877246edf7a067f82a69083a2f5132244",
+    "perceptualHash": "0101032327270f1e",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 26572,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "awd-swmtrh",
+    "canonicalNameEn": "Sumatran agarwood oud",
+    "positiveDescription": "a dark Sumatran agarwood piece with smoky charcoal resin bands, rugged porous grain and reddish-brown edges",
+    "scientificName": null,
+    "entityType": "wood",
+    "plantPart": "wood",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject Sumatran agarwood oud. Subject: a dark Sumatran agarwood piece with smoky charcoal resin bands, rugged porous grain and reddish-brown edges. Style: high-end photorealistic botanical or material catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, morphology, grain, texture and natural color; only the named note; each wood specimen visually distinctive; no backdrop, floor, scenery, frame, text, label, logo, watermark, people, hands, perfume bottle, container, branded packaging or unrelated objects.",
+    "sourceImageId": "exec-6fb8a7c0-e854-4c63-903c-4044863159e4",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "عود سومطرة",
+    "imageUrl": "assets/notes/generated/awd-swmtrh.webp",
+    "noteKey": "awd-swmtrh",
+    "noteAssetId": "origo-note-awd-swmtrh",
+    "sha256": "a523958956c096de26276ca01ef4b7baa886ef76bcb1283ea5139968856e371a",
+    "visualReview": "Reviewed reports/batch56-review.jpg against the locked prompt: exact botanical, lichen or region-specific agarwood material is clearly shown; no lettering, perfume bottle, branded packaging, scenery or unrelated objects.",
+    "contentHash": "10045cc4b3d181693cbacde32225158a7c93c9b4a9913fba20dab938475de6de",
+    "perceptualHash": "0303031f2b251d33",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 30712,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "awd-syny",
+    "canonicalNameEn": "Chinese agarwood oud",
+    "positiveDescription": "a slender Chinese agarwood chip with elegant dark resin streaks through pale golden-brown fibrous grain",
+    "scientificName": null,
+    "entityType": "wood",
+    "plantPart": "wood",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject Chinese agarwood oud. Subject: a slender Chinese agarwood chip with elegant dark resin streaks through pale golden-brown fibrous grain. Style: high-end photorealistic botanical or material catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, morphology, grain, texture and natural color; only the named note; each wood specimen visually distinctive; no backdrop, floor, scenery, frame, text, label, logo, watermark, people, hands, perfume bottle, container, branded packaging or unrelated objects.",
+    "sourceImageId": "exec-3ca843be-2c56-4e06-b5b1-af737da2ea66",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "عود صيني",
+    "imageUrl": "assets/notes/generated/awd-syny.webp",
+    "noteKey": "awd-syny",
+    "noteAssetId": "origo-note-awd-syny",
+    "sha256": "469f23906cd523d0adf744eb137a9a09a3b147a8beda01294506be0dba11598d",
+    "visualReview": "Reviewed reports/batch56-review.jpg against the locked prompt: exact botanical, lichen or region-specific agarwood material is clearly shown; no lettering, perfume bottle, branded packaging, scenery or unrelated objects.",
+    "contentHash": "13fc309c29645d7808b017011a7112c0aa263ab93c778d1bb9495e412fd5832b",
+    "perceptualHash": "00000c0f63460000",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 13270,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "awd-fytnamy",
+    "canonicalNameEn": "Vietnamese agarwood oud",
+    "positiveDescription": "a compact Vietnamese agarwood piece with glossy near-black resin pockets and fine reddish-gold layered fibers",
+    "scientificName": null,
+    "entityType": "wood",
+    "plantPart": "wood",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject Vietnamese agarwood oud. Subject: a compact Vietnamese agarwood piece with glossy near-black resin pockets and fine reddish-gold layered fibers. Style: high-end photorealistic botanical or material catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, morphology, grain, texture and natural color; only the named note; each wood specimen visually distinctive; no backdrop, floor, scenery, frame, text, label, logo, watermark, people, hands, perfume bottle, container, branded packaging or unrelated objects.",
+    "sourceImageId": "exec-be179e31-f211-4f16-b606-46616ba1486d",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "عود فيتنامي",
+    "imageUrl": "assets/notes/generated/awd-fytnamy.webp",
+    "noteKey": "awd-fytnamy",
+    "noteAssetId": "origo-note-awd-fytnamy",
+    "sha256": "decf1d12374ce95495acf720d5a4fd6c103e5f39cfd36268a5b7137a7f226491",
+    "visualReview": "Reviewed reports/batch56-review.jpg against the locked prompt: exact botanical, lichen or region-specific agarwood material is clearly shown; no lettering, perfume bottle, branded packaging, scenery or unrelated objects.",
+    "contentHash": "060e1f86f88e11b8d0c8473c0eeda51670e9c711618cfb9f71e69a0df6d74c97",
+    "perceptualHash": "03030d19710b0f0e",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 24594,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "awd-malyzy",
+    "canonicalNameEn": "Malaysian agarwood oud",
+    "positiveDescription": "a broad Malaysian agarwood chip with dense dark resin marbling, honey-brown wood and irregular natural cavities",
+    "scientificName": null,
+    "entityType": "wood",
+    "plantPart": "wood",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject Malaysian agarwood oud. Subject: a broad Malaysian agarwood chip with dense dark resin marbling, honey-brown wood and irregular natural cavities. Style: high-end photorealistic botanical or material catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, morphology, grain, texture and natural color; only the named note; each wood specimen visually distinctive; no backdrop, floor, scenery, frame, text, label, logo, watermark, people, hands, perfume bottle, container, branded packaging or unrelated objects.",
+    "sourceImageId": "exec-d9d70851-49bc-4431-96d8-69d92cd9f040",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "عود ماليزي",
+    "imageUrl": "assets/notes/generated/awd-malyzy.webp",
+    "noteKey": "awd-malyzy",
+    "noteAssetId": "origo-note-awd-malyzy",
+    "sha256": "e2b808bd5bab4add72255e35969a471683824206ae8fda334a8863ab1d842415",
+    "visualReview": "Reviewed reports/batch56-review.jpg against the locked prompt: exact botanical, lichen or region-specific agarwood material is clearly shown; no lettering, perfume bottle, branded packaging, scenery or unrelated objects.",
+    "contentHash": "7a8f6fc322d35e2fc7f7f6ec70122ef018026f70e3126b87202ea6f615d2a89b",
+    "perceptualHash": "0103191b271e3820",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 28112,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "fyby-zynan",
+    "canonicalNameEn": "Phoebe zhennan wood",
+    "positiveDescription": "a small golden olive-brown Phoebe zhennan wood block with luminous silky straight grain and one glossy lanceolate leaf",
+    "scientificName": null,
+    "entityType": "wood",
+    "plantPart": "wood",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject Phoebe zhennan wood. Subject: a small golden olive-brown Phoebe zhennan wood block with luminous silky straight grain and one glossy lanceolate leaf. Style: high-end photorealistic botanical or material catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, morphology, grain, texture and natural color; only the named note; each wood specimen visually distinctive; no backdrop, floor, scenery, frame, text, label, logo, watermark, people, hands, perfume bottle, container, branded packaging or unrelated objects.",
+    "sourceImageId": "exec-b7dbbf02-5369-4c9a-a11b-8919adfaf589",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "فيبي زينان",
+    "imageUrl": "assets/notes/generated/fyby-zynan.webp",
+    "noteKey": "fyby-zynan",
+    "noteAssetId": "origo-note-fyby-zynan",
+    "sha256": "197190bf14528670ee35b46a8ed5d5a6fb88ce6651402cfb4eb4aae83c2e850e",
+    "visualReview": "Reviewed reports/batch56-review.jpg against the locked prompt: exact botanical, lichen or region-specific agarwood material is clearly shown; no lettering, perfume bottle, branded packaging, scenery or unrelated objects.",
+    "contentHash": "82167399f9dfbc7bb6cb8bbeecb69d449d79133fa63cb60318f295fb40582a82",
+    "perceptualHash": "0007071d383c7f9c",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 19056,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "kabrywfa",
+    "canonicalNameEn": "Cabreuva wood Myrocarpus frondosus",
+    "positiveDescription": "a reddish-golden Cabreuva heartwood chip with darker aromatic resin lines and a tiny pinnate leaf sprig",
+    "scientificName": null,
+    "entityType": "wood",
+    "plantPart": "wood",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject Cabreuva wood Myrocarpus frondosus. Subject: a reddish-golden Cabreuva heartwood chip with darker aromatic resin lines and a tiny pinnate leaf sprig. Style: high-end photorealistic botanical or material catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, morphology, grain, texture and natural color; only the named note; each wood specimen visually distinctive; no backdrop, floor, scenery, frame, text, label, logo, watermark, people, hands, perfume bottle, container, branded packaging or unrelated objects.",
+    "sourceImageId": "exec-d5d7ddcb-b9f7-475a-94c7-46325ca7e662",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "كابريوفا",
+    "imageUrl": "assets/notes/generated/kabrywfa.webp",
+    "noteKey": "kabrywfa",
+    "noteAssetId": "origo-note-kabrywfa",
+    "sha256": "c68f34c5efdc2d8c8ae9cd15d74c737b94b65f34fad7d0967f8dd850f94afe65",
+    "visualReview": "Reviewed reports/batch56-review.jpg against the locked prompt: exact botanical, lichen or region-specific agarwood material is clearly shown; no lettering, perfume bottle, branded packaging, scenery or unrelated objects.",
+    "contentHash": "d14783b9f858ac49672af964cd36efff58ca0d0cfd24edb874f8c33874b6809f",
+    "perceptualHash": "061b0d05366b3b33",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 31356,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  }
+]
