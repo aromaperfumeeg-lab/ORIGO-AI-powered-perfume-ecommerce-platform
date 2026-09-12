@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-09-12T14:40:35.884Z",
+  "generatedAt": "2026-09-12T15:36:02.208Z",
   "scope": "Library plus persisted note overrides; SQLite opened read-only. Visual semantics are not certified by filenames or hashes.",
   "notes": 1883,
   "products": 5,
-  "valid": 1390,
-  "missing": 475,
+  "valid": 1406,
+  "missing": 459,
   "duplicateGroups": 9,
   "needsReview": 0,
   "duplicates": [
@@ -19404,13 +19404,13 @@
     {
       "canonicalKey": "alrysh",
       "nameAr": "الريش",
-      "nameEn": "الريش",
+      "nameEn": "feathers fragrance note",
       "sourceName": "الريش",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alrysh.webp",
+      "filename": "alrysh.webp",
+      "hash": "4824b7b63c07444977bd27dbc6a9aaa2e99c95b3f721ccfa17a1d69c58281521",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الريش"
       ]
@@ -19418,13 +19418,13 @@
     {
       "canonicalKey": "alzbad",
       "nameAr": "الزباد",
-      "nameEn": "الزباد",
+      "nameEn": "civet fragrance material",
       "sourceName": "الزباد",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alzbad.webp",
+      "filename": "alzbad.webp",
+      "hash": "a60fc84e884b523ec344f8e5ab5b75a647a67960b0de98f988d70e24d5c6acd6",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الزباد"
       ]
@@ -19432,13 +19432,13 @@
     {
       "canonicalKey": "alshaab-almrjanyh",
       "nameAr": "الشعاب المرجانية",
-      "nameEn": "الشعاب المرجانية",
+      "nameEn": "coral reef fragrance note",
       "sourceName": "الشعاب المرجانية",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alshaab-almrjanyh.webp",
+      "filename": "alshaab-almrjanyh.webp",
+      "hash": "6f15c7333c306e3c29fd7a2b53db1d89fa2cd9043f8f3e6365143024cd2ff42f",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الشعاب المرجانية"
       ]
@@ -19461,13 +19461,13 @@
     {
       "canonicalKey": "alqnds",
       "nameAr": "القندس",
-      "nameEn": "القندس",
+      "nameEn": "castoreum fragrance material",
       "sourceName": "القندس",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alqnds.webp",
+      "filename": "alqnds.webp",
+      "hash": "675cd3741694de31a4539741f1d5de729708236142172e8fbd31341ce4d8a366",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "القندس"
       ]
@@ -19475,13 +19475,13 @@
     {
       "canonicalKey": "alkafyar",
       "nameAr": "الكافيار",
-      "nameEn": "الكافيار",
+      "nameEn": "caviar fragrance note",
       "sourceName": "الكافيار",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alkafyar.webp",
+      "filename": "alkafyar.webp",
+      "hash": "4a96f55d73179dc1c422751aa466bf0072d726a311d0979651529a74ab2de1d0",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الكافيار"
       ]
@@ -19489,13 +19489,13 @@
     {
       "canonicalKey": "allbn",
       "nameAr": "اللبن",
-      "nameEn": "اللبن",
+      "nameEn": "milk fragrance note",
       "sourceName": "اللبن",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/allbn.webp",
+      "filename": "allbn.webp",
+      "hash": "d9de15ee7dbdefb662814a53051f5b8b93c11a23b75ea23a39c0bcbfd5fe1bd9",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "اللبن"
       ]
@@ -19503,13 +19503,13 @@
     {
       "canonicalKey": "allhm",
       "nameAr": "اللحم",
-      "nameEn": "اللحم",
+      "nameEn": "meat fragrance note",
       "sourceName": "اللحم",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/allhm.webp",
+      "filename": "allhm.webp",
+      "hash": "0f143765337ae4553650ba595b143dd1311d20ce6c58fbc17f785954b5462a29",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "اللحم"
       ]
@@ -19517,13 +19517,13 @@
     {
       "canonicalKey": "allhm-almqdd",
       "nameAr": "اللحم المقدد",
-      "nameEn": "اللحم المقدد",
+      "nameEn": "bacon fragrance note",
       "sourceName": "اللحم المقدد",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/allhm-almqdd.webp",
+      "filename": "allhm-almqdd.webp",
+      "hash": "b3d2b616546d3b5cbf6999b2d9af5431bee093de2f96c37c39c55bcb066deac4",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "اللحم المقدد"
       ]
@@ -19531,13 +19531,13 @@
     {
       "canonicalKey": "almhar",
       "nameAr": "المحار",
-      "nameEn": "المحار",
+      "nameEn": "oyster fragrance note",
       "sourceName": "المحار",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/almhar.webp",
+      "filename": "almhar.webp",
+      "hash": "431578a57bd9f5ee1069f6c2ac44f4d57da12a54087b5b84cefc62dd1281292d",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "المحار"
       ]
@@ -19560,13 +19560,13 @@
     {
       "canonicalKey": "almskwn",
       "nameAr": "المسكون",
-      "nameEn": "المسكون",
+      "nameEn": "muscone fragrance molecule",
       "sourceName": "المسكون",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/almskwn.webp",
+      "filename": "almskwn.webp",
+      "hash": "a65b3161fc4cb8ac1f45838987ae31984e7a79cd770d6ddea46c8b3b6f9313bb",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "المسكون"
       ]
@@ -19574,13 +19574,13 @@
     {
       "canonicalKey": "carrot-seeds",
       "nameAr": "بذور الجزر",
-      "nameEn": "Carrot Seeds",
+      "nameEn": "carrot seeds",
       "sourceName": "بذور الجزر",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/carrot-seeds.webp",
+      "filename": "carrot-seeds.webp",
+      "hash": "7ac49687519d5a12808711dddc375029d21b81c02deb01fceaf9749d64b5fc95",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "بذور الجزر",
         "بذور الجزر العطرية"
@@ -19589,13 +19589,13 @@
     {
       "canonicalKey": "blsm-twlw",
       "nameAr": "بلسم تولو",
-      "nameEn": "بلسم تولو",
+      "nameEn": "Tolu balsam",
       "sourceName": "بلسم تولو",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/blsm-twlw.webp",
+      "filename": "blsm-twlw.webp",
+      "hash": "5a8188c3f938925447f05412f6699af36045141948bcaa4929b8ed6b0fa68701",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "بلسم تولو"
       ]
@@ -19603,13 +19603,13 @@
     {
       "canonicalKey": "twabl-albarbkyw",
       "nameAr": "توابل الباربكيو",
-      "nameEn": "توابل الباربكيو",
+      "nameEn": "barbecue spices accord",
       "sourceName": "توابل الباربكيو",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/twabl-albarbkyw.webp",
+      "filename": "twabl-albarbkyw.webp",
+      "hash": "b516b5a5fde917463cb1d9d5d6b7ea772ddff5abc03af70371e2db19a7be4f52",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "توابل الباربكيو"
       ]
@@ -19617,13 +19617,13 @@
     {
       "canonicalKey": "twlyfh-alakashyk",
       "nameAr": "توليفة الأكاشيك",
-      "nameEn": "توليفة الأكاشيك",
+      "nameEn": "Akashic accord",
       "sourceName": "توليفة الأكاشيك",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/twlyfh-alakashyk.webp",
+      "filename": "twlyfh-alakashyk.webp",
+      "hash": "f390446eaa877a8e3a2ba50ef26f6b4523fe7aa8b1a4e2d4b35a9b57e56e7203",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "توليفة الأكاشيك"
       ]
@@ -19631,13 +19631,13 @@
     {
       "canonicalKey": "jld-alhsan",
       "nameAr": "جلد الحصان",
-      "nameEn": "جلد الحصان",
+      "nameEn": "horse leather fragrance note",
       "sourceName": "جلد الحصان",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/jld-alhsan.webp",
+      "filename": "jld-alhsan.webp",
+      "hash": "faede1ad4f54a616b098bd2022e486f0118666d0ede292fa00e5827addee27f1",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "جلد الحصان"
       ]
@@ -19645,13 +19645,13 @@
     {
       "canonicalKey": "jld-alghzal-aljld-almdbwgh",
       "nameAr": "جلد الغزال (الجلد المدبوغ)",
-      "nameEn": "جلد الغزال (الجلد المدبوغ)",
+      "nameEn": "deerskin suede fragrance note",
       "sourceName": "جلد الغزال (الجلد المدبوغ)",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/jld-alghzal-aljld-almdbwgh.webp",
+      "filename": "jld-alghzal-aljld-almdbwgh.webp",
+      "hash": "dff1165460175100372e50e4ab475e6c7d75eb8fd0bda667ab5dff066acbcb68",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "جلد الغزال (الجلد المدبوغ)"
       ]

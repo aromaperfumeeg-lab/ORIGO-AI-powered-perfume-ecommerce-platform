@@ -1,0 +1,466 @@
+[
+  {
+    "canonicalKey": "alrysh",
+    "canonicalNameEn": "feathers fragrance note",
+    "positiveDescription": "a small elegant pair of naturally patterned soft feathers",
+    "scientificName": null,
+    "entityType": "animalic material",
+    "plantPart": "feather",
+    "generationPrompt": "Premium fragrance-note cutout: small elegant pair of naturally patterned soft feathers; exact identity, realistic texture, centered isolated specimen, true transparent alpha, no text, people, living animals, bottles, containers, backgrounds or unrelated objects.",
+    "sourceImageId": "exec-1119e876-fafd-4d1b-b603-a7376232067f",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "الريش",
+    "imageUrl": "assets/notes/generated/alrysh.webp",
+    "noteKey": "alrysh",
+    "noteAssetId": "origo-note-alrysh",
+    "sha256": "4824b7b63c07444977bd27dbc6a9aaa2e99c95b3f721ccfa17a1d69c58281521",
+    "visualReview": "Reviewed reports/batch62-review.jpg against the locked identity prompt: the exact material or botanical representation is clearly shown; no lettering, bottle, packaging, scenery or unrelated objects.",
+    "contentHash": "f38ab73447b5633cc1bf17ebf7f541262ff83b606e637b35d41abc1ad62cf1b9",
+    "perceptualHash": "00060e3831010700",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 22604,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "alzbad",
+    "canonicalNameEn": "civet fragrance material",
+    "positiveDescription": "a small dark amber-brown waxy paste-like lump on neutral natural fiber",
+    "scientificName": null,
+    "entityType": "animalic material",
+    "plantPart": "material",
+    "generationPrompt": "Premium fragrance-note cutout: civet fragrance material as a small dark amber-brown waxy paste-like lump on neutral natural fiber; no animal; true transparent alpha and no unrelated objects.",
+    "sourceImageId": "exec-1019908f-1243-4def-907c-d54c15cba31e",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "الزباد",
+    "imageUrl": "assets/notes/generated/alzbad.webp",
+    "noteKey": "alzbad",
+    "noteAssetId": "origo-note-alzbad",
+    "sha256": "a60fc84e884b523ec344f8e5ab5b75a647a67960b0de98f988d70e24d5c6acd6",
+    "visualReview": "Reviewed reports/batch62-review.jpg against the locked identity prompt: the exact material or botanical representation is clearly shown; no lettering, bottle, packaging, scenery or unrelated objects.",
+    "contentHash": "f74eb7d0b02a6d25673245a27ae8dcf3b32b1d43635dfa1a74e0b5da353f50c2",
+    "perceptualHash": "0001010d1b0f0e0c",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 20050,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "alshaab-almrjanyh",
+    "canonicalNameEn": "coral reef fragrance note",
+    "positiveDescription": "one small naturally branching pale coral fragment with porous texture",
+    "scientificName": null,
+    "entityType": "marine material",
+    "plantPart": "coral",
+    "generationPrompt": "Premium fragrance-note cutout: one small naturally branching pale porous coral fragment; no animals; true transparent alpha and no unrelated objects.",
+    "sourceImageId": "exec-4ea4229c-aa7f-4d90-aebe-0c21d502495e",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "الشعاب المرجانية",
+    "imageUrl": "assets/notes/generated/alshaab-almrjanyh.webp",
+    "noteKey": "alshaab-almrjanyh",
+    "noteAssetId": "origo-note-alshaab-almrjanyh",
+    "sha256": "6f15c7333c306e3c29fd7a2b53db1d89fa2cd9043f8f3e6365143024cd2ff42f",
+    "visualReview": "Reviewed reports/batch62-review.jpg against the locked identity prompt: the exact material or botanical representation is clearly shown; no lettering, bottle, packaging, scenery or unrelated objects.",
+    "contentHash": "6cfe06df772c689615b8fb8b7772c9d52ba132fc3170080822e382cd48a77528",
+    "perceptualHash": "020643590807050c",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 18050,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "alqnds",
+    "canonicalNameEn": "castoreum fragrance material",
+    "positiveDescription": "a small dried dark brown resinous leathery fragment",
+    "scientificName": null,
+    "entityType": "animalic material",
+    "plantPart": "material",
+    "generationPrompt": "Premium fragrance-note cutout: castoreum fragrance material as a small dried dark brown resinous leathery fragment; no animal or body part; true transparent alpha.",
+    "sourceImageId": "exec-a13e77e2-0f5e-4e2d-9410-c7b24fe7412a",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "القندس",
+    "imageUrl": "assets/notes/generated/alqnds.webp",
+    "noteKey": "alqnds",
+    "noteAssetId": "origo-note-alqnds",
+    "sha256": "675cd3741694de31a4539741f1d5de729708236142172e8fbd31341ce4d8a366",
+    "visualReview": "Reviewed reports/batch62-review.jpg against the locked identity prompt: the exact material or botanical representation is clearly shown; no lettering, bottle, packaging, scenery or unrelated objects.",
+    "contentHash": "a5b6643a58bb5f29320cdabd7391f79b728ce5fa7fd14f8e0ba4080119a0d5c7",
+    "perceptualHash": "0303071517030507",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 24974,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "alkafyar",
+    "canonicalNameEn": "caviar fragrance note",
+    "positiveDescription": "a compact cluster of glossy black roe pearls",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "roe",
+    "generationPrompt": "Premium fragrance-note cutout: compact glossy black caviar roe pearls; centered, true transparent alpha, no plate, container or unrelated objects.",
+    "sourceImageId": "exec-98965970-a853-43e2-b874-b5156532be18",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "الكافيار",
+    "imageUrl": "assets/notes/generated/alkafyar.webp",
+    "noteKey": "alkafyar",
+    "noteAssetId": "origo-note-alkafyar",
+    "sha256": "4a96f55d73179dc1c422751aa466bf0072d726a311d0979651529a74ab2de1d0",
+    "visualReview": "Reviewed reports/batch62-review.jpg against the locked identity prompt: the exact material or botanical representation is clearly shown; no lettering, bottle, packaging, scenery or unrelated objects.",
+    "contentHash": "037b1b30d227f82224642ac5b2be77e4a53d608868c417524e8547f3a2bca281",
+    "perceptualHash": "00061f3b25270f0e",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 20210,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "allbn",
+    "canonicalNameEn": "milk fragrance note",
+    "positiveDescription": "an elegant ivory milk splash",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "liquid",
+    "generationPrompt": "Premium fragrance-note cutout: elegant ivory milk splash; centered, true transparent alpha, no glass, container or unrelated objects.",
+    "sourceImageId": "exec-ba692c74-213b-48bb-83fc-dca24855b5c4",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "اللبن",
+    "imageUrl": "assets/notes/generated/allbn.webp",
+    "noteKey": "allbn",
+    "noteAssetId": "origo-note-allbn",
+    "sha256": "d9de15ee7dbdefb662814a53051f5b8b93c11a23b75ea23a39c0bcbfd5fe1bd9",
+    "visualReview": "Reviewed reports/batch62-review.jpg against the locked identity prompt: the exact material or botanical representation is clearly shown; no lettering, bottle, packaging, scenery or unrelated objects.",
+    "contentHash": "f6167d801a5a52a89914eedb6df95cf821f86bdd341561698558cfee92b59b60",
+    "perceptualHash": "0041416323270e0c",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 12590,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "allhm",
+    "canonicalNameEn": "meat fragrance note",
+    "positiveDescription": "a small clean raw red meat cut with natural marbling",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "meat",
+    "generationPrompt": "Premium fragrance-note cutout: small clean raw red meat cut with natural marbling; centered, true transparent alpha, no plate or unrelated objects.",
+    "sourceImageId": "exec-8b0aff0e-b1cb-4f3e-b5a6-7acc40dccd50",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "اللحم",
+    "imageUrl": "assets/notes/generated/allhm.webp",
+    "noteKey": "allhm",
+    "noteAssetId": "origo-note-allhm",
+    "sha256": "0f143765337ae4553650ba595b143dd1311d20ce6c58fbc17f785954b5462a29",
+    "visualReview": "Reviewed reports/batch62-review.jpg against the locked identity prompt: the exact material or botanical representation is clearly shown; no lettering, bottle, packaging, scenery or unrelated objects.",
+    "contentHash": "a140bb08e83f6213dc88dd0164f74e4369225c5025454de4b569ca866fea1604",
+    "perceptualHash": "0007051d8b370f1c",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 24474,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "allhm-almqdd",
+    "canonicalNameEn": "bacon fragrance note",
+    "positiveDescription": "two crisp reddish-brown bacon strips",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "cured meat",
+    "generationPrompt": "Premium fragrance-note cutout: two crisp bacon strips; centered, true transparent alpha, no plate or unrelated objects.",
+    "sourceImageId": "exec-19d14efd-379f-4206-bdf1-9c070f52ed33",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "اللحم المقدد",
+    "imageUrl": "assets/notes/generated/allhm-almqdd.webp",
+    "noteKey": "allhm-almqdd",
+    "noteAssetId": "origo-note-allhm-almqdd",
+    "sha256": "b3d2b616546d3b5cbf6999b2d9af5431bee093de2f96c37c39c55bcb066deac4",
+    "visualReview": "Reviewed reports/batch62-review.jpg against the locked identity prompt: the exact material or botanical representation is clearly shown; no lettering, bottle, packaging, scenery or unrelated objects.",
+    "contentHash": "6376c45f0ab787b2aa5392df4fd650bd81168f6eed4984e50646af315646a217",
+    "perceptualHash": "00012725311b2e6c",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 25530,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "almhar",
+    "canonicalNameEn": "oyster fragrance note",
+    "positiveDescription": "an open oyster shell with pearly interior and oyster meat",
+    "scientificName": null,
+    "entityType": "marine food",
+    "plantPart": "oyster",
+    "generationPrompt": "Premium fragrance-note cutout: open oyster shell with pearly interior and oyster meat; centered, true transparent alpha, no plate or unrelated objects.",
+    "sourceImageId": "exec-5d56bde3-6f18-4068-b89b-c7a01398fc16",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "المحار",
+    "imageUrl": "assets/notes/generated/almhar.webp",
+    "noteKey": "almhar",
+    "noteAssetId": "origo-note-almhar",
+    "sha256": "431578a57bd9f5ee1069f6c2ac44f4d57da12a54087b5b84cefc62dd1281292d",
+    "visualReview": "Reviewed reports/batch62-review.jpg against the locked identity prompt: the exact material or botanical representation is clearly shown; no lettering, bottle, packaging, scenery or unrelated objects.",
+    "contentHash": "61a6cbacf3a9ff983f9902ae8b68a7ec1f59f6719f2105ffc79cb3ef9d70c70b",
+    "perceptualHash": "000603093961470f",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 23092,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "almskwn",
+    "canonicalNameEn": "muscone fragrance molecule",
+    "positiveDescription": "a pale ivory macrocyclic ring crystal",
+    "scientificName": null,
+    "entityType": "molecule",
+    "plantPart": "crystal",
+    "generationPrompt": "Premium fragrance-note cutout: muscone molecule represented as a pale ivory ring-shaped crystal; centered, true transparent alpha, no laboratory glassware or unrelated objects.",
+    "sourceImageId": "exec-9d2d37a1-03b3-47d7-9508-015e3efc943d",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "المسكون",
+    "imageUrl": "assets/notes/generated/almskwn.webp",
+    "noteKey": "almskwn",
+    "noteAssetId": "origo-note-almskwn",
+    "sha256": "a65b3161fc4cb8ac1f45838987ae31984e7a79cd770d6ddea46c8b3b6f9313bb",
+    "visualReview": "Reviewed reports/batch62-review.jpg against the locked identity prompt: the exact material or botanical representation is clearly shown; no lettering, bottle, packaging, scenery or unrelated objects.",
+    "contentHash": "9b90af1cdcbab839ae57339aabf8f51c608140460b38ab2a83799420c0e7c586",
+    "perceptualHash": "1213306060711316",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 16980,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "carrot-seeds",
+    "canonicalNameEn": "carrot seeds",
+    "positiveDescription": "ribbed brown carrot seeds beside a delicate feathery flower umbel",
+    "scientificName": "Daucus carota",
+    "entityType": "seed",
+    "plantPart": "seed",
+    "generationPrompt": "Premium botanical cutout: ribbed brown carrot seeds beside a delicate feathery flower umbel; centered, true transparent alpha, no container or unrelated objects.",
+    "sourceImageId": "exec-00ee9169-f16f-47ce-bc9c-860590066b0e",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "بذور الجزر",
+    "imageUrl": "assets/notes/generated/carrot-seeds.webp",
+    "noteKey": "carrot-seeds",
+    "noteAssetId": "origo-note-carrot-seeds",
+    "sha256": "7ac49687519d5a12808711dddc375029d21b81c02deb01fceaf9749d64b5fc95",
+    "visualReview": "Reviewed reports/batch62-review.jpg against the locked identity prompt: the exact material or botanical representation is clearly shown; no lettering, bottle, packaging, scenery or unrelated objects.",
+    "contentHash": "01a414fbbf35038f29d5c2474aab7c633366f5c695b5efd3566207f8e96e78c2",
+    "perceptualHash": "013111511127233b",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 49752,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "blsm-twlw",
+    "canonicalNameEn": "Tolu balsam",
+    "positiveDescription": "a glossy dark amber Tolu balsam resin bead on aromatic bark",
+    "scientificName": "Myroxylon balsamum",
+    "entityType": "resin",
+    "plantPart": "balsam",
+    "generationPrompt": "Premium botanical cutout: Tolu balsam resin on bark; centered, true transparent alpha, no jar, container or unrelated objects.",
+    "sourceImageId": "exec-4a62df37-63ef-45cb-ab74-19a70680c71e",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "بلسم تولو",
+    "imageUrl": "assets/notes/generated/blsm-twlw.webp",
+    "noteKey": "blsm-twlw",
+    "noteAssetId": "origo-note-blsm-twlw",
+    "sha256": "5a8188c3f938925447f05412f6699af36045141948bcaa4929b8ed6b0fa68701",
+    "visualReview": "Reviewed reports/batch62-review.jpg against the locked identity prompt: the exact material or botanical representation is clearly shown; no lettering, bottle, packaging, scenery or unrelated objects.",
+    "contentHash": "7557ca5bc87ab787e5e4d63455b6df43c9a1c9ba29fab697ebb2c4fc5d9172c1",
+    "perceptualHash": "000e0f3b172f3c30",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 23922,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "twabl-albarbkyw",
+    "canonicalNameEn": "barbecue spices accord",
+    "positiveDescription": "a compact mound of smoky red-brown dry barbecue spice blend",
+    "scientificName": null,
+    "entityType": "spice accord",
+    "plantPart": "powder",
+    "generationPrompt": "Premium fragrance-note cutout: dry smoky red-brown barbecue spice blend; centered, true transparent alpha, no bowl, plate or unrelated objects.",
+    "sourceImageId": "exec-2f332ff6-2d76-4733-b1d1-4c91d6298d0a",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "توابل الباربكيو",
+    "imageUrl": "assets/notes/generated/twabl-albarbkyw.webp",
+    "noteKey": "twabl-albarbkyw",
+    "noteAssetId": "origo-note-twabl-albarbkyw",
+    "sha256": "b516b5a5fde917463cb1d9d5d6b7ea772ddff5abc03af70371e2db19a7be4f52",
+    "visualReview": "Reviewed reports/batch62-review.jpg against the locked identity prompt: the exact material or botanical representation is clearly shown; no lettering, bottle, packaging, scenery or unrelated objects.",
+    "contentHash": "6500e08c31be1e036a892c160de4d3f9e365e6f942d36c4d60c2e101a4e1ad80",
+    "perceptualHash": "04062b691d2b170c",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 38770,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "twlyfh-alakashyk",
+    "canonicalNameEn": "Akashic accord",
+    "positiveDescription": "a pale sacred wood chip with a translucent resin crystal and dried violet petal",
+    "scientificName": null,
+    "entityType": "fantasy accord",
+    "plantPart": "accord",
+    "generationPrompt": "Premium fragrance-note cutout: Akashic accord represented by pale sacred wood chip, translucent resin crystal and dried violet petal; true transparent alpha, no unrelated objects.",
+    "sourceImageId": "exec-220bdc4b-ffef-4986-ae32-793832b8e115",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "توليفة الأكاشيك",
+    "imageUrl": "assets/notes/generated/twlyfh-alakashyk.webp",
+    "noteKey": "twlyfh-alakashyk",
+    "noteAssetId": "origo-note-twlyfh-alakashyk",
+    "sha256": "f390446eaa877a8e3a2ba50ef26f6b4523fe7aa8b1a4e2d4b35a9b57e56e7203",
+    "visualReview": "Reviewed reports/batch62-review.jpg against the locked identity prompt: the exact material or botanical representation is clearly shown; no lettering, bottle, packaging, scenery or unrelated objects.",
+    "contentHash": "1864191efa72a63bd4ec9a3c8afe3043ff9e744d97185606c334d180d53baf1f",
+    "perceptualHash": "0101030f191f0f05",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 23716,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "jld-alhsan",
+    "canonicalNameEn": "horse leather fragrance note",
+    "positiveDescription": "a small rolled piece of dark chestnut equestrian leather",
+    "scientificName": null,
+    "entityType": "material",
+    "plantPart": "leather",
+    "generationPrompt": "Premium fragrance-note cutout: dark chestnut rolled equestrian leather material; no animal or body part; centered, true transparent alpha.",
+    "sourceImageId": "exec-7ad8a213-dcde-4d88-bd8b-42f804e03879",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "جلد الحصان",
+    "imageUrl": "assets/notes/generated/jld-alhsan.webp",
+    "noteKey": "jld-alhsan",
+    "noteAssetId": "origo-note-jld-alhsan",
+    "sha256": "faede1ad4f54a616b098bd2022e486f0118666d0ede292fa00e5827addee27f1",
+    "visualReview": "Reviewed reports/batch62-review.jpg against the locked identity prompt: the exact material or botanical representation is clearly shown; no lettering, bottle, packaging, scenery or unrelated objects.",
+    "contentHash": "89c3cfc8c2c34f81e382f32983ae13df93769a8f79c11cdafd091130e54cbd31",
+    "perceptualHash": "000603274d6f7b38",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 16710,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "jld-alghzal-aljld-almdbwgh",
+    "canonicalNameEn": "deerskin suede fragrance note",
+    "positiveDescription": "a softly folded piece of warm tan suede with fine nap",
+    "scientificName": null,
+    "entityType": "material",
+    "plantPart": "leather",
+    "generationPrompt": "Premium fragrance-note cutout: soft warm tan deerskin suede folded piece; no animal or body part; centered, true transparent alpha.",
+    "sourceImageId": "exec-9225d7e2-f8f3-44a8-90f8-1c3361ac079f",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "جلد الغزال (الجلد المدبوغ)",
+    "imageUrl": "assets/notes/generated/jld-alghzal-aljld-almdbwgh.webp",
+    "noteKey": "jld-alghzal-aljld-almdbwgh",
+    "noteAssetId": "origo-note-jld-alghzal-aljld-almdbwgh",
+    "sha256": "dff1165460175100372e50e4ab475e6c7d75eb8fd0bda667ab5dff066acbcb68",
+    "visualReview": "Reviewed reports/batch62-review.jpg against the locked identity prompt: the exact material or botanical representation is clearly shown; no lettering, bottle, packaging, scenery or unrelated objects.",
+    "contentHash": "5a2a25ebf33dbdbd3865cdf0468006d0cb63b1a97d2b84b4efac57bc89a711c6",
+    "perceptualHash": "000c0e1721431909",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 17686,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  }
+]
