@@ -5524,48 +5524,29 @@ function renderNotesLibrary() {
     .filter((entry) => entry.notes.length);
   $("#notes-page-content").innerHTML = `
     <header class="notes-page-hero">
-      <div>
-        <span class="eyebrow">${state.lang === "ar" ? "أطلس ORIGO العطري" : "ORIGO OLFACTORY ATLAS"}</span>
-        <h1 id="notes-page-title">${state.lang === "ar" ? "مكتبة المكونات<br><em>العطرية.</em>" : "Fragrance Notes<br><em>Library.</em>"}</h1>
-        <p>${state.lang === "ar"
-          ? "استكشف العائلات والمكونات، وافهم موقع كل نوتة ثم انتقل مباشرة إلى العطور التي تحملها."
-          : "Explore scent families, understand each note's role, and discover perfumes built around it."}</p>
-      </div>
-      <div class="notes-page-stats">
-        <div class="notes-page-stat"><strong>${formatNumber(library.notes.length)}</strong><span>${state.lang === "ar" ? "إجمالي النوتات" : "total notes"}</span></div>
-        <div class="notes-page-stat"><strong>${formatNumber(familyCards.length)}</strong><span>${state.lang === "ar" ? "عائلة عطرية" : "scent families"}</span></div>
-      </div>
+      <h1 id="notes-page-title">${state.lang === "ar" ? "مكتبة المكونات العطرية" : "Fragrance Notes Library"}</h1>
     </header>
+    <label class="notes-library-search notes-library-search-top"><span>⌕</span><input id="notes-library-search" type="search"
+      value="${escapeHTML(state.notesSearchQuery)}" placeholder="${state.lang === "ar" ? "ابحث: ورد، Oud، برغموت…" : "Search: Rose, Oud, Bergamot…"}" /></label>
     <div class="notes-family-heading"><h2>${state.lang === "ar" ? "العائلات العطرية" : "Fragrance families"}</h2><button data-action="filter-note-family" data-family="all">${state.lang === "ar" ? "عرض كل العائلات" : "View all families"} <span>←</span></button></div>
     <section class="notes-family-showcase" id="notes-family-showcase" aria-label="${state.lang === "ar" ? "عائلات النوتات العطرية" : "Fragrance note families"}">
       ${familyCards.map(({ family, notes }) => `<button data-action="filter-note-family" data-family="${escapeHTML(family.id)}" style="--family-color:${escapeHTML(family.color)};--family-accent:${escapeHTML(family.accent)}">
         <span><img src="${escapeHTML(library.artwork(notes.find((note) => note.imageStatus === "ready") || { ...notes[0], image: "" }))}" alt="" loading="lazy" /></span>
-        <b>${escapeHTML(familyLabel(family))}</b><small>${notes.length} ${state.lang === "ar" ? "نوتة" : "notes"}</small>
+        <b>${escapeHTML(familyLabel(family))}</b>
       </button>`).join("")}
     </section>
-    <div class="notes-library-toolbar">
-      <label class="notes-library-search"><span>⌕</span><input id="notes-library-search" type="search"
-        value="${escapeHTML(state.notesSearchQuery)}" placeholder="${state.lang === "ar" ? "ابحث: ورد، Oud، برغموت…" : "Search: Rose, Oud, Bergamot…"}" /></label>
-      ${staffView ? `<div class="notes-image-filters" role="group" aria-label="${state.lang === "ar" ? "حالة صور النوتات" : "Artwork status"}">
+    ${staffView ? `<div class="notes-library-toolbar notes-staff-toolbar">
+      <div class="notes-image-filters" role="group" aria-label="${state.lang === "ar" ? "حالة صور النوتات" : "Artwork status"}">
         <button data-action="filter-note-images" data-images="available" class="${state.notesImageFilter === "available" ? "active" : ""}">${state.lang === "ar" ? "صور معتمدة" : "Artwork ready"} <small>${readyCount}</small></button>
         <button data-action="filter-note-images" data-images="all" class="${state.notesImageFilter === "all" ? "active" : ""}">${state.lang === "ar" ? "كل النوتات" : "All notes"} <small>${library.notes.length}</small></button>
         <button data-action="filter-note-images" data-images="reference" class="${state.notesImageFilter === "reference" ? "active" : ""}">${state.lang === "ar" ? "مراجع تحتاج إعادة توليد" : "References to regenerate"} <small>${referenceCount}</small></button>
         <button data-action="filter-note-images" data-images="missing" class="${state.notesImageFilter === "missing" ? "active" : ""}">${state.lang === "ar" ? "صور غير مضافة" : "Missing artwork"} <small>${missingCount}</small></button>
-      </div>` : ""}
-      <div class="notes-family-filters" role="group" aria-label="${state.lang === "ar" ? "فلترة حسب العائلة" : "Filter by family"}">
-        <button data-action="filter-note-family" data-family="all" class="${state.notesFamilyFilter === "all" ? "active" : ""}">${state.lang === "ar" ? "كل العائلات" : "All families"} <small>${library.notes.length}</small></button>
-        ${families.map((family) => {
-          const count = library.notes.filter((note) => note.familyId === family.id).length;
-          return `<button data-action="filter-note-family" data-family="${escapeHTML(family.id)}" class="${state.notesFamilyFilter === family.id ? "active" : ""}" style="--family-color:${escapeHTML(family.color)}">
-            <i>${escapeHTML(family.symbol)}</i>${escapeHTML(familyLabel(family))}<small>${count}</small></button>`;
-        }).join("")}
       </div>
-    </div>
+    </div>` : ""}
     <div class="notes-results-head">
       <div><span class="eyebrow">${state.lang === "ar" ? "المكونات" : "INGREDIENTS"}</span><h2>${state.notesFamilyFilter === "all"
         ? (state.lang === "ar" ? "كل المكونات" : "All notes")
         : escapeHTML(familyLabel(library.familyById(state.notesFamilyFilter)))}</h2></div>
-      <b>${result.total} ${state.lang === "ar" ? "نتيجة" : "results"}</b>
     </div>
     <div class="library-notes-grid">
       ${result.items.length ? result.items.map((note) => noteCardMarkup(note)).join("") : `
