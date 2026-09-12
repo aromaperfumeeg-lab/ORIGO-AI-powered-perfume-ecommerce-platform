@@ -1,0 +1,466 @@
+[
+  {
+    "canonicalKey": "ambrkytal-amberketal",
+    "canonicalNameEn": "Amberketal fragrance molecule",
+    "positiveDescription": "a warm golden translucent crystal with a compact ketal-like faceted ring form",
+    "scientificName": null,
+    "entityType": "molecule",
+    "plantPart": "crystal",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject Amberketal fragrance molecule. Subject: a warm golden translucent crystal with a compact ketal-like faceted ring form. Style: high-end photorealistic material or botanical catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, texture and natural color; only the named note; no backdrop, floor, scenery, frame, text, label, logo, watermark, people, hands, body parts, living animals, perfume bottle, plate, container, packaging, laboratory glassware or unrelated objects.",
+    "sourceImageId": "exec-4312c59b-480b-4bae-b20f-b041b8bc44ba",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "أمبركيتال (Amberketal)",
+    "imageUrl": "assets/notes/generated/ambrkytal-amberketal.webp",
+    "noteKey": "ambrkytal-amberketal",
+    "noteAssetId": "origo-note-ambrkytal-amberketal",
+    "sha256": "2184d55c9771ae880e2e88e5482454d15ba87bd515f8b73c0dcd7506daf9a322",
+    "visualReview": "Reviewed reports/batch61-review.jpg against the locked identity prompt: the exact material or botanical representation is clearly shown; no lettering, bottle, packaging, scenery or unrelated objects.",
+    "contentHash": "fbd89659e83edffc68c3940e8886f584f596677b6fe994f88f53d5c965fcc8eb",
+    "perceptualHash": "00050616131b0766",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 20018,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "ambrwstar",
+    "canonicalNameEn": "Ambrostar fragrance molecule",
+    "positiveDescription": "a radiant star-like amber-gold crystalline cluster with woody brown center",
+    "scientificName": null,
+    "entityType": "molecule",
+    "plantPart": "crystal",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject Ambrostar fragrance molecule. Subject: a radiant star-like amber-gold crystalline cluster with woody brown center. Style: high-end photorealistic material or botanical catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, texture and natural color; only the named note; no backdrop, floor, scenery, frame, text, label, logo, watermark, people, hands, body parts, living animals, perfume bottle, plate, container, packaging, laboratory glassware or unrelated objects.",
+    "sourceImageId": "exec-5037528b-6456-40fe-9729-8b3520fa5fa4",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "أمبروستار",
+    "imageUrl": "assets/notes/generated/ambrwstar.webp",
+    "noteKey": "ambrwstar",
+    "noteAssetId": "origo-note-ambrwstar",
+    "sha256": "f3b08fdfff0e5e18e578024e4cf6e2f3ac12c09c817dde7f6959c4f0ea299fc3",
+    "visualReview": "Reviewed reports/batch61-review.jpg against the locked identity prompt: the exact material or botanical representation is clearly shown; no lettering, bottle, packaging, scenery or unrelated objects.",
+    "contentHash": "edf458f8119bb01e09872508194ea2a68ecb4b91c797468476e16cfb212c0b40",
+    "perceptualHash": "06660e1f0d1f6606",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 30296,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "ambrwsynyd",
+    "canonicalNameEn": "Ambrocenide fragrance molecule",
+    "positiveDescription": "a sharp angular deep amber crystal with powerful dry woody facets",
+    "scientificName": null,
+    "entityType": "molecule",
+    "plantPart": "crystal",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject Ambrocenide fragrance molecule. Subject: a sharp angular deep amber crystal with powerful dry woody facets. Style: high-end photorealistic material or botanical catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, texture and natural color; only the named note; no backdrop, floor, scenery, frame, text, label, logo, watermark, people, hands, body parts, living animals, perfume bottle, plate, container, packaging, laboratory glassware or unrelated objects.",
+    "sourceImageId": "exec-dc280521-cf5b-4392-97b7-70002bcd77cf",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "أمبروسينيد",
+    "imageUrl": "assets/notes/generated/ambrwsynyd.webp",
+    "noteKey": "ambrwsynyd",
+    "noteAssetId": "origo-note-ambrwsynyd",
+    "sha256": "6327b7eddf0311cd4fdd09ed834b14e3350dab01671525ee4cf1c758e5c580ed",
+    "visualReview": "Reviewed reports/batch61-review.jpg against the locked identity prompt: the exact material or botanical representation is clearly shown; no lettering, bottle, packaging, scenery or unrelated objects.",
+    "contentHash": "55cfa21b311d80448877b257226b49c94dbe0c27fa572b93afb840eb18731160",
+    "perceptualHash": "060701350607130a",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 23104,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "ambrwnwfa",
+    "canonicalNameEn": "Ambronova fragrance molecule",
+    "positiveDescription": "a smooth modern honey-amber crystal with luminous woody core",
+    "scientificName": null,
+    "entityType": "molecule",
+    "plantPart": "crystal",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject Ambronova fragrance molecule. Subject: a smooth modern honey-amber crystal with luminous woody core. Style: high-end photorealistic material or botanical catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, texture and natural color; only the named note; no backdrop, floor, scenery, frame, text, label, logo, watermark, people, hands, body parts, living animals, perfume bottle, plate, container, packaging, laboratory glassware or unrelated objects.",
+    "sourceImageId": "exec-6df15f81-9b93-4547-8894-45fda5add507",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "أمبرونوفا",
+    "imageUrl": "assets/notes/generated/ambrwnwfa.webp",
+    "noteKey": "ambrwnwfa",
+    "noteAssetId": "origo-note-ambrwnwfa",
+    "sha256": "3e4f711294a5914dd07be52a7ff3cd3707801737ce8dcf3284f3f6ee38206d66",
+    "visualReview": "Reviewed reports/batch61-review.jpg against the locked identity prompt: the exact material or botanical representation is clearly shown; no lettering, bottle, packaging, scenery or unrelated objects.",
+    "contentHash": "ae0bcdd864af88ad73d7bc0715a3f4459ecafa17b5c6c460e5cdafdc6618e55a",
+    "perceptualHash": "0607270d47070f0f",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 28080,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "ambrettolide",
+    "canonicalNameEn": "Ambrettolide musk molecule",
+    "positiveDescription": "a soft ivory translucent rounded crystal with subtle warm pearly sheen",
+    "scientificName": null,
+    "entityType": "molecule",
+    "plantPart": "crystal",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject Ambrettolide musk molecule. Subject: a soft ivory translucent rounded crystal with subtle warm pearly sheen. Style: high-end photorealistic material or botanical catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, texture and natural color; only the named note; no backdrop, floor, scenery, frame, text, label, logo, watermark, people, hands, body parts, living animals, perfume bottle, plate, container, packaging, laboratory glassware or unrelated objects.",
+    "sourceImageId": "exec-6bd921a7-77bd-45d0-8915-e46d4d423095",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "أمبريتوليد",
+    "imageUrl": "assets/notes/generated/ambrettolide.webp",
+    "noteKey": "ambrettolide",
+    "noteAssetId": "origo-note-ambrettolide",
+    "sha256": "fa7e9d5f4c485670be816a716fbc34b0dbcce002790d61c885302dc492a57bff",
+    "visualReview": "Reviewed reports/batch61-review.jpg against the locked identity prompt: the exact material or botanical representation is clearly shown; no lettering, bottle, packaging, scenery or unrelated objects.",
+    "contentHash": "3435cc08458c6f3cf057b9269297ce7864b46eabbfea6739567effb18de36436",
+    "perceptualHash": "0613591987471b0e",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 15598,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "ambrytwn",
+    "canonicalNameEn": "Ambretone musk material",
+    "positiveDescription": "a pale cream waxy crystal with rounded clean facets",
+    "scientificName": null,
+    "entityType": "molecule",
+    "plantPart": "crystal",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject Ambretone musk material. Subject: a pale cream waxy crystal with rounded clean facets. Style: high-end photorealistic material or botanical catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, texture and natural color; only the named note; no backdrop, floor, scenery, frame, text, label, logo, watermark, people, hands, body parts, living animals, perfume bottle, plate, container, packaging, laboratory glassware or unrelated objects.",
+    "sourceImageId": "exec-57d69b55-194f-472c-beb8-a18f986df156",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "أمبريتون",
+    "imageUrl": "assets/notes/generated/ambrytwn.webp",
+    "noteKey": "ambrytwn",
+    "noteAssetId": "origo-note-ambrytwn",
+    "sha256": "1013cdeaf4f779451dbac593467cc710613fc6046103fcd71737487b8d44841b",
+    "visualReview": "Reviewed reports/batch61-review.jpg against the locked identity prompt: the exact material or botanical representation is clearly shown; no lettering, bottle, packaging, scenery or unrelated objects.",
+    "contentHash": "a3737f7ee4f88290b0ae26f354477f246893b31b01a11daeba4cd57e38d3efde",
+    "perceptualHash": "0603110b0b170f06",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 13702,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "ambryn",
+    "canonicalNameEn": "Ambrine amber material",
+    "positiveDescription": "a dark golden-brown translucent resin crystal with warm organic inclusions",
+    "scientificName": null,
+    "entityType": "material",
+    "plantPart": "crystal",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject Ambrine amber material. Subject: a dark golden-brown translucent resin crystal with warm organic inclusions. Style: high-end photorealistic material or botanical catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, texture and natural color; only the named note; no backdrop, floor, scenery, frame, text, label, logo, watermark, people, hands, body parts, living animals, perfume bottle, plate, container, packaging, laboratory glassware or unrelated objects.",
+    "sourceImageId": "exec-66d02ec6-decf-4c1d-80c6-1852c39629fe",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "أمبرين",
+    "imageUrl": "assets/notes/generated/ambryn.webp",
+    "noteKey": "ambryn",
+    "noteAssetId": "origo-note-ambryn",
+    "sha256": "8975ebddc52e848010c47d5dd065d338162a75c951d8c8fd1aea19df59e621a7",
+    "visualReview": "Reviewed reports/batch61-review.jpg against the locked identity prompt: the exact material or botanical representation is clearly shown; no lettering, bottle, packaging, scenery or unrelated objects.",
+    "contentHash": "d6a0e564f6d6829a3217dbbe7386533f751ce23da348ab08cbaa3e3722115f7e",
+    "perceptualHash": "0627494d1b33070c",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 30444,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "anthambr",
+    "canonicalNameEn": "Anthamber fragrance molecule",
+    "positiveDescription": "a pale amber mineral-like shard with cool dry woody facets",
+    "scientificName": null,
+    "entityType": "molecule",
+    "plantPart": "crystal",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject Anthamber fragrance molecule. Subject: a pale amber mineral-like shard with cool dry woody facets. Style: high-end photorealistic material or botanical catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, texture and natural color; only the named note; no backdrop, floor, scenery, frame, text, label, logo, watermark, people, hands, body parts, living animals, perfume bottle, plate, container, packaging, laboratory glassware or unrelated objects.",
+    "sourceImageId": "exec-43c1d5f1-ea8c-4eaa-a090-928d13fa110f",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "أنثامبر",
+    "imageUrl": "assets/notes/generated/anthambr.webp",
+    "noteKey": "anthambr",
+    "noteAssetId": "origo-note-anthambr",
+    "sha256": "a2591f9e5d3b25268089dde0573ff4456f8145795e7db705323a4bd8dcb87221",
+    "visualReview": "Reviewed reports/batch61-review.jpg against the locked identity prompt: the exact material or botanical representation is clearly shown; no lettering, bottle, packaging, scenery or unrelated objects.",
+    "contentHash": "3f83b8729fb500ccf89aa40794e03b3173ad6786f8410891a41323390573bf0e",
+    "perceptualHash": "0607031658391106",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 25314,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "akzaltwlyd",
+    "canonicalNameEn": "Exaltolide musk molecule",
+    "positiveDescription": "an elegant white translucent ring-shaped crystalline cluster with silky pearlescence",
+    "scientificName": null,
+    "entityType": "molecule",
+    "plantPart": "crystal",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject Exaltolide musk molecule. Subject: an elegant white translucent ring-shaped crystalline cluster with silky pearlescence. Style: high-end photorealistic material or botanical catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, texture and natural color; only the named note; no backdrop, floor, scenery, frame, text, label, logo, watermark, people, hands, body parts, living animals, perfume bottle, plate, container, packaging, laboratory glassware or unrelated objects.",
+    "sourceImageId": "exec-a07e58c6-ad3e-4508-a7e4-806a0fd57767",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "إكزالتوليد",
+    "imageUrl": "assets/notes/generated/akzaltwlyd.webp",
+    "noteKey": "akzaltwlyd",
+    "noteAssetId": "origo-note-akzaltwlyd",
+    "sha256": "9af9ee448be241063682ecf0070b070cc27049f0fd9a792db416d74a3784b021",
+    "visualReview": "Reviewed reports/batch61-review.jpg against the locked identity prompt: the exact material or botanical representation is clearly shown; no lettering, bottle, packaging, scenery or unrelated objects.",
+    "contentHash": "2cd68c35f5dcf315d0fa4f190f66f0388dd4134634f732d7d728b8f6134a1587",
+    "perceptualHash": "071b316161310f0e",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 19210,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "alambrghrys",
+    "canonicalNameEn": "ambergris fragrance material",
+    "positiveDescription": "a weathered irregular pale gray-beige waxy ocean-aged lump with marbled interior",
+    "scientificName": null,
+    "entityType": "animalic material",
+    "plantPart": "material",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject ambergris fragrance material. Subject: a weathered irregular pale gray-beige waxy ocean-aged lump with marbled interior. Style: high-end photorealistic material or botanical catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, texture and natural color; only the named note; no backdrop, floor, scenery, frame, text, label, logo, watermark, people, hands, body parts, living animals, perfume bottle, plate, container, packaging, laboratory glassware or unrelated objects.",
+    "sourceImageId": "exec-fde67104-9734-4ef2-a4aa-8dd790c065fc",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "الآمبرغريس",
+    "imageUrl": "assets/notes/generated/alambrghrys.webp",
+    "noteKey": "alambrghrys",
+    "noteAssetId": "origo-note-alambrghrys",
+    "sha256": "30076c1ea1bf8c3e1595b7c328f38661de3f4219adb1a5f162a4d81bdf3a76e5",
+    "visualReview": "Reviewed reports/batch61-review.jpg against the locked identity prompt: the exact material or botanical representation is clearly shown; no lettering, bottle, packaging, scenery or unrelated objects.",
+    "contentHash": "ee8c218346f7a2c91b5f75767cdcb07d72aaacf900e282da4d47750b1cfbcf98",
+    "perceptualHash": "06074d2b23733b0f",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 25858,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "alambrwksan",
+    "canonicalNameEn": "Ambroxan fragrance molecule",
+    "positiveDescription": "a clean translucent pale amber crystalline cluster with dry mineral facets",
+    "scientificName": null,
+    "entityType": "molecule",
+    "plantPart": "crystal",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject Ambroxan fragrance molecule. Subject: a clean translucent pale amber crystalline cluster with dry mineral facets. Style: high-end photorealistic material or botanical catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, texture and natural color; only the named note; no backdrop, floor, scenery, frame, text, label, logo, watermark, people, hands, body parts, living animals, perfume bottle, plate, container, packaging, laboratory glassware or unrelated objects.",
+    "sourceImageId": "exec-4bca4078-38d0-4df3-b2e4-a3084aad30f5",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "الأمبروكسان",
+    "imageUrl": "assets/notes/generated/alambrwksan.webp",
+    "noteKey": "alambrwksan",
+    "noteAssetId": "origo-note-alambrwksan",
+    "sha256": "18b3d1d37a55e7e1de599edf4d0884f1d987a5f500aa417d861219eb04391a31",
+    "visualReview": "Reviewed reports/batch61-review.jpg against the locked identity prompt: the exact material or botanical representation is clearly shown; no lettering, bottle, packaging, scenery or unrelated objects.",
+    "contentHash": "916c64c335bedacd4ae5f9a172db2a2512e4c01b3ffcb880b20303ca10f188aa",
+    "perceptualHash": "0305073969330b0f",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 23986,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "alambryt",
+    "canonicalNameEn": "Ambrette seed Abelmoschus moschatus",
+    "positiveDescription": "several kidney-shaped gray-brown musky seeds beside a small green leaf",
+    "scientificName": null,
+    "entityType": "seed",
+    "plantPart": "seed",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject Ambrette seed Abelmoschus moschatus. Subject: several kidney-shaped gray-brown musky seeds beside a small green leaf. Style: high-end photorealistic material or botanical catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, texture and natural color; only the named note; no backdrop, floor, scenery, frame, text, label, logo, watermark, people, hands, body parts, living animals, perfume bottle, plate, container, packaging, laboratory glassware or unrelated objects.",
+    "sourceImageId": "exec-269f356c-9a2a-4090-8f97-ba6e029f970d",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "الأمبريت",
+    "imageUrl": "assets/notes/generated/alambryt.webp",
+    "noteKey": "alambryt",
+    "noteAssetId": "origo-note-alambryt",
+    "sha256": "a07155b072ef8b0e779eb6bc3a4decd804e608441a755f42eb0c191285ab77cf",
+    "visualReview": "Reviewed reports/batch61-review.jpg against the locked identity prompt: the exact material or botanical representation is clearly shown; no lettering, bottle, packaging, scenery or unrelated objects.",
+    "contentHash": "55cfbd0fe33ab08197af3cecf46d507467d25777aa3038a1cac3e6f1bbc02ba0",
+    "perceptualHash": "0303070503331919",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 26304,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "albshrh",
+    "canonicalNameEn": "clean skin fragrance note",
+    "positiveDescription": "a smooth warm beige organic mineral pebble with soft satin texture",
+    "scientificName": null,
+    "entityType": "accord",
+    "plantPart": "material",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject clean skin fragrance note. Subject: a smooth warm beige organic mineral pebble with soft satin texture. Style: high-end photorealistic material or botanical catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, texture and natural color; only the named note; no backdrop, floor, scenery, frame, text, label, logo, watermark, people, hands, body parts, living animals, perfume bottle, plate, container, packaging, laboratory glassware or unrelated objects.",
+    "sourceImageId": "exec-7b06909a-eddf-4cbc-9927-399b8b21beee",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "البشرة",
+    "imageUrl": "assets/notes/generated/albshrh.webp",
+    "noteKey": "albshrh",
+    "noteAssetId": "origo-note-albshrh",
+    "sha256": "70e876fcc425dfb07c0ca7050f2ffec2ea9f3a9981140c276da43ab5bcc03581",
+    "visualReview": "Reviewed reports/batch61-review.jpg against the locked identity prompt: the exact material or botanical representation is clearly shown; no lettering, bottle, packaging, scenery or unrelated objects.",
+    "contentHash": "257d8137af27a33b2cd67f57617696445f8203f7bdaadba74f7222bcf13da5ee",
+    "perceptualHash": "0101020c1901071e",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 12638,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "aljbn",
+    "canonicalNameEn": "aged cheese fragrance note",
+    "positiveDescription": "one small natural ivory cheese wedge with golden rind and subtle porous texture",
+    "scientificName": null,
+    "entityType": "food",
+    "plantPart": "cheese",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject aged cheese fragrance note. Subject: one small natural ivory cheese wedge with golden rind and subtle porous texture. Style: high-end photorealistic material or botanical catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, texture and natural color; only the named note; no backdrop, floor, scenery, frame, text, label, logo, watermark, people, hands, body parts, living animals, perfume bottle, plate, container, packaging, laboratory glassware or unrelated objects.",
+    "sourceImageId": "exec-dd8d7747-95b9-4163-bf98-1043515b6fa1",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "الجبن",
+    "imageUrl": "assets/notes/generated/aljbn.webp",
+    "noteKey": "aljbn",
+    "noteAssetId": "origo-note-aljbn",
+    "sha256": "cce87c62fd7762258ef3ba44e0f5cd85618a8c5d89bbb4474de5fe88bb3f51a9",
+    "visualReview": "Reviewed reports/batch61-review.jpg against the locked identity prompt: the exact material or botanical representation is clearly shown; no lettering, bottle, packaging, scenery or unrelated objects.",
+    "contentHash": "46708faa1b60d9e437612fb03b5f848fc51f9638d97734358f3663c1901093eb",
+    "perceptualHash": "0101010908010501",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 18886,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "aljlwd",
+    "canonicalNameEn": "natural leather fragrance note",
+    "positiveDescription": "one small rolled piece of rich brown vegetable-tanned leather showing grain and raw edge",
+    "scientificName": null,
+    "entityType": "material",
+    "plantPart": "leather",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject natural leather fragrance note. Subject: one small rolled piece of rich brown vegetable-tanned leather showing grain and raw edge. Style: high-end photorealistic material or botanical catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, texture and natural color; only the named note; no backdrop, floor, scenery, frame, text, label, logo, watermark, people, hands, body parts, living animals, perfume bottle, plate, container, packaging, laboratory glassware or unrelated objects.",
+    "sourceImageId": "exec-72c97b63-f309-4bfd-8bba-f03d9befb0cd",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "الجلود",
+    "imageUrl": "assets/notes/generated/aljlwd.webp",
+    "noteKey": "aljlwd",
+    "noteAssetId": "origo-note-aljlwd",
+    "sha256": "57563389a31d87708f2caee874cf45c2e07dd3e8cf9d243c2925c58556636f7c",
+    "visualReview": "Reviewed reports/batch61-review.jpg against the locked identity prompt: the exact material or botanical representation is clearly shown; no lettering, bottle, packaging, scenery or unrelated objects.",
+    "contentHash": "15511051ad9b00072f88494b77d1b31044f901a5c2993611bb94a222609cb671",
+    "perceptualHash": "000203031b270e18",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 13172,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "aldrnh",
+    "canonicalNameEn": "tuber fragrance note",
+    "positiveDescription": "one earthy beige botanical root tuber with fine rootlets and a small green shoot",
+    "scientificName": null,
+    "entityType": "root",
+    "plantPart": "tuber",
+    "generationPrompt": "Use case: product-mockup. Asset type: ORIGO fragrance-note cutout. Primary request: exact subject tuber fragrance note. Subject: one earthy beige botanical root tuber with fine rootlets and a small green shoot. Style: high-end photorealistic material or botanical catalog specimen. Composition: isolated centered square object with generous transparent margin. Constraints: TRUE transparent alpha background with every corner fully transparent; accurate identity, texture and natural color; only the named note; no backdrop, floor, scenery, frame, text, label, logo, watermark, people, hands, body parts, living animals, perfume bottle, plate, container, packaging, laboratory glassware or unrelated objects.",
+    "sourceImageId": "exec-79803503-550a-4c09-b5cc-f1fe2cdd57c7",
+    "validated": true,
+    "status": "VALID",
+    "canonicalNameAr": "الدرنه",
+    "imageUrl": "assets/notes/generated/aldrnh.webp",
+    "noteKey": "aldrnh",
+    "noteAssetId": "origo-note-aldrnh",
+    "sha256": "abf76f7b9e62d64bfb795c0ddfd29e0204d952917f3cf36338613e01c76ead1b",
+    "visualReview": "Reviewed reports/batch61-review.jpg against the locked identity prompt: the exact material or botanical representation is clearly shown; no lettering, bottle, packaging, scenery or unrelated objects.",
+    "contentHash": "c08c62da33b9469813a9115b3a91d5a65bce77e292777ab8a9949e5e3f70fbee",
+    "perceptualHash": "0001030981470e05",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 21938,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  }
+]

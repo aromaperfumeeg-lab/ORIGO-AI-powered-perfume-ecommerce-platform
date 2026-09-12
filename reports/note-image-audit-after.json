@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-09-12T14:16:51.179Z",
+  "generatedAt": "2026-09-12T14:40:35.884Z",
   "scope": "Library plus persisted note overrides; SQLite opened read-only. Visual semantics are not certified by filenames or hashes.",
   "notes": 1883,
   "products": 5,
-  "valid": 1374,
-  "missing": 491,
+  "valid": 1390,
+  "missing": 475,
   "duplicateGroups": 9,
   "needsReview": 0,
   "duplicates": [
@@ -19180,13 +19180,13 @@
     {
       "canonicalKey": "ambrkytal-amberketal",
       "nameAr": "أمبركيتال (Amberketal)",
-      "nameEn": "أمبركيتال (Amberketal)",
+      "nameEn": "Amberketal fragrance molecule",
       "sourceName": "أمبركيتال (Amberketal)",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/ambrkytal-amberketal.webp",
+      "filename": "ambrkytal-amberketal.webp",
+      "hash": "2184d55c9771ae880e2e88e5482454d15ba87bd515f8b73c0dcd7506daf9a322",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "أمبركيتال (Amberketal)"
       ]
@@ -19194,13 +19194,13 @@
     {
       "canonicalKey": "ambrwstar",
       "nameAr": "أمبروستار",
-      "nameEn": "أمبروستار",
+      "nameEn": "Ambrostar fragrance molecule",
       "sourceName": "أمبروستار",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/ambrwstar.webp",
+      "filename": "ambrwstar.webp",
+      "hash": "f3b08fdfff0e5e18e578024e4cf6e2f3ac12c09c817dde7f6959c4f0ea299fc3",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "أمبروستار"
       ]
@@ -19208,13 +19208,13 @@
     {
       "canonicalKey": "ambrwsynyd",
       "nameAr": "أمبروسينيد",
-      "nameEn": "أمبروسينيد",
+      "nameEn": "Ambrocenide fragrance molecule",
       "sourceName": "أمبروسينيد",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/ambrwsynyd.webp",
+      "filename": "ambrwsynyd.webp",
+      "hash": "6327b7eddf0311cd4fdd09ed834b14e3350dab01671525ee4cf1c758e5c580ed",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "أمبروسينيد"
       ]
@@ -19222,13 +19222,13 @@
     {
       "canonicalKey": "ambrwnwfa",
       "nameAr": "أمبرونوفا",
-      "nameEn": "أمبرونوفا",
+      "nameEn": "Ambronova fragrance molecule",
       "sourceName": "أمبرونوفا",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/ambrwnwfa.webp",
+      "filename": "ambrwnwfa.webp",
+      "hash": "3e4f711294a5914dd07be52a7ff3cd3707801737ce8dcf3284f3f6ee38206d66",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "أمبرونوفا"
       ]
@@ -19236,13 +19236,13 @@
     {
       "canonicalKey": "ambrettolide",
       "nameAr": "أمبريتوليد",
-      "nameEn": "Ambrettolide",
+      "nameEn": "Ambrettolide musk molecule",
       "sourceName": "أمبريتوليد",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/ambrettolide.webp",
+      "filename": "ambrettolide.webp",
+      "hash": "fa7e9d5f4c485670be816a716fbc34b0dbcce002790d61c885302dc492a57bff",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "أمبريتوليد"
       ]
@@ -19250,13 +19250,13 @@
     {
       "canonicalKey": "ambrytwn",
       "nameAr": "أمبريتون",
-      "nameEn": "أمبريتون",
+      "nameEn": "Ambretone musk material",
       "sourceName": "أمبريتون",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/ambrytwn.webp",
+      "filename": "ambrytwn.webp",
+      "hash": "1013cdeaf4f779451dbac593467cc710613fc6046103fcd71737487b8d44841b",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "أمبريتون"
       ]
@@ -19264,13 +19264,13 @@
     {
       "canonicalKey": "ambryn",
       "nameAr": "أمبرين",
-      "nameEn": "أمبرين",
+      "nameEn": "Ambrine amber material",
       "sourceName": "أمبرين",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/ambryn.webp",
+      "filename": "ambryn.webp",
+      "hash": "8975ebddc52e848010c47d5dd065d338162a75c951d8c8fd1aea19df59e621a7",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "أمبرين"
       ]
@@ -19278,13 +19278,13 @@
     {
       "canonicalKey": "anthambr",
       "nameAr": "أنثامبر",
-      "nameEn": "أنثامبر",
+      "nameEn": "Anthamber fragrance molecule",
       "sourceName": "أنثامبر",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/anthambr.webp",
+      "filename": "anthambr.webp",
+      "hash": "a2591f9e5d3b25268089dde0573ff4456f8145795e7db705323a4bd8dcb87221",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "أنثامبر"
       ]
@@ -19292,13 +19292,13 @@
     {
       "canonicalKey": "akzaltwlyd",
       "nameAr": "إكزالتوليد",
-      "nameEn": "إكزالتوليد",
+      "nameEn": "Exaltolide musk molecule",
       "sourceName": "إكزالتوليد",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/akzaltwlyd.webp",
+      "filename": "akzaltwlyd.webp",
+      "hash": "9af9ee448be241063682ecf0070b070cc27049f0fd9a792db416d74a3784b021",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "إكزالتوليد"
       ]
@@ -19306,13 +19306,13 @@
     {
       "canonicalKey": "alambrghrys",
       "nameAr": "الآمبرغريس",
-      "nameEn": "الآمبرغريس",
+      "nameEn": "ambergris fragrance material",
       "sourceName": "الآمبرغريس",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alambrghrys.webp",
+      "filename": "alambrghrys.webp",
+      "hash": "30076c1ea1bf8c3e1595b7c328f38661de3f4219adb1a5f162a4d81bdf3a76e5",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الآمبرغريس"
       ]
@@ -19320,13 +19320,13 @@
     {
       "canonicalKey": "alambrwksan",
       "nameAr": "الأمبروكسان",
-      "nameEn": "الأمبروكسان",
+      "nameEn": "Ambroxan fragrance molecule",
       "sourceName": "الأمبروكسان",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alambrwksan.webp",
+      "filename": "alambrwksan.webp",
+      "hash": "18b3d1d37a55e7e1de599edf4d0884f1d987a5f500aa417d861219eb04391a31",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الأمبروكسان"
       ]
@@ -19334,13 +19334,13 @@
     {
       "canonicalKey": "alambryt",
       "nameAr": "الأمبريت",
-      "nameEn": "الأمبريت",
+      "nameEn": "Ambrette seed Abelmoschus moschatus",
       "sourceName": "الأمبريت",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alambryt.webp",
+      "filename": "alambryt.webp",
+      "hash": "a07155b072ef8b0e779eb6bc3a4decd804e608441a755f42eb0c191285ab77cf",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الأمبريت"
       ]
@@ -19348,13 +19348,13 @@
     {
       "canonicalKey": "albshrh",
       "nameAr": "البشرة",
-      "nameEn": "البشرة",
+      "nameEn": "clean skin fragrance note",
       "sourceName": "البشرة",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/albshrh.webp",
+      "filename": "albshrh.webp",
+      "hash": "70e876fcc425dfb07c0ca7050f2ffec2ea9f3a9981140c276da43ab5bcc03581",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "البشرة"
       ]
@@ -19362,13 +19362,13 @@
     {
       "canonicalKey": "aljbn",
       "nameAr": "الجبن",
-      "nameEn": "الجبن",
+      "nameEn": "aged cheese fragrance note",
       "sourceName": "الجبن",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/aljbn.webp",
+      "filename": "aljbn.webp",
+      "hash": "cce87c62fd7762258ef3ba44e0f5cd85618a8c5d89bbb4474de5fe88bb3f51a9",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الجبن"
       ]
@@ -19376,13 +19376,13 @@
     {
       "canonicalKey": "aljlwd",
       "nameAr": "الجلود",
-      "nameEn": "الجلود",
+      "nameEn": "natural leather fragrance note",
       "sourceName": "الجلود",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/aljlwd.webp",
+      "filename": "aljlwd.webp",
+      "hash": "57563389a31d87708f2caee874cf45c2e07dd3e8cf9d243c2925c58556636f7c",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الجلود"
       ]
@@ -19390,13 +19390,13 @@
     {
       "canonicalKey": "aldrnh",
       "nameAr": "الدرنه",
-      "nameEn": "الدرنه",
+      "nameEn": "tuber fragrance note",
       "sourceName": "الدرنه",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/aldrnh.webp",
+      "filename": "aldrnh.webp",
+      "hash": "abf76f7b9e62d64bfb795c0ddfd29e0204d952917f3cf36338613e01c76ead1b",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الدرنه"
       ]
