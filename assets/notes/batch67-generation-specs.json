@@ -1,0 +1,466 @@
+[
+  {
+    "canonicalKey": "tshangh",
+    "canonicalNameEn": "تشانغ",
+    "canonicalNameAr": "تشانغ",
+    "positiveDescription": "تشانغ",
+    "scientificName": null,
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "تشانغ",
+    "sourceImageId": "exec-08b3018d-c493-480b-864b-5aa8cca9202f",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/tshangh.webp",
+    "noteKey": "tshangh",
+    "noteAssetId": "origo-note-tshangh",
+    "sha256": "fb824a0123071de7f9347e9ffdabd2dd18f3ad47ced86af8129ee5e1d3130638",
+    "visualReview": "Reviewed reports/batch67-review.jpg: exact beverage or ingredient identity; no text, vessel, background or unrelated object.",
+    "contentHash": "4dcb0a6f88c03bfa7de59028faca664d99edf8cc0737ea87ce612615e6533d48",
+    "perceptualHash": "0163636f5b77971c",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 42528,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "tshay-latyh",
+    "canonicalNameEn": "تشاي لاتيه",
+    "canonicalNameAr": "تشاي لاتيه",
+    "positiveDescription": "تشاي لاتيه",
+    "scientificName": null,
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "تشاي لاتيه",
+    "sourceImageId": "exec-002be000-32e6-4060-87ce-34c6c7d596d0",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/tshay-latyh.webp",
+    "noteKey": "tshay-latyh",
+    "noteAssetId": "origo-note-tshay-latyh",
+    "sha256": "75f548ca814296f9b0ffe27601f4b50fc8eba156a6e521e090e2f9b108d5d98e",
+    "visualReview": "Reviewed reports/batch67-review.jpg: exact beverage or ingredient identity; no text, vessel, background or unrelated object.",
+    "contentHash": "9059954f12c6f76713eb0bfd2bde50ce39a23b141cb4c11a622f759aca8bc6d1",
+    "perceptualHash": "0436134917270706",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 40314,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "jynyby",
+    "canonicalNameEn": "جينيبي",
+    "canonicalNameAr": "جينيبي",
+    "positiveDescription": "جينيبي",
+    "scientificName": null,
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "جينيبي",
+    "sourceImageId": "exec-54da5c8c-c21d-4f0d-bb38-b2549aedae48",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/jynyby.webp",
+    "noteKey": "jynyby",
+    "noteAssetId": "origo-note-jynyby",
+    "sha256": "080db01b5074458ba799bdee84d35f4a072c2ed34abcf05b2ff2f578423cef43",
+    "visualReview": "Reviewed reports/batch67-review.jpg: exact beverage or ingredient identity; no text, vessel, background or unrelated object.",
+    "contentHash": "2003ada7edc5ff774539de5a72a949447ad5b159a0454ec3b87f5df04b2f08d7",
+    "perceptualHash": "070f1f1d0f1b0d09",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 36662,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "hlyb-alswya",
+    "canonicalNameEn": "حليب الصويا",
+    "canonicalNameAr": "حليب الصويا",
+    "positiveDescription": "حليب الصويا",
+    "scientificName": null,
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "حليب الصويا",
+    "sourceImageId": "exec-a462dff0-5de5-4d2f-8fd2-266710feeade",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/hlyb-alswya.webp",
+    "noteKey": "hlyb-alswya",
+    "noteAssetId": "origo-note-hlyb-alswya",
+    "sha256": "efd969386ee9ce70d84c71fe29d2c7cc7c19fcb336b3328aff09d032860732a3",
+    "visualReview": "Reviewed reports/batch67-review.jpg: exact beverage or ingredient identity; no text, vessel, background or unrelated object.",
+    "contentHash": "82f26fc394276acd58adb7827803ce4444383e2410551a92c1e12e622ec94c39",
+    "perceptualHash": "030f1f5d793e3706",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 23324,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "hlyb-hamd",
+    "canonicalNameEn": "حليب حامض",
+    "canonicalNameAr": "حليب حامض",
+    "positiveDescription": "حليب حامض",
+    "scientificName": null,
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "حليب حامض",
+    "sourceImageId": "exec-4bfaa06d-f9a5-4a10-a0f4-b66a0905e662",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/hlyb-hamd.webp",
+    "noteKey": "hlyb-hamd",
+    "noteAssetId": "origo-note-hlyb-hamd",
+    "sha256": "be4114a9f03025ef4a31f9dd1b15e2b4611cb256e1066bc2c00228c598ea392e",
+    "visualReview": "Reviewed reports/batch67-review.jpg: exact beverage or ingredient identity; no text, vessel, background or unrelated object.",
+    "contentHash": "4cce894cf9cfb2fb5c16851a3aa279c0d7966991f083ec9f5dec3882682c146e",
+    "perceptualHash": "0e17331919995090",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 21488,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "hlyb-hlw",
+    "canonicalNameEn": "حليب حلو",
+    "canonicalNameAr": "حليب حلو",
+    "positiveDescription": "حليب حلو",
+    "scientificName": null,
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "حليب حلو",
+    "sourceImageId": "exec-ef6f1b33-50bd-456c-a9c0-e044ee169dae",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/hlyb-hlw.webp",
+    "noteKey": "hlyb-hlw",
+    "noteAssetId": "origo-note-hlyb-hlw",
+    "sha256": "b325ab7d19cf74d2dbbfcdaed78802aa94565e78a6915f77bbf82dd4f64322d6",
+    "visualReview": "Reviewed reports/batch67-review.jpg: exact beverage or ingredient identity; no text, vessel, background or unrelated object.",
+    "contentHash": "fb332932fd85f00f173aff9e09574f9729419d3d0a7a3c857ae98102bbd05e7d",
+    "perceptualHash": "0151c10b17332f1c",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 31174,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "khl",
+    "canonicalNameEn": "خل",
+    "canonicalNameAr": "خل",
+    "positiveDescription": "خل",
+    "scientificName": null,
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "خل",
+    "sourceImageId": "exec-8e52c826-e9ab-4bc3-b0a1-f1a1237eccf6",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/khl.webp",
+    "noteKey": "khl",
+    "noteAssetId": "origo-note-khl",
+    "sha256": "7ebff8e800e3c8de31725df901857740aa4aeb1082ff0d5170cdcca54d8bf427",
+    "visualReview": "Reviewed reports/batch67-review.jpg: exact beverage or ingredient identity; no text, vessel, background or unrelated object.",
+    "contentHash": "e99aec83a5d25c92b7dfb22aa3a761b9d381187d0f7b58086e7c51e3997bc81a",
+    "perceptualHash": "0113335b230f0e8c",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 31364,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "daykyry",
+    "canonicalNameEn": "دايكيري",
+    "canonicalNameAr": "دايكيري",
+    "positiveDescription": "دايكيري",
+    "scientificName": null,
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "دايكيري",
+    "sourceImageId": "exec-401dcba4-8a12-445a-804e-4bd41a785f23",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/daykyry.webp",
+    "noteKey": "daykyry",
+    "noteAssetId": "origo-note-daykyry",
+    "sha256": "552b035ad8f6cf98fd6fe776622c278fe1440f04423f0f3935e3ff2bf8c2fd1f",
+    "visualReview": "Reviewed reports/batch67-review.jpg: exact beverage or ingredient identity; no text, vessel, background or unrelated object.",
+    "contentHash": "eb5809d113cdb64945c79db6a0ec1ec9549caeb69e59230d0f8bf8d2923263d9",
+    "perceptualHash": "030f1f1f1b0f2d14",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 37022,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "rghwh-alhlyb",
+    "canonicalNameEn": "رغوة الحليب",
+    "canonicalNameAr": "رغوة الحليب",
+    "positiveDescription": "رغوة الحليب",
+    "scientificName": null,
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "رغوة الحليب",
+    "sourceImageId": "exec-3430a9e2-501b-43a7-b5c0-fb31a2c9d333",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/rghwh-alhlyb.webp",
+    "noteKey": "rghwh-alhlyb",
+    "noteAssetId": "origo-note-rghwh-alhlyb",
+    "sha256": "a8b2b34e27300f881e1ecb02300ebcf552417062334affba7e13288b73726909",
+    "visualReview": "Reviewed reports/batch67-review.jpg: exact beverage or ingredient identity; no text, vessel, background or unrelated object.",
+    "contentHash": "3f8d5091c339a2dac1b645e350aa72566ff2f96a436b8357c20d972def7aa086",
+    "perceptualHash": "030313130b03070f",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 15892,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "rm-balzbdh",
+    "canonicalNameEn": "رم بالزبدة",
+    "canonicalNameAr": "رم بالزبدة",
+    "positiveDescription": "رم بالزبدة",
+    "scientificName": null,
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "رم بالزبدة",
+    "sourceImageId": "exec-68173ce7-bf25-4d61-9fb3-29347c69dec1",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/rm-balzbdh.webp",
+    "noteKey": "rm-balzbdh",
+    "noteAssetId": "origo-note-rm-balzbdh",
+    "sha256": "bcde208f283d5d873b8b15f878afac14a2a1e8c4c5b66c1abda3933aecef34eb",
+    "visualReview": "Reviewed reports/batch67-review.jpg: exact beverage or ingredient identity; no text, vessel, background or unrelated object.",
+    "contentHash": "d520cf809f351e6ac7b96bc76c31789476f8e902a0072eaf800b38c6a7138dd7",
+    "perceptualHash": "060c0f37777e3f0f",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 37320,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "rwasb-alnbydh",
+    "canonicalNameEn": "رواسب النبيذ",
+    "canonicalNameAr": "رواسب النبيذ",
+    "positiveDescription": "رواسب النبيذ",
+    "scientificName": null,
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "رواسب النبيذ",
+    "sourceImageId": "exec-461ca477-0273-48ba-a57f-0eb7fa79c38b",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/rwasb-alnbydh.webp",
+    "noteKey": "rwasb-alnbydh",
+    "noteAssetId": "origo-note-rwasb-alnbydh",
+    "sha256": "3c7c9deb4e1b2daec7ea3f9bf236615b3d5fd1c215eab936a4fbae43751ea3bb",
+    "visualReview": "Reviewed reports/batch67-review.jpg: exact beverage or ingredient identity; no text, vessel, background or unrelated object.",
+    "contentHash": "60ae652d714ca931449e69c676ff9b96625ce4cd3b32bd70eb57b82cd7cfe45a",
+    "perceptualHash": "060713177b170f0c",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 26642,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "rwt-byr",
+    "canonicalNameEn": "روت بير",
+    "canonicalNameAr": "روت بير",
+    "positiveDescription": "روت بير",
+    "scientificName": null,
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "روت بير",
+    "sourceImageId": "exec-595d8688-8c6f-4c2f-8f39-094b148f72f8",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/rwt-byr.webp",
+    "noteKey": "rwt-byr",
+    "noteAssetId": "origo-note-rwt-byr",
+    "sha256": "ba15c61417da16280fd7adc8a7d7fad9444c358a8df0b6f450363bb66e260764",
+    "visualReview": "Reviewed reports/batch67-review.jpg: exact beverage or ingredient identity; no text, vessel, background or unrelated object.",
+    "contentHash": "ceaa7ad3e923e1607d5526288bda89afeefafeaf045a13f1706c961065fe81da",
+    "perceptualHash": "0161610329191f3c",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 43356,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "rwm-aghrykwl",
+    "canonicalNameEn": "روم أغريكول",
+    "canonicalNameAr": "روم أغريكول",
+    "positiveDescription": "روم أغريكول",
+    "scientificName": null,
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "روم أغريكول",
+    "sourceImageId": "exec-b20d97ea-9380-43d5-a462-4ccc722f10a0",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/rwm-aghrykwl.webp",
+    "noteKey": "rwm-aghrykwl",
+    "noteAssetId": "origo-note-rwm-aghrykwl",
+    "sha256": "f1aa194a317dc6f831ef9936309489c33c1c5ecaf06e56efe3c2845956c7846a",
+    "visualReview": "Reviewed reports/batch67-review.jpg: exact beverage or ingredient identity; no text, vessel, background or unrelated object.",
+    "contentHash": "d0914982129da2ce579251477c80bd6087b20a17ef11fe430639cfa0d9eba12a",
+    "perceptualHash": "110b2b17271b1b23",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 36550,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "saky",
+    "canonicalNameEn": "ساكي",
+    "canonicalNameAr": "ساكي",
+    "positiveDescription": "ساكي",
+    "scientificName": null,
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "ساكي",
+    "sourceImageId": "exec-2c23adcf-3342-4040-a891-98e4d2cd172b",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/saky.webp",
+    "noteKey": "saky",
+    "noteAssetId": "origo-note-saky",
+    "sha256": "41cb3543aa39b2ccb2ca6fb3d10ab5a61a787668edc1b85cad5d7692f98b63eb",
+    "visualReview": "Reviewed reports/batch67-review.jpg: exact beverage or ingredient identity; no text, vessel, background or unrelated object.",
+    "contentHash": "ff8ac4aa0d8059a382577d073e6507d138f391d67268d20f1089c90167e47e84",
+    "perceptualHash": "030362771713060c",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 28804,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "shay-alyasmyn",
+    "canonicalNameEn": "شاى الياسمين",
+    "canonicalNameAr": "شاى الياسمين",
+    "positiveDescription": "شاى الياسمين",
+    "scientificName": null,
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "شاى الياسمين",
+    "sourceImageId": "exec-73547210-39ce-4686-8212-420098c88a54",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/shay-alyasmyn.webp",
+    "noteKey": "shay-alyasmyn",
+    "noteAssetId": "origo-note-shay-alyasmyn",
+    "sha256": "2aafd5bcfc071cb852074cdc7786b7a759a44f3edbac961f17a60176f580ea19",
+    "visualReview": "Reviewed reports/batch67-review.jpg: exact beverage or ingredient identity; no text, vessel, background or unrelated object.",
+    "contentHash": "6266b318c40de21f3e44a82355846550c85fcc67856a041364666766c21182e7",
+    "perceptualHash": "0313334b0e4c2736",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 34882,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "shay-alfwakh",
+    "canonicalNameEn": "شاي الفواكة",
+    "canonicalNameAr": "شاي الفواكة",
+    "positiveDescription": "شاي الفواكة",
+    "scientificName": null,
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "شاي الفواكة",
+    "sourceImageId": "exec-e9ed78d3-884a-4132-9b89-95b90712a6f0",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/shay-alfwakh.webp",
+    "noteKey": "shay-alfwakh",
+    "noteAssetId": "origo-note-shay-alfwakh",
+    "sha256": "5a07ed48dde9952eba3c9080682e38fd2486854d35366e6c631e8f81c46c8e9f",
+    "visualReview": "Reviewed reports/batch67-review.jpg: exact beverage or ingredient identity; no text, vessel, background or unrelated object.",
+    "contentHash": "e32a5a57db1e8f46e568d69d2c6755c5399d9cc99e4db25e9bda7afe6a26287a",
+    "perceptualHash": "050f0f5f6321333a",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 44530,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  }
+]

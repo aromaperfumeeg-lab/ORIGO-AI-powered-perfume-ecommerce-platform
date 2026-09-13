@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-09-13T09:12:13.978Z",
+  "generatedAt": "2026-09-13T10:10:34.168Z",
   "scope": "Library plus persisted note overrides; SQLite opened read-only. Visual semantics are not certified by filenames or hashes.",
   "notes": 1883,
   "products": 5,
-  "valid": 1470,
-  "missing": 395,
+  "valid": 1486,
+  "missing": 379,
   "duplicateGroups": 9,
   "needsReview": 0,
   "duplicates": [
@@ -20561,11 +20561,11 @@
       "nameAr": "تشانغ",
       "nameEn": "تشانغ",
       "sourceName": "تشانغ",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/tshangh.webp",
+      "filename": "tshangh.webp",
+      "hash": "fb824a0123071de7f9347e9ffdabd2dd18f3ad47ced86af8129ee5e1d3130638",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "تشانغ"
       ]
@@ -20575,11 +20575,11 @@
       "nameAr": "تشاي لاتيه",
       "nameEn": "تشاي لاتيه",
       "sourceName": "تشاي لاتيه",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/tshay-latyh.webp",
+      "filename": "tshay-latyh.webp",
+      "hash": "75f548ca814296f9b0ffe27601f4b50fc8eba156a6e521e090e2f9b108d5d98e",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "تشاي لاتيه"
       ]
@@ -20589,11 +20589,11 @@
       "nameAr": "جينيبي",
       "nameEn": "جينيبي",
       "sourceName": "جينيبي",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/jynyby.webp",
+      "filename": "jynyby.webp",
+      "hash": "080db01b5074458ba799bdee84d35f4a072c2ed34abcf05b2ff2f578423cef43",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "جينيبي"
       ]
@@ -20603,11 +20603,11 @@
       "nameAr": "حليب الصويا",
       "nameEn": "حليب الصويا",
       "sourceName": "حليب الصويا",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/hlyb-alswya.webp",
+      "filename": "hlyb-alswya.webp",
+      "hash": "efd969386ee9ce70d84c71fe29d2c7cc7c19fcb336b3328aff09d032860732a3",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "حليب الصويا"
       ]
@@ -20617,11 +20617,11 @@
       "nameAr": "حليب حامض",
       "nameEn": "حليب حامض",
       "sourceName": "حليب حامض",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/hlyb-hamd.webp",
+      "filename": "hlyb-hamd.webp",
+      "hash": "be4114a9f03025ef4a31f9dd1b15e2b4611cb256e1066bc2c00228c598ea392e",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "حليب حامض"
       ]
@@ -20631,11 +20631,11 @@
       "nameAr": "حليب حلو",
       "nameEn": "حليب حلو",
       "sourceName": "حليب حلو",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/hlyb-hlw.webp",
+      "filename": "hlyb-hlw.webp",
+      "hash": "b325ab7d19cf74d2dbbfcdaed78802aa94565e78a6915f77bbf82dd4f64322d6",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "حليب حلو"
       ]
@@ -20645,11 +20645,11 @@
       "nameAr": "خل",
       "nameEn": "خل",
       "sourceName": "خل",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/khl.webp",
+      "filename": "khl.webp",
+      "hash": "7ebff8e800e3c8de31725df901857740aa4aeb1082ff0d5170cdcca54d8bf427",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "خل"
       ]
@@ -20659,11 +20659,11 @@
       "nameAr": "دايكيري",
       "nameEn": "دايكيري",
       "sourceName": "دايكيري",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/daykyry.webp",
+      "filename": "daykyry.webp",
+      "hash": "552b035ad8f6cf98fd6fe776622c278fe1440f04423f0f3935e3ff2bf8c2fd1f",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "دايكيري"
       ]
@@ -20673,11 +20673,11 @@
       "nameAr": "رغوة الحليب",
       "nameEn": "رغوة الحليب",
       "sourceName": "رغوة الحليب",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/rghwh-alhlyb.webp",
+      "filename": "rghwh-alhlyb.webp",
+      "hash": "a8b2b34e27300f881e1ecb02300ebcf552417062334affba7e13288b73726909",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "رغوة الحليب"
       ]
@@ -20687,11 +20687,11 @@
       "nameAr": "رم بالزبدة",
       "nameEn": "رم بالزبدة",
       "sourceName": "رم بالزبدة",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/rm-balzbdh.webp",
+      "filename": "rm-balzbdh.webp",
+      "hash": "bcde208f283d5d873b8b15f878afac14a2a1e8c4c5b66c1abda3933aecef34eb",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "رم بالزبدة"
       ]
@@ -20701,11 +20701,11 @@
       "nameAr": "رواسب النبيذ",
       "nameEn": "رواسب النبيذ",
       "sourceName": "رواسب النبيذ",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/rwasb-alnbydh.webp",
+      "filename": "rwasb-alnbydh.webp",
+      "hash": "3c7c9deb4e1b2daec7ea3f9bf236615b3d5fd1c215eab936a4fbae43751ea3bb",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "رواسب النبيذ"
       ]
@@ -20715,11 +20715,11 @@
       "nameAr": "روت بير",
       "nameEn": "روت بير",
       "sourceName": "روت بير",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/rwt-byr.webp",
+      "filename": "rwt-byr.webp",
+      "hash": "ba15c61417da16280fd7adc8a7d7fad9444c358a8df0b6f450363bb66e260764",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "روت بير"
       ]
@@ -20729,11 +20729,11 @@
       "nameAr": "روم أغريكول",
       "nameEn": "روم أغريكول",
       "sourceName": "روم أغريكول",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/rwm-aghrykwl.webp",
+      "filename": "rwm-aghrykwl.webp",
+      "hash": "f1aa194a317dc6f831ef9936309489c33c1c5ecaf06e56efe3c2845956c7846a",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "روم أغريكول"
       ]
@@ -20743,11 +20743,11 @@
       "nameAr": "ساكي",
       "nameEn": "ساكي",
       "sourceName": "ساكي",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/saky.webp",
+      "filename": "saky.webp",
+      "hash": "41cb3543aa39b2ccb2ca6fb3d10ab5a61a787668edc1b85cad5d7692f98b63eb",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "ساكي"
       ]
@@ -20757,11 +20757,11 @@
       "nameAr": "شاى الياسمين",
       "nameEn": "شاى الياسمين",
       "sourceName": "شاى الياسمين",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/shay-alyasmyn.webp",
+      "filename": "shay-alyasmyn.webp",
+      "hash": "2aafd5bcfc071cb852074cdc7786b7a759a44f3edbac961f17a60176f580ea19",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "شاى الياسمين"
       ]
@@ -20771,11 +20771,11 @@
       "nameAr": "شاي الفواكة",
       "nameEn": "شاي الفواكة",
       "sourceName": "شاي الفواكة",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/shay-alfwakh.webp",
+      "filename": "shay-alfwakh.webp",
+      "hash": "5a07ed48dde9952eba3c9080682e38fd2486854d35366e6c631e8f81c46c8e9f",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "شاي الفواكة"
       ]
