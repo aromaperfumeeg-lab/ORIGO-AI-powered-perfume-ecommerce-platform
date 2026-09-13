@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-09-13T04:29:54.735Z",
+  "generatedAt": "2026-09-13T05:10:33.112Z",
   "scope": "Library plus persisted note overrides; SQLite opened read-only. Visual semantics are not certified by filenames or hashes.",
   "notes": 1883,
   "products": 5,
-  "valid": 1422,
-  "missing": 443,
+  "valid": 1438,
+  "missing": 427,
   "duplicateGroups": 9,
   "needsReview": 0,
   "duplicates": [
@@ -19886,13 +19886,13 @@
     {
       "canonicalKey": "kyfy",
       "nameAr": "كيفي",
-      "nameEn": "كيفي",
+      "nameEn": "Kyphi ancient Egyptian incense blend",
       "sourceName": "كيفي",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/kyfy.webp",
+      "filename": "kyfy.webp",
+      "hash": "9d3d0188953a7ccb7b11ae796a13cff7d249ecd81c06b9ac2207fa9cf27cf0af",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "كيفي"
       ]
@@ -19900,13 +19900,13 @@
     {
       "canonicalKey": "msk-albshrh",
       "nameAr": "مسك البشرة",
-      "nameEn": "مسك البشرة",
+      "nameEn": "skin musk accord",
       "sourceName": "مسك البشرة",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/msk-albshrh.webp",
+      "filename": "msk-albshrh.webp",
+      "hash": "824cc1e90b81e4e89cbc4c8c052eaf43ef80760e14b90c6f0c6e240645f2b34a",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "مسك البشرة"
       ]
@@ -19914,13 +19914,13 @@
     {
       "canonicalKey": "njm-albhr",
       "nameAr": "نجم البحر",
-      "nameEn": "نجم البحر",
+      "nameEn": "starfish marine fragrance note",
       "sourceName": "نجم البحر",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/njm-albhr.webp",
+      "filename": "njm-albhr.webp",
+      "hash": "27da3cf434fa9472e00dc161434db8f19ee3fb990965add51aa85ca346835303",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "نجم البحر"
       ]
@@ -19928,13 +19928,13 @@
     {
       "canonicalKey": "nwth-hywanyh",
       "nameAr": "نوتة حيوانية",
-      "nameEn": "نوتة حيوانية",
+      "nameEn": "animalic fragrance accord",
       "sourceName": "نوتة حيوانية",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/nwth-hywanyh.webp",
+      "filename": "nwth-hywanyh.webp",
+      "hash": "f11f30afd068606b33f205c8b9d05b1083308ae33f1645ffaeabb2b573580f6e",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "نوتة حيوانية"
       ]
@@ -19942,13 +19942,13 @@
     {
       "canonicalKey": "habanwlyd",
       "nameAr": "هابانوليد",
-      "nameEn": "هابانوليد",
+      "nameEn": "Habanolide musk molecule",
       "sourceName": "هابانوليد",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/habanwlyd.webp",
+      "filename": "habanwlyd.webp",
+      "hash": "fddf56a3db39168aedbe2c66fa76669785309281cc028d1a1149780da1a38137",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "هابانوليد"
       ]
@@ -19956,13 +19956,13 @@
     {
       "canonicalKey": "champagne-cola",
       "nameAr": "كولا الشمبانيا",
-      "nameEn": "Champagne Cola",
+      "nameEn": "Champagne Cola fragrance note",
       "sourceName": "Champagne Cola",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/champagne-cola.webp",
+      "filename": "champagne-cola.webp",
+      "hash": "94a0b186da7cb01bbb2e0944f803b00620fd8bbff4159c42994bb59ccc5cbba6",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "Champagne Cola"
       ]
@@ -19970,13 +19970,13 @@
     {
       "canonicalKey": "cola",
       "nameAr": "كولا",
-      "nameEn": "Cola",
+      "nameEn": "cola fragrance note",
       "sourceName": "Cola",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/cola.webp",
+      "filename": "cola.webp",
+      "hash": "82dc14e98de0ab57b104f9e631b9831a2445c73b23fcdc450f2cbb6b17d747e1",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "Cola"
       ]
@@ -19984,13 +19984,13 @@
     {
       "canonicalKey": "abljak",
       "nameAr": "آبلجاك",
-      "nameEn": "آبلجاك",
+      "nameEn": "Applejack apple brandy fragrance note",
       "sourceName": "آبلجاك",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/abljak.webp",
+      "filename": "abljak.webp",
+      "hash": "960910af4a763cd6e77d9450315d78998f4b4e7008f278f0b6a3478f5e53fc76",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "آبلجاك"
       ]
@@ -19998,13 +19998,13 @@
     {
       "canonicalKey": "abyrwl",
       "nameAr": "أبيرول",
-      "nameEn": "أبيرول",
+      "nameEn": "Aperol orange bitter fragrance note",
       "sourceName": "أبيرول",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/abyrwl.webp",
+      "filename": "abyrwl.webp",
+      "hash": "7b23e404add2e2a1338147e258416c06975306ffa866530c40a90b54f0b3db61",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "أبيرول"
       ]
@@ -20012,13 +20012,13 @@
     {
       "canonicalKey": "adfwkat",
       "nameAr": "أدفوكات",
-      "nameEn": "أدفوكات",
+      "nameEn": "Advocaat egg liqueur fragrance note",
       "sourceName": "أدفوكات",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/adfwkat.webp",
+      "filename": "adfwkat.webp",
+      "hash": "9d65ad9d6bd48c49afdb9c3cf89a01d19ada1a0d6aca1dd62ceab2dae8449794",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "أدفوكات"
       ]
@@ -20026,13 +20026,13 @@
     {
       "canonicalKey": "almdwdlr",
       "nameAr": "ألمدودلر",
-      "nameEn": "ألمدودلر",
+      "nameEn": "Almdudler herbal lemonade fragrance note",
       "sourceName": "ألمدودلر",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/almdwdlr.webp",
+      "filename": "almdwdlr.webp",
+      "hash": "39f63d040b65d1d1411d5b45f8c9a57eac18c2b1f81c16a7ba19b92bbe7c0eba",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "ألمدودلر"
       ]
@@ -20040,13 +20040,13 @@
     {
       "canonicalKey": "amarwla",
       "nameAr": "أمارولا",
-      "nameEn": "أمارولا",
+      "nameEn": "Amarula cream liqueur fragrance note",
       "sourceName": "أمارولا",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/amarwla.webp",
+      "filename": "amarwla.webp",
+      "hash": "f4e9c2605cb2f3df5ba6be2aa849b8ed731b8689ba9c8058cffeda994ad36f42",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "أمارولا"
       ]
@@ -20054,13 +20054,13 @@
     {
       "canonicalKey": "awmyshw",
       "nameAr": "أوميشو",
-      "nameEn": "أوميشو",
+      "nameEn": "Umeshu Japanese plum liqueur fragrance note",
       "sourceName": "أوميشو",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/awmyshw.webp",
+      "filename": "awmyshw.webp",
+      "hash": "149ccbfa8b00ad5d2cc6587879f2b0cb0665c4ca787b1171ed381b69f35273e6",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "أوميشو"
       ]
@@ -20068,13 +20068,13 @@
     {
       "canonicalKey": "alawzw",
       "nameAr": "الأوزو",
-      "nameEn": "الأوزو",
+      "nameEn": "Ouzo anise spirit fragrance note",
       "sourceName": "الأوزو",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alawzw.webp",
+      "filename": "alawzw.webp",
+      "hash": "258218e3983414ed877b19dea28ba6afab7ef222da4c4f8ece0ab1aa9f97dee8",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الأوزو"
       ]
@@ -20082,13 +20082,13 @@
     {
       "canonicalKey": "alasbrsw",
       "nameAr": "الإسبرسو",
-      "nameEn": "الإسبرسو",
+      "nameEn": "espresso fragrance note",
       "sourceName": "الإسبرسو",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alasbrsw.webp",
+      "filename": "alasbrsw.webp",
+      "hash": "dcb8a2abb6718c2e8e7fd5b0bfc1987a638f945d37975e8bf9a4e5cd90b8c377",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الإسبرسو"
       ]
@@ -20096,13 +20096,13 @@
     {
       "canonicalKey": "albrandy",
       "nameAr": "البراندي",
-      "nameEn": "البراندي",
+      "nameEn": "brandy fragrance note",
       "sourceName": "البراندي",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/albrandy.webp",
+      "filename": "albrandy.webp",
+      "hash": "58ff1620c4f075b95f24e47d7e8ae9d25e1c7f293c1797710b7000ebd4389d4b",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "البراندي"
       ]
