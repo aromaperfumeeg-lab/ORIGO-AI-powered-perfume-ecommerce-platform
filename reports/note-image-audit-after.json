@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-09-12T15:36:02.208Z",
+  "generatedAt": "2026-09-13T04:29:54.735Z",
   "scope": "Library plus persisted note overrides; SQLite opened read-only. Visual semantics are not certified by filenames or hashes.",
   "notes": 1883,
   "products": 5,
-  "valid": 1406,
-  "missing": 459,
+  "valid": 1422,
+  "missing": 443,
   "duplicateGroups": 9,
   "needsReview": 0,
   "duplicates": [
@@ -19659,13 +19659,13 @@
     {
       "canonicalKey": "jld-safyanw",
       "nameAr": "جلد سافيانو",
-      "nameEn": "جلد سافيانو",
+      "nameEn": "Saffiano leather fragrance note",
       "sourceName": "جلد سافيانو",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/jld-safyanw.webp",
+      "filename": "jld-safyanw.webp",
+      "hash": "229e458f1d447e09606cd76cd18880296f35433627d2039b47257280ef707d0f",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "جلد سافيانو"
       ]
@@ -19673,13 +19673,13 @@
     {
       "canonicalKey": "jynyh",
       "nameAr": "جينيه",
-      "nameEn": "جينيه",
+      "nameEn": "genet animalic fragrance material",
       "sourceName": "جينيه",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/jynyh.webp",
+      "filename": "jynyh.webp",
+      "hash": "8126e4c8b24abc500d427f3e16532c367ef0968b39be6d8fe3b3c93e389fe0f7",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "جينيه"
       ]
@@ -19687,13 +19687,13 @@
     {
       "canonicalKey": "hlyb-almaaz",
       "nameAr": "حليب الماعز",
-      "nameEn": "حليب الماعز",
+      "nameEn": "goat milk fragrance note",
       "sourceName": "حليب الماعز",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/hlyb-almaaz.webp",
+      "filename": "hlyb-almaaz.webp",
+      "hash": "857f7dc83c218a0babd4b02a945562901de2533e82f5fa895677e3fe7ea993a0",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "حليب الماعز"
       ]
@@ -19701,13 +19701,13 @@
     {
       "canonicalKey": "daym",
       "nameAr": "دايم",
-      "nameEn": "دايم",
+      "nameEn": "daim suede fragrance note",
       "sourceName": "دايم",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/daym.webp",
+      "filename": "daym.webp",
+      "hash": "bcb002d6a0a968544e5918095ee2f28f0b41a1e6686a498c98ebe0ddba6edfa7",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "دايم"
       ]
@@ -19715,13 +19715,13 @@
     {
       "canonicalKey": "skatwl",
       "nameAr": "سكاتول",
-      "nameEn": "سكاتول",
+      "nameEn": "skatole fragrance molecule",
       "sourceName": "سكاتول",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/skatwl.webp",
+      "filename": "skatwl.webp",
+      "hash": "29c331052640742b9e919ce8a64993ce8c60541fc1db0371b53ab653dcd0372b",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "سكاتول"
       ]
@@ -19729,13 +19729,13 @@
     {
       "canonicalKey": "cetalox",
       "nameAr": "سيتالوكس",
-      "nameEn": "Cetalox",
+      "nameEn": "Cetalox Ambroxide fragrance molecule",
       "sourceName": "سيتالوكس",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/cetalox.webp",
+      "filename": "cetalox.webp",
+      "hash": "feda32888e7f3fcfc34872209a5e7e62d6058536958e4cf4b2ca19292e0561fb",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "سيتالوكس",
         "Cetambrox",
@@ -19745,13 +19745,13 @@
     {
       "canonicalKey": "syfytwn",
       "nameAr": "سيفيتون",
-      "nameEn": "سيفيتون",
+      "nameEn": "civetone fragrance molecule",
       "sourceName": "سيفيتون",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/syfytwn.webp",
+      "filename": "syfytwn.webp",
+      "hash": "7b0cf3022d5cc7a6ee0b4ff72642457ddcdb5e6edfb9be74c1b8c5dd8dcc5fe6",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "سيفيتون"
       ]
@@ -19759,13 +19759,13 @@
     {
       "canonicalKey": "sylkwlyd",
       "nameAr": "سيلكوليد",
-      "nameEn": "سيلكوليد",
+      "nameEn": "Silkolide musk molecule",
       "sourceName": "سيلكوليد",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/sylkwlyd.webp",
+      "filename": "sylkwlyd.webp",
+      "hash": "60da6d3a219277941d72c501458ba928ea13a7d4c69383d8c1abde3150b38a4f",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "سيلكوليد"
       ]
@@ -19773,13 +19773,13 @@
     {
       "canonicalKey": "shar-almaaz",
       "nameAr": "شعر الماعز",
-      "nameEn": "شعر الماعز",
+      "nameEn": "goat hair fragrance note",
       "sourceName": "شعر الماعز",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/shar-almaaz.webp",
+      "filename": "shar-almaaz.webp",
+      "hash": "b608020e55fbc3b00f927a2d56fd23cc8ec43ba54ceff51160189818774387e8",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "شعر الماعز"
       ]
@@ -19787,13 +19787,13 @@
     {
       "canonicalKey": "beeswax",
       "nameAr": "شمع العسل",
-      "nameEn": "Beeswax",
+      "nameEn": "beeswax fragrance note",
       "sourceName": "شمع العسل",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/beeswax.webp",
+      "filename": "beeswax.webp",
+      "hash": "3d36a82554eca93a5a01c45d0aac985aad7eae3a6810be51c1cbef7224b8f25b",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "شمع العسل",
         "شمع النحل"
@@ -19802,13 +19802,13 @@
     {
       "canonicalKey": "ghryzalfa",
       "nameAr": "غريزالفا",
-      "nameEn": "غريزالفا",
+      "nameEn": "Grisalva fragrance material",
       "sourceName": "غريزالفا",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/ghryzalfa.webp",
+      "filename": "ghryzalfa.webp",
+      "hash": "71647c9df8225633ea256d7aec3094fdd2a0abbab36620b2b11c977d5439b12f",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "غريزالفا"
       ]
@@ -19816,13 +19816,13 @@
     {
       "canonicalKey": "far-almsk",
       "nameAr": "فأر المسك",
-      "nameEn": "فأر المسك",
+      "nameEn": "muskrat animalic fragrance material",
       "sourceName": "فأر المسك",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/far-almsk.webp",
+      "filename": "far-almsk.webp",
+      "hash": "ca540ca73234319e293ce64f5aaddaf08f8a7c5d17e401f002d7b1f5947ecf2d",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "فأر المسك"
       ]
@@ -19830,13 +19830,13 @@
     {
       "canonicalKey": "frw",
       "nameAr": "فرو",
-      "nameEn": "فرو",
+      "nameEn": "fur fragrance note",
       "sourceName": "فرو",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/frw.webp",
+      "filename": "frw.webp",
+      "hash": "bfb3f74f67a39c4eca319ad642fc41427e439a382911921747bdbba0e515fc0e",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "فرو"
       ]
@@ -19844,13 +19844,13 @@
     {
       "canonicalKey": "fylfywntm",
       "nameAr": "فيلفيون™",
-      "nameEn": "فيلفيون™",
+      "nameEn": "Velvione musk molecule",
       "sourceName": "فيلفيون™",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/fylfywntm.webp",
+      "filename": "fylfywntm.webp",
+      "hash": "b5262f1d6cdb467d66824f997bc40fcc89a1cf5a72a11dd4c143154207cab0dd",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "فيلفيون™"
       ]
@@ -19858,13 +19858,13 @@
     {
       "canonicalKey": "kashalwks",
       "nameAr": "كاشالوكس",
-      "nameEn": "كاشالوكس",
+      "nameEn": "Cashalox fragrance molecule",
       "sourceName": "كاشالوكس",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/kashalwks.webp",
+      "filename": "kashalwks.webp",
+      "hash": "ccefbecc4896a8fd74bcdd95315b225d621a9a31c74a7579bce7b13b180f66d4",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "كاشالوكس"
       ]
@@ -19872,13 +19872,13 @@
     {
       "canonicalKey": "kyflys",
       "nameAr": "كيفليس",
-      "nameEn": "كيفليس",
+      "nameEn": "Kephalis fragrance molecule",
       "sourceName": "كيفليس",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/kyflys.webp",
+      "filename": "kyflys.webp",
+      "hash": "e35869150989abe76629f30aadc821e0bdf29781db5fd494139cb9094a4b4105",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "كيفليس"
       ]
