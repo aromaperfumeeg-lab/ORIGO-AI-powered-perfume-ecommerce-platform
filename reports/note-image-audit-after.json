@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-09-13T14:03:54.449Z",
+  "generatedAt": "2026-09-13T14:52:39.842Z",
   "scope": "Library plus persisted note overrides; SQLite opened read-only. Visual semantics are not certified by filenames or hashes.",
   "notes": 1883,
   "products": 5,
-  "valid": 1534,
-  "missing": 331,
+  "valid": 1550,
+  "missing": 315,
   "duplicateGroups": 9,
   "needsReview": 0,
   "duplicates": [
@@ -21455,13 +21455,13 @@
     {
       "canonicalKey": "mydwry",
       "nameAr": "ميدوري",
-      "nameEn": "ميدوري",
+      "nameEn": "Midori vivid green melon liqueur splash with honeydew melon slices",
       "sourceName": "ميدوري",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/mydwry.webp",
+      "filename": "mydwry.webp",
+      "hash": "bd5dc86ddf6b58a195dc0f2cbb588d10e2a3bda8c2144f17cf8c981a58587ecf",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "ميدوري"
       ]
@@ -21469,13 +21469,13 @@
     {
       "canonicalKey": "myskal",
       "nameAr": "ميسكال",
-      "nameEn": "ميسكال",
+      "nameEn": "mezcal clear spirit splash with a roasted agave heart wedge",
       "sourceName": "ميسكال",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/myskal.webp",
+      "filename": "myskal.webp",
+      "hash": "b0a5f7d07a0d9033e9a700a980bfc16d183711513807a169cf23c583ef460e7c",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "ميسكال"
       ]
@@ -21483,13 +21483,13 @@
     {
       "canonicalKey": "nbydh-asfr",
       "nameAr": "نبيذ أصفر",
-      "nameEn": "نبيذ أصفر",
+      "nameEn": "yellow wine golden wine splash with yellow grapes",
       "sourceName": "نبيذ أصفر",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/nbydh-asfr.webp",
+      "filename": "nbydh-asfr.webp",
+      "hash": "08c29a47ae5f5f43d6750af7b8f1319c0e3fd2d9e21536e2890c9ccea7224241",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "نبيذ أصفر"
       ]
@@ -21497,13 +21497,13 @@
     {
       "canonicalKey": "nbydh-albrqwq",
       "nameAr": "نبيذ البرقوق",
-      "nameEn": "نبيذ البرقوق",
+      "nameEn": "plum wine ruby wine splash with ripe plums",
       "sourceName": "نبيذ البرقوق",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/nbydh-albrqwq.webp",
+      "filename": "nbydh-albrqwq.webp",
+      "hash": "d2fe04ad622210b0d83a1f6f7a49a47f28a562d856ad1e9a672686ca8304de8a",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "نبيذ البرقوق"
       ]
@@ -21511,13 +21511,13 @@
     {
       "canonicalKey": "nbydh-althlj",
       "nameAr": "نبيذ الثلج",
-      "nameEn": "نبيذ الثلج",
+      "nameEn": "ice wine golden splash with frost covered grapes",
       "sourceName": "نبيذ الثلج",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/nbydh-althlj.webp",
+      "filename": "nbydh-althlj.webp",
+      "hash": "025245dba10603b99502cea5ea4e51db0712fd7a836fcda6f9db49a98846b081",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "نبيذ الثلج"
       ]
@@ -21525,13 +21525,13 @@
     {
       "canonicalKey": "nbydh-bwrt",
       "nameAr": "نبيذ بورت",
-      "nameEn": "نبيذ بورت",
+      "nameEn": "port wine deep ruby splash with dark grapes",
       "sourceName": "نبيذ بورت",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/nbydh-bwrt.webp",
+      "filename": "nbydh-bwrt.webp",
+      "hash": "43d7a21a6364fac9c2fb5bd7708fee59e2e486bf67ae50b258243b109ee5f1ef",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "نبيذ بورت"
       ]
@@ -21539,13 +21539,13 @@
     {
       "canonicalKey": "nbydh-sakhn-baltwabl",
       "nameAr": "نبيذ ساخن بالتوابل",
-      "nameEn": "نبيذ ساخن بالتوابل",
+      "nameEn": "mulled wine dark red splash with cinnamon sticks cloves and orange peel",
       "sourceName": "نبيذ ساخن بالتوابل",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/nbydh-sakhn-baltwabl.webp",
+      "filename": "nbydh-sakhn-baltwabl.webp",
+      "hash": "54a58e81dd4cea7230f5938b6951907ba625a74789cc86951a556e963bea535c",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "نبيذ ساخن بالتوابل"
       ]
@@ -21553,13 +21553,13 @@
     {
       "canonicalKey": "nbydh-fwar",
       "nameAr": "نبيذ فوّار",
-      "nameEn": "نبيذ فوّار",
+      "nameEn": "sparkling wine pale gold splash with fine bubbles and grapes",
       "sourceName": "نبيذ فوّار",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/nbydh-fwar.webp",
+      "filename": "nbydh-fwar.webp",
+      "hash": "dbfa5023545e0cf8cdad9cb6aa184b479730524f90f12c05e7247006a1d110db",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "نبيذ فوّار"
       ]
@@ -21567,13 +21567,13 @@
     {
       "canonicalKey": "nbydh-fyrmwth",
       "nameAr": "نبيذ فيرموث",
-      "nameEn": "نبيذ فيرموث",
+      "nameEn": "vermouth amber wine splash with wormwood sprig and citrus peel",
       "sourceName": "نبيذ فيرموث",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/nbydh-fyrmwth.webp",
+      "filename": "nbydh-fyrmwth.webp",
+      "hash": "80e18e84a99f98e454baafff5e8b92acd3f0117c25ea039bafa3762c0a0d788f",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "نبيذ فيرموث"
       ]
@@ -21581,13 +21581,13 @@
     {
       "canonicalKey": "nghmat-khwlyh",
       "nameAr": "نغمات كحولية",
-      "nameEn": "نغمات كحولية",
+      "nameEn": "alcohol accord represented by a clear colorless liquid splash",
       "sourceName": "نغمات كحولية",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/nghmat-khwlyh.webp",
+      "filename": "nghmat-khwlyh.webp",
+      "hash": "981ad656386e33a92eb6a652a54844368a66ae36bb33573ca5e50cd651d5d13c",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "نغمات كحولية"
       ]
@@ -21595,13 +21595,13 @@
     {
       "canonicalKey": "nyghrwny",
       "nameAr": "نيغروني",
-      "nameEn": "نيغروني",
+      "nameEn": "Negroni ruby orange cocktail splash with orange peel",
       "sourceName": "نيغروني",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/nyghrwny.webp",
+      "filename": "nyghrwny.webp",
+      "hash": "131862343bdf2956348c7310d96c28f0b7e1277831edead29521ecd8405eee83",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "نيغروني"
       ]
@@ -21735,13 +21735,13 @@
     {
       "canonicalKey": "party-balloons",
       "nameAr": "بالونات الحفلات",
-      "nameEn": "Party Balloons",
+      "nameEn": "three colorful inflated latex party balloons with short strings",
       "sourceName": "Party Balloons",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/party-balloons.webp",
+      "filename": "party-balloons.webp",
+      "hash": "319e02b81dd23be9b4aef6321c6760e14a170ae501f10ef0003d5d2d0e695a10",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "Party Balloons"
       ]
@@ -21791,13 +21791,13 @@
     {
       "canonicalKey": "atrbh",
       "nameAr": "أتربة",
-      "nameEn": "أتربة",
+      "nameEn": "small mound of dry earthy soil with fine dusty texture",
       "sourceName": "أتربة",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/atrbh.webp",
+      "filename": "atrbh.webp",
+      "hash": "9cdf2b6a857ebeaa55a9ace8f3c353042913b80d18c13c67fb5c7b96af63dc22",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "أتربة"
       ]
@@ -21833,13 +21833,13 @@
     {
       "canonicalKey": "asflt",
       "nameAr": "أسفلت",
-      "nameEn": "أسفلت",
+      "nameEn": "small rough broken chunk of black asphalt with visible aggregate",
       "sourceName": "أسفلت",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/asflt.webp",
+      "filename": "asflt.webp",
+      "hash": "c84e497ff5a005754195daca2012cd324e7c211d249b75ccf73ef509392b371d",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "أسفلت"
       ]
@@ -22253,13 +22253,13 @@
     {
       "canonicalKey": "alardwaz",
       "nameAr": "الأردواز",
-      "nameEn": "الأردواز",
+      "nameEn": "layered dark slate stone specimen",
       "sourceName": "الأردواز",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alardwaz.webp",
+      "filename": "alardwaz.webp",
+      "hash": "c867d3920558e4b632237b3dd7532ad38fa9249f7451ad656a09505469d9602c",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الأردواز"
       ]
@@ -22295,13 +22295,13 @@
     {
       "canonicalKey": "alalwmnywm",
       "nameAr": "الألومنيوم",
-      "nameEn": "الألومنيوم",
+      "nameEn": "crumpled shiny aluminum foil specimen",
       "sourceName": "الألومنيوم",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alalwmnywm.webp",
+      "filename": "alalwmnywm.webp",
+      "hash": "a71286009cf435c2ccb5c5ad3e7bf356a49df9658ae916e19809005974ce2db7",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الألومنيوم"
       ]

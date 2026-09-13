@@ -30,7 +30,8 @@ test("generated note artwork uses lightweight local WebP while untouched notes r
   const generatedFile = new URL(`../${generated.image}`, import.meta.url);
   assert.ok((await stat(generatedFile)).size < 100 * 1024);
   assert.equal((await readFile(generatedFile)).subarray(0, 4).toString("ascii"), "RIFF");
-  assert.match(library.artwork(library.find("Party Balloons")), /^data:image\/svg\+xml/);
+  assert.equal(library.artwork(library.find("Party Balloons")), "/assets/notes/generated/party-balloons.webp");
+  assert.match(library.artwork(library.find("Cascalone")), /^data:image\/svg\+xml/);
 });
 
 test("resolves Arabic, English, and alias spellings to one note", () => {

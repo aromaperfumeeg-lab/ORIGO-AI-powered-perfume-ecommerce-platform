@@ -1,0 +1,450 @@
+[
+  {
+    "canonicalKey": "mydwry",
+    "canonicalNameEn": "Midori vivid green melon liqueur splash with honeydew melon slices",
+    "positiveDescription": "Midori vivid green melon liqueur splash with honeydew melon slices",
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "Photorealistic ORIGO fragrance note catalog cutout: Midori vivid green melon liqueur splash with honeydew melon slices. Centered square isolated specimen, actual transparent alpha background. No text, people, bottles, cups, containers, floor, backdrop. High detail.",
+    "status": "VALID",
+    "validated": true,
+    "canonicalNameAr": "ميدوري",
+    "sourceImageId": "exec-3aa585dc-8955-4839-aee0-ed5e1abc67d2.png",
+    "imageUrl": "assets/notes/generated/mydwry.webp",
+    "noteKey": "mydwry",
+    "noteAssetId": "origo-note-mydwry",
+    "sha256": "bd5dc86ddf6b58a195dc0f2cbb588d10e2a3bda8c2144f17cf8c981a58587ecf",
+    "contentHash": "c8e21e2b40dc6795578a49da08b151b65373cb422b188aec5b7c893e8892f21d",
+    "perceptualHash": "0f0723090d192346",
+    "visualReview": "Reviewed reports/batch71-review.jpg: distinct ingredient or material representation, no text or vessels.",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 40296,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "myskal",
+    "canonicalNameEn": "mezcal clear spirit splash with a roasted agave heart wedge",
+    "positiveDescription": "mezcal clear spirit splash with a roasted agave heart wedge",
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "Photorealistic ORIGO fragrance note catalog cutout: mezcal clear spirit splash with a roasted agave heart wedge. Centered square isolated specimen, actual transparent alpha background. No text, people, bottles, cups, containers, floor, backdrop. High detail.",
+    "status": "VALID",
+    "validated": true,
+    "canonicalNameAr": "ميسكال",
+    "sourceImageId": "exec-9d26697e-29d1-41e5-ad37-8a6d54d91619.png",
+    "imageUrl": "assets/notes/generated/myskal.webp",
+    "noteKey": "myskal",
+    "noteAssetId": "origo-note-myskal",
+    "sha256": "b0a5f7d07a0d9033e9a700a980bfc16d183711513807a169cf23c583ef460e7c",
+    "contentHash": "71db0c891f67358044ff6d6a3d26012d51ec6dc9c459dd472da0236e805b412b",
+    "perceptualHash": "02191d333b1d0f0f",
+    "visualReview": "Reviewed reports/batch71-review.jpg: distinct ingredient or material representation, no text or vessels.",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 34864,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "nbydh-asfr",
+    "canonicalNameEn": "yellow wine golden wine splash with yellow grapes",
+    "positiveDescription": "yellow wine golden wine splash with yellow grapes",
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "Photorealistic ORIGO fragrance note catalog cutout: yellow wine golden wine splash with yellow grapes. Centered square isolated specimen, actual transparent alpha background. No text, people, bottles, cups, containers, floor, backdrop. High detail.",
+    "status": "VALID",
+    "validated": true,
+    "canonicalNameAr": "نبيذ أصفر",
+    "sourceImageId": "exec-46dc8ef1-3c1d-49a7-bf65-0a5b0eb169e9.png",
+    "imageUrl": "assets/notes/generated/nbydh-asfr.webp",
+    "noteKey": "nbydh-asfr",
+    "noteAssetId": "origo-note-nbydh-asfr",
+    "sha256": "08c29a47ae5f5f43d6750af7b8f1319c0e3fd2d9e21536e2890c9ccea7224241",
+    "contentHash": "a3d9b7c96d3112b8e39154625f264d4c8a56dc1eb69ac22c7f054c0b548720f9",
+    "perceptualHash": "0131383d1d1f3f1c",
+    "visualReview": "Reviewed reports/batch71-review.jpg: distinct ingredient or material representation, no text or vessels.",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 40752,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "nbydh-albrqwq",
+    "canonicalNameEn": "plum wine ruby wine splash with ripe plums",
+    "positiveDescription": "plum wine ruby wine splash with ripe plums",
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "Photorealistic ORIGO fragrance note catalog cutout: plum wine ruby wine splash with ripe plums. Centered square isolated specimen, actual transparent alpha background. No text, people, bottles, cups, containers, floor, backdrop. High detail.",
+    "status": "VALID",
+    "validated": true,
+    "canonicalNameAr": "نبيذ البرقوق",
+    "sourceImageId": "exec-c2b9eb5d-6cf3-49b9-b547-292481331d4d.png",
+    "imageUrl": "assets/notes/generated/nbydh-albrqwq.webp",
+    "noteKey": "nbydh-albrqwq",
+    "noteAssetId": "origo-note-nbydh-albrqwq",
+    "sha256": "d2fe04ad622210b0d83a1f6f7a49a47f28a562d856ad1e9a672686ca8304de8a",
+    "contentHash": "2cd563cdaac454518d68e575572babf9937b6c8766aecb8995103d8a549016a6",
+    "perceptualHash": "010d058933030e0e",
+    "visualReview": "Reviewed reports/batch71-review.jpg: distinct ingredient or material representation, no text or vessels.",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 39236,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "nbydh-althlj",
+    "canonicalNameEn": "ice wine golden splash with frost covered grapes",
+    "positiveDescription": "ice wine golden splash with frost covered grapes",
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "Photorealistic ORIGO fragrance note catalog cutout: ice wine golden splash with frost covered grapes. Centered square isolated specimen, actual transparent alpha background. No text, people, bottles, cups, containers, floor, backdrop. High detail.",
+    "status": "VALID",
+    "validated": true,
+    "canonicalNameAr": "نبيذ الثلج",
+    "sourceImageId": "exec-3b228779-417c-4f7d-a328-70455e76c6dd.png",
+    "imageUrl": "assets/notes/generated/nbydh-althlj.webp",
+    "noteKey": "nbydh-althlj",
+    "noteAssetId": "origo-note-nbydh-althlj",
+    "sha256": "025245dba10603b99502cea5ea4e51db0712fd7a836fcda6f9db49a98846b081",
+    "contentHash": "fb362b320bd19071ffe5e45dd32d93edbdf07c7cf198062bd515edbf0f01232c",
+    "perceptualHash": "061b1b270321078e",
+    "visualReview": "Reviewed reports/batch71-review.jpg: distinct ingredient or material representation, no text or vessels.",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 41420,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "nbydh-bwrt",
+    "canonicalNameEn": "port wine deep ruby splash with dark grapes",
+    "positiveDescription": "port wine deep ruby splash with dark grapes",
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "Photorealistic ORIGO fragrance note catalog cutout: port wine deep ruby splash with dark grapes. Centered square isolated specimen, actual transparent alpha background. No text, people, bottles, cups, containers, floor, backdrop. High detail.",
+    "status": "VALID",
+    "validated": true,
+    "canonicalNameAr": "نبيذ بورت",
+    "sourceImageId": "exec-40a317f5-709f-4508-bc61-820539d4e75c.png",
+    "imageUrl": "assets/notes/generated/nbydh-bwrt.webp",
+    "noteKey": "nbydh-bwrt",
+    "noteAssetId": "origo-note-nbydh-bwrt",
+    "sha256": "43d7a21a6364fac9c2fb5bd7708fee59e2e486bf67ae50b258243b109ee5f1ef",
+    "contentHash": "1c8de43bbc7e44723d9ed447928f97d6ca2c4f7dd02b466afdd4038262c31f82",
+    "perceptualHash": "03230b05050b8e06",
+    "visualReview": "Reviewed reports/batch71-review.jpg: distinct ingredient or material representation, no text or vessels.",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 33498,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "nbydh-sakhn-baltwabl",
+    "canonicalNameEn": "mulled wine dark red splash with cinnamon sticks cloves and orange peel",
+    "positiveDescription": "mulled wine dark red splash with cinnamon sticks cloves and orange peel",
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "Photorealistic ORIGO fragrance note catalog cutout: mulled wine dark red splash with cinnamon sticks cloves and orange peel. Centered square isolated specimen, actual transparent alpha background. No text, people, bottles, cups, containers, floor, backdrop. High detail.",
+    "status": "VALID",
+    "validated": true,
+    "canonicalNameAr": "نبيذ ساخن بالتوابل",
+    "sourceImageId": "exec-09dedb42-45f4-4de6-975c-75c17683c2f1.png",
+    "imageUrl": "assets/notes/generated/nbydh-sakhn-baltwabl.webp",
+    "noteKey": "nbydh-sakhn-baltwabl",
+    "noteAssetId": "origo-note-nbydh-sakhn-baltwabl",
+    "sha256": "54a58e81dd4cea7230f5938b6951907ba625a74789cc86951a556e963bea535c",
+    "contentHash": "17c8485d4a6aefeb7b1c1b11d1c6adf60a7e5833023758a68e0680638ce635fe",
+    "perceptualHash": "0c0f070b4f5351a0",
+    "visualReview": "Reviewed reports/batch71-review.jpg: distinct ingredient or material representation, no text or vessels.",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 38608,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "nbydh-fwar",
+    "canonicalNameEn": "sparkling wine pale gold splash with fine bubbles and grapes",
+    "positiveDescription": "sparkling wine pale gold splash with fine bubbles and grapes",
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "Photorealistic ORIGO fragrance note catalog cutout: sparkling wine pale gold splash with fine bubbles and grapes. Centered square isolated specimen, actual transparent alpha background. No text, people, bottles, cups, containers, floor, backdrop. High detail.",
+    "status": "VALID",
+    "validated": true,
+    "canonicalNameAr": "نبيذ فوّار",
+    "sourceImageId": "exec-d0bc8e97-b071-4c49-b9e9-d1e2f46751d9.png",
+    "imageUrl": "assets/notes/generated/nbydh-fwar.webp",
+    "noteKey": "nbydh-fwar",
+    "noteAssetId": "origo-note-nbydh-fwar",
+    "sha256": "dbfa5023545e0cf8cdad9cb6aa184b479730524f90f12c05e7247006a1d110db",
+    "contentHash": "065a72b618646c8f611fa469ad873e1967ef09b052a1a8d8da20fb0582d61335",
+    "perceptualHash": "0e1f171323470730",
+    "visualReview": "Reviewed reports/batch71-review.jpg: distinct ingredient or material representation, no text or vessels.",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 39992,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "nbydh-fyrmwth",
+    "canonicalNameEn": "vermouth amber wine splash with wormwood sprig and citrus peel",
+    "positiveDescription": "vermouth amber wine splash with wormwood sprig and citrus peel",
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "Photorealistic ORIGO fragrance note catalog cutout: vermouth amber wine splash with wormwood sprig and citrus peel. Centered square isolated specimen, actual transparent alpha background. No text, people, bottles, cups, containers, floor, backdrop. High detail.",
+    "status": "VALID",
+    "validated": true,
+    "canonicalNameAr": "نبيذ فيرموث",
+    "sourceImageId": "exec-85b565a8-eaeb-4378-a7d3-e0e7df2925bc.png",
+    "imageUrl": "assets/notes/generated/nbydh-fyrmwth.webp",
+    "noteKey": "nbydh-fyrmwth",
+    "noteAssetId": "origo-note-nbydh-fyrmwth",
+    "sha256": "80e18e84a99f98e454baafff5e8b92acd3f0117c25ea039bafa3762c0a0d788f",
+    "contentHash": "731589bda4046bb4d0e552071e996e858f3792a6f9443f75187866397c9a3f8c",
+    "perceptualHash": "0b1b2b8307270f2a",
+    "visualReview": "Reviewed reports/batch71-review.jpg: distinct ingredient or material representation, no text or vessels.",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 42952,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "nghmat-khwlyh",
+    "canonicalNameEn": "alcohol accord represented by a clear colorless liquid splash",
+    "positiveDescription": "alcohol accord represented by a clear colorless liquid splash",
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "Photorealistic ORIGO fragrance note catalog cutout: alcohol accord represented by a clear colorless liquid splash. Centered square isolated specimen, actual transparent alpha background. No text, people, bottles, cups, containers, floor, backdrop. High detail.",
+    "status": "VALID",
+    "validated": true,
+    "canonicalNameAr": "نغمات كحولية",
+    "sourceImageId": "exec-c06aae35-33c6-40fd-9c23-a91ac9d6a31e.png",
+    "imageUrl": "assets/notes/generated/nghmat-khwlyh.webp",
+    "noteKey": "nghmat-khwlyh",
+    "noteAssetId": "origo-note-nghmat-khwlyh",
+    "sha256": "981ad656386e33a92eb6a652a54844368a66ae36bb33573ca5e50cd651d5d13c",
+    "contentHash": "73e877e7568774c62565e312df42a44b3541e161cfcb3f84f2b41a5a2a638e16",
+    "perceptualHash": "03a6664437174e0c",
+    "visualReview": "Reviewed reports/batch71-review.jpg: distinct ingredient or material representation, no text or vessels.",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 30654,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "nyghrwny",
+    "canonicalNameEn": "Negroni ruby orange cocktail splash with orange peel",
+    "positiveDescription": "Negroni ruby orange cocktail splash with orange peel",
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "Photorealistic ORIGO fragrance note catalog cutout: Negroni ruby orange cocktail splash with orange peel. Centered square isolated specimen, actual transparent alpha background. No text, people, bottles, cups, containers, floor, backdrop. High detail.",
+    "status": "VALID",
+    "validated": true,
+    "canonicalNameAr": "نيغروني",
+    "sourceImageId": "exec-73df1c1c-9722-4725-a052-ea1deb9041be.png",
+    "imageUrl": "assets/notes/generated/nyghrwny.webp",
+    "noteKey": "nyghrwny",
+    "noteAssetId": "origo-note-nyghrwny",
+    "sha256": "131862343bdf2956348c7310d96c28f0b7e1277831edead29521ecd8405eee83",
+    "contentHash": "31335e0d6417f9f606a8a95e414aa9bd56731e594879b7b27079394f0fc30827",
+    "perceptualHash": "042d2b214b06169c",
+    "visualReview": "Reviewed reports/batch71-review.jpg: distinct ingredient or material representation, no text or vessels.",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 34032,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "party-balloons",
+    "canonicalNameEn": "three colorful inflated latex party balloons with short strings",
+    "positiveDescription": "three colorful inflated latex party balloons with short strings",
+    "entityType": "material",
+    "plantPart": "material",
+    "generationPrompt": "Photorealistic ORIGO fragrance note catalog cutout: three colorful inflated latex party balloons with short strings. Centered square isolated specimen, actual transparent alpha background. No text, people, bottles, cups, containers, floor, backdrop. High detail.",
+    "status": "VALID",
+    "validated": true,
+    "canonicalNameAr": "بالونات الحفلات",
+    "sourceImageId": "exec-d0a6653e-83f8-4840-90e0-cd014a104342.png",
+    "imageUrl": "assets/notes/generated/party-balloons.webp",
+    "noteKey": "party-balloons",
+    "noteAssetId": "origo-note-party-balloons",
+    "sha256": "319e02b81dd23be9b4aef6321c6760e14a170ae501f10ef0003d5d2d0e695a10",
+    "contentHash": "016e3624e79d62d5a1d056f17745f1c5b19da5e4b28b3cfb6423d6293b8928da",
+    "perceptualHash": "0c2233010f0d0f0e",
+    "visualReview": "Reviewed reports/batch71-review.jpg: distinct ingredient or material representation, no text or vessels.",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 17764,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "atrbh",
+    "canonicalNameEn": "small mound of dry earthy soil with fine dusty texture",
+    "positiveDescription": "small mound of dry earthy soil with fine dusty texture",
+    "entityType": "material",
+    "plantPart": "material",
+    "generationPrompt": "Photorealistic ORIGO fragrance note catalog cutout: small mound of dry earthy soil with fine dusty texture. Centered square isolated specimen, actual transparent alpha background. No text, people, bottles, cups, containers, floor, backdrop. High detail.",
+    "status": "VALID",
+    "validated": true,
+    "canonicalNameAr": "أتربة",
+    "sourceImageId": "exec-f11bcd2c-4de1-402c-9ea0-0c061a69c6df.png",
+    "imageUrl": "assets/notes/generated/atrbh.webp",
+    "noteKey": "atrbh",
+    "noteAssetId": "origo-note-atrbh",
+    "sha256": "9cdf2b6a857ebeaa55a9ace8f3c353042913b80d18c13c67fb5c7b96af63dc22",
+    "contentHash": "c62a2637abc5aae43f1a54de845293db8cd063152b20b4e0f06fa7639a08ca19",
+    "perceptualHash": "00071f2725030f0c",
+    "visualReview": "Reviewed reports/batch71-review.jpg: distinct ingredient or material representation, no text or vessels.",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 30634,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "asflt",
+    "canonicalNameEn": "small rough broken chunk of black asphalt with visible aggregate",
+    "positiveDescription": "small rough broken chunk of black asphalt with visible aggregate",
+    "entityType": "material",
+    "plantPart": "material",
+    "generationPrompt": "Photorealistic ORIGO fragrance note catalog cutout: small rough broken chunk of black asphalt with visible aggregate. Centered square isolated specimen, actual transparent alpha background. No text, people, bottles, cups, containers, floor, backdrop. High detail.",
+    "status": "VALID",
+    "validated": true,
+    "canonicalNameAr": "أسفلت",
+    "sourceImageId": "exec-39cefc02-571e-4311-adab-0af652bf1cf7.png",
+    "imageUrl": "assets/notes/generated/asflt.webp",
+    "noteKey": "asflt",
+    "noteAssetId": "origo-note-asflt",
+    "sha256": "c84e497ff5a005754195daca2012cd324e7c211d249b75ccf73ef509392b371d",
+    "contentHash": "fc4f5caa42f6dbeeec45ebf435b0299a301d546fd229e6353ff6b2a9ba2a97dd",
+    "perceptualHash": "060f63735b2b060e",
+    "visualReview": "Reviewed reports/batch71-review.jpg: distinct ingredient or material representation, no text or vessels.",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 27878,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "alardwaz",
+    "canonicalNameEn": "layered dark slate stone specimen",
+    "positiveDescription": "layered dark slate stone specimen",
+    "entityType": "material",
+    "plantPart": "material",
+    "generationPrompt": "Photorealistic ORIGO fragrance note catalog cutout: layered dark slate stone specimen. Centered square isolated specimen, actual transparent alpha background. No text, people, bottles, cups, containers, floor, backdrop. High detail.",
+    "status": "VALID",
+    "validated": true,
+    "canonicalNameAr": "الأردواز",
+    "sourceImageId": "exec-4a5bfedf-a043-48c7-b37c-36c2acf210c0.png",
+    "imageUrl": "assets/notes/generated/alardwaz.webp",
+    "noteKey": "alardwaz",
+    "noteAssetId": "origo-note-alardwaz",
+    "sha256": "c867d3920558e4b632237b3dd7532ad38fa9249f7451ad656a09505469d9602c",
+    "contentHash": "58e05f627b917599454d3dde4233d7b2bc375dcea74d5e049733fc27c8263b6d",
+    "perceptualHash": "076f11514d77650f",
+    "visualReview": "Reviewed reports/batch71-review.jpg: distinct ingredient or material representation, no text or vessels.",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 26624,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "alalwmnywm",
+    "canonicalNameEn": "crumpled shiny aluminum foil specimen",
+    "positiveDescription": "crumpled shiny aluminum foil specimen",
+    "entityType": "material",
+    "plantPart": "material",
+    "generationPrompt": "Photorealistic ORIGO fragrance note catalog cutout: crumpled shiny aluminum foil specimen. Centered square isolated specimen, actual transparent alpha background. No text, people, bottles, cups, containers, floor, backdrop. High detail.",
+    "status": "VALID",
+    "validated": true,
+    "canonicalNameAr": "الألومنيوم",
+    "sourceImageId": "exec-c625061d-a5fa-4b32-bd41-14506fba6874.png",
+    "imageUrl": "assets/notes/generated/alalwmnywm.webp",
+    "noteKey": "alalwmnywm",
+    "noteAssetId": "origo-note-alalwmnywm",
+    "sha256": "a71286009cf435c2ccb5c5ad3e7bf356a49df9658ae916e19809005974ce2db7",
+    "contentHash": "8f59f0019e923dbf9cd2e81a196e31ff2e074159dc16a59915299f1dea21006d",
+    "perceptualHash": "031315553339250b",
+    "visualReview": "Reviewed reports/batch71-review.jpg: distinct ingredient or material representation, no text or vessels.",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 34468,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  }
+]
