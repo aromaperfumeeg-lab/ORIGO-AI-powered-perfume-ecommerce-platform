@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-09-13T05:10:33.112Z",
+  "generatedAt": "2026-09-13T05:33:44.425Z",
   "scope": "Library plus persisted note overrides; SQLite opened read-only. Visual semantics are not certified by filenames or hashes.",
   "notes": 1883,
   "products": 5,
-  "valid": 1438,
-  "missing": 427,
+  "valid": 1454,
+  "missing": 411,
   "duplicateGroups": 9,
   "needsReview": 0,
   "duplicates": [
@@ -20110,13 +20110,13 @@
     {
       "canonicalKey": "albnsh",
       "nameAr": "البنش",
-      "nameEn": "البنش",
+      "nameEn": "fruit punch fragrance note",
       "sourceName": "البنش",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/albnsh.webp",
+      "filename": "albnsh.webp",
+      "hash": "4fa12351f989b369623ef01b45cc667f558bc9398e5a7304dfbfbb324df0e5ab",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "البنش"
       ]
@@ -20124,13 +20124,13 @@
     {
       "canonicalKey": "albwrbwn",
       "nameAr": "البوربون",
-      "nameEn": "البوربون",
+      "nameEn": "bourbon fragrance note",
       "sourceName": "البوربون",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/albwrbwn.webp",
+      "filename": "albwrbwn.webp",
+      "hash": "b764a71b9ba6d3cb4480db9ed911eed4ae7dc9317a778832461fe426a91ffd77",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "البوربون"
       ]
@@ -20138,13 +20138,13 @@
     {
       "canonicalKey": "altkyla",
       "nameAr": "التكيلا",
-      "nameEn": "التكيلا",
+      "nameEn": "tequila fragrance note",
       "sourceName": "التكيلا",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/altkyla.webp",
+      "filename": "altkyla.webp",
+      "hash": "ab37e26f1ec08ec2083c4fdd78c5a1255c1162abc7ac5bc0e2378e42672c751b",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "التكيلا"
       ]
@@ -20152,13 +20152,13 @@
     {
       "canonicalKey": "aljrandyn",
       "nameAr": "الجراندين",
-      "nameEn": "الجراندين",
+      "nameEn": "grenadine fragrance note",
       "sourceName": "الجراندين",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/aljrandyn.webp",
+      "filename": "aljrandyn.webp",
+      "hash": "955c5bdb416e5d6491c51712c2309d12b1e36f6af357b0d8ccb26ca8e533dca0",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الجراندين"
       ]
@@ -20166,13 +20166,13 @@
     {
       "canonicalKey": "aljah",
       "nameAr": "الجعة",
-      "nameEn": "الجعة",
+      "nameEn": "beer fragrance note",
       "sourceName": "الجعة",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/aljah.webp",
+      "filename": "aljah.webp",
+      "hash": "5fe1b50e77588e3872eb1a77485d0e8357a1bf66c946074971be0970f25478e4",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الجعة"
       ]
@@ -20180,13 +20180,13 @@
     {
       "canonicalKey": "aljn",
       "nameAr": "الجن",
-      "nameEn": "الجن",
+      "nameEn": "gin fragrance note",
       "sourceName": "الجن",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/aljn.webp",
+      "filename": "aljn.webp",
+      "hash": "2809927f9d82cd8c27a8e52f4f6051f3aa00b102ee90fae25ca81b3377eed24f",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الجن"
       ]
@@ -20194,13 +20194,13 @@
     {
       "canonicalKey": "alkhmr",
       "nameAr": "الخمر",
-      "nameEn": "الخمر",
+      "nameEn": "wine fragrance note",
       "sourceName": "الخمر",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alkhmr.webp",
+      "filename": "alkhmr.webp",
+      "hash": "a63d90e72544cfb941e41c154355c6c44a52257982fbc6a71d2c97fdbaf58cb1",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الخمر"
       ]
@@ -20208,13 +20208,13 @@
     {
       "canonicalKey": "rum",
       "nameAr": "روم",
-      "nameEn": "Rum",
+      "nameEn": "rum fragrance note",
       "sourceName": "الروم",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/rum.webp",
+      "filename": "rum.webp",
+      "hash": "e2e4417a6e82cc85daedd2f843f90c3a17816553b093ab9f120df4ff7ceb098d",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الروم",
         "Rhum"
@@ -20223,13 +20223,13 @@
     {
       "canonicalKey": "alsanjrya",
       "nameAr": "السانجريا",
-      "nameEn": "السانجريا",
+      "nameEn": "sangria fragrance note",
       "sourceName": "السانجريا",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alsanjrya.webp",
+      "filename": "alsanjrya.webp",
+      "hash": "e25f8a857c6b4e9ad7aae248c5222397bd843140570760a474983e59c2bb81b1",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "السانجريا"
       ]
@@ -20237,13 +20237,13 @@
     {
       "canonicalKey": "alswjw",
       "nameAr": "السوجو",
-      "nameEn": "السوجو",
+      "nameEn": "soju fragrance note",
       "sourceName": "السوجو",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alswjw.webp",
+      "filename": "alswjw.webp",
+      "hash": "fea1f14c4b96a52c8f05b90f9a3ed6202936cf77fa824feb3370327f9f46ccaa",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "السوجو"
       ]
@@ -20251,13 +20251,13 @@
     {
       "canonicalKey": "alshambanya-alwrdyh",
       "nameAr": "الشامبانيا الوردية",
-      "nameEn": "الشامبانيا الوردية",
+      "nameEn": "rosé champagne fragrance note",
       "sourceName": "الشامبانيا الوردية",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alshambanya-alwrdyh.webp",
+      "filename": "alshambanya-alwrdyh.webp",
+      "hash": "620e79bb2ca70d3f961f934123b6268d3e33b75e3f1e8df1203bcb024841a360",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الشامبانيا الوردية"
       ]
@@ -20265,13 +20265,13 @@
     {
       "canonicalKey": "alshrbat",
       "nameAr": "الشربات",
-      "nameEn": "الشربات",
+      "nameEn": "sherbet drink fragrance note",
       "sourceName": "الشربات",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alshrbat.webp",
+      "filename": "alshrbat.webp",
+      "hash": "d2caa0cd69038a6b79e31a7787c51c3276b24acdfe0908c6769ae287b744b26d",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الشربات"
       ]
@@ -20279,13 +20279,13 @@
     {
       "canonicalKey": "alshmbanya",
       "nameAr": "الشمبانيا",
-      "nameEn": "الشمبانيا",
+      "nameEn": "champagne fragrance note",
       "sourceName": "الشمبانيا",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alshmbanya.webp",
+      "filename": "alshmbanya.webp",
+      "hash": "52063bd25dc1cdac3636904cba5402e1b768adc66c9d903c666d02a9d05535d6",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الشمبانيا"
       ]
@@ -20293,13 +20293,13 @@
     {
       "canonicalKey": "alshykwlath-alsakhnh",
       "nameAr": "الشيكولاتة الساخنة",
-      "nameEn": "الشيكولاتة الساخنة",
+      "nameEn": "hot chocolate fragrance note",
       "sourceName": "الشيكولاتة الساخنة",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alshykwlath-alsakhnh.webp",
+      "filename": "alshykwlath-alsakhnh.webp",
+      "hash": "8771cee38b42c7b7042b8e8d7b1aaa147a7561f662329b6275994137e0708d92",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الشيكولاتة الساخنة"
       ]
@@ -20307,13 +20307,13 @@
     {
       "canonicalKey": "alfwdka",
       "nameAr": "الفودكا",
-      "nameEn": "الفودكا",
+      "nameEn": "vodka fragrance note",
       "sourceName": "الفودكا",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alfwdka.webp",
+      "filename": "alfwdka.webp",
+      "hash": "cac1fb2bca8af77bcac98715b12d508bed0039bab9bcf451a0740cac8e65c672",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الفودكا"
       ]
@@ -20321,13 +20321,13 @@
     {
       "canonicalKey": "alkabytshynw",
       "nameAr": "الكابيتشينو",
-      "nameEn": "الكابيتشينو",
+      "nameEn": "cappuccino fragrance note",
       "sourceName": "الكابيتشينو",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alkabytshynw.webp",
+      "filename": "alkabytshynw.webp",
+      "hash": "776f7da66dd545aaa20a408ef84cea4a31f17c0972e7402b066ba7906db3e251",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الكابيتشينو"
       ]
