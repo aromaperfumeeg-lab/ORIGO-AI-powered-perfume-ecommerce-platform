@@ -1,0 +1,450 @@
+[
+  {
+    "canonicalKey": "lymwnsylw",
+    "canonicalNameEn": "limoncello",
+    "positiveDescription": "limoncello",
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "Photorealistic fragrance note catalog cutout of limoncello. Centered square. Actual transparent alpha background. No text people bottles cups containers floor or backdrop.",
+    "status": "VALID",
+    "validated": true,
+    "canonicalNameAr": "ليمونسيلو",
+    "sourceImageId": "exec-0d046403-541a-4244-8eda-bd20e1e5786c.png",
+    "imageUrl": "assets/notes/generated/lymwnsylw.webp",
+    "noteKey": "lymwnsylw",
+    "noteAssetId": "origo-note-lymwnsylw",
+    "sha256": "203f7dfc1963350b9011a9b914d3f4fbb9d9d5d522d3d8fe74421f70b467097d",
+    "contentHash": "d5fb89357c52ef8b594c8e9e0ae006349cec6adacf4886e86293387b2d7ca5a0",
+    "perceptualHash": "050e87170f072309",
+    "visualReview": "Reviewed reports/batch70-review.jpg: beverage ingredient representation, no vessels or text.",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 35642,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "ma-alarz",
+    "canonicalNameEn": "rice water, cloudy white splash and rice grains",
+    "positiveDescription": "rice water, cloudy white splash and rice grains",
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "Photorealistic fragrance note catalog cutout of rice water, cloudy white splash and rice grains. Centered square. Actual transparent alpha background. No text people bottles cups containers floor or backdrop.",
+    "status": "VALID",
+    "validated": true,
+    "canonicalNameAr": "ماء الأرز",
+    "sourceImageId": "exec-3e4282c5-85b6-4702-85c2-f3d6b02df565.png",
+    "imageUrl": "assets/notes/generated/ma-alarz.webp",
+    "noteKey": "ma-alarz",
+    "noteAssetId": "origo-note-ma-alarz",
+    "sha256": "7bbe379d747284e33ef22b943e2d6db9a6f7583eb805304decd3f8511e249e6e",
+    "contentHash": "0567f6d3f5ba0f19bb744e5f7a189d92eebfb2592adb7b2d1850f34a9def6067",
+    "perceptualHash": "0e07030527499831",
+    "visualReview": "Reviewed reports/batch70-review.jpg: beverage ingredient representation, no vessels or text.",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 28630,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "ma-fwar",
+    "canonicalNameEn": "sparkling water clear splash and bubbles",
+    "positiveDescription": "sparkling water clear splash and bubbles",
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "Photorealistic fragrance note catalog cutout of sparkling water clear splash and bubbles. Centered square. Actual transparent alpha background. No text people bottles cups containers floor or backdrop.",
+    "status": "VALID",
+    "validated": true,
+    "canonicalNameAr": "ماء فوّار",
+    "sourceImageId": "exec-532120ac-46b2-42d5-a679-c578266960ac.png",
+    "imageUrl": "assets/notes/generated/ma-fwar.webp",
+    "noteKey": "ma-fwar",
+    "noteAssetId": "origo-note-ma-fwar",
+    "sha256": "ba27046aa34a79323e1cd9b3c73c5daf48f4f9068189579e70f84b759b1de303",
+    "contentHash": "e3a17f4251c2a8c671f318d948ae96b959fd21d9a7e78b4a7d895b29b03d6131",
+    "perceptualHash": "00071f1e0e1e0f07",
+    "visualReview": "Reviewed reports/batch70-review.jpg: beverage ingredient representation, no vessels or text.",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 38516,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "madyra",
+    "canonicalNameEn": "Madeira wine amber splash and grapes",
+    "positiveDescription": "Madeira wine amber splash and grapes",
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "Photorealistic fragrance note catalog cutout of Madeira wine amber splash and grapes. Centered square. Actual transparent alpha background. No text people bottles cups containers floor or backdrop.",
+    "status": "VALID",
+    "validated": true,
+    "canonicalNameAr": "ماديرا",
+    "sourceImageId": "exec-901c96c1-bd29-498f-b239-758aad46507b.png",
+    "imageUrl": "assets/notes/generated/madyra.webp",
+    "noteKey": "madyra",
+    "noteAssetId": "origo-note-madyra",
+    "sha256": "b12199b3d7706d251c728431a3002824c3115a5d109b0aca942d17246ceb7ef3",
+    "contentHash": "0d64ab71a36e2b5b545bc0241aa683bac79941b8e1cd1e9f5f72ed424019e437",
+    "perceptualHash": "0505078721230e0c",
+    "visualReview": "Reviewed reports/batch70-review.jpg: beverage ingredient representation, no vessels or text.",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 37016,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "makyatw",
+    "canonicalNameEn": "macchiato espresso splash with small milk foam swirl and coffee beans",
+    "positiveDescription": "macchiato espresso splash with small milk foam swirl and coffee beans",
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "Photorealistic fragrance note catalog cutout of macchiato espresso splash with small milk foam swirl and coffee beans. Centered square. Actual transparent alpha background. No text people bottles cups containers floor or backdrop.",
+    "status": "VALID",
+    "validated": true,
+    "canonicalNameAr": "ماكياتو",
+    "sourceImageId": "exec-3b7edfae-e4a9-46cb-8e1c-086027d0629b.png",
+    "imageUrl": "assets/notes/generated/makyatw.webp",
+    "noteKey": "makyatw",
+    "noteAssetId": "origo-note-makyatw",
+    "sha256": "2b69389e3c2a5fe31a01b93ba36b5c7428fd091b9d2c6e6a5f7e588f89ee817a",
+    "contentHash": "8a03ac8560eba9602e288f7fea365eaac47a55374380f7e5a0a8f0a3e05bca72",
+    "perceptualHash": "099f3f2e67333725",
+    "visualReview": "Reviewed reports/batch70-review.jpg: beverage ingredient representation, no vessels or text.",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 26638,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "mkhyd-allbn",
+    "canonicalNameEn": "buttermilk thick white cultured milk splash",
+    "positiveDescription": "buttermilk thick white cultured milk splash",
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "Photorealistic fragrance note catalog cutout of buttermilk thick white cultured milk splash. Centered square. Actual transparent alpha background. No text people bottles cups containers floor or backdrop.",
+    "status": "VALID",
+    "validated": true,
+    "canonicalNameAr": "مخيض اللبن",
+    "sourceImageId": "exec-29f361d2-3827-4540-977a-b5b25ef29ce6.png",
+    "imageUrl": "assets/notes/generated/mkhyd-allbn.webp",
+    "noteKey": "mkhyd-allbn",
+    "noteAssetId": "origo-note-mkhyd-allbn",
+    "sha256": "76cfae064dbf02fc78bf72e1fb4291ce7eec9fbfe01a7f97147c1a55b536924a",
+    "contentHash": "f17c0edf1c47191391020d3e057119df801670a1dbbf14490cd25f2b2b3e688a",
+    "perceptualHash": "021d0f5e673e1d0e",
+    "visualReview": "Reviewed reports/batch70-review.jpg: beverage ingredient representation, no vessels or text.",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 17972,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "mstar-alnbydh",
+    "canonicalNameEn": "grape must cloudy purple juice splash with crushed grapes",
+    "positiveDescription": "grape must cloudy purple juice splash with crushed grapes",
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "Photorealistic fragrance note catalog cutout of grape must cloudy purple juice splash with crushed grapes. Centered square. Actual transparent alpha background. No text people bottles cups containers floor or backdrop.",
+    "status": "VALID",
+    "validated": true,
+    "canonicalNameAr": "مسطار النبيذ",
+    "sourceImageId": "exec-057d21df-1f0d-495f-bd3c-b3e1f48f4cdc.png",
+    "imageUrl": "assets/notes/generated/mstar-alnbydh.webp",
+    "noteKey": "mstar-alnbydh",
+    "noteAssetId": "origo-note-mstar-alnbydh",
+    "sha256": "dcdaf0b5c05e0ed5adf851fff508f1e447c8258ea0f3203d74f5baeab1643afa",
+    "contentHash": "aa20b4832aa5060b2ba6d8d83ccb1a8fc1eee39d08de263e9d45c90281ff1bda",
+    "perceptualHash": "03c7172f2b0b0f4e",
+    "visualReview": "Reviewed reports/batch70-review.jpg: beverage ingredient representation, no vessels or text.",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 39402,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "mshrwb-raki",
+    "canonicalNameEn": "raki anise spirit milky translucent splash and anise seeds",
+    "positiveDescription": "raki anise spirit milky translucent splash and anise seeds",
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "Photorealistic fragrance note catalog cutout of raki anise spirit milky translucent splash and anise seeds. Centered square. Actual transparent alpha background. No text people bottles cups containers floor or backdrop.",
+    "status": "VALID",
+    "validated": true,
+    "canonicalNameAr": "مشروب Raki",
+    "sourceImageId": "exec-efd5bace-4112-4dad-a912-41b08980ef5e.png",
+    "imageUrl": "assets/notes/generated/mshrwb-raki.webp",
+    "noteKey": "mshrwb-raki",
+    "noteAssetId": "origo-note-mshrwb-raki",
+    "sha256": "57dae35caed8c846548d25e6799cdce17c83880752d103b4f5cded061055ce10",
+    "contentHash": "03d63834e9b3d8ae41d5f3adaa323d0a7ededce8d13978a88370d74fed1044f9",
+    "perceptualHash": "06474da64b070f0f",
+    "visualReview": "Reviewed reports/batch70-review.jpg: beverage ingredient representation, no vessels or text.",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 29838,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "mshrwb-alqhwh-alkhwly",
+    "canonicalNameEn": "coffee liqueur glossy dark brown splash and roasted beans",
+    "positiveDescription": "coffee liqueur glossy dark brown splash and roasted beans",
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "Photorealistic fragrance note catalog cutout of coffee liqueur glossy dark brown splash and roasted beans. Centered square. Actual transparent alpha background. No text people bottles cups containers floor or backdrop.",
+    "status": "VALID",
+    "validated": true,
+    "canonicalNameAr": "مشروب القهوة الكحولي",
+    "sourceImageId": "exec-d1311232-e46a-4dc4-b6f2-9139e496e88e.png",
+    "imageUrl": "assets/notes/generated/mshrwb-alqhwh-alkhwly.webp",
+    "noteKey": "mshrwb-alqhwh-alkhwly",
+    "noteAssetId": "origo-note-mshrwb-alqhwh-alkhwly",
+    "sha256": "18ed82e9143670a905b4e69c3691eec56b87335e1bf20c7524cc1d7c24acfa96",
+    "contentHash": "c6452a84778120ccd6eef9adb49bf1862be423dd15927b73c5f8704921379bfb",
+    "perceptualHash": "01939353471f1f16",
+    "visualReview": "Reviewed reports/batch70-review.jpg: beverage ingredient representation, no vessels or text.",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 34800,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "mshrwb-alkafa",
+    "canonicalNameEn": "kava drink beige splash with kava roots",
+    "positiveDescription": "kava drink beige splash with kava roots",
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "Photorealistic fragrance note catalog cutout of kava drink beige splash with kava roots. Centered square. Actual transparent alpha background. No text people bottles cups containers floor or backdrop.",
+    "status": "VALID",
+    "validated": true,
+    "canonicalNameAr": "مشروب الكافا",
+    "sourceImageId": "exec-4deefaa4-0b85-4753-896b-e7f3f5563582.png",
+    "imageUrl": "assets/notes/generated/mshrwb-alkafa.webp",
+    "noteKey": "mshrwb-alkafa",
+    "noteAssetId": "origo-note-mshrwb-alkafa",
+    "sha256": "ca5bc3595151adc902a0855fc90c10c48294d14e2d5ddb7f602908006aad30f7",
+    "contentHash": "1b84b00594f3ec5493d053efdc5c12945d545ff0359c0c6a75252fa8665e88d9",
+    "perceptualHash": "031b173f17b233a1",
+    "visualReview": "Reviewed reports/batch70-review.jpg: beverage ingredient representation, no vessels or text.",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 35054,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "mshrwb-jwldwasr",
+    "canonicalNameEn": "Goldwasser clear liqueur splash with suspended gold flakes",
+    "positiveDescription": "Goldwasser clear liqueur splash with suspended gold flakes",
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "Photorealistic fragrance note catalog cutout of Goldwasser clear liqueur splash with suspended gold flakes. Centered square. Actual transparent alpha background. No text people bottles cups containers floor or backdrop.",
+    "status": "VALID",
+    "validated": true,
+    "canonicalNameAr": "مشروب جولدواسر",
+    "sourceImageId": "exec-68571e97-756d-4a9e-bbba-5435d731efb0.png",
+    "imageUrl": "assets/notes/generated/mshrwb-jwldwasr.webp",
+    "noteKey": "mshrwb-jwldwasr",
+    "noteAssetId": "origo-note-mshrwb-jwldwasr",
+    "sha256": "4c529d91f0da64322e9b90b7991b2bf85371cc58c82a3a38a7dff368b729acb2",
+    "contentHash": "373448d4677b96b7d4089928066c9320b2525a9be89c224aea79e66e3181ba79",
+    "perceptualHash": "03031e3c3a1d0f1e",
+    "visualReview": "Reviewed reports/batch70-review.jpg: beverage ingredient representation, no vessels or text.",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 36830,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "mshrwb-kalfadws",
+    "canonicalNameEn": "Calvados amber apple brandy splash and apple slices",
+    "positiveDescription": "Calvados amber apple brandy splash and apple slices",
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "Photorealistic fragrance note catalog cutout of Calvados amber apple brandy splash and apple slices. Centered square. Actual transparent alpha background. No text people bottles cups containers floor or backdrop.",
+    "status": "VALID",
+    "validated": true,
+    "canonicalNameAr": "مشروب كالفادوس",
+    "sourceImageId": "exec-4bdb21bc-473c-401c-a9e8-63910500a3e7.png",
+    "imageUrl": "assets/notes/generated/mshrwb-kalfadws.webp",
+    "noteKey": "mshrwb-kalfadws",
+    "noteAssetId": "origo-note-mshrwb-kalfadws",
+    "sha256": "920aa797e90d5cb8e4b6c948d46ed884043ac9ca58fefbefd7987ad07276a57c",
+    "contentHash": "ceacbbe2af2f28937ca32d5eb664479f927dfe369eb755afefe6e3e1d5d71896",
+    "perceptualHash": "060e1c595b3b1f0f",
+    "visualReview": "Reviewed reports/batch70-review.jpg: beverage ingredient representation, no vessels or text.",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 39366,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "mwskw-mwl",
+    "canonicalNameEn": "Moscow Mule pale sparkling splash with lime and ginger",
+    "positiveDescription": "Moscow Mule pale sparkling splash with lime and ginger",
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "Photorealistic fragrance note catalog cutout of Moscow Mule pale sparkling splash with lime and ginger. Centered square. Actual transparent alpha background. No text people bottles cups containers floor or backdrop.",
+    "status": "VALID",
+    "validated": true,
+    "canonicalNameAr": "موسكو مول",
+    "sourceImageId": "exec-912e50d1-260c-40d9-8858-755e42e65e9d.png",
+    "imageUrl": "assets/notes/generated/mwskw-mwl.webp",
+    "noteKey": "mwskw-mwl",
+    "noteAssetId": "origo-note-mwskw-mwl",
+    "sha256": "73bec4bfcf5afe17c3e5e3eee81ff5fb4680ade1d8251ec5bdf7f77601b10eb9",
+    "contentHash": "99edd4346f78b90ad28e95401d1b7d73e94450f35134bfb037d9a4b4ad5ea10d",
+    "perceptualHash": "080f66671b1919c3",
+    "visualReview": "Reviewed reports/batch70-review.jpg: beverage ingredient representation, no vessels or text.",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 41710,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "mwka",
+    "canonicalNameEn": "mocha chocolate coffee splash with cocoa and coffee beans",
+    "positiveDescription": "mocha chocolate coffee splash with cocoa and coffee beans",
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "Photorealistic fragrance note catalog cutout of mocha chocolate coffee splash with cocoa and coffee beans. Centered square. Actual transparent alpha background. No text people bottles cups containers floor or backdrop.",
+    "status": "VALID",
+    "validated": true,
+    "canonicalNameAr": "موكا",
+    "sourceImageId": "exec-3169bb4b-9766-4351-a6bd-525993287d80.png",
+    "imageUrl": "assets/notes/generated/mwka.webp",
+    "noteKey": "mwka",
+    "noteAssetId": "origo-note-mwka",
+    "sha256": "cdb504b8e438a5a0c07865af8acfb0ae7dd14c2007077d52024cc1a8751558f8",
+    "contentHash": "0fe52bb02312ad97ba1476d18c6eb0bd90bf1e5a62ff4917d509ff24c8364914",
+    "perceptualHash": "050713031b0f2767",
+    "visualReview": "Reviewed reports/batch70-review.jpg: beverage ingredient representation, no vessels or text.",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 41988,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "mwn-shayn",
+    "canonicalNameEn": "moonshine clear spirit splash with corn kernels",
+    "positiveDescription": "moonshine clear spirit splash with corn kernels",
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "Photorealistic fragrance note catalog cutout of moonshine clear spirit splash with corn kernels. Centered square. Actual transparent alpha background. No text people bottles cups containers floor or backdrop.",
+    "status": "VALID",
+    "validated": true,
+    "canonicalNameAr": "مون شاين",
+    "sourceImageId": "exec-aa4f99b0-9895-4de4-8904-a9a98c970d24.png",
+    "imageUrl": "assets/notes/generated/mwn-shayn.webp",
+    "noteKey": "mwn-shayn",
+    "noteAssetId": "origo-note-mwn-shayn",
+    "sha256": "90fb1033a1ab7c1fd91ee193a18add4e97b15010b63620a4c6efccc577587c73",
+    "contentHash": "0a27444a4ee74d55a077ba72a00b83b58fcfe76c07366f0000d85b8003f5b5d7",
+    "perceptualHash": "0d1f132b27ad5517",
+    "visualReview": "Reviewed reports/batch70-review.jpg: beverage ingredient representation, no vessels or text.",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 34428,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "myah-altwnyk",
+    "canonicalNameEn": "tonic water sparkling clear splash with cinchona bark and lime peel",
+    "positiveDescription": "tonic water sparkling clear splash with cinchona bark and lime peel",
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "Photorealistic fragrance note catalog cutout of tonic water sparkling clear splash with cinchona bark and lime peel. Centered square. Actual transparent alpha background. No text people bottles cups containers floor or backdrop.",
+    "status": "VALID",
+    "validated": true,
+    "canonicalNameAr": "مياه التونيك",
+    "sourceImageId": "exec-74f82148-e24b-43f6-9fef-379940844d1d.png",
+    "imageUrl": "assets/notes/generated/myah-altwnyk.webp",
+    "noteKey": "myah-altwnyk",
+    "noteAssetId": "origo-note-myah-altwnyk",
+    "sha256": "85e9b09b7c627a39b76123f627c40c8a54bfaf12183fbd75f7df7d9f130eb8bd",
+    "contentHash": "5ea8b162245358b2e48ef580c2f1651460719388fd3d51a902eb6d17a9188973",
+    "perceptualHash": "03272f0f13331737",
+    "visualReview": "Reviewed reports/batch70-review.jpg: beverage ingredient representation, no vessels or text.",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 51098,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  }
+]

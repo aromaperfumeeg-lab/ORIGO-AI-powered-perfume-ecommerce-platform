@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-09-13T11:56:07.784Z",
+  "generatedAt": "2026-09-13T14:03:54.449Z",
   "scope": "Library plus persisted note overrides; SQLite opened read-only. Visual semantics are not certified by filenames or hashes.",
   "notes": 1883,
   "products": 5,
-  "valid": 1518,
-  "missing": 347,
+  "valid": 1534,
+  "missing": 331,
   "duplicateGroups": 9,
   "needsReview": 0,
   "duplicates": [
@@ -21231,13 +21231,13 @@
     {
       "canonicalKey": "lymwnsylw",
       "nameAr": "ليمونسيلو",
-      "nameEn": "ليمونسيلو",
+      "nameEn": "limoncello",
       "sourceName": "ليمونسيلو",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/lymwnsylw.webp",
+      "filename": "lymwnsylw.webp",
+      "hash": "203f7dfc1963350b9011a9b914d3f4fbb9d9d5d522d3d8fe74421f70b467097d",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "ليمونسيلو"
       ]
@@ -21245,13 +21245,13 @@
     {
       "canonicalKey": "ma-alarz",
       "nameAr": "ماء الأرز",
-      "nameEn": "ماء الأرز",
+      "nameEn": "rice water, cloudy white splash and rice grains",
       "sourceName": "ماء الأرز",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/ma-alarz.webp",
+      "filename": "ma-alarz.webp",
+      "hash": "7bbe379d747284e33ef22b943e2d6db9a6f7583eb805304decd3f8511e249e6e",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "ماء الأرز"
       ]
@@ -21259,13 +21259,13 @@
     {
       "canonicalKey": "ma-fwar",
       "nameAr": "ماء فوّار",
-      "nameEn": "ماء فوّار",
+      "nameEn": "sparkling water clear splash and bubbles",
       "sourceName": "ماء فوّار",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/ma-fwar.webp",
+      "filename": "ma-fwar.webp",
+      "hash": "ba27046aa34a79323e1cd9b3c73c5daf48f4f9068189579e70f84b759b1de303",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "ماء فوّار"
       ]
@@ -21273,13 +21273,13 @@
     {
       "canonicalKey": "madyra",
       "nameAr": "ماديرا",
-      "nameEn": "ماديرا",
+      "nameEn": "Madeira wine amber splash and grapes",
       "sourceName": "ماديرا",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/madyra.webp",
+      "filename": "madyra.webp",
+      "hash": "b12199b3d7706d251c728431a3002824c3115a5d109b0aca942d17246ceb7ef3",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "ماديرا"
       ]
@@ -21287,13 +21287,13 @@
     {
       "canonicalKey": "makyatw",
       "nameAr": "ماكياتو",
-      "nameEn": "ماكياتو",
+      "nameEn": "macchiato espresso splash with small milk foam swirl and coffee beans",
       "sourceName": "ماكياتو",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/makyatw.webp",
+      "filename": "makyatw.webp",
+      "hash": "2b69389e3c2a5fe31a01b93ba36b5c7428fd091b9d2c6e6a5f7e588f89ee817a",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "ماكياتو"
       ]
@@ -21301,13 +21301,13 @@
     {
       "canonicalKey": "mkhyd-allbn",
       "nameAr": "مخيض اللبن",
-      "nameEn": "مخيض اللبن",
+      "nameEn": "buttermilk thick white cultured milk splash",
       "sourceName": "مخيض اللبن",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/mkhyd-allbn.webp",
+      "filename": "mkhyd-allbn.webp",
+      "hash": "76cfae064dbf02fc78bf72e1fb4291ce7eec9fbfe01a7f97147c1a55b536924a",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "مخيض اللبن"
       ]
@@ -21315,13 +21315,13 @@
     {
       "canonicalKey": "mstar-alnbydh",
       "nameAr": "مسطار النبيذ",
-      "nameEn": "مسطار النبيذ",
+      "nameEn": "grape must cloudy purple juice splash with crushed grapes",
       "sourceName": "مسطار النبيذ",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/mstar-alnbydh.webp",
+      "filename": "mstar-alnbydh.webp",
+      "hash": "dcdaf0b5c05e0ed5adf851fff508f1e447c8258ea0f3203d74f5baeab1643afa",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "مسطار النبيذ"
       ]
@@ -21329,13 +21329,13 @@
     {
       "canonicalKey": "mshrwb-raki",
       "nameAr": "مشروب Raki",
-      "nameEn": "مشروب Raki",
+      "nameEn": "raki anise spirit milky translucent splash and anise seeds",
       "sourceName": "مشروب Raki",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/mshrwb-raki.webp",
+      "filename": "mshrwb-raki.webp",
+      "hash": "57dae35caed8c846548d25e6799cdce17c83880752d103b4f5cded061055ce10",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "مشروب Raki"
       ]
@@ -21343,13 +21343,13 @@
     {
       "canonicalKey": "mshrwb-alqhwh-alkhwly",
       "nameAr": "مشروب القهوة الكحولي",
-      "nameEn": "مشروب القهوة الكحولي",
+      "nameEn": "coffee liqueur glossy dark brown splash and roasted beans",
       "sourceName": "مشروب القهوة الكحولي",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/mshrwb-alqhwh-alkhwly.webp",
+      "filename": "mshrwb-alqhwh-alkhwly.webp",
+      "hash": "18ed82e9143670a905b4e69c3691eec56b87335e1bf20c7524cc1d7c24acfa96",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "مشروب القهوة الكحولي"
       ]
@@ -21357,13 +21357,13 @@
     {
       "canonicalKey": "mshrwb-alkafa",
       "nameAr": "مشروب الكافا",
-      "nameEn": "مشروب الكافا",
+      "nameEn": "kava drink beige splash with kava roots",
       "sourceName": "مشروب الكافا",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/mshrwb-alkafa.webp",
+      "filename": "mshrwb-alkafa.webp",
+      "hash": "ca5bc3595151adc902a0855fc90c10c48294d14e2d5ddb7f602908006aad30f7",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "مشروب الكافا"
       ]
@@ -21371,13 +21371,13 @@
     {
       "canonicalKey": "mshrwb-jwldwasr",
       "nameAr": "مشروب جولدواسر",
-      "nameEn": "مشروب جولدواسر",
+      "nameEn": "Goldwasser clear liqueur splash with suspended gold flakes",
       "sourceName": "مشروب جولدواسر",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/mshrwb-jwldwasr.webp",
+      "filename": "mshrwb-jwldwasr.webp",
+      "hash": "4c529d91f0da64322e9b90b7991b2bf85371cc58c82a3a38a7dff368b729acb2",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "مشروب جولدواسر"
       ]
@@ -21385,13 +21385,13 @@
     {
       "canonicalKey": "mshrwb-kalfadws",
       "nameAr": "مشروب كالفادوس",
-      "nameEn": "مشروب كالفادوس",
+      "nameEn": "Calvados amber apple brandy splash and apple slices",
       "sourceName": "مشروب كالفادوس",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/mshrwb-kalfadws.webp",
+      "filename": "mshrwb-kalfadws.webp",
+      "hash": "920aa797e90d5cb8e4b6c948d46ed884043ac9ca58fefbefd7987ad07276a57c",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "مشروب كالفادوس"
       ]
@@ -21399,13 +21399,13 @@
     {
       "canonicalKey": "mwskw-mwl",
       "nameAr": "موسكو مول",
-      "nameEn": "موسكو مول",
+      "nameEn": "Moscow Mule pale sparkling splash with lime and ginger",
       "sourceName": "موسكو مول",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/mwskw-mwl.webp",
+      "filename": "mwskw-mwl.webp",
+      "hash": "73bec4bfcf5afe17c3e5e3eee81ff5fb4680ade1d8251ec5bdf7f77601b10eb9",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "موسكو مول"
       ]
@@ -21413,13 +21413,13 @@
     {
       "canonicalKey": "mwka",
       "nameAr": "موكا",
-      "nameEn": "موكا",
+      "nameEn": "mocha chocolate coffee splash with cocoa and coffee beans",
       "sourceName": "موكا",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/mwka.webp",
+      "filename": "mwka.webp",
+      "hash": "cdb504b8e438a5a0c07865af8acfb0ae7dd14c2007077d52024cc1a8751558f8",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "موكا"
       ]
@@ -21427,13 +21427,13 @@
     {
       "canonicalKey": "mwn-shayn",
       "nameAr": "مون شاين",
-      "nameEn": "مون شاين",
+      "nameEn": "moonshine clear spirit splash with corn kernels",
       "sourceName": "مون شاين",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/mwn-shayn.webp",
+      "filename": "mwn-shayn.webp",
+      "hash": "90fb1033a1ab7c1fd91ee193a18add4e97b15010b63620a4c6efccc577587c73",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "مون شاين"
       ]
@@ -21441,13 +21441,13 @@
     {
       "canonicalKey": "myah-altwnyk",
       "nameAr": "مياه التونيك",
-      "nameEn": "مياه التونيك",
+      "nameEn": "tonic water sparkling clear splash with cinchona bark and lime peel",
       "sourceName": "مياه التونيك",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/myah-altwnyk.webp",
+      "filename": "myah-altwnyk.webp",
+      "hash": "85e9b09b7c627a39b76123f627c40c8a54bfaf12183fbd75f7df7d9f130eb8bd",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "مياه التونيك"
       ]
