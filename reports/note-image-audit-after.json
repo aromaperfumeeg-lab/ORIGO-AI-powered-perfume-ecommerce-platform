@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-09-13T05:33:44.425Z",
+  "generatedAt": "2026-09-13T09:12:13.978Z",
   "scope": "Library plus persisted note overrides; SQLite opened read-only. Visual semantics are not certified by filenames or hashes.",
   "notes": 1883,
   "products": 5,
-  "valid": 1454,
-  "missing": 411,
+  "valid": 1470,
+  "missing": 395,
   "duplicateGroups": 9,
   "needsReview": 0,
   "duplicates": [
@@ -20337,11 +20337,11 @@
       "nameAr": "الكوكاكولا",
       "nameEn": "الكوكاكولا",
       "sourceName": "الكوكاكولا",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alkwkakwla.webp",
+      "filename": "alkwkakwla.webp",
+      "hash": "e148435ed8415a38f6b7ee4c2de8747bd015dd0abaa3bfbebc60f09a67c84028",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الكوكاكولا"
       ]
@@ -20351,11 +20351,11 @@
       "nameAr": "الكوكتيل",
       "nameEn": "الكوكتيل",
       "sourceName": "الكوكتيل",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alkwktyl.webp",
+      "filename": "alkwktyl.webp",
+      "hash": "b67382cdec61e2ddd8e801ee7edb987e1ee14e68e6e2345cc7f06a9a56e59339",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الكوكتيل"
       ]
@@ -20365,11 +20365,11 @@
       "nameAr": "الكونياك",
       "nameEn": "الكونياك",
       "sourceName": "الكونياك",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alkwnyak.webp",
+      "filename": "alkwnyak.webp",
+      "hash": "6849bdb365c3272c42a4359dbeb347e860749e7b3941f49beedb0d49e85763d9",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الكونياك"
       ]
@@ -20379,11 +20379,11 @@
       "nameAr": "المارتيني",
       "nameEn": "المارتيني",
       "sourceName": "المارتيني",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/almartyny.webp",
+      "filename": "almartyny.webp",
+      "hash": "e47fb67ad2f6623d20b2ea243e105c327cb017dd991393e5ff64e41384c8b37f",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "المارتيني"
       ]
@@ -20393,11 +20393,11 @@
       "nameAr": "المارغريتا",
       "nameEn": "المارغريتا",
       "sourceName": "المارغريتا",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/almarghryta.webp",
+      "filename": "almarghryta.webp",
+      "hash": "e0cbc1ae7d03d6e2fd0a7813dc4d1f8a15540fef1f5a670bf3280e9d22890dd4",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "المارغريتا"
       ]
@@ -20407,11 +20407,11 @@
       "nameAr": "الموهيتو",
       "nameEn": "الموهيتو",
       "sourceName": "الموهيتو",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/almwhytw.webp",
+      "filename": "almwhytw.webp",
+      "hash": "0ae4757c7676c3382e1a31d5ea8af1ce86c3fdf51fbc75f02cef7950cc4fe66a",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الموهيتو"
       ]
@@ -20421,11 +20421,11 @@
       "nameAr": "النبيذ",
       "nameEn": "النبيذ",
       "sourceName": "النبيذ",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alnbydh.webp",
+      "filename": "alnbydh.webp",
+      "hash": "8cc608c7c56b47ac833c028cc56e69539135622151fd177463fb847f1c7904da",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "النبيذ"
       ]
@@ -20435,11 +20435,11 @@
       "nameAr": "النبيذ الأبيض",
       "nameEn": "النبيذ الأبيض",
       "sourceName": "النبيذ الأبيض",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alnbydh-alabyd.webp",
+      "filename": "alnbydh-alabyd.webp",
+      "hash": "2fdaf5347da719fc29dc9ae28d9c32e0c0dfc1522c3cd851307014070baba307",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "النبيذ الأبيض"
       ]
@@ -20449,11 +20449,11 @@
       "nameAr": "النبيذ الأحمر",
       "nameEn": "النبيذ الأحمر",
       "sourceName": "النبيذ الأحمر",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alnbydh-alahmr.webp",
+      "filename": "alnbydh-alahmr.webp",
+      "hash": "eeebcbf61d1b5f824923ae861d741442fd639306e9096ebd450d109c9e0bfeca",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "النبيذ الأحمر"
       ]
@@ -20463,11 +20463,11 @@
       "nameAr": "الويسكي",
       "nameEn": "الويسكي",
       "sourceName": "الويسكي",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alwysky.webp",
+      "filename": "alwysky.webp",
+      "hash": "7d3192696656ce0bd5f03119b4443b4252bd3906d2bf4dfd68a29278cdf62342",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الويسكي"
       ]
@@ -20477,11 +20477,11 @@
       "nameAr": "باتيدا",
       "nameEn": "باتيدا",
       "sourceName": "باتيدا",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/batyda.webp",
+      "filename": "batyda.webp",
+      "hash": "0c534ec8dde8a8072a8047593a299fbab3838cbeeb684bbf94d887659b4ccccc",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "باتيدا"
       ]
@@ -20491,11 +20491,11 @@
       "nameAr": "بايجيو برائحة الصلصة",
       "nameEn": "بايجيو برائحة الصلصة",
       "sourceName": "بايجيو برائحة الصلصة",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/bayjyw-brayhh-alslsh.webp",
+      "filename": "bayjyw-brayhh-alslsh.webp",
+      "hash": "ec577840af3d4ab16c098ac5922d7a39eeb7c0bc8302e1499e57d1d6ac466ed0",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "بايجيو برائحة الصلصة"
       ]
@@ -20505,11 +20505,11 @@
       "nameAr": "بروسيكو",
       "nameEn": "بروسيكو",
       "sourceName": "بروسيكو",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/brwsykw.webp",
+      "filename": "brwsykw.webp",
+      "hash": "8ecd2a62c4aef685db7c65be9acf88b310555bb308d1cee0216ebf1f060aa9b9",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "بروسيكو"
       ]
@@ -20519,11 +20519,11 @@
       "nameAr": "بيرة",
       "nameEn": "بيرة",
       "sourceName": "بيرة",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/byrh.webp",
+      "filename": "byrh.webp",
+      "hash": "75a7f04cd1d0ebceabdab7f396ccd82783fdd04f77fb06ff2385095ab134278d",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "بيرة"
       ]
@@ -20533,11 +20533,11 @@
       "nameAr": "بينا كولادا",
       "nameEn": "بينا كولادا",
       "sourceName": "بينا كولادا",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/byna-kwlada.webp",
+      "filename": "byna-kwlada.webp",
+      "hash": "80408b0e18cc39cb3f0f4ddfe830a8988e2208e9905fddc71a8059c4302d9bfa",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "بينا كولادا"
       ]
@@ -20547,11 +20547,11 @@
       "nameAr": "تريبل سيك",
       "nameEn": "تريبل سيك",
       "sourceName": "تريبل سيك",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/trybl-syk.webp",
+      "filename": "trybl-syk.webp",
+      "hash": "43af5e46e599d2f1511d3b1410bff389fb60b84ea949507a5a3ba0f854e66228",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "تريبل سيك"
       ]
