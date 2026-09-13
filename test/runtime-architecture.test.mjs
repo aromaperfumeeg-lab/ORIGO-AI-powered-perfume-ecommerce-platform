@@ -70,7 +70,7 @@ test("product studio click passes through both asynchronous loaders exactly once
 
 test("home loads production storefront core without admin editor or finder runtimes", async () => {
   const [html, loader, core] = await Promise.all([read("../index.html"), read("../runtime-loader.js"), read("../chunks/storefront-core.min.js")]);
-  assert.match(html, /chunks\/storefront-core\.min\.js\?v=55/);
+  assert.match(html, /chunks\/storefront-core\.min\.js\?v=58/);
   assert.match(html, /runtime-loader\.js\?v=19/);
   assert.doesNotMatch(html, /<script[^>]+(?:admin-runtime|product-editor-runtime|storefront-settings-runtime|fragrance-finder-(?:engine|i18n)|fragrance-finder\.js)/);
   assert.doesNotMatch(core, /function settingsMarkup\(|function renderImportReview\(|function overviewMarkup\(/);
@@ -131,6 +131,11 @@ test("notes library keeps search intentional and hides internal artwork diagnost
   assert.doesNotMatch(render, /notes-library-search"\)\?\.focus/);
   assert.doesNotMatch(render, /notes-image-filters|صور غير مضافة|مراجع تحتاج إعادة توليد/);
   assert.match(render, /نوتة عطرية/);
+  assert.match(render, /عدد النوتات العطرية/);
+  assert.match(render, /عدد العائلات العطرية/);
+  assert.doesNotMatch(render, /صور معتمدة|صور جاهزة|بدون صورة/);
+  assert.match(app, /productsFor\?\.\(note, state\.products\)\?\.length/);
+  assert.match(app, /note-card-product-count/);
   const hydration = app.slice(app.indexOf("async function hydrateServer("), app.indexOf("async function loadAdminCatalog("));
   assert.doesNotMatch(hydration, /handleNotesRoute\(\{ replace: true \}\)/);
 });

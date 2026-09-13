@@ -5406,23 +5406,20 @@ function fragranceNoteArtwork(note) {
 
 function noteCardMarkup(note, compact = false) {
   const family = window.ORIGOFragranceNotes?.familyById?.(note.familyId);
+  const perfumeCount = window.ORIGOFragranceNotes?.productsFor?.(note, state.products)?.length || 0;
   const secondaryName = state.lang === "ar" ? note.nameEn : note.nameAr;
   const secondaryLabel = note.nameAr === note.nameEn
     ? (state.lang === "ar" ? "اسم المصدر" : "SOURCE NAME")
     : secondaryName;
-  const imageStateLabel = note.imageStatus === "reference"
-    ? (state.lang === "ar" ? "مرجع يحتاج إعادة توليد" : "REFERENCE — REGENERATION NEEDED")
-    : note.imageStatus === "missing"
-      ? (state.lang === "ar" ? "الصورة غير مضافة" : "IMAGE MISSING")
-      : "";
   return `
-    <button class="library-note-card${compact ? " compact" : ""} image-${escapeHTML(note.imageStatus || "missing")}" data-action="open-note" data-slug="${escapeHTML(note.slug)}"
+    <button class="library-note-card${compact ? " compact" : ""}" data-action="open-note" data-slug="${escapeHTML(note.slug)}"
       style="--note-color:${escapeHTML(family?.color || "#77736e")}">
       <span class="library-note-image"><img src="${escapeHTML(fragranceNoteArtwork(note))}" alt="${escapeHTML(noteLabel(note))}" loading="lazy" data-note-artwork="true" data-note-slug="${escapeHTML(note.slug)}" /></span>
       <span class="library-note-copy">
-        <small>${escapeHTML(familyLabel(family) || "")}${imageStateLabel ? ` · ${escapeHTML(imageStateLabel)}` : ""}</small>
+        <small>${escapeHTML(familyLabel(family) || "")}</small>
         <b>${escapeHTML(noteLabel(note))}</b>
         <i dir="${note.nameAr === note.nameEn ? "auto" : (state.lang === "ar" ? "ltr" : "rtl")}">${escapeHTML(secondaryLabel)}</i>
+        <em class="note-card-product-count">${formatNumber(perfumeCount)} ${state.lang === "ar" ? "عطر" : (perfumeCount === 1 ? "perfume" : "perfumes")}</em>
       </span>
       <span class="note-card-arrow">↗</span>
     </button>`;
@@ -5528,9 +5525,21 @@ function renderNotesLibrary() {
     return readyNotes.find((note) => terms.some((term) => [note.nameAr, note.nameEn, ...(note.aliases || [])]
       .some((name) => String(name || "").toLocaleLowerCase().includes(term.toLocaleLowerCase())))) || readyNotes[0] || { ...notes[0], image:"" };
   };
+  const heroArtwork = ["citrus", "white-flowers", "sweets-gourmand"].map((familyId) => {
+    const entry = familyCards.find(({ family }) => family.id === familyId);
+    return entry ? library.artwork(familyArtworkNote(entry.family, entry.notes)) : "";
+  }).filter(Boolean);
   $("#notes-page-content").innerHTML = `
     <header class="notes-page-hero">
-      <h1 id="notes-page-title">${state.lang === "ar" ? "مكتبة المكونات العطرية" : "Fragrance Notes Library"}</h1>
+      <div class="notes-hero-art" aria-hidden="true">${heroArtwork.map((src) => `<img src="${escapeHTML(src)}" alt="" />`).join("")}</div>
+      <div class="notes-hero-copy">
+        <h1 id="notes-page-title">${state.lang === "ar" ? "مكتبة النوتات العطرية" : "Fragrance Notes Library"}</h1>
+        <p>${state.lang === "ar" ? "اكتشف النوتات والعائلات العطرية، واعرف العطور التي تحتوي عليها." : "Explore fragrance notes and families, and discover the perfumes that contain them."}</p>
+      </div>
+      <div class="notes-page-stats" aria-label="${state.lang === "ar" ? "إحصاءات المكتبة" : "Library statistics"}">
+        <div class="notes-page-stat"><i aria-hidden="true">◆</i><strong>${formatNumber(library.notes.length)}</strong><span>${state.lang === "ar" ? "عدد النوتات العطرية" : "Fragrance notes"}</span></div>
+        <div class="notes-page-stat"><i aria-hidden="true">▦</i><strong>${formatNumber(familyCards.length)}</strong><span>${state.lang === "ar" ? "عدد العائلات العطرية" : "Fragrance families"}</span></div>
+      </div>
     </header>
     <label class="notes-library-search notes-library-search-top"><span>⌕</span><input id="notes-library-search" type="search"
       value="${escapeHTML(state.notesSearchQuery)}" placeholder="${state.lang === "ar" ? "ابحث عن نوتة عطرية…" : "Search for a fragrance note…"}" /></label>
@@ -5539,6 +5548,7 @@ function renderNotesLibrary() {
       ${familyCards.map(({ family, notes }) => `<button data-action="filter-note-family" data-family="${escapeHTML(family.id)}" style="--family-color:${escapeHTML(family.color)};--family-accent:${escapeHTML(family.accent)}">
         <span><img src="${escapeHTML(library.artwork(familyArtworkNote(family, notes)))}" alt="" loading="lazy" /></span>
         <b>${escapeHTML(familyLabel(family))}</b><small>${formatNumber(notes.length)} ${state.lang === "ar" ? "نوتة عطرية" : "fragrance notes"}</small>
+        <em class="family-card-action">${state.lang === "ar" ? "استكشف العائلة" : "Explore family"}</em>
       </button>`).join("")}
     </section>
     <div class="notes-results-head">

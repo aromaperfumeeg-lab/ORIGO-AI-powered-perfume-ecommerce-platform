@@ -9737,10 +9737,16 @@ body:not(.dark) .advanced-admin-panel .admin-workflow-strip button.active{color:
 .brand-library .brand-logo{overflow:hidden}.brand-library .brand-logo img{width:100%;height:100%;display:block;object-fit:contain}.brand-library .brands-table-card{width:100%}.brand-library .brands-table-card td:last-child{white-space:nowrap}.brand-library .brands-table-card>header .burgundy-button{color:#fff;background:#75001d;border-color:#75001d}
 
 /* Compact notes-library title, aligned with the storefront typography. */
-.notes-page-hero{min-height:0;padding:8px 0 22px;display:block;color:var(--ink);background:transparent;box-shadow:none;overflow:visible}
+.notes-page-hero{min-height:230px;padding:28px clamp(22px,4vw,56px);display:grid;grid-template-columns:minmax(250px,.8fr) minmax(300px,1.2fr);grid-template-areas:"art copy" "art stats";align-items:center;gap:18px 38px;color:#35131c;background:linear-gradient(110deg,#fff8f5,#f8e8e9);border:1px solid #ecd8dc;border-radius:18px;box-shadow:none;overflow:hidden;position:relative}
 .notes-page-hero::before,.notes-page-hero::after{content:none}
-.notes-page-hero h1,[dir="rtl"] .notes-page-hero h1{margin:0;font-family:var(--font-ar);font-size:clamp(30px,3vw,44px);font-weight:700;line-height:1.25;letter-spacing:0}
-@media(max-width:580px){.notes-page-hero{padding:4px 0 16px}.notes-page-hero h1{font-size:30px}}
+.notes-hero-art{grid-area:art;align-self:stretch;min-height:180px;position:relative}
+.notes-hero-art img{width:46%;height:72%;object-fit:contain;filter:drop-shadow(0 10px 12px rgba(54,18,27,.12));position:absolute;bottom:-8px}
+.notes-hero-art img:nth-child(1){inset-inline-start:-3%;z-index:1}.notes-hero-art img:nth-child(2){inset-inline-start:26%;width:52%;height:92%;z-index:3}.notes-hero-art img:nth-child(3){inset-inline-end:-2%;z-index:2}
+.notes-hero-copy{grid-area:copy;align-self:end}.notes-page-hero h1,[dir="rtl"] .notes-page-hero h1{margin:0;font-family:var(--font-ar);font-size:clamp(30px,3.4vw,50px);font-weight:700;line-height:1.2;letter-spacing:0}.notes-page-hero p{max-width:none;margin:6px 0 0;color:#665057;font-size:13px;line-height:1.7}
+.notes-page-hero .notes-page-stats{grid-area:stats;display:grid;grid-template-columns:repeat(2,minmax(120px,180px));gap:10px;align-self:start}
+.notes-page-hero .notes-page-stat{min-width:0;padding:12px 14px;display:grid;grid-template-columns:auto 1fr;align-items:center;gap:0 9px;border:1px solid #ead7dc;border-radius:12px;background:rgba(255,255,255,.72);backdrop-filter:none}
+.notes-page-hero .notes-page-stat i{grid-row:1/3;color:var(--burgundy);font-size:20px;font-style:normal}.notes-page-hero .notes-page-stat strong{color:var(--burgundy);font-family:var(--font-ar);font-size:22px;line-height:1}.notes-page-hero .notes-page-stat span{margin:3px 0 0;color:#554047;font-size:10px}
+@media(max-width:760px){.notes-page-hero{min-height:250px;padding:20px 16px;grid-template-columns:1fr;grid-template-areas:"copy" "art" "stats";gap:8px;text-align:start}.notes-hero-art{min-height:105px}.notes-hero-art img{height:94%}.notes-hero-art img:nth-child(2){height:112%}.notes-page-hero .notes-page-stats{width:100%;grid-template-columns:repeat(2,minmax(0,1fr))}.notes-page-hero h1{font-size:30px}.notes-page-hero p{font-size:11px}}
 .notes-library-search-top{width:70%;max-width:760px;height:46px;border-radius:12px;background:var(--card)}
 .notes-library-search,.notes-admin-search{outline:none!important;box-shadow:none!important}
 .notes-library-search:focus-within,.notes-admin-search:focus-within{outline:none!important;box-shadow:none!important;border-color:var(--burgundy)}
@@ -9756,6 +9762,22 @@ body:not(.dark) .advanced-admin-panel .admin-workflow-strip button.active{color:
 .notes-family-showcase button>small{margin:0;padding:1px 9px 7px;color:var(--ink-soft);background:var(--card);position:relative;z-index:1}
 .notes-family-heading button{display:flex;align-items:center;gap:7px;font-family:var(--font-ar);font-size:12px}
 .notes-family-heading button span{width:26px;height:26px;display:grid;place-items:center;border:1px solid currentColor;border-radius:50%;font-family:Arial,sans-serif;font-size:18px;line-height:1}
+.library-note-copy .note-card-product-count{margin-top:3px;color:var(--ink);font-family:var(--font-ar);font-size:10px;font-style:normal;font-weight:700}
 .notes-staff-toolbar{margin:14px 0 0;padding:12px;border-radius:12px;box-shadow:none}
 .notes-staff-toolbar .notes-image-filters{margin-top:0}
 @media(max-width:580px){.notes-library-search-top{width:100%;max-width:none}.notes-family-heading{margin-top:18px}.notes-family-showcase button{flex-basis:112px;min-width:112px;grid-template-rows:64px auto auto}.notes-family-showcase button>span{height:64px}}
+
+/* Notes library visual system matching the approved reference. */
+.notes-page-hero{color:#fff;background:linear-gradient(110deg,#7d0b2a,#360611 72%);border:0;border-radius:0}
+.notes-page-hero h1,[dir="rtl"] .notes-page-hero h1{color:#fff}.notes-page-hero p{color:rgba(255,255,255,.86)}
+.notes-page-hero .notes-page-stat{border-color:rgba(255,255,255,.2);background:rgba(255,255,255,.09)}
+.notes-page-hero .notes-page-stat i,.notes-page-hero .notes-page-stat strong{color:#ffd26d}.notes-page-hero .notes-page-stat span{color:#fff}
+.notes-family-showcase button{grid-template-rows:72px auto auto auto}
+.notes-family-showcase .family-card-action{margin:5px 8px 8px;padding:5px 6px;border:1px solid var(--burgundy);border-radius:6px;color:var(--burgundy);background:#fff;font-family:var(--font-ar);font-size:9px;font-style:normal;font-weight:800;text-align:center}
+.library-notes-grid{grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.library-note-card{min-width:0;min-height:0;display:flex;flex-direction:column;align-items:stretch;gap:0;border-radius:12px;position:relative;text-align:center}
+.library-note-image{width:100%;height:112px}.library-note-copy{width:100%;padding:8px 9px 10px;display:grid;justify-items:center;align-content:start}
+.library-note-copy small{font-size:8px}.library-note-copy b{max-width:100%;font-size:13px}.library-note-copy i{max-width:100%;font-size:9px}.library-note-copy .note-card-product-count{font-size:10px}
+.note-card-arrow{padding:0;position:absolute;inset-block-start:8px;inset-inline-start:8px;z-index:2;font-size:14px}
+@media(max-width:900px){.library-notes-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:580px){.notes-page-hero{border-radius:0}.notes-family-showcase button{grid-template-rows:64px auto auto auto}.library-notes-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.library-note-image{height:110px}.library-note-copy{padding:7px 7px 9px}}
