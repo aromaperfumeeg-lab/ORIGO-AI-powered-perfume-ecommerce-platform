@@ -5407,10 +5407,6 @@ function fragranceNoteArtwork(note) {
 function noteCardMarkup(note, compact = false) {
   const family = window.ORIGOFragranceNotes?.familyById?.(note.familyId);
   const perfumeCount = window.ORIGOFragranceNotes?.productsFor?.(note, state.products)?.length || 0;
-  const secondaryName = state.lang === "ar" ? note.nameEn : note.nameAr;
-  const secondaryLabel = note.nameAr === note.nameEn
-    ? (state.lang === "ar" ? "اسم المصدر" : "SOURCE NAME")
-    : secondaryName;
   return `
     <button class="library-note-card${compact ? " compact" : ""}" data-action="open-note" data-slug="${escapeHTML(note.slug)}"
       style="--note-color:${escapeHTML(family?.color || "#77736e")}">
@@ -5418,7 +5414,6 @@ function noteCardMarkup(note, compact = false) {
       <span class="library-note-copy">
         <small>${escapeHTML(familyLabel(family) || "")}</small>
         <b>${escapeHTML(noteLabel(note))}</b>
-        <i dir="${note.nameAr === note.nameEn ? "auto" : (state.lang === "ar" ? "ltr" : "rtl")}">${escapeHTML(secondaryLabel)}</i>
         <em class="note-card-product-count">${formatNumber(perfumeCount)} ${state.lang === "ar" ? "عطر" : (perfumeCount === 1 ? "perfume" : "perfumes")}</em>
       </span>
       <span class="note-card-arrow">↗</span>
@@ -5525,7 +5520,7 @@ function renderNotesLibrary() {
     return readyNotes.find((note) => terms.some((term) => [note.nameAr, note.nameEn, ...(note.aliases || [])]
       .some((name) => String(name || "").toLocaleLowerCase().includes(term.toLocaleLowerCase())))) || readyNotes[0] || { ...notes[0], image:"" };
   };
-  const heroArtwork = ["citrus", "white-flowers", "sweets-gourmand"].map((familyId) => {
+  const heroArtwork = ["citrus", "white-flowers", "sweets-gourmand", "woods-mosses", "spices", "resins-balsams"].map((familyId) => {
     const entry = familyCards.find(({ family }) => family.id === familyId);
     return entry ? library.artwork(familyArtworkNote(entry.family, entry.notes)) : "";
   }).filter(Boolean);
@@ -5574,10 +5569,6 @@ function renderNoteDetail(note) {
   const similarProducts = library.productsFor(note, state.products, { excludeExact: true }).slice(0, 6);
   const related = library.related(note, 8);
   const description = state.lang === "ar" ? note.descriptionAr : note.descriptionEn;
-  const secondaryName = state.lang === "ar" ? note.nameEn : note.nameAr;
-  const secondaryLabel = note.nameAr === note.nameEn
-    ? (state.lang === "ar" ? "الاسم كما ورد في المصدر" : "Name as listed in the source")
-    : secondaryName;
   $("#notes-page-content").innerHTML = `
     <article class="note-detail" style="--note-color:${escapeHTML(family?.color || "#77736e")};--note-accent:${escapeHTML(family?.accent || "#eee")}">
       <button class="note-detail-back" data-action="open-notes">← ${state.lang === "ar" ? "كل المكونات" : "All notes"}</button>
@@ -5586,7 +5577,6 @@ function renderNoteDetail(note) {
         <div class="note-detail-copy">
           <span class="eyebrow">${escapeHTML(familyLabel(family) || "")}</span>
           <h1 id="notes-page-title">${escapeHTML(noteLabel(note))}</h1>
-          <p class="note-secondary-name" dir="${note.nameAr === note.nameEn ? "auto" : (state.lang === "ar" ? "ltr" : "rtl")}">${escapeHTML(secondaryLabel)}</p>
           <p>${escapeHTML(description)}</p>
           <div class="note-detail-facts">
             <span><small>${state.lang === "ar" ? "العائلة" : "FAMILY"}</small><b>${escapeHTML(familyLabel(family))}</b></span>
