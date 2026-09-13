@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-09-13T14:52:39.842Z",
+  "generatedAt": "2026-09-13T19:18:26.705Z",
   "scope": "Library plus persisted note overrides; SQLite opened read-only. Visual semantics are not certified by filenames or hashes.",
   "notes": 1883,
   "products": 5,
-  "valid": 1550,
-  "missing": 315,
+  "valid": 1566,
+  "missing": 299,
   "duplicateGroups": 9,
   "needsReview": 0,
   "duplicates": [
@@ -22463,13 +22463,13 @@
     {
       "canonicalKey": "aljrafyt",
       "nameAr": "الجرافيت",
-      "nameEn": "الجرافيت",
+      "nameEn": "graphite mineral dark metallic gray flaky specimen",
       "sourceName": "الجرافيت",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/aljrafyt.webp",
+      "filename": "aljrafyt.webp",
+      "hash": "bf8b1f4e21fcc8e1a338f6b5612e0b09f2690dbbf27a6b156d541710b26cdb8d",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الجرافيت"
       ]
@@ -22477,13 +22477,13 @@
     {
       "canonicalKey": "aljs-alrtb",
       "nameAr": "الجص الرطب",
-      "nameEn": "الجص الرطب",
+      "nameEn": "wet white plaster small mound with creamy trowelled texture",
       "sourceName": "الجص الرطب",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/aljs-alrtb.webp",
+      "filename": "aljs-alrtb.webp",
+      "hash": "7ebd70e48cbd5ba236cef94d23ea1d7398ca641f0235088d9644dc8e87d2c8fa",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الجص الرطب"
       ]
@@ -22491,13 +22491,13 @@
     {
       "canonicalKey": "aljmr",
       "nameAr": "الجمر",
-      "nameEn": "الجمر",
+      "nameEn": "glowing charcoal embers small cluster with orange cracks",
       "sourceName": "الجمر",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/aljmr.webp",
+      "filename": "aljmr.webp",
+      "hash": "54fc4b18cfed5eea199fb4a5b458f77bbba4f938a01a3b0900f02bd9510e379d",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الجمر"
       ]
@@ -22505,13 +22505,13 @@
     {
       "canonicalKey": "aljynz",
       "nameAr": "الجينز",
-      "nameEn": "الجينز",
+      "nameEn": "folded indigo denim fabric with visible twill",
       "sourceName": "الجينز",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/aljynz.webp",
+      "filename": "aljynz.webp",
+      "hash": "6e9375f15c18e70fcce35aa122c1cafc0dd5cfd0ad73d87363f018257c30cf19",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الجينز"
       ]
@@ -22533,13 +22533,13 @@
     {
       "canonicalKey": "alhryr",
       "nameAr": "الحرير",
-      "nameEn": "الحرير",
+      "nameEn": "ivory silk fabric flowing folded swatch",
       "sourceName": "الحرير",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alhryr.webp",
+      "filename": "alhryr.webp",
+      "hash": "6603feeecb89483dc56908f8fb9d6f38a5504d59dac6d651441b75f21174ea05",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الحرير"
       ]
@@ -22561,13 +22561,13 @@
     {
       "canonicalKey": "alhsy",
       "nameAr": "الحصي",
-      "nameEn": "الحصي",
+      "nameEn": "small cluster of smooth natural pebbles",
       "sourceName": "الحصي",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alhsy.webp",
+      "filename": "alhsy.webp",
+      "hash": "c58486e11ae27f13b8f6d7175e07c29c89888584fbf145e6c4d3d6a8a5d4f176",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الحصي"
       ]
@@ -22589,13 +22589,13 @@
     {
       "canonicalKey": "alkhth",
       "nameAr": "الخث",
-      "nameEn": "الخث",
+      "nameEn": "dark brown fibrous peat specimen",
       "sourceName": "الخث",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alkhth.webp",
+      "filename": "alkhth.webp",
+      "hash": "1214dbd25d29ca4f8211f8bb2ac2a518e73532d7a36e99f01ac90078e5cc2646",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الخث"
       ]
@@ -22603,13 +22603,13 @@
     {
       "canonicalKey": "alkhzf",
       "nameAr": "الخزف",
-      "nameEn": "الخزف",
+      "nameEn": "white glazed porcelain shards",
       "sourceName": "الخزف",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alkhzf.webp",
+      "filename": "alkhzf.webp",
+      "hash": "3c842a78d55e41f0eebffbfe9fb3fa62821d88f85d830caeafa9c08fc395e128",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الخزف"
       ]
@@ -22617,13 +22617,13 @@
     {
       "canonicalKey": "alkhmyrh",
       "nameAr": "الخميرة",
-      "nameEn": "الخميرة",
+      "nameEn": "beige fresh yeast crumbly cube",
       "sourceName": "الخميرة",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alkhmyrh.webp",
+      "filename": "alkhmyrh.webp",
+      "hash": "58379233fefede8d465bce04b9127c457d5ea62da35c46a6f3b83c588b1ed5f2",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الخميرة"
       ]
@@ -22687,13 +22687,13 @@
     {
       "canonicalKey": "alzjaj",
       "nameAr": "الزجاج",
-      "nameEn": "الزجاج",
+      "nameEn": "clear glass solid shards with reflective edges",
       "sourceName": "الزجاج",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alzjaj.webp",
+      "filename": "alzjaj.webp",
+      "hash": "103faaf3e3af4eeb0244b99d5a24e2feb3f461a8377d06d7c3a0f06d378c5968",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الزجاج"
       ]
@@ -22701,13 +22701,13 @@
     {
       "canonicalKey": "alsatan",
       "nameAr": "الساتان",
-      "nameEn": "الساتان",
+      "nameEn": "champagne satin fabric swatch glossy folds",
       "sourceName": "الساتان",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alsatan.webp",
+      "filename": "alsatan.webp",
+      "hash": "395d117ebd64cd883779f3dfde0d2fde333003a384f1f3b3991a33d24eabbaad",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الساتان"
       ]
@@ -22771,13 +22771,13 @@
     {
       "canonicalKey": "alsabwn",
       "nameAr": "الصابون",
-      "nameEn": "الصابون",
+      "nameEn": "plain ivory soap bar with no imprint",
       "sourceName": "الصابون",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alsabwn.webp",
+      "filename": "alsabwn.webp",
+      "hash": "c58ffb3816e85742b90837e0e46e625fa8056b31cdd19fc6e00c0d9834f95aec",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الصابون"
       ]
@@ -22785,13 +22785,13 @@
     {
       "canonicalKey": "alswf",
       "nameAr": "الصوف",
-      "nameEn": "الصوف",
+      "nameEn": "cream raw wool fibers small tuft",
       "sourceName": "الصوف",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alswf.webp",
+      "filename": "alswf.webp",
+      "hash": "99296f4e67de49ccca18d742f9f3a5d9a14d2b35b39bd5826bace050c60f73c1",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الصوف"
       ]
@@ -22799,13 +22799,13 @@
     {
       "canonicalKey": "altbashyr",
       "nameAr": "الطباشير",
-      "nameEn": "الطباشير",
+      "nameEn": "white chalk sticks and powder",
       "sourceName": "الطباشير",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/altbashyr.webp",
+      "filename": "altbashyr.webp",
+      "hash": "ccdcc01c9b40d65e17b39d0dac1760913cad54c7e50a8c387bbd6719c476698b",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الطباشير"
       ]
@@ -22897,13 +22897,13 @@
     {
       "canonicalKey": "alfhm",
       "nameAr": "الفحم",
-      "nameEn": "الفحم",
+      "nameEn": "matte black charcoal chunks",
       "sourceName": "الفحم",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alfhm.webp",
+      "filename": "alfhm.webp",
+      "hash": "abc4c1c401163976c4d57185e93493ee0c8da3b3c1cd238df47715c8ddaa122f",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الفحم"
       ]
@@ -22911,13 +22911,13 @@
     {
       "canonicalKey": "alqrmyd",
       "nameAr": "القرميد",
-      "nameEn": "القرميد",
+      "nameEn": "red terracotta roof tile fragment",
       "sourceName": "القرميد",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alqrmyd.webp",
+      "filename": "alqrmyd.webp",
+      "hash": "c8262af99cfcec95e53f98c1a85f2564cfab2f4133a479e60b1c5b7f7aa65487",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "القرميد"
       ]

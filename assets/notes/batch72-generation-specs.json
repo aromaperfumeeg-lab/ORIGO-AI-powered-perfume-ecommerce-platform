@@ -1,0 +1,450 @@
+[
+  {
+    "canonicalKey": "aljrafyt",
+    "canonicalNameEn": "graphite mineral dark metallic gray flaky specimen",
+    "positiveDescription": "graphite mineral dark metallic gray flaky specimen",
+    "entityType": "material",
+    "plantPart": "material",
+    "generationPrompt": "Photorealistic fragrance note catalog cutout of graphite mineral, dark metallic gray flaky specimen. Centered square, actual transparent alpha background. No text people containers floor or backdrop.",
+    "status": "VALID",
+    "validated": true,
+    "canonicalNameAr": "الجرافيت",
+    "sourceImageId": "exec-49a86e5e-8ace-42f3-a41a-d152920ed3f2.png",
+    "imageUrl": "assets/notes/generated/aljrafyt.webp",
+    "noteKey": "aljrafyt",
+    "noteAssetId": "origo-note-aljrafyt",
+    "sha256": "bf8b1f4e21fcc8e1a338f6b5612e0b09f2690dbbf27a6b156d541710b26cdb8d",
+    "contentHash": "37d92777e518dd85aa0a6ce842ea4c6287f3f09474d7dc59d8467a4697398735",
+    "perceptualHash": "030707155d1d0f07",
+    "visualReview": "Reviewed reports/batch72-review.jpg: distinct material representation with appropriate texture, no text or background.",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 28236,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "aljs-alrtb",
+    "canonicalNameEn": "wet white plaster small mound with creamy trowelled texture",
+    "positiveDescription": "wet white plaster small mound with creamy trowelled texture",
+    "entityType": "material",
+    "plantPart": "material",
+    "generationPrompt": "Photorealistic ORIGO fragrance note catalog cutout of wet white plaster small mound with creamy trowelled texture. Centered square isolated specimen, actual transparent alpha background. No text people bottles containers floor backdrop. High detail.",
+    "status": "VALID",
+    "validated": true,
+    "canonicalNameAr": "الجص الرطب",
+    "sourceImageId": "exec-8af33653-15c9-49b8-9a1f-b026486813f5.png",
+    "imageUrl": "assets/notes/generated/aljs-alrtb.webp",
+    "noteKey": "aljs-alrtb",
+    "noteAssetId": "origo-note-aljs-alrtb",
+    "sha256": "7ebd70e48cbd5ba236cef94d23ea1d7398ca641f0235088d9644dc8e87d2c8fa",
+    "contentHash": "59de619c96cbb8a36cf49266d82b6ffe5723f91f18bb945d9b969313f151fe5a",
+    "perceptualHash": "0303396416030307",
+    "visualReview": "Reviewed reports/batch72-review.jpg: distinct material representation with appropriate texture, no text or background.",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 19258,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "aljmr",
+    "canonicalNameEn": "glowing charcoal embers small cluster with orange cracks",
+    "positiveDescription": "glowing charcoal embers small cluster with orange cracks",
+    "entityType": "material",
+    "plantPart": "material",
+    "generationPrompt": "Photorealistic ORIGO fragrance note catalog cutout of glowing charcoal embers small cluster with orange cracks. Centered square isolated specimen, actual transparent alpha background. No text people bottles containers floor backdrop. High detail.",
+    "status": "VALID",
+    "validated": true,
+    "canonicalNameAr": "الجمر",
+    "sourceImageId": "exec-c6c6f961-3789-4b04-8139-eb1fbe9c0cac.png",
+    "imageUrl": "assets/notes/generated/aljmr.webp",
+    "noteKey": "aljmr",
+    "noteAssetId": "origo-note-aljmr",
+    "sha256": "54fc4b18cfed5eea199fb4a5b458f77bbba4f938a01a3b0900f02bd9510e379d",
+    "contentHash": "5948c9a1504fbe843e479e578c95f8bc9c2d76a2c63eb8b6f8425401c8468d6e",
+    "perceptualHash": "06071b1533693b33",
+    "visualReview": "Reviewed reports/batch72-review.jpg: distinct material representation with appropriate texture, no text or background.",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 24688,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "aljynz",
+    "canonicalNameEn": "folded indigo denim fabric with visible twill",
+    "positiveDescription": "folded indigo denim fabric with visible twill",
+    "entityType": "material",
+    "plantPart": "material",
+    "generationPrompt": "Photorealistic ORIGO fragrance note catalog cutout of folded indigo denim fabric with visible twill. Centered square isolated specimen, actual transparent alpha background. No text people bottles containers floor backdrop. High detail.",
+    "status": "VALID",
+    "validated": true,
+    "canonicalNameAr": "الجينز",
+    "sourceImageId": "exec-f445deae-afb3-4063-913e-bf204c3b58f2.png",
+    "imageUrl": "assets/notes/generated/aljynz.webp",
+    "noteKey": "aljynz",
+    "noteAssetId": "origo-note-aljynz",
+    "sha256": "6e9375f15c18e70fcce35aa122c1cafc0dd5cfd0ad73d87363f018257c30cf19",
+    "contentHash": "78a0690d065a1de42f0d4dbbe64f95aa156c6bad1f1d3df0c802ea26e26a3d8f",
+    "perceptualHash": "0141314d67134941",
+    "visualReview": "Reviewed reports/batch72-review.jpg: distinct material representation with appropriate texture, no text or background.",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 30122,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "alhryr",
+    "canonicalNameEn": "ivory silk fabric flowing folded swatch",
+    "positiveDescription": "ivory silk fabric flowing folded swatch",
+    "entityType": "material",
+    "plantPart": "material",
+    "generationPrompt": "Photorealistic ORIGO fragrance note catalog cutout of ivory silk fabric flowing folded swatch. Centered square isolated specimen, actual transparent alpha background. No text people bottles containers floor backdrop. High detail.",
+    "status": "VALID",
+    "validated": true,
+    "canonicalNameAr": "الحرير",
+    "sourceImageId": "exec-339ec759-5710-4297-9ddc-a505e7436341.png",
+    "imageUrl": "assets/notes/generated/alhryr.webp",
+    "noteKey": "alhryr",
+    "noteAssetId": "origo-note-alhryr",
+    "sha256": "6603feeecb89483dc56908f8fb9d6f38a5504d59dac6d651441b75f21174ea05",
+    "contentHash": "afa0cfc22caf81bd437808dbae5e25f6df0cf8174d3af3f4ca1e2cb728a2a40e",
+    "perceptualHash": "03c74e4f4f2b1b1b",
+    "visualReview": "Reviewed reports/batch72-review.jpg: distinct material representation with appropriate texture, no text or background.",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 17000,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "alhsy",
+    "canonicalNameEn": "small cluster of smooth natural pebbles",
+    "positiveDescription": "small cluster of smooth natural pebbles",
+    "entityType": "material",
+    "plantPart": "material",
+    "generationPrompt": "Photorealistic ORIGO fragrance note catalog cutout of small cluster of smooth natural pebbles. Centered square isolated specimen, actual transparent alpha background. No text people bottles containers floor backdrop. High detail.",
+    "status": "VALID",
+    "validated": true,
+    "canonicalNameAr": "الحصي",
+    "sourceImageId": "exec-5654c52e-ce0c-4d6a-9af4-fe6e266cb5f9.png",
+    "imageUrl": "assets/notes/generated/alhsy.webp",
+    "noteKey": "alhsy",
+    "noteAssetId": "origo-note-alhsy",
+    "sha256": "c58486e11ae27f13b8f6d7175e07c29c89888584fbf145e6c4d3d6a8a5d4f176",
+    "contentHash": "2c62b294e63101a08b1a83707f195072a2aaafdf78cdfb219fc1e67c3099830e",
+    "perceptualHash": "0607191819391910",
+    "visualReview": "Reviewed reports/batch72-review.jpg: distinct material representation with appropriate texture, no text or background.",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 24082,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "alkhth",
+    "canonicalNameEn": "dark brown fibrous peat specimen",
+    "positiveDescription": "dark brown fibrous peat specimen",
+    "entityType": "material",
+    "plantPart": "material",
+    "generationPrompt": "Photorealistic ORIGO fragrance note catalog cutout of dark brown fibrous peat specimen. Centered square isolated specimen, actual transparent alpha background. No text people bottles containers floor backdrop. High detail.",
+    "status": "VALID",
+    "validated": true,
+    "canonicalNameAr": "الخث",
+    "sourceImageId": "exec-c2cef320-4c75-43f2-b96a-1d1009541237.png",
+    "imageUrl": "assets/notes/generated/alkhth.webp",
+    "noteKey": "alkhth",
+    "noteAssetId": "origo-note-alkhth",
+    "sha256": "1214dbd25d29ca4f8211f8bb2ac2a518e73532d7a36e99f01ac90078e5cc2646",
+    "contentHash": "e2b2178bd390732226276380319b09690f8548f12ff7fd32a9decfdb3891c486",
+    "perceptualHash": "07274b4b57712b1b",
+    "visualReview": "Reviewed reports/batch72-review.jpg: distinct material representation with appropriate texture, no text or background.",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 37708,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "alkhzf",
+    "canonicalNameEn": "white glazed porcelain shards",
+    "positiveDescription": "white glazed porcelain shards",
+    "entityType": "material",
+    "plantPart": "material",
+    "generationPrompt": "Photorealistic ORIGO fragrance note catalog cutout of white glazed porcelain shards. Centered square isolated specimen, actual transparent alpha background. No text people bottles containers floor backdrop. High detail.",
+    "status": "VALID",
+    "validated": true,
+    "canonicalNameAr": "الخزف",
+    "sourceImageId": "exec-5d64161e-56a3-49ad-a60c-9024057d7d9b.png",
+    "imageUrl": "assets/notes/generated/alkhzf.webp",
+    "noteKey": "alkhzf",
+    "noteAssetId": "origo-note-alkhzf",
+    "sha256": "3c842a78d55e41f0eebffbfe9fb3fa62821d88f85d830caeafa9c08fc395e128",
+    "contentHash": "90d5c67071bd830edf872519502a3e87d5fa185ba882cea594d75fd455becb75",
+    "perceptualHash": "035f2f13494f5347",
+    "visualReview": "Reviewed reports/batch72-review.jpg: distinct material representation with appropriate texture, no text or background.",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 14220,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "alkhmyrh",
+    "canonicalNameEn": "beige fresh yeast crumbly cube",
+    "positiveDescription": "beige fresh yeast crumbly cube",
+    "entityType": "material",
+    "plantPart": "material",
+    "generationPrompt": "Photorealistic ORIGO fragrance note catalog cutout of beige fresh yeast crumbly cube. Centered square isolated specimen, actual transparent alpha background. No text people bottles containers floor backdrop. High detail.",
+    "status": "VALID",
+    "validated": true,
+    "canonicalNameAr": "الخميرة",
+    "sourceImageId": "exec-be8ed076-6fc7-4ddc-92a2-5a778e4366bb.png",
+    "imageUrl": "assets/notes/generated/alkhmyrh.webp",
+    "noteKey": "alkhmyrh",
+    "noteAssetId": "origo-note-alkhmyrh",
+    "sha256": "58379233fefede8d465bce04b9127c457d5ea62da35c46a6f3b83c588b1ed5f2",
+    "contentHash": "29b2fdae74ed2e660ab637436854b78de1bde222132225d6ed5256e08052482e",
+    "perceptualHash": "0e0761454551590f",
+    "visualReview": "Reviewed reports/batch72-review.jpg: distinct material representation with appropriate texture, no text or background.",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 22646,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "alzjaj",
+    "canonicalNameEn": "clear glass solid shards with reflective edges",
+    "positiveDescription": "clear glass solid shards with reflective edges",
+    "entityType": "material",
+    "plantPart": "material",
+    "generationPrompt": "Photorealistic ORIGO fragrance note catalog cutout of clear glass solid shards with reflective edges. Centered square isolated specimen, actual transparent alpha background. No text people bottles containers floor backdrop. High detail.",
+    "status": "VALID",
+    "validated": true,
+    "canonicalNameAr": "الزجاج",
+    "sourceImageId": "exec-c369546f-06b0-447e-a897-97b33344b264.png",
+    "imageUrl": "assets/notes/generated/alzjaj.webp",
+    "noteKey": "alzjaj",
+    "noteAssetId": "origo-note-alzjaj",
+    "sha256": "103faaf3e3af4eeb0244b99d5a24e2feb3f461a8377d06d7c3a0f06d378c5968",
+    "contentHash": "d05a2bbb57c71fbc2bfb1003d8ec04e2d7799bea953518423503675141311e22",
+    "perceptualHash": "0613337f1d391f18",
+    "visualReview": "Reviewed reports/batch72-review.jpg: distinct material representation with appropriate texture, no text or background.",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 28874,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "alsatan",
+    "canonicalNameEn": "champagne satin fabric swatch glossy folds",
+    "positiveDescription": "champagne satin fabric swatch glossy folds",
+    "entityType": "material",
+    "plantPart": "material",
+    "generationPrompt": "Photorealistic ORIGO fragrance note catalog cutout of champagne satin fabric swatch glossy folds. Centered square isolated specimen, actual transparent alpha background. No text people bottles containers floor backdrop. High detail.",
+    "status": "VALID",
+    "validated": true,
+    "canonicalNameAr": "الساتان",
+    "sourceImageId": "exec-814ff02d-e98e-40d7-8ca9-aa3d2d8b08cc.png",
+    "imageUrl": "assets/notes/generated/alsatan.webp",
+    "noteKey": "alsatan",
+    "noteAssetId": "origo-note-alsatan",
+    "sha256": "395d117ebd64cd883779f3dfde0d2fde333003a384f1f3b3991a33d24eabbaad",
+    "contentHash": "56ea15b042498bb229b8769ee634d66ad59fff90f4e6eceb1417d654b1f0c0f6",
+    "perceptualHash": "104d072655511513",
+    "visualReview": "Reviewed reports/batch72-review.jpg: distinct material representation with appropriate texture, no text or background.",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 18846,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "alsabwn",
+    "canonicalNameEn": "plain ivory soap bar with no imprint",
+    "positiveDescription": "plain ivory soap bar with no imprint",
+    "entityType": "material",
+    "plantPart": "material",
+    "generationPrompt": "Photorealistic ORIGO fragrance note catalog cutout of plain ivory soap bar with no imprint. Centered square isolated specimen, actual transparent alpha background. No text people bottles containers floor backdrop. High detail.",
+    "status": "VALID",
+    "validated": true,
+    "canonicalNameAr": "الصابون",
+    "sourceImageId": "exec-83c75a4c-0caa-4f5a-a6df-64715c11ef47.png",
+    "imageUrl": "assets/notes/generated/alsabwn.webp",
+    "noteKey": "alsabwn",
+    "noteAssetId": "origo-note-alsabwn",
+    "sha256": "c58ffb3816e85742b90837e0e46e625fa8056b31cdd19fc6e00c0d9834f95aec",
+    "contentHash": "cd7a1b2de42a94bdb2c3988d271655bd7849c5f6556937646253426588705d1c",
+    "perceptualHash": "0000000000010100",
+    "visualReview": "Reviewed reports/batch72-review.jpg: distinct material representation with appropriate texture, no text or background.",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 8396,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "alswf",
+    "canonicalNameEn": "cream raw wool fibers small tuft",
+    "positiveDescription": "cream raw wool fibers small tuft",
+    "entityType": "material",
+    "plantPart": "material",
+    "generationPrompt": "Single tuft of raw cream sheep wool fibers, photorealistic catalog cutout. PNG with real transparent alpha background, all surrounding pixels alpha zero. No white background, no gray background, no shadow, no text, no container. Square.",
+    "status": "VALID",
+    "validated": true,
+    "canonicalNameAr": "الصوف",
+    "sourceImageId": "exec-ca5e3988-7de7-4c98-a6f4-617ccd77f0bb.png",
+    "imageUrl": "assets/notes/generated/alswf.webp",
+    "noteKey": "alswf",
+    "noteAssetId": "origo-note-alswf",
+    "sha256": "99296f4e67de49ccca18d742f9f3a5d9a14d2b35b39bd5826bace050c60f73c1",
+    "contentHash": "7326c236f871fd60b0db706370c856cdeae7f2a61de986f0b3f98e93b83a37e6",
+    "perceptualHash": "03061f37170d0f06",
+    "visualReview": "Reviewed reports/batch72-review.jpg: distinct material representation with appropriate texture, no text or background.",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 23494,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "altbashyr",
+    "canonicalNameEn": "white chalk sticks and powder",
+    "positiveDescription": "white chalk sticks and powder",
+    "entityType": "material",
+    "plantPart": "material",
+    "generationPrompt": "Photorealistic ORIGO fragrance note catalog cutout of white chalk sticks and powder. Centered square isolated specimen, actual transparent alpha background. No text people bottles containers floor backdrop. High detail.",
+    "status": "VALID",
+    "validated": true,
+    "canonicalNameAr": "الطباشير",
+    "sourceImageId": "exec-42de066f-9445-487a-89a7-aa811437ad7e.png",
+    "imageUrl": "assets/notes/generated/altbashyr.webp",
+    "noteKey": "altbashyr",
+    "noteAssetId": "origo-note-altbashyr",
+    "sha256": "ccdcc01c9b40d65e17b39d0dac1760913cad54c7e50a8c387bbd6719c476698b",
+    "contentHash": "1522119f7214e742dfdd88a0fd8dd754278eb466ca830d1aa40eeb817f3f56d8",
+    "perceptualHash": "022327070e59230f",
+    "visualReview": "Reviewed reports/batch72-review.jpg: distinct material representation with appropriate texture, no text or background.",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 24814,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "alfhm",
+    "canonicalNameEn": "matte black charcoal chunks",
+    "positiveDescription": "matte black charcoal chunks",
+    "entityType": "material",
+    "plantPart": "material",
+    "generationPrompt": "Photorealistic ORIGO fragrance note catalog cutout of matte black charcoal chunks. Centered square isolated specimen, actual transparent alpha background. No text people bottles containers floor backdrop. High detail.",
+    "status": "VALID",
+    "validated": true,
+    "canonicalNameAr": "الفحم",
+    "sourceImageId": "exec-b29b5ce9-ab67-4837-a8fe-aa9c66e2c6ac.png",
+    "imageUrl": "assets/notes/generated/alfhm.webp",
+    "noteKey": "alfhm",
+    "noteAssetId": "origo-note-alfhm",
+    "sha256": "abc4c1c401163976c4d57185e93493ee0c8da3b3c1cd238df47715c8ddaa122f",
+    "contentHash": "d4cc9203a7f8812185009d0a51073c8930c3ecc331fdcb1dc313bcf89ab6f1e0",
+    "perceptualHash": "07033b4b4d1d0f0f",
+    "visualReview": "Reviewed reports/batch72-review.jpg: distinct material representation with appropriate texture, no text or background.",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 22278,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "alqrmyd",
+    "canonicalNameEn": "red terracotta roof tile fragment",
+    "positiveDescription": "red terracotta roof tile fragment",
+    "entityType": "material",
+    "plantPart": "material",
+    "generationPrompt": "Photorealistic ORIGO fragrance note catalog cutout of red terracotta roof tile fragment. Centered square isolated specimen, actual transparent alpha background. No text people bottles containers floor backdrop. High detail.",
+    "status": "VALID",
+    "validated": true,
+    "canonicalNameAr": "القرميد",
+    "sourceImageId": "exec-a958201d-8957-46aa-ba63-013d48eb1045.png",
+    "imageUrl": "assets/notes/generated/alqrmyd.webp",
+    "noteKey": "alqrmyd",
+    "noteAssetId": "origo-note-alqrmyd",
+    "sha256": "c8262af99cfcec95e53f98c1a85f2564cfab2f4133a479e60b1c5b7f7aa65487",
+    "contentHash": "c3fc64849df48cf2024bc9b4406aa64f6dbef4cd06574d503a00f93031d1b51b",
+    "perceptualHash": "012c2171416b3f03",
+    "visualReview": "Reviewed reports/batch72-review.jpg: distinct material representation with appropriate texture, no text or background.",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 27782,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  }
+]
