@@ -1,0 +1,466 @@
+[
+  {
+    "canonicalKey": "asyr-allymwnadh",
+    "canonicalNameEn": "Lemonade Juice",
+    "canonicalNameAr": "عصير الليمونادة",
+    "positiveDescription": "Pale yellow lemonade splash with lemon slices",
+    "scientificName": null,
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "Premium photorealistic ORIGO fragrance-note catalog cutout of pale yellow lemonade splash with lemon slices. Centered isolated square specimen. TRUE RGBA transparent alpha background, every corner alpha=0. No backdrop, shadow, text, people, animals, bottle, glass, cup, plate, utensil, jar, container, packaging or unrelated object.",
+    "sourceImageId": "exec-91cab335-3f49-425f-b191-c93a18158c71.png",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/asyr-allymwnadh.webp",
+    "noteKey": "asyr-allymwnadh",
+    "noteAssetId": "origo-note-asyr-allymwnadh",
+    "sha256": "46a255fc2975886929528693ad748e8ca4837e9ed5eec7365385441605437d99",
+    "visualReview": "Reviewed reports/batch69-review.jpg: exact beverage or ingredient identity; no text, vessel, background or unrelated object.",
+    "contentHash": "9e21d0f07d46c945d700cd27c303ae9283c415c889bac8e4b62b9705b72ca35c",
+    "perceptualHash": "13072f1f1f0f0f4a",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 31058,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "fwakh-alkwktyl",
+    "canonicalNameEn": "Cocktail Fruits",
+    "canonicalNameAr": "فواكه الكوكتيل",
+    "positiveDescription": "Mixed cocktail fruits with pineapple orange cherry berries and grapes",
+    "scientificName": null,
+    "entityType": "beverage accord",
+    "plantPart": "fruit",
+    "generationPrompt": "Premium photorealistic ORIGO fragrance-note catalog cutout of mixed cocktail fruits: pineapple orange cherry berries and grapes. Centered isolated square specimen. TRUE RGBA transparent alpha background, every corner alpha=0. No backdrop, shadow, text, people, animals, bottle, glass, cup, plate, utensil, jar, container, packaging or unrelated object.",
+    "sourceImageId": "exec-92ddc805-509d-4ee8-8792-eef301857d55.png",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/fwakh-alkwktyl.webp",
+    "noteKey": "fwakh-alkwktyl",
+    "noteAssetId": "origo-note-fwakh-alkwktyl",
+    "sha256": "774fa57a81b4a693be7dde4b53833bda761b067145ee7d144d6e61e6b3f871d0",
+    "visualReview": "Reviewed reports/batch69-review.jpg: exact beverage or ingredient identity; no text, vessel, background or unrelated object.",
+    "contentHash": "05b5af89d735a7e664a29132759ae5a2450a1f3d1e3515e0c2974d13cb45ad9c",
+    "perceptualHash": "010341393d490903",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 36172,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "qhwh-alasbrsw",
+    "canonicalNameEn": "Espresso Coffee",
+    "canonicalNameAr": "قهوة الإسبرسو",
+    "positiveDescription": "Dark espresso crema splash with roasted coffee beans",
+    "scientificName": null,
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "Premium photorealistic ORIGO fragrance-note catalog cutout of espresso coffee dark crema splash with roasted beans. Centered isolated square specimen. TRUE RGBA transparent alpha background, every corner alpha=0. No backdrop, shadow, text, people, animals, bottle, glass, cup, plate, utensil, jar, container, packaging or unrelated object.",
+    "sourceImageId": "exec-3a616124-82b6-4a32-9d60-de3d137e2f22.png",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/qhwh-alasbrsw.webp",
+    "noteKey": "qhwh-alasbrsw",
+    "noteAssetId": "origo-note-qhwh-alasbrsw",
+    "sha256": "f58ba6df028fb4b9a5ebd41277ff368626b247fdde94981f940935a0808b41d9",
+    "visualReview": "Reviewed reports/batch69-review.jpg: exact beverage or ingredient identity; no text, vessel, background or unrelated object.",
+    "contentHash": "a2fb419e0ed1e6dc63917deaa6e338ca36e57b0924f87f8ad7a266179f8efefc",
+    "perceptualHash": "06071d3f2b3b33b1",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 38572,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "kashaza",
+    "canonicalNameEn": "Cachaca",
+    "canonicalNameAr": "كاشازا",
+    "positiveDescription": "Clear sugarcane spirit splash with fresh sugarcane and lime",
+    "scientificName": null,
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "Premium photorealistic ORIGO fragrance-note catalog cutout of cachaca clear cane-spirit splash with fresh sugarcane and lime. Centered isolated square specimen. TRUE RGBA transparent alpha background, every corner alpha=0. No backdrop, shadow, text, people, animals, bottle, glass, cup, plate, utensil, jar, container, packaging or unrelated object.",
+    "sourceImageId": "exec-2e77193a-55a4-49d9-a607-b254bdb84df0.png",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/kashaza.webp",
+    "noteKey": "kashaza",
+    "noteAssetId": "origo-note-kashaza",
+    "sha256": "7ccdea83eaf7be86d03f39fd6732e94d80ee92827a9bf4950bffbe3dc5545a5c",
+    "visualReview": "Reviewed reports/batch69-review.jpg: exact beverage or ingredient identity; no text, vessel, background or unrelated object.",
+    "contentHash": "59c56f04342bb8e477758c3f40f3f3b2959fc6730f104ddedbbc45147c9e1123",
+    "perceptualHash": "0703131d0f0f5316",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 39182,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "kafyh-latyh",
+    "canonicalNameEn": "Cafe Latte",
+    "canonicalNameAr": "كافيه لاتيه",
+    "positiveDescription": "Creamy coffee and milk swirl with roasted beans",
+    "scientificName": null,
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "Premium photorealistic ORIGO fragrance-note catalog cutout of cafe latte creamy coffee and milk swirl with beans. Centered isolated square specimen. TRUE RGBA transparent alpha background, every corner alpha=0. No backdrop, shadow, text, people, animals, bottle, glass, cup, plate, utensil, jar, container, packaging or unrelated object.",
+    "sourceImageId": "exec-459e1500-38ca-466c-87db-881a612641f3.png",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/kafyh-latyh.webp",
+    "noteKey": "kafyh-latyh",
+    "noteAssetId": "origo-note-kafyh-latyh",
+    "sha256": "d8e4a4113611dd6ca39b7edcf5fdaaed1c1a24e13435383e6905fabefb2d2045",
+    "visualReview": "Reviewed reports/batch69-review.jpg: exact beverage or ingredient identity; no text, vessel, background or unrelated object.",
+    "contentHash": "fc884bd6b58a8ff76c9094652d16fbdc6aa14b5abc4a320f2aff762b2a042073",
+    "perceptualHash": "0b0e0d2ba32f1e1b",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 35360,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "kambary",
+    "canonicalNameEn": "Campari",
+    "canonicalNameAr": "كامباري",
+    "positiveDescription": "Vivid crimson bitter aperitif splash with orange peel and herbs",
+    "scientificName": null,
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "Premium photorealistic ORIGO fragrance-note catalog cutout of Campari vivid crimson bitter splash with orange peel and herbs. Centered isolated square specimen. TRUE RGBA transparent alpha background, every corner alpha=0. No backdrop, shadow, text, people, animals, bottle, glass, cup, plate, utensil, jar, container, packaging or unrelated object.",
+    "sourceImageId": "exec-9b03b54c-5e66-4e47-ac6b-4323fd798fba.png",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/kambary.webp",
+    "noteKey": "kambary",
+    "noteAssetId": "origo-note-kambary",
+    "sha256": "e139f6389f2fbc2fa46c8130df73adac38bfd59d77b30a50491cdcd78999c06c",
+    "visualReview": "Reviewed reports/batch69-review.jpg: exact beverage or ingredient identity; no text, vessel, background or unrelated object.",
+    "contentHash": "6194367fe573ebd085b767240eef1f4ea8a2b6a2635487a306cd797b811c1cdd",
+    "perceptualHash": "00b34347170f0f15",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 39324,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "kaybyrynya",
+    "canonicalNameEn": "Caipirinha",
+    "canonicalNameAr": "كايبيرينيا",
+    "positiveDescription": "Clear lime-gold cocktail splash with lime pieces and cane sugar",
+    "scientificName": null,
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "Premium photorealistic ORIGO fragrance-note catalog cutout of caipirinha clear lime-gold splash with lime pieces and cane sugar. Centered isolated square specimen. TRUE RGBA transparent alpha background, every corner alpha=0. No backdrop, shadow, text, people, animals, bottle, glass, cup, plate, utensil, jar, container, packaging or unrelated object.",
+    "sourceImageId": "exec-d4338fa9-2b64-4d91-9eb3-3b8c5ed72c14.png",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/kaybyrynya.webp",
+    "noteKey": "kaybyrynya",
+    "noteAssetId": "origo-note-kaybyrynya",
+    "sha256": "ea3106c6cd8b301dd27176f4e9ad41a815cca373839b55fd9b02a79ea3101b9a",
+    "visualReview": "Reviewed reports/batch69-review.jpg: exact beverage or ingredient identity; no text, vessel, background or unrelated object.",
+    "contentHash": "6b0e8b2577a8971893ab65580dfde2bcc00f5bdc210dd4b31772e080daa412ed",
+    "perceptualHash": "121307151f0f2d2d",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 43076,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "krym-swda",
+    "canonicalNameEn": "Cream Soda",
+    "canonicalNameAr": "كريم صودا",
+    "positiveDescription": "Pale vanilla-gold fizzy soda splash with vanilla pod",
+    "scientificName": null,
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "Premium photorealistic ORIGO fragrance-note catalog cutout of cream soda pale vanilla-gold fizzy splash with vanilla pod. Centered isolated square specimen. TRUE RGBA transparent alpha background, every corner alpha=0. No backdrop, shadow, text, people, animals, bottle, glass, cup, plate, utensil, jar, container, packaging or unrelated object.",
+    "sourceImageId": "exec-b886d418-93c6-4390-b891-6d0b5e39fd64.png",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/krym-swda.webp",
+    "noteKey": "krym-swda",
+    "noteAssetId": "origo-note-krym-swda",
+    "sha256": "0e63dce1958dda4fc894cfa763117d6afbdd38637d1d5697477debec562f6f26",
+    "visualReview": "Reviewed reports/batch69-review.jpg: exact beverage or ingredient identity; no text, vessel, background or unrelated object.",
+    "contentHash": "cb9c9e31b776d9f26a6285bc9df9c87f442023b9e70a80c3fb5a3d8ae38d5898",
+    "perceptualHash": "1a0b073be3a3e343",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 39546,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "kwktyl-byskw-alhamd",
+    "canonicalNameEn": "Pisco Sour Cocktail",
+    "canonicalNameAr": "كوكتيل بيسكو الحامض",
+    "positiveDescription": "Pale creamy citrus cocktail splash with lime and grape",
+    "scientificName": null,
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "Premium photorealistic ORIGO fragrance-note catalog cutout of pisco sour pale creamy citrus splash with lime and grape. Centered isolated square specimen. TRUE RGBA transparent alpha background, every corner alpha=0. No backdrop, shadow, text, people, animals, bottle, glass, cup, plate, utensil, jar, container, packaging or unrelated object.",
+    "sourceImageId": "exec-dac761e7-30d7-4cb0-8677-d020d1139e62.png",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/kwktyl-byskw-alhamd.webp",
+    "noteKey": "kwktyl-byskw-alhamd",
+    "noteAssetId": "origo-note-kwktyl-byskw-alhamd",
+    "sha256": "8c2cd5c20c25d85f4dc497a09ec515e2e6685c58f7f700d405398cf93872278d",
+    "visualReview": "Reviewed reports/batch69-review.jpg: exact beverage or ingredient identity; no text, vessel, background or unrelated object.",
+    "contentHash": "59feaa2c0926dcbe3fe07c001bdbb45237c91057acdc7d21b70074aa810fa28b",
+    "perceptualHash": "0766362533331f0e",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 27816,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "kwktyl-sks-awn-dha-bytsh",
+    "canonicalNameEn": "Sex on the Beach Cocktail",
+    "canonicalNameAr": "كوكتيل سكس أون ذا بيتش",
+    "positiveDescription": "Peach cranberry orange gradient cocktail splash with peach slice",
+    "scientificName": null,
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "Premium photorealistic ORIGO fragrance-note catalog cutout of peach cranberry orange cocktail gradient splash with peach slice. Centered isolated square specimen. TRUE RGBA transparent alpha background, every corner alpha=0. No backdrop, shadow, text, people, animals, bottle, glass, cup, plate, utensil, jar, container, packaging or unrelated object.",
+    "sourceImageId": "exec-db2d844a-30af-4bfa-8cce-32c524cded75.png",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/kwktyl-sks-awn-dha-bytsh.webp",
+    "noteKey": "kwktyl-sks-awn-dha-bytsh",
+    "noteAssetId": "origo-note-kwktyl-sks-awn-dha-bytsh",
+    "sha256": "70a4671bfbbf52e7440fb66dd29d71f06a0101ab71399ae858cb1e2b06ee4f69",
+    "visualReview": "Reviewed reports/batch69-review.jpg: exact beverage or ingredient identity; no text, vessel, background or unrelated object.",
+    "contentHash": "9e132020f449d0c574a6619f10e0c4b546831862c44d0de62e065f7772507e2b",
+    "perceptualHash": "071f1f2f733b0f09",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 37438,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "kwktyl-may-tay",
+    "canonicalNameEn": "Mai Tai Cocktail",
+    "canonicalNameAr": "كوكتيل ماى تاى",
+    "positiveDescription": "Amber tropical cocktail splash with lime pineapple and almond",
+    "scientificName": null,
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "Premium photorealistic ORIGO fragrance-note catalog cutout of Mai Tai amber tropical splash with lime pineapple and almond. Centered isolated square specimen. TRUE RGBA transparent alpha background, every corner alpha=0. No backdrop, shadow, text, people, animals, bottle, glass, cup, plate, utensil, jar, container, packaging or unrelated object.",
+    "sourceImageId": "exec-8f535724-4a84-4f65-8615-31495f1bbe22.png",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/kwktyl-may-tay.webp",
+    "noteKey": "kwktyl-may-tay",
+    "noteAssetId": "origo-note-kwktyl-may-tay",
+    "sha256": "160d60c08644dc54f5516940b2779069cdb189dec7e9ed06853fbccdca8b3e45",
+    "visualReview": "Reviewed reports/batch69-review.jpg: exact beverage or ingredient identity; no text, vessel, background or unrelated object.",
+    "contentHash": "490716943f6c7b30f154c6aba098e66918cbeef441fd915f71d86bfc8e2f5cdf",
+    "perceptualHash": "070d154147230d0f",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 35162,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "kwktyl-hay-fay",
+    "canonicalNameEn": "Hi-Fi Cocktail",
+    "canonicalNameAr": "كوكتيل هاي فاي",
+    "positiveDescription": "Bright orange sparkling cocktail splash with citrus peel",
+    "scientificName": null,
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "Premium photorealistic ORIGO fragrance-note catalog cutout of Hi-Fi cocktail bright orange sparkling splash with citrus peel. Centered isolated square specimen. TRUE RGBA transparent alpha background, every corner alpha=0. No backdrop, shadow, text, people, animals, bottle, glass, cup, plate, utensil, jar, container, packaging or unrelated object.",
+    "sourceImageId": "exec-df9b7df2-02d0-480b-88d7-1c176f8b3728.png",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/kwktyl-hay-fay.webp",
+    "noteKey": "kwktyl-hay-fay",
+    "noteAssetId": "origo-note-kwktyl-hay-fay",
+    "sha256": "f15979c7d5dd2c742aec726ff9bb3a431641f180353dbae760a0b2cf547c4f63",
+    "visualReview": "Reviewed reports/batch69-review.jpg: exact beverage or ingredient identity; no text, vessel, background or unrelated object.",
+    "contentHash": "41689270b2999871f380583cad9cc9bca10e071f5f54405ad4b35e0399dfc13b",
+    "perceptualHash": "073f575e2f271b0e",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 38656,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "kwmbwtsha",
+    "canonicalNameEn": "Kombucha",
+    "canonicalNameAr": "كومبوتشا",
+    "positiveDescription": "Amber fermented tea splash with tea leaves and SCOBY fragment",
+    "scientificName": null,
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "Premium photorealistic ORIGO fragrance-note catalog cutout of kombucha amber fermented tea splash with tea leaves and SCOBY fragment. Centered isolated square specimen. TRUE RGBA transparent alpha background, every corner alpha=0. No backdrop, shadow, text, people, animals, bottle, glass, cup, plate, utensil, jar, container, packaging or unrelated object.",
+    "sourceImageId": "exec-f5929708-6a7b-4f4f-a3d6-60db3ba2b13c.png",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/kwmbwtsha.webp",
+    "noteKey": "kwmbwtsha",
+    "noteAssetId": "origo-note-kwmbwtsha",
+    "sha256": "8c106c268ab7840399b37c4de5073bca4adba754ffc255341266108872d1a5fb",
+    "visualReview": "Reviewed reports/batch69-review.jpg: exact beverage or ingredient identity; no text, vessel, background or unrelated object.",
+    "contentHash": "9c60b63e39f95805a170721c4eaf36af4c5aadde49047dd0b867d4770aceddcc",
+    "perceptualHash": "0307372f2753a3c0",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 37434,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "lykwr-alfstq",
+    "canonicalNameEn": "Pistachio Liqueur",
+    "canonicalNameAr": "ليكور الفستق",
+    "positiveDescription": "Pale green creamy liqueur splash with pistachio kernels",
+    "scientificName": null,
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "Premium photorealistic ORIGO fragrance-note catalog cutout of pistachio liqueur pale green creamy splash with pistachio kernels. Centered isolated square specimen. TRUE RGBA transparent alpha background, every corner alpha=0. No backdrop, shadow, text, people, animals, bottle, glass, cup, plate, utensil, jar, container, packaging or unrelated object.",
+    "sourceImageId": "exec-c4b020b6-8a5b-42a9-9cd4-1c30e0378c1f.png",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/lykwr-alfstq.webp",
+    "noteKey": "lykwr-alfstq",
+    "noteAssetId": "origo-note-lykwr-alfstq",
+    "sha256": "5e427c3fd69f859ffe92276c346bc477b30a7aa50c9753668f173b5a9847b66f",
+    "visualReview": "Reviewed reports/batch69-review.jpg: exact beverage or ingredient identity; no text, vessel, background or unrelated object.",
+    "contentHash": "0bab9729a91d275484d912965a41e72be862d2e0728a26c976c2e6beced826dc",
+    "perceptualHash": "01460b8b1b1f272a",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 29814,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "lykywr-albrqwq",
+    "canonicalNameEn": "Plum Liqueur",
+    "canonicalNameAr": "ليكيور البرقوق",
+    "positiveDescription": "Ruby-purple liqueur splash with ripe plum",
+    "scientificName": null,
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "Premium photorealistic ORIGO fragrance-note catalog cutout of plum liqueur ruby-purple splash with ripe plum. Centered isolated square specimen. TRUE RGBA transparent alpha background, every corner alpha=0. No backdrop, shadow, text, people, animals, bottle, glass, cup, plate, utensil, jar, container, packaging or unrelated object.",
+    "sourceImageId": "exec-42f253b8-5fcc-42b4-894d-af1e18570671.png",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/lykywr-albrqwq.webp",
+    "noteKey": "lykywr-albrqwq",
+    "noteAssetId": "origo-note-lykywr-albrqwq",
+    "sha256": "d0283a58933870aee02c5dddecaef791c4609b8e43b542e1801f86abfe31607d",
+    "visualReview": "Reviewed reports/batch69-review.jpg: exact beverage or ingredient identity; no text, vessel, background or unrelated object.",
+    "contentHash": "574563808f6500b7215405ea2af212e7226944d2e468ae27e441ed9dbc4ede70",
+    "perceptualHash": "070f191f0f3f39c1",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 32916,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  {
+    "canonicalKey": "lykywr-alkrymh",
+    "canonicalNameEn": "Cream Liqueur",
+    "canonicalNameAr": "ليكيور الكريمة",
+    "positiveDescription": "Silky ivory-caramel cream liqueur splash with vanilla and cocoa",
+    "scientificName": null,
+    "entityType": "beverage accord",
+    "plantPart": "liquid",
+    "generationPrompt": "Premium photorealistic ORIGO fragrance-note catalog cutout of cream liqueur silky ivory-caramel splash with vanilla and cocoa. Centered isolated square specimen. TRUE RGBA transparent alpha background, every corner alpha=0. No backdrop, shadow, text, people, animals, bottle, glass, cup, plate, utensil, jar, container, packaging or unrelated object.",
+    "sourceImageId": "exec-995dae09-5d43-4c17-b48c-ce4cbb7fff6f.png",
+    "validated": true,
+    "status": "VALID",
+    "imageUrl": "assets/notes/generated/lykywr-alkrymh.webp",
+    "noteKey": "lykywr-alkrymh",
+    "noteAssetId": "origo-note-lykywr-alkrymh",
+    "sha256": "5cce2a6d51602f779859e0cffb516e638f0c6ee83a3edd90c06d1ae7f32e50b8",
+    "visualReview": "Reviewed reports/batch69-review.jpg: exact beverage or ingredient identity; no text, vessel, background or unrelated object.",
+    "contentHash": "0f779f5f39b84ebe7d6b2caaae9643610238e464463682dfa998e4d04af61c24",
+    "perceptualHash": "07011f0723173624",
+    "technicalReview": {
+      "width": 320,
+      "height": 320,
+      "bytes": 34566,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  }
+]

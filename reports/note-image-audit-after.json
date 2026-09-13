@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-09-13T11:05:49.644Z",
+  "generatedAt": "2026-09-13T11:56:07.784Z",
   "scope": "Library plus persisted note overrides; SQLite opened read-only. Visual semantics are not certified by filenames or hashes.",
   "notes": 1883,
   "products": 5,
-  "valid": 1502,
-  "missing": 363,
+  "valid": 1518,
+  "missing": 347,
   "duplicateGroups": 9,
   "needsReview": 0,
   "duplicates": [
@@ -21007,13 +21007,13 @@
     {
       "canonicalKey": "asyr-allymwnadh",
       "nameAr": "عصير الليمونادة",
-      "nameEn": "عصير الليمونادة",
+      "nameEn": "Lemonade Juice",
       "sourceName": "عصير الليمونادة",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/asyr-allymwnadh.webp",
+      "filename": "asyr-allymwnadh.webp",
+      "hash": "46a255fc2975886929528693ad748e8ca4837e9ed5eec7365385441605437d99",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "عصير الليمونادة"
       ]
@@ -21021,13 +21021,13 @@
     {
       "canonicalKey": "fwakh-alkwktyl",
       "nameAr": "فواكه الكوكتيل",
-      "nameEn": "فواكه الكوكتيل",
+      "nameEn": "Cocktail Fruits",
       "sourceName": "فواكه الكوكتيل",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/fwakh-alkwktyl.webp",
+      "filename": "fwakh-alkwktyl.webp",
+      "hash": "774fa57a81b4a693be7dde4b53833bda761b067145ee7d144d6e61e6b3f871d0",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "فواكه الكوكتيل"
       ]
@@ -21035,13 +21035,13 @@
     {
       "canonicalKey": "qhwh-alasbrsw",
       "nameAr": "قهوة الإسبرسو",
-      "nameEn": "قهوة الإسبرسو",
+      "nameEn": "Espresso Coffee",
       "sourceName": "قهوة الإسبرسو",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/qhwh-alasbrsw.webp",
+      "filename": "qhwh-alasbrsw.webp",
+      "hash": "f58ba6df028fb4b9a5ebd41277ff368626b247fdde94981f940935a0808b41d9",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "قهوة الإسبرسو"
       ]
@@ -21049,13 +21049,13 @@
     {
       "canonicalKey": "kashaza",
       "nameAr": "كاشازا",
-      "nameEn": "كاشازا",
+      "nameEn": "Cachaca",
       "sourceName": "كاشازا",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/kashaza.webp",
+      "filename": "kashaza.webp",
+      "hash": "7ccdea83eaf7be86d03f39fd6732e94d80ee92827a9bf4950bffbe3dc5545a5c",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "كاشازا"
       ]
@@ -21063,13 +21063,13 @@
     {
       "canonicalKey": "kafyh-latyh",
       "nameAr": "كافيه لاتيه",
-      "nameEn": "كافيه لاتيه",
+      "nameEn": "Cafe Latte",
       "sourceName": "كافيه لاتيه",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/kafyh-latyh.webp",
+      "filename": "kafyh-latyh.webp",
+      "hash": "d8e4a4113611dd6ca39b7edcf5fdaaed1c1a24e13435383e6905fabefb2d2045",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "كافيه لاتيه"
       ]
@@ -21077,13 +21077,13 @@
     {
       "canonicalKey": "kambary",
       "nameAr": "كامباري",
-      "nameEn": "كامباري",
+      "nameEn": "Campari",
       "sourceName": "كامباري",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/kambary.webp",
+      "filename": "kambary.webp",
+      "hash": "e139f6389f2fbc2fa46c8130df73adac38bfd59d77b30a50491cdcd78999c06c",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "كامباري"
       ]
@@ -21091,13 +21091,13 @@
     {
       "canonicalKey": "kaybyrynya",
       "nameAr": "كايبيرينيا",
-      "nameEn": "كايبيرينيا",
+      "nameEn": "Caipirinha",
       "sourceName": "كايبيرينيا",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/kaybyrynya.webp",
+      "filename": "kaybyrynya.webp",
+      "hash": "ea3106c6cd8b301dd27176f4e9ad41a815cca373839b55fd9b02a79ea3101b9a",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "كايبيرينيا"
       ]
@@ -21105,13 +21105,13 @@
     {
       "canonicalKey": "krym-swda",
       "nameAr": "كريم صودا",
-      "nameEn": "كريم صودا",
+      "nameEn": "Cream Soda",
       "sourceName": "كريم صودا",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/krym-swda.webp",
+      "filename": "krym-swda.webp",
+      "hash": "0e63dce1958dda4fc894cfa763117d6afbdd38637d1d5697477debec562f6f26",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "كريم صودا"
       ]
@@ -21119,13 +21119,13 @@
     {
       "canonicalKey": "kwktyl-byskw-alhamd",
       "nameAr": "كوكتيل بيسكو الحامض",
-      "nameEn": "كوكتيل بيسكو الحامض",
+      "nameEn": "Pisco Sour Cocktail",
       "sourceName": "كوكتيل بيسكو الحامض",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/kwktyl-byskw-alhamd.webp",
+      "filename": "kwktyl-byskw-alhamd.webp",
+      "hash": "8c2cd5c20c25d85f4dc497a09ec515e2e6685c58f7f700d405398cf93872278d",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "كوكتيل بيسكو الحامض"
       ]
@@ -21133,13 +21133,13 @@
     {
       "canonicalKey": "kwktyl-sks-awn-dha-bytsh",
       "nameAr": "كوكتيل سكس أون ذا بيتش",
-      "nameEn": "كوكتيل سكس أون ذا بيتش",
+      "nameEn": "Sex on the Beach Cocktail",
       "sourceName": "كوكتيل سكس أون ذا بيتش",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/kwktyl-sks-awn-dha-bytsh.webp",
+      "filename": "kwktyl-sks-awn-dha-bytsh.webp",
+      "hash": "70a4671bfbbf52e7440fb66dd29d71f06a0101ab71399ae858cb1e2b06ee4f69",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "كوكتيل سكس أون ذا بيتش"
       ]
@@ -21147,13 +21147,13 @@
     {
       "canonicalKey": "kwktyl-may-tay",
       "nameAr": "كوكتيل ماى تاى",
-      "nameEn": "كوكتيل ماى تاى",
+      "nameEn": "Mai Tai Cocktail",
       "sourceName": "كوكتيل ماى تاى",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/kwktyl-may-tay.webp",
+      "filename": "kwktyl-may-tay.webp",
+      "hash": "160d60c08644dc54f5516940b2779069cdb189dec7e9ed06853fbccdca8b3e45",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "كوكتيل ماى تاى"
       ]
@@ -21161,13 +21161,13 @@
     {
       "canonicalKey": "kwktyl-hay-fay",
       "nameAr": "كوكتيل هاي فاي",
-      "nameEn": "كوكتيل هاي فاي",
+      "nameEn": "Hi-Fi Cocktail",
       "sourceName": "كوكتيل هاي فاي",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/kwktyl-hay-fay.webp",
+      "filename": "kwktyl-hay-fay.webp",
+      "hash": "f15979c7d5dd2c742aec726ff9bb3a431641f180353dbae760a0b2cf547c4f63",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "كوكتيل هاي فاي"
       ]
@@ -21175,13 +21175,13 @@
     {
       "canonicalKey": "kwmbwtsha",
       "nameAr": "كومبوتشا",
-      "nameEn": "كومبوتشا",
+      "nameEn": "Kombucha",
       "sourceName": "كومبوتشا",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/kwmbwtsha.webp",
+      "filename": "kwmbwtsha.webp",
+      "hash": "8c106c268ab7840399b37c4de5073bca4adba754ffc255341266108872d1a5fb",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "كومبوتشا"
       ]
@@ -21189,13 +21189,13 @@
     {
       "canonicalKey": "lykwr-alfstq",
       "nameAr": "ليكور الفستق",
-      "nameEn": "ليكور الفستق",
+      "nameEn": "Pistachio Liqueur",
       "sourceName": "ليكور الفستق",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/lykwr-alfstq.webp",
+      "filename": "lykwr-alfstq.webp",
+      "hash": "5e427c3fd69f859ffe92276c346bc477b30a7aa50c9753668f173b5a9847b66f",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "ليكور الفستق"
       ]
@@ -21203,13 +21203,13 @@
     {
       "canonicalKey": "lykywr-albrqwq",
       "nameAr": "ليكيور البرقوق",
-      "nameEn": "ليكيور البرقوق",
+      "nameEn": "Plum Liqueur",
       "sourceName": "ليكيور البرقوق",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/lykywr-albrqwq.webp",
+      "filename": "lykywr-albrqwq.webp",
+      "hash": "d0283a58933870aee02c5dddecaef791c4609b8e43b542e1801f86abfe31607d",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "ليكيور البرقوق"
       ]
@@ -21217,13 +21217,13 @@
     {
       "canonicalKey": "lykywr-alkrymh",
       "nameAr": "ليكيور الكريمة",
-      "nameEn": "ليكيور الكريمة",
+      "nameEn": "Cream Liqueur",
       "sourceName": "ليكيور الكريمة",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/lykywr-alkrymh.webp",
+      "filename": "lykywr-alkrymh.webp",
+      "hash": "5cce2a6d51602f779859e0cffb516e638f0c6ee83a3edd90c06d1ae7f32e50b8",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "ليكيور الكريمة"
       ]
