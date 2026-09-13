@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-09-13T10:10:34.168Z",
+  "generatedAt": "2026-09-13T11:05:49.644Z",
   "scope": "Library plus persisted note overrides; SQLite opened read-only. Visual semantics are not certified by filenames or hashes.",
   "notes": 1883,
   "products": 5,
-  "valid": 1486,
-  "missing": 379,
+  "valid": 1502,
+  "missing": 363,
   "duplicateGroups": 9,
   "needsReview": 0,
   "duplicates": [
@@ -20785,11 +20785,11 @@
       "nameAr": "شاي الماسالا",
       "nameEn": "شاي الماسالا",
       "sourceName": "شاي الماسالا",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/shay-almasala.webp",
+      "filename": "shay-almasala.webp",
+      "hash": "68ac519bee3f215f0d6fb2fa4496ab717c80c6898b67315a717064d9d63c1a5f",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "شاي الماسالا"
       ]
@@ -20799,11 +20799,11 @@
       "nameAr": "شاي بالنعناع",
       "nameEn": "شاي بالنعناع",
       "sourceName": "شاي بالنعناع",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/shay-balnanaa.webp",
+      "filename": "shay-balnanaa.webp",
+      "hash": "5ed735d193d2fe4f805a50a2357220677572d55a602af0c89db7c18152d771e8",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "شاي بالنعناع"
       ]
@@ -20813,11 +20813,11 @@
       "nameAr": "شاي بوهيا (ووي)",
       "nameEn": "شاي بوهيا (ووي)",
       "sourceName": "شاي بوهيا (ووي)",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/shay-bwhya-wwy.webp",
+      "filename": "shay-bwhya-wwy.webp",
+      "hash": "9ee5e47fc347bdd998c470959691be29c60097451811315640b830b1dff8743e",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "شاي بوهيا (ووي)"
       ]
@@ -20827,11 +20827,11 @@
       "nameAr": "شراب الأفسنتين",
       "nameEn": "شراب الأفسنتين",
       "sourceName": "شراب الأفسنتين",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/shrab-alafsntyn.webp",
+      "filename": "shrab-alafsntyn.webp",
+      "hash": "b1fab49a3033de6735d4a7eca9f88e6acad9a57dbf817fa0f27aef5e8990f142",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "شراب الأفسنتين"
       ]
@@ -20841,11 +20841,11 @@
       "nameAr": "شراب الأماريتو",
       "nameEn": "شراب الأماريتو",
       "sourceName": "شراب الأماريتو",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/shrab-alamarytw.webp",
+      "filename": "shrab-alamarytw.webp",
+      "hash": "cb8aa0a58e64ca70f2b71616034413821e9c153965888dd43ff3577281fe6b35",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "شراب الأماريتو"
       ]
@@ -20855,11 +20855,11 @@
       "nameAr": "شراب البيليني",
       "nameEn": "شراب البيليني",
       "sourceName": "شراب البيليني",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/shrab-albylyny.webp",
+      "filename": "shrab-albylyny.webp",
+      "hash": "0996c1ee7a2f37da5f491c4e1e97056e824717a4da30b1ded4230bc9a005fd89",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "شراب البيليني"
       ]
@@ -20869,11 +20869,11 @@
       "nameAr": "شراب الكرز الكحولي",
       "nameEn": "شراب الكرز الكحولي",
       "sourceName": "شراب الكرز الكحولي",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/shrab-alkrz-alkhwly.webp",
+      "filename": "shrab-alkrz-alkhwly.webp",
+      "hash": "d5a34bf11bd1109673ef794397ed81adce0f63973aed0fa5cc9b6d639e2eac59",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "شراب الكرز الكحولي"
       ]
@@ -20883,11 +20883,11 @@
       "nameAr": "شراب الكير",
       "nameEn": "شراب الكير",
       "sourceName": "شراب الكير",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/shrab-alkyr.webp",
+      "filename": "shrab-alkyr.webp",
+      "hash": "6145a1023aec375e1fe86ccb2bfdbd66ed85a7c5b4727d785a6d3253bedc7040",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "شراب الكير"
       ]
@@ -20897,11 +20897,11 @@
       "nameAr": "شراب بايليز الأيرلندي",
       "nameEn": "شراب بايليز الأيرلندي",
       "sourceName": "شراب بايليز الأيرلندي",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/shrab-baylyz-alayrlndy.webp",
+      "filename": "shrab-baylyz-alayrlndy.webp",
+      "hash": "c026241f2a07460157debcef0aba4ee2a89054341a09f1c63fd34cd440806fe2",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "شراب بايليز الأيرلندي"
       ]
@@ -20911,11 +20911,11 @@
       "nameAr": "شراب كراكاو",
       "nameEn": "شراب كراكاو",
       "sourceName": "شراب كراكاو",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/shrab-krakaw.webp",
+      "filename": "shrab-krakaw.webp",
+      "hash": "22b367fed2532f716bd46cebc54d29be95dd1a57f1c2c787892e5ab8573f1a50",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "شراب كراكاو"
       ]
@@ -20925,11 +20925,11 @@
       "nameAr": "شراب كوزموبوليتان كوكتيل",
       "nameEn": "شراب كوزموبوليتان كوكتيل",
       "sourceName": "شراب كوزموبوليتان كوكتيل",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/shrab-kwzmwbwlytan-kwktyl.webp",
+      "filename": "shrab-kwzmwbwlytan-kwktyl.webp",
+      "hash": "c7d48d525e7774b3c47402e388fe5a49ab79edad8a5b8e5d2121cc2614ec06a5",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "شراب كوزموبوليتان كوكتيل"
       ]
@@ -20939,11 +20939,11 @@
       "nameAr": "شيري",
       "nameEn": "شيري",
       "sourceName": "شيري",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/shyry.webp",
+      "filename": "shyry.webp",
+      "hash": "5fbc252aed3c38905f1117cc84589c13c47f7e2dcc4cc81b78c8e03afe2710cc",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "شيري"
       ]
@@ -20953,11 +20953,11 @@
       "nameAr": "صودا البرتقال",
       "nameEn": "صودا البرتقال",
       "sourceName": "صودا البرتقال",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/swda-albrtqal.webp",
+      "filename": "swda-albrtqal.webp",
+      "hash": "6f2e2e7da269af43c9f32eaf0c2b8e67b791a391b64f0e32d77956bb27637b6b",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "صودا البرتقال"
       ]
@@ -20967,11 +20967,11 @@
       "nameAr": "صودا الليمون",
       "nameEn": "صودا الليمون",
       "sourceName": "صودا الليمون",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/swda-allymwn.webp",
+      "filename": "swda-allymwn.webp",
+      "hash": "ecaf22b350f7efcd5c9d36e937333719e36c34fbd3018879a41cd520c9c02625",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "صودا الليمون"
       ]
@@ -20981,11 +20981,11 @@
       "nameAr": "عصير الكشمش الأسود",
       "nameEn": "عصير الكشمش الأسود",
       "sourceName": "عصير الكشمش الأسود",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/asyr-alkshmsh-alaswd.webp",
+      "filename": "asyr-alkshmsh-alaswd.webp",
+      "hash": "c9bcac7f737d6ea122ab3ed10d6e8c10eb36b3ffd56193e4e4393c5e8fb5a0e1",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "عصير الكشمش الأسود"
       ]
@@ -20995,11 +20995,11 @@
       "nameAr": "عصير الكمثرى",
       "nameEn": "عصير الكمثرى",
       "sourceName": "عصير الكمثرى",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/asyr-alkmthry.webp",
+      "filename": "asyr-alkmthry.webp",
+      "hash": "f022e756a6a7853cc136b697f8d3d542e03b5ffb7de1330273ab4de6f242515d",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "عصير الكمثرى"
       ]
