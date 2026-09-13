@@ -1664,7 +1664,6 @@ async function hydrateServer() {
     updateAccountIndicator();
     handleBenefitRoute({ replace: true });
     handleBenefitsRoute({ replace: true });
-    handleNotesRoute({ replace: true });
     handleCatalogRoute({ replace: true });
     handleProductRoute();
     await handleAdminOrderRoute();
@@ -5507,12 +5506,7 @@ function restoreStoreMeta() {
 
 function renderNotesLibrary() {
   const library = window.ORIGOFragranceNotes;
-  const staffView = isStaffUser();
-  if (!staffView) state.notesImageFilter = "available";
-  const readyCount = library.notes.filter((note) => note.imageStatus === "ready").length;
-  const referenceCount = library.notes.filter((note) => note.imageStatus === "reference").length;
-  const missingCount = library.notes.filter((note) => note.imageStatus === "missing").length;
-  const pendingCount = referenceCount + missingCount;
+  if (!isStaffUser()) state.notesImageFilter = "available";
   const result = library.search(state.notesSearchQuery, {
     familyId: state.notesFamilyFilter,
     imageStatus: state.notesImageFilter,
@@ -5522,27 +5516,31 @@ function renderNotesLibrary() {
   const familyCards = families
     .map((family) => ({ family, notes: library.notes.filter((note) => note.familyId === family.id) }))
     .filter((entry) => entry.notes.length);
+  const familyImageTerms = {
+    citrus:["ليمون", "lemon"], "fruits-vegetables-nuts":["توت", "berries"], flowers:["ورد", "rose"],
+    "white-flowers":["ياسمين", "jasmine"], "greens-herbs-fougere":["خزامى", "lavender"], spices:["قرفة", "cinnamon"],
+    "sweets-gourmand":["فانيليا", "vanilla"], "woods-mosses":["صندل", "sandalwood"], "resins-balsams":["لبان", "frankincense"],
+    "musk-amber-animalic":["عنبر", "amber"], beverages:["قهوة", "coffee"]
+  };
+  const familyArtworkNote = (family, notes) => {
+    const terms = familyImageTerms[family.id] || [];
+    const readyNotes = notes.filter((note) => note.imageStatus === "ready");
+    return readyNotes.find((note) => terms.some((term) => [note.nameAr, note.nameEn, ...(note.aliases || [])]
+      .some((name) => String(name || "").toLocaleLowerCase().includes(term.toLocaleLowerCase())))) || readyNotes[0] || { ...notes[0], image:"" };
+  };
   $("#notes-page-content").innerHTML = `
     <header class="notes-page-hero">
       <h1 id="notes-page-title">${state.lang === "ar" ? "مكتبة المكونات العطرية" : "Fragrance Notes Library"}</h1>
     </header>
     <label class="notes-library-search notes-library-search-top"><span>⌕</span><input id="notes-library-search" type="search"
-      value="${escapeHTML(state.notesSearchQuery)}" placeholder="${state.lang === "ar" ? "ابحث: ورد، Oud، برغموت…" : "Search: Rose, Oud, Bergamot…"}" /></label>
-    <div class="notes-family-heading"><h2>${state.lang === "ar" ? "العائلات العطرية" : "Fragrance families"}</h2><button data-action="filter-note-family" data-family="all">${state.lang === "ar" ? "عرض كل العائلات" : "View all families"} <span>←</span></button></div>
+      value="${escapeHTML(state.notesSearchQuery)}" placeholder="${state.lang === "ar" ? "ابحث عن نوتة عطرية…" : "Search for a fragrance note…"}" /></label>
+    <div class="notes-family-heading"><h2>${state.lang === "ar" ? "العائلات العطرية" : "Fragrance families"}</h2><button data-action="filter-note-family" data-family="all">${state.lang === "ar" ? "عرض جميع العائلات" : "View all families"} <span aria-hidden="true">←</span></button></div>
     <section class="notes-family-showcase" id="notes-family-showcase" aria-label="${state.lang === "ar" ? "عائلات النوتات العطرية" : "Fragrance note families"}">
       ${familyCards.map(({ family, notes }) => `<button data-action="filter-note-family" data-family="${escapeHTML(family.id)}" style="--family-color:${escapeHTML(family.color)};--family-accent:${escapeHTML(family.accent)}">
-        <span><img src="${escapeHTML(library.artwork(notes.find((note) => note.imageStatus === "ready") || { ...notes[0], image: "" }))}" alt="" loading="lazy" /></span>
-        <b>${escapeHTML(familyLabel(family))}</b>
+        <span><img src="${escapeHTML(library.artwork(familyArtworkNote(family, notes)))}" alt="" loading="lazy" /></span>
+        <b>${escapeHTML(familyLabel(family))}</b><small>${formatNumber(notes.length)} ${state.lang === "ar" ? "نوتة عطرية" : "fragrance notes"}</small>
       </button>`).join("")}
     </section>
-    ${staffView ? `<div class="notes-library-toolbar notes-staff-toolbar">
-      <div class="notes-image-filters" role="group" aria-label="${state.lang === "ar" ? "حالة صور النوتات" : "Artwork status"}">
-        <button data-action="filter-note-images" data-images="available" class="${state.notesImageFilter === "available" ? "active" : ""}">${state.lang === "ar" ? "صور معتمدة" : "Artwork ready"} <small>${readyCount}</small></button>
-        <button data-action="filter-note-images" data-images="all" class="${state.notesImageFilter === "all" ? "active" : ""}">${state.lang === "ar" ? "كل النوتات" : "All notes"} <small>${library.notes.length}</small></button>
-        <button data-action="filter-note-images" data-images="reference" class="${state.notesImageFilter === "reference" ? "active" : ""}">${state.lang === "ar" ? "مراجع تحتاج إعادة توليد" : "References to regenerate"} <small>${referenceCount}</small></button>
-        <button data-action="filter-note-images" data-images="missing" class="${state.notesImageFilter === "missing" ? "active" : ""}">${state.lang === "ar" ? "صور غير مضافة" : "Missing artwork"} <small>${missingCount}</small></button>
-      </div>
-    </div>` : ""}
     <div class="notes-results-head">
       <div><span class="eyebrow">${state.lang === "ar" ? "المكونات" : "INGREDIENTS"}</span><h2>${state.notesFamilyFilter === "all"
         ? (state.lang === "ar" ? "كل المكونات" : "All notes")
@@ -5557,7 +5555,6 @@ function renderNotesLibrary() {
       ${state.lang === "ar" ? "عرض المزيد" : "Load more"} <span>＋</span></button>` : ""}`;
   bindHorizontalRail($("#notes-family-showcase"));
   updateNotesMeta();
-  $("#notes-library-search")?.focus({ preventScroll: true });
 }
 
 function renderNoteDetail(note) {

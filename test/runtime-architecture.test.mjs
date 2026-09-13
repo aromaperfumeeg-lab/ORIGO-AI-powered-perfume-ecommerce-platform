@@ -70,7 +70,7 @@ test("product studio click passes through both asynchronous loaders exactly once
 
 test("home loads production storefront core without admin editor or finder runtimes", async () => {
   const [html, loader, core] = await Promise.all([read("../index.html"), read("../runtime-loader.js"), read("../chunks/storefront-core.min.js")]);
-  assert.match(html, /chunks\/storefront-core\.min\.js\?v=51/);
+  assert.match(html, /chunks\/storefront-core\.min\.js\?v=55/);
   assert.match(html, /runtime-loader\.js\?v=19/);
   assert.doesNotMatch(html, /<script[^>]+(?:admin-runtime|product-editor-runtime|storefront-settings-runtime|fragrance-finder-(?:engine|i18n)|fragrance-finder\.js)/);
   assert.doesNotMatch(core, /function settingsMarkup\(|function renderImportReview\(|function overviewMarkup\(/);
@@ -123,6 +123,16 @@ test("fragrance knowledge dependencies load sequentially before the product edit
   const notes = await read("../fragrance-notes-library.js");
   assert.match(deferred, /querySelectorAll\("script\[data-knowledge-src\]"\)[\s\S]*?\.reduce\(\(chain, placeholder\) => chain\.then/);
   assert.match(notes, /if \(!families\.length\) families\.push/);
+});
+
+test("notes library keeps search intentional and hides internal artwork diagnostics", async () => {
+  const app = await read("../app.js");
+  const render = app.slice(app.indexOf("function renderNotesLibrary("), app.indexOf("function renderNoteDetail("));
+  assert.doesNotMatch(render, /notes-library-search"\)\?\.focus/);
+  assert.doesNotMatch(render, /notes-image-filters|صور غير مضافة|مراجع تحتاج إعادة توليد/);
+  assert.match(render, /نوتة عطرية/);
+  const hydration = app.slice(app.indexOf("async function hydrateServer("), app.indexOf("async function loadAdminCatalog("));
+  assert.doesNotMatch(hydration, /handleNotesRoute\(\{ replace: true \}\)/);
 });
 
 test("runtime chunks and their CSS exist and Hostinger copies the chunks tree", async () => {
