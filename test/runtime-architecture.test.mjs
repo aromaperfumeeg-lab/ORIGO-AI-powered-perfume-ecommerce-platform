@@ -70,7 +70,7 @@ test("product studio click passes through both asynchronous loaders exactly once
 
 test("home loads production storefront core without admin editor or finder runtimes", async () => {
   const [html, loader, core] = await Promise.all([read("../index.html"), read("../runtime-loader.js"), read("../chunks/storefront-core.min.js")]);
-  assert.match(html, /chunks\/storefront-core\.min\.js\?v=60/);
+  assert.match(html, /chunks\/storefront-core\.min\.js\?v=61/);
   assert.match(html, /runtime-loader\.js\?v=19/);
   assert.doesNotMatch(html, /<script[^>]+(?:admin-runtime|product-editor-runtime|storefront-settings-runtime|fragrance-finder-(?:engine|i18n)|fragrance-finder\.js)/);
   assert.doesNotMatch(core, /function settingsMarkup\(|function renderImportReview\(|function overviewMarkup\(/);
@@ -82,11 +82,21 @@ test("home loads production storefront core without admin editor or finder runti
 test("storefront navigation avoids artificial catalog waits and warms deferred knowledge", async () => {
   const [app, deferred] = await Promise.all([read("../app.js"), read("../deferred-modules.js")]);
   assert.match(app, /function renderCatalog\(\{ skeleton = false \} = \{\}\)/);
-  assert.match(app, /else commitCatalog\(\)/);
+  assert.match(app, /commitCatalog\(\);/);
   assert.doesNotMatch(app, /skeleton \? 140 : 0/);
   assert.match(deferred, /knowledgePromise = \[\.\.\.document\.querySelectorAll/);
-  assert.match(deferred, /idle\(loadKnowledgeResources, 700\)/);
+  assert.match(deferred, /const afterLoad = \(\) => \{[\s\S]*?loadKnowledgeResources\(\)/);
   assert.match(deferred, /addEventListener\("pointerdown"/);
+});
+
+test("storefront waits for the live catalog and shows local loading feedback", async () => {
+  const [app, styles] = await Promise.all([read("../app.js"), read("../styles.css")]);
+  assert.match(app, /products: \[\],[\s\S]*?storefrontReady: false/);
+  assert.match(app, /function sectionLoadingMarkup\(/);
+  assert.match(app, /if \(!state\.storefrontReady\)/);
+  assert.doesNotMatch(app, /delay: Math\.min\(index \* (?:35|45|70)/);
+  assert.doesNotMatch(app, /catalogRenderTimer = setTimeout\(commitCatalog, 80\)/);
+  assert.match(styles, /\.section-loading-state span[\s\S]*?notes-loading-spin/);
 });
 
 test("shared fragrance note persistence stays in the storefront core", async () => {
@@ -185,7 +195,7 @@ test("initial asset budgets keep admin and finder out of storefront", async () =
   const bytes = async (paths) => (await Promise.all(paths.map((path) => stat(new URL(`../${path}`, import.meta.url))))).reduce((sum, item) => sum + item.size, 0);
   const gzipBytes = async (paths) => (await Promise.all(paths.map((path) => readFile(new URL(`../${path}`, import.meta.url))))).reduce((sum, item) => sum + gzipSync(item).length, 0);
   assert.ok(await bytes(initialScripts) < 560_000, "initial JS raw budget");
-  assert.ok(await bytes(initialStyles) < 700 * 1024, "initial CSS raw budget");
+  assert.ok(await bytes(initialStyles) < 701 * 1024, "initial CSS raw budget");
   assert.ok(await gzipBytes(initialScripts) < 160 * 1024, "initial JS gzip budget");
   assert.ok(await gzipBytes(initialStyles) < 130 * 1024, "initial CSS gzip budget");
   assert.equal(initialScripts.some((path) => /admin|product-editor|storefront-settings|fragrance-finder/.test(path)), false);

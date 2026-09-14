@@ -1205,7 +1205,8 @@ const state = {
   productRatings: readStoredObject("origoProductRatings"),
   selectedNotes: [],
   catalogProducts: initialCatalogProducts,
-  products: initialCatalogProducts.filter((product) => product.status === "published").map(toStorefrontProduct),
+  products: [],
+  storefrontReady: false,
   webResults: [],
   activeProductId: null,
   activeProductQuantity: 1,
@@ -1626,6 +1627,7 @@ async function hydrateServer() {
     });
     state.serverAvailable = results[0]?.status === "fulfilled";
     if (Array.isArray(catalog.products)) state.products = catalog.products.map(serverProduct);
+    state.storefrontReady = true;
     if (Array.isArray(brandOptions.options)) state.productOptions = [
       ...state.productOptions.filter((item) => item.group !== "brand"),
       ...brandOptions.options
@@ -1670,6 +1672,8 @@ async function hydrateServer() {
     if (!directProductRoute) scheduleStorefrontIdle(() => hydrateDeferredStorefront(Number(catalog.total || state.products.length)), 1800);
   } catch {
     state.serverAvailable = false;
+    state.products = [];
+    state.storefrontReady = true;
     state.brandOptionsReady = true;
     updateAccountIndicator();
     const directProductRoute = /^\/perfume\/[^/]+\/?$/i.test(location.pathname);
@@ -4058,6 +4062,10 @@ function bindConfiguredHomeProductRow(section) {
 function renderConfiguredHomeProductRows() {
   const holder = $("#home-configured-product-rows");
   if (!holder) return;
+  if (!state.storefrontReady) {
+    holder.innerHTML = sectionLoadingMarkup(state.lang === "ar" ? "جارٍ تحميل المنتجات…" : "Loading products…");
+    return;
+  }
   const settings = mergeStoreSettings(state.adminWorkspace.settings || {});
   const rows = settings.homeProductRows.filter((row) => row.enabled !== false).sort((a, b) => Number(a.order || 0) - Number(b.order || 0));
   let productViewControlAdded = false;
@@ -4068,7 +4076,7 @@ function renderConfiguredHomeProductRows() {
     productViewControlAdded = true;
     return `<section class="home-configured-product-row" data-home-product-source="${escapeHTML(row.source)}"${row.brand ? ` data-home-product-brand="${escapeHTML(row.brand)}"` : ""}>
       <div class="home-section-head">${homeProductRowViewAll(row)}<div class="ornament-heading"><h2>${escapeHTML(homeProductRowTitle(row))}</h2></div>${viewControl}</div>
-      <div class="home-products-wrap"><button class="home-product-row-arrow previous" type="button" data-home-product-row-direction="-1" aria-label="${state.lang === "ar" ? "المنتجات السابقة" : "Previous products"}">${state.lang === "ar" ? "›" : "‹"}</button><div class="product-grid home-product-row-track" data-mobile-product-rail>${products.map((product, index) => productCardMarkup(product, { context: "grid", delay: Math.min(index * 35, 175) })).join("")}</div><button class="home-product-row-arrow next" type="button" data-home-product-row-direction="1" aria-label="${state.lang === "ar" ? "المنتجات التالية" : "Next products"}">${state.lang === "ar" ? "‹" : "›"}</button></div>
+      <div class="home-products-wrap"><button class="home-product-row-arrow previous" type="button" data-home-product-row-direction="-1" aria-label="${state.lang === "ar" ? "المنتجات السابقة" : "Previous products"}">${state.lang === "ar" ? "›" : "‹"}</button><div class="product-grid home-product-row-track" data-mobile-product-rail>${products.map((product) => productCardMarkup(product, { context: "grid", delay: 0 })).join("")}</div><button class="home-product-row-arrow next" type="button" data-home-product-row-direction="1" aria-label="${state.lang === "ar" ? "المنتجات التالية" : "Next products"}">${state.lang === "ar" ? "‹" : "›"}</button></div>
     </section>`;
   }).join("");
   $$(".home-configured-product-row", holder).forEach(bindConfiguredHomeProductRow);
@@ -4523,6 +4531,10 @@ function navigateBenefit(slug) {
 function renderProducts(filter = "all") {
   const grid = $("#product-grid");
   if (!grid) return;
+  if (!state.storefrontReady) {
+    grid.innerHTML = sectionLoadingMarkup(state.lang === "ar" ? "جارٍ تحميل المنتجات…" : "Loading products…");
+    return;
+  }
   const search = ORIGOCatalog.normalize(state.storefrontSearchQuery);
   const perfumeOnly = mergeStoreSettings(state.adminWorkspace.settings || {}).perfumeOnlyMode !== false;
   const visibleProducts = state.products
@@ -4551,10 +4563,10 @@ function renderProducts(filter = "all") {
       </div>`;
     return;
   }
-  grid.innerHTML = visibleProducts.map((product, index) => productCardMarkup(product, {
+  grid.innerHTML = visibleProducts.map((product) => productCardMarkup(product, {
     context: "grid",
     reveal: true,
-    delay: Math.min(index * 70, 280)
+    delay: 0
   })).join("");
   observeReveals();
 }
@@ -4604,6 +4616,10 @@ function catalogProductText(product) {
     product.concentration, product.familyAr, product.familyEn, product.fragranceFamily,
     ...(product.scentCharacterAr || []), ...(product.scentCharacterEn || []), ...(Array.isArray(mainAccords) ? mainAccords : [mainAccords])
   ].filter(Boolean).join(" "));
+}
+
+function sectionLoadingMarkup(label) {
+  return `<div class="section-loading-state" role="status" aria-live="polite"><span aria-hidden="true"></span><b>${escapeHTML(label)}</b></div>`;
 }
 
 function catalogLocalizedPairs(arValues, enValues, fallback = []) {
@@ -4849,6 +4865,10 @@ function renderCatalog({ skeleton = false } = {}) {
   const grid = $("#catalog-product-grid");
   if (!grid || !document.body.classList.contains("catalog-route")) return;
   clearTimeout(catalogRenderTimer);
+  if (!state.storefrontReady) {
+    grid.innerHTML = sectionLoadingMarkup(state.lang === "ar" ? "جارٍ تحميل العطور…" : "Loading fragrances…");
+    return;
+  }
   const results = catalogFilteredProducts();
   renderCatalogChrome(results.length);
   renderCatalogFilters();
@@ -4859,12 +4879,11 @@ function renderCatalog({ skeleton = false } = {}) {
     const start = (state.catalogPage - 1) * state.catalogPageSize;
     const pageProducts = results.slice(start, start + state.catalogPageSize);
     if (!pageProducts.length) grid.innerHTML = `<div class="catalog-empty"><span>◇</span><h2>${state.lang === "ar" ? "لم نجد نتائج مطابقة" : "No matching results"}</h2><p>${state.lang === "ar" ? "جرّب إزالة بعض الفلاتر أو استخدم كلمة بحث أقصر. يمكنك العودة إلى جميع العطور بضغطة واحدة." : "Remove some filters or try a shorter search term."}</p><div><button data-action="catalog-clear-all">${state.lang === "ar" ? "مسح الكل" : "Clear all"}</button><button data-action="catalog-quick-filter" data-value="all">${state.lang === "ar" ? "الأكثر مبيعًا" : "Best sellers"}</button></div></div>`;
-    else grid.innerHTML = pageProducts.map((product, index) => productCardMarkup(product, { context: "catalog", compact: matchMedia("(max-width:800px)").matches, reveal: true, delay: Math.min(index * 45, 180) })).join("");
+    else grid.innerHTML = pageProducts.map((product) => productCardMarkup(product, { context: "catalog", compact: matchMedia("(max-width:800px)").matches, reveal: true, delay: 0 })).join("");
     $("#catalog-pagination").innerHTML = pages > 1 ? Array.from({ length: pages }, (_, index) => `<button data-action="catalog-page" data-page="${index + 1}" class="${state.catalogPage === index + 1 ? "active" : ""}" aria-label="${state.lang === "ar" ? `صفحة ${index + 1}` : `Page ${index + 1}`}">${index + 1}</button>`).join("") : "";
     observeReveals();
   };
-  if (skeleton) catalogRenderTimer = setTimeout(commitCatalog, 80);
-  else commitCatalog();
+  commitCatalog();
 }
 
 function resetCatalogFilters({ keepQuery = false } = {}) {
