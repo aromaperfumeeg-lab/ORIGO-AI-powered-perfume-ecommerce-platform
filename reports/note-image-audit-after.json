@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-09-13T19:18:26.705Z",
+  "generatedAt": "2026-09-14T04:59:47.492Z",
   "scope": "Library plus persisted note overrides; SQLite opened read-only. Visual semantics are not certified by filenames or hashes.",
   "notes": 1883,
   "products": 5,
-  "valid": 1566,
-  "missing": 299,
+  "valid": 1582,
+  "missing": 283,
   "duplicateGroups": 9,
   "needsReview": 0,
   "duplicates": [
@@ -23359,13 +23359,13 @@
     {
       "canonicalKey": "blwrh-wrdyh",
       "nameAr": "بلورة وردية",
-      "nameEn": "بلورة وردية",
+      "nameEn": "rose quartz pink crystal specimen",
       "sourceName": "بلورة وردية",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/blwrh-wrdyh.webp",
+      "filename": "blwrh-wrdyh.webp",
+      "hash": "f79afc6c07220dfd8ca990a7f9c63b00f468b79657fba737ad2ce43e1a723897",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "بلورة وردية"
       ]
@@ -23401,13 +23401,13 @@
     {
       "canonicalKey": "bwdrh-alarz",
       "nameAr": "بودرة الأرز",
-      "nameEn": "بودرة الأرز",
+      "nameEn": "rice powder mound with a few rice grains",
       "sourceName": "بودرة الأرز",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/bwdrh-alarz.webp",
+      "filename": "bwdrh-alarz.webp",
+      "hash": "c09f47712db7f95bac19de5ed5db8c1fb04740769303efce6775ecf3c4a66fe6",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "بودرة الأرز"
       ]
@@ -23415,13 +23415,13 @@
     {
       "canonicalKey": "bwdrh-altlk",
       "nameAr": "بودرة التلك",
-      "nameEn": "بودرة التلك",
+      "nameEn": "fine white talcum powder mound",
       "sourceName": "بودرة التلك",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/bwdrh-altlk.webp",
+      "filename": "bwdrh-altlk.webp",
+      "hash": "6e7600bd48a44b4aa39f133d6c87d46dbbb62ad6556eef89829aec3340ef676f",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "بودرة التلك"
       ]
@@ -23443,13 +23443,13 @@
     {
       "canonicalKey": "bytza",
       "nameAr": "بيتزا",
-      "nameEn": "بيتزا",
+      "nameEn": "cheese tomato pizza slice",
       "sourceName": "بيتزا",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/bytza.webp",
+      "filename": "bytza.webp",
+      "hash": "5b1fc203d9aa8f5fac3bfa189779f94a68a66b9848ed6714900817faf141eb7e",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "بيتزا"
       ]
@@ -23471,13 +23471,13 @@
     {
       "canonicalKey": "bydh",
       "nameAr": "بيضة",
-      "nameEn": "بيضة",
+      "nameEn": "whole egg and cracked eggshell with yolk",
       "sourceName": "بيضة",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/bydh.webp",
+      "filename": "bydh.webp",
+      "hash": "319c5304bbab011fffcaf8378efa6ebfde138e37a92df3808dc4399448970b6e",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "بيضة"
       ]
@@ -23653,13 +23653,13 @@
     {
       "canonicalKey": "jbnh-almaskarbwny",
       "nameAr": "جبنة الماسكاربوني",
-      "nameEn": "جبنة الماسكاربوني",
+      "nameEn": "mascarpone soft creamy white cheese dollop",
       "sourceName": "جبنة الماسكاربوني",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/jbnh-almaskarbwny.webp",
+      "filename": "jbnh-almaskarbwny.webp",
+      "hash": "8ba021d3dc0ca41a8b4450235c8ba9faf651c10eb08b6377042cfa40d20ce20e",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "جبنة الماسكاربوني"
       ]
@@ -23751,13 +23751,13 @@
     {
       "canonicalKey": "jld-abyd",
       "nameAr": "جلد أبيض",
-      "nameEn": "جلد أبيض",
+      "nameEn": "folded white leather swatch visible leather grain",
       "sourceName": "جلد أبيض",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/jld-abyd.webp",
+      "filename": "jld-abyd.webp",
+      "hash": "d6774e6838f2e6f31060c4c92dd33ab5dd2e239a7c88ddbd3ca9e269137cd17d",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "جلد أبيض"
       ]
@@ -23765,13 +23765,13 @@
     {
       "canonicalKey": "jld-aswd",
       "nameAr": "جلد أسود",
-      "nameEn": "جلد أسود",
+      "nameEn": "folded black leather swatch visible leather grain",
       "sourceName": "جلد أسود",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/jld-aswd.webp",
+      "filename": "jld-aswd.webp",
+      "hash": "4b5bb65d7e3383d88d447e015b6648f165375825b431a76d95f9fb0648790213",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "جلد أسود"
       ]
@@ -23807,13 +23807,13 @@
     {
       "canonicalKey": "hbal-alsyzal",
       "nameAr": "حبال السيزال",
-      "nameEn": "حبال السيزال",
+      "nameEn": "coiled natural sisal rope",
       "sourceName": "حبال السيزال",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/hbal-alsyzal.webp",
+      "filename": "hbal-alsyzal.webp",
+      "hash": "e341d8187c1c6aa286b0bdf3327e6e7d336d11777080127a1b1378c6c8e56e1f",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "حبال السيزال"
       ]
@@ -23863,13 +23863,13 @@
     {
       "canonicalKey": "hjr-alswan",
       "nameAr": "حجر الصوان",
-      "nameEn": "حجر الصوان",
+      "nameEn": "flint stone fractured specimen",
       "sourceName": "حجر الصوان",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/hjr-alswan.webp",
+      "filename": "hjr-alswan.webp",
+      "hash": "09a2e0b4382446d8d33ac7d9342caf03b91996759e24fd05a7eb3770fb8c9e2f",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "حجر الصوان"
       ]
@@ -24003,13 +24003,13 @@
     {
       "canonicalKey": "dantyl",
       "nameAr": "دانتيل",
-      "nameEn": "دانتيل",
+      "nameEn": "ivory floral lace fabric swatch",
       "sourceName": "دانتيل",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/dantyl.webp",
+      "filename": "dantyl.webp",
+      "hash": "930d27d92b54b329720d48fc7db6a33a4845dc2299f07c9f8119c260be4035e8",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "دانتيل"
       ]
@@ -24115,13 +24115,13 @@
     {
       "canonicalKey": "dhhb",
       "nameAr": "ذهب",
-      "nameEn": "ذهب",
+      "nameEn": "natural gold nugget",
       "sourceName": "ذهب",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/dhhb.webp",
+      "filename": "dhhb.webp",
+      "hash": "b2c237a40c93c70c7cc12c81adacfcb0d30fc87707296f7ccfa30cce28522672",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "ذهب"
       ]
@@ -24171,13 +24171,13 @@
     {
       "canonicalKey": "rkham",
       "nameAr": "رخام",
-      "nameEn": "رخام",
+      "nameEn": "white marble stone with gray veins",
       "sourceName": "رخام",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/rkham.webp",
+      "filename": "rkham.webp",
+      "hash": "7b678c7816929c9b7d75106ae683e42d20a1d1e17c800c0c8af22241173880cf",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "رخام"
       ]
@@ -24185,13 +24185,13 @@
     {
       "canonicalKey": "rmal",
       "nameAr": "رمال",
-      "nameEn": "رمال",
+      "nameEn": "small mound of golden sand",
       "sourceName": "رمال",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/rmal.webp",
+      "filename": "rmal.webp",
+      "hash": "cf4a2e72e35ac2cdf25f5ad9dc2a38c0f4b2dd3b44ecd961b7dd0c29cf48a41c",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "رمال"
       ]
@@ -25599,13 +25599,13 @@
     {
       "canonicalKey": "waqy-alshms",
       "nameAr": "واقي الشمس",
-      "nameEn": "واقي الشمس",
+      "nameEn": "sunscreen cream dollop",
       "sourceName": "واقي الشمس",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/waqy-alshms.webp",
+      "filename": "waqy-alshms.webp",
+      "hash": "023cf260080f236c9a69da8257c707541516424a45149336e6d1f7265091955e",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "واقي الشمس"
       ]
@@ -25613,13 +25613,13 @@
     {
       "canonicalKey": "wrq-alrq",
       "nameAr": "ورق الرق",
-      "nameEn": "ورق الرق",
+      "nameEn": "blank aged parchment sheet curled edges",
       "sourceName": "ورق الرق",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/wrq-alrq.webp",
+      "filename": "wrq-alrq.webp",
+      "hash": "3bf5f5614fffc999fff82e1b4e07dc5749fbd9888a9b0462fda0424bb5147307",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "ورق الرق"
       ]
