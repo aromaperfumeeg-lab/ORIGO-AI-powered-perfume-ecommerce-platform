@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-09-14T04:59:47.492Z",
+  "generatedAt": "2026-09-14T15:50:16.489Z",
   "scope": "Library plus persisted note overrides; SQLite opened read-only. Visual semantics are not certified by filenames or hashes.",
   "notes": 1883,
   "products": 5,
-  "valid": 1582,
-  "missing": 283,
+  "valid": 1598,
+  "missing": 267,
   "duplicateGroups": 9,
   "needsReview": 0,
   "duplicates": [
@@ -24269,13 +24269,13 @@
     {
       "canonicalKey": "zyt-almhrkat",
       "nameAr": "زيت المحركات",
-      "nameEn": "زيت المحركات",
+      "nameEn": "amber brown viscous motor oil droplet and small fluid curl",
       "sourceName": "زيت المحركات",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/zyt-almhrkat.webp",
+      "filename": "zyt-almhrkat.webp",
+      "hash": "dd854447fb5a9aeb88cfc7a465ac20ebd4059355b240afac3c8bdf412ec145a7",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "زيت المحركات"
       ]
@@ -24493,13 +24493,13 @@
     {
       "canonicalKey": "shryt-lasq",
       "nameAr": "شريط لاصق",
-      "nameEn": "شريط لاصق",
+      "nameEn": "roll of clear adhesive tape with a peeled strip no markings",
       "sourceName": "شريط لاصق",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/shryt-lasq.webp",
+      "filename": "shryt-lasq.webp",
+      "hash": "0e5d6b12e944157807f6c3c4853020e7711dbf416a0a00494dd9646366cac3b8",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "شريط لاصق"
       ]
@@ -24507,13 +24507,13 @@
     {
       "canonicalKey": "shmah-shma",
       "nameAr": "شمعة شمع",
-      "nameEn": "شمعة شمع",
+      "nameEn": "plain ivory wax candle with unlit wick",
       "sourceName": "شمعة شمع",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/shmah-shma.webp",
+      "filename": "shmah-shma.webp",
+      "hash": "9c719672a1ef5f3d6ae64c6eb3c7e8918ffa043bd80a2645fa522253ec3a0e21",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "شمعة شمع"
       ]
@@ -24549,13 +24549,13 @@
     {
       "canonicalKey": "slsh-alswya",
       "nameAr": "صلصة الصويا",
-      "nameEn": "صلصة الصويا",
+      "nameEn": "dark brown soy sauce splash with a few soybeans",
       "sourceName": "صلصة الصويا",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/slsh-alswya.webp",
+      "filename": "slsh-alswya.webp",
+      "hash": "d72a566e4acf171ef48b77253965bcb83446d546c904b32e589d4eac943ba89a",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "صلصة الصويا"
       ]
@@ -24563,13 +24563,13 @@
     {
       "canonicalKey": "slsh-altmatm",
       "nameAr": "صلصة الطماطم",
-      "nameEn": "صلصة الطماطم",
+      "nameEn": "red tomato sauce dollop with half tomato",
       "sourceName": "صلصة الطماطم",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/slsh-altmatm.webp",
+      "filename": "slsh-altmatm.webp",
+      "hash": "c4f1878f52fe64d48bac0cd32a9b925d36d651c588a590b3f17c7d2fe85dacd1",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "صلصة الطماطم"
       ]
@@ -24577,13 +24577,13 @@
     {
       "canonicalKey": "tla-azafr",
       "nameAr": "طلاء أظافر",
-      "nameEn": "طلاء أظافر",
+      "nameEn": "glossy crimson nail polish liquid smear",
       "sourceName": "طلاء أظافر",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/tla-azafr.webp",
+      "filename": "tla-azafr.webp",
+      "hash": "3336a881d1d580fc658e99cbd6aef53a71d760c8881dbe5a091e88b58947fffd",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "طلاء أظافر"
       ]
@@ -24605,13 +24605,13 @@
     {
       "canonicalKey": "tyn-albwrslyn",
       "nameAr": "طين البورسلين",
-      "nameEn": "طين البورسلين",
+      "nameEn": "white kaolin porcelain clay lump",
       "sourceName": "طين البورسلين",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/tyn-albwrslyn.webp",
+      "filename": "tyn-albwrslyn.webp",
+      "hash": "e5c6e5e6cd8bd66d3315b3b75f9b915c18608fc2057865fe94b80fedc9f1e07f",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "طين البورسلين"
       ]
@@ -24633,13 +24633,13 @@
     {
       "canonicalKey": "ajynh-alfaswlya-alhmra",
       "nameAr": "عجينة الفاصوليا الحمراء",
-      "nameEn": "عجينة الفاصوليا الحمراء",
+      "nameEn": "reddish brown red bean paste mound with azuki beans",
       "sourceName": "عجينة الفاصوليا الحمراء",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/ajynh-alfaswlya-alhmra.webp",
+      "filename": "ajynh-alfaswlya-alhmra.webp",
+      "hash": "632f596fa60efa9e46aabe48111edaee1c7079eb2d07250e6187a3dce58903d2",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "عجينة الفاصوليا الحمراء"
       ]
@@ -24731,13 +24731,13 @@
     {
       "canonicalKey": "fdh",
       "nameAr": "فضة",
-      "nameEn": "فضة",
+      "nameEn": "rough native silver metal nugget",
       "sourceName": "فضة",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/fdh.webp",
+      "filename": "fdh.webp",
+      "hash": "ae5a9f69b9af307745783d94696e2e12a03b8b34e7a48c65834b54a1153d4fb0",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "فضة"
       ]
@@ -24801,13 +24801,13 @@
     {
       "canonicalKey": "fynyl",
       "nameAr": "فينيل",
-      "nameEn": "فينيل",
+      "nameEn": "small glossy black vinyl sheet curled corner",
       "sourceName": "فينيل",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/fynyl.webp",
+      "filename": "fynyl.webp",
+      "hash": "9cf7dfffc8393b97fc0d244a582aa361b39b5f77b7cf6092603d26c303bc87dd",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "فينيل"
       ]
@@ -24899,13 +24899,13 @@
     {
       "canonicalKey": "qlm-rsas",
       "nameAr": "قلم رصاص",
-      "nameEn": "قلم رصاص",
+      "nameEn": "plain unmarked wooden graphite pencil and pencil shavings",
       "sourceName": "قلم رصاص",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/qlm-rsas.webp",
+      "filename": "qlm-rsas.webp",
+      "hash": "36d4a15654709dd4a4f861de179fe94e66b358ddb3b0a1fbbcc4f4dea388bb4b",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "قلم رصاص"
       ]
@@ -24913,13 +24913,13 @@
     {
       "canonicalKey": "qmash-alkanfas",
       "nameAr": "قماش الكانفاس",
-      "nameEn": "قماش الكانفاس",
+      "nameEn": "folded coarse beige canvas fabric",
       "sourceName": "قماش الكانفاس",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/qmash-alkanfas.webp",
+      "filename": "qmash-alkanfas.webp",
+      "hash": "da824be3f52bd9ef207d45bbb59109c7f1576073d2b96f06b5feeceb18bff4c1",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "قماش الكانفاس"
       ]
@@ -24941,13 +24941,13 @@
     {
       "canonicalKey": "kanwly",
       "nameAr": "كانولي",
-      "nameEn": "كانولي",
+      "nameEn": "single cannoli pastry with white ricotta filling",
       "sourceName": "كانولي",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/kanwly.webp",
+      "filename": "kanwly.webp",
+      "hash": "21952c4f6f139852270d691cd27be1668b8a453f97d4e883ba9342449b75d7e5",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "كانولي"
       ]
@@ -24955,13 +24955,13 @@
     {
       "canonicalKey": "kbryt",
       "nameAr": "كبريت",
-      "nameEn": "كبريت",
+      "nameEn": "bright yellow sulfur mineral specimen",
       "sourceName": "كبريت",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/kbryt.webp",
+      "filename": "kbryt.webp",
+      "hash": "c9bab4245ec7f8ec883389ab50ac714af49329fe779f859fa1dcef59be7b9377",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "كبريت"
       ]
@@ -24997,13 +24997,13 @@
     {
       "canonicalKey": "krh-altns",
       "nameAr": "كرة التنس",
-      "nameEn": "كرة التنس",
+      "nameEn": "yellow fuzzy tennis ball with white seams",
       "sourceName": "كرة التنس",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/krh-altns.webp",
+      "filename": "krh-altns.webp",
+      "hash": "d5300f1e6250d3e07cb860c158085ac4b53dbd189ad77798b6da242d2b227ce2",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "كرة التنس"
       ]
@@ -25067,13 +25067,13 @@
     {
       "canonicalKey": "kwnkryt",
       "nameAr": "كونكريت",
-      "nameEn": "كونكريت",
+      "nameEn": "rough gray concrete chunk visible aggregate",
       "sourceName": "كونكريت",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/kwnkryt.webp",
+      "filename": "kwnkryt.webp",
+      "hash": "a90d3537f25a193adfeeb1eb787649b173d14ca2dce34f10dc50dadbd5bfe1e7",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "كونكريت"
       ]
