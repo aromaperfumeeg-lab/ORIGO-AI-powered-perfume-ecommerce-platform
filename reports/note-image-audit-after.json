@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-09-14T20:46:51.721Z",
+  "generatedAt": "2026-09-14T21:01:38.772Z",
   "scope": "Library plus persisted note overrides; SQLite opened read-only. Visual semantics are not certified by filenames or hashes.",
   "notes": 1883,
   "products": 5,
-  "valid": 1614,
-  "missing": 251,
+  "valid": 1630,
+  "missing": 235,
   "duplicateGroups": 9,
   "needsReview": 0,
   "duplicates": [
@@ -21623,13 +21623,13 @@
     {
       "canonicalKey": "alsmgh-alsnaay",
       "nameAr": "الصمغ الصناعي",
-      "nameEn": "الصمغ الصناعي",
+      "nameEn": "clear synthetic glue viscous bead with thin adhesive strand",
       "sourceName": "الصمغ الصناعي",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alsmgh-alsnaay.webp",
+      "filename": "alsmgh-alsnaay.webp",
+      "hash": "24e4f0e478570fcfd5532b44a7492685666c4d71a2161ff1c0a6399df5f9fb7c",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الصمغ الصناعي"
       ]
@@ -21805,13 +21805,13 @@
     {
       "canonicalKey": "athath-qdym",
       "nameAr": "أثاث قديم",
-      "nameEn": "أثاث قديم",
+      "nameEn": "antique wooden chair worn wood grain",
       "sourceName": "أثاث قديم",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/athath-qdym.webp",
+      "filename": "athath-qdym.webp",
+      "hash": "820caad0359fdd8a4c2cadc094fd23ddb32be586e21091ba62c2946af0542cba",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "أثاث قديم"
       ]
@@ -22099,13 +22099,13 @@
     {
       "canonicalKey": "atfaq-alaflam-alftwghrafyh",
       "nameAr": "إتفاق الأفلام الفتوغرافية",
-      "nameEn": "إتفاق الأفلام الفتوغرافية",
+      "nameEn": "curled brown photographic film strip with blank frames no text",
       "sourceName": "إتفاق الأفلام الفتوغرافية",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/atfaq-alaflam-alftwghrafyh.webp",
+      "filename": "atfaq-alaflam-alftwghrafyh.webp",
+      "hash": "341a1a2d3a1dc8214775587a1b3a1f32db7468c6084f3c47ed33f8f9e9ada88e",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "إتفاق الأفلام الفتوغرافية"
       ]
@@ -22197,13 +22197,13 @@
     {
       "canonicalKey": "atfaq-altwl",
       "nameAr": "اتفاق التول",
-      "nameEn": "اتفاق التول",
+      "nameEn": "white tulle mesh fabric gathered swatch",
       "sourceName": "اتفاق التول",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/atfaq-altwl.webp",
+      "filename": "atfaq-altwl.webp",
+      "hash": "163734f806bd872cfcb12712294a9d453a252eb9fbaca9c958dde502544a7853",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "اتفاق التول"
       ]
@@ -22211,13 +22211,13 @@
     {
       "canonicalKey": "atfaq-alty-shyrt",
       "nameAr": "اتفاق التي شيرت",
-      "nameEn": "اتفاق التي شيرت",
+      "nameEn": "folded plain white cotton T-shirt",
       "sourceName": "اتفاق التي شيرت",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/atfaq-alty-shyrt.webp",
+      "filename": "atfaq-alty-shyrt.webp",
+      "hash": "3059c20d817447b7504247ccaa337be7614771453dbc6379136ad32011591df5",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "اتفاق التي شيرت"
       ]
@@ -22225,13 +22225,13 @@
     {
       "canonicalKey": "atfaq-alkantara",
       "nameAr": "اتفاق الكانتارا",
-      "nameEn": "اتفاق الكانتارا",
+      "nameEn": "gray Alcantara microfiber suede swatch",
       "sourceName": "اتفاق الكانتارا",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/atfaq-alkantara.webp",
+      "filename": "atfaq-alkantara.webp",
+      "hash": "7bb51ac5a28f3a354dca85c34d8fdc3f6684b78f89f679bc683f486c6c943c21",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "اتفاق الكانتارا"
       ]
@@ -22239,13 +22239,13 @@
     {
       "canonicalKey": "ahmr-alshfah",
       "nameAr": "احمر الشفاة",
-      "nameEn": "احمر الشفاة",
+      "nameEn": "red lipstick wax stick alone without casing",
       "sourceName": "احمر الشفاة",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/ahmr-alshfah.webp",
+      "filename": "ahmr-alshfah.webp",
+      "hash": "35f0ff27438c31b60f3da379a631b15869769eef9adf1f6f772a5bbcd0b36b76",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "احمر الشفاة"
       ]
@@ -22407,13 +22407,13 @@
     {
       "canonicalKey": "alblastyk",
       "nameAr": "البلاستيك",
-      "nameEn": "البلاستيك",
+      "nameEn": "colorful plastic resin pellets small mound",
       "sourceName": "البلاستيك",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alblastyk.webp",
+      "filename": "alblastyk.webp",
+      "hash": "9c5bff0ff4b5c2313dfad0ecd313c74c8861511a0533cd5ccb425b83f3a249a5",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "البلاستيك"
       ]
@@ -22519,13 +22519,13 @@
     {
       "canonicalKey": "alhdyd-alsakhn",
       "nameAr": "الحديد الساخن",
-      "nameEn": "الحديد الساخن",
+      "nameEn": "small hot iron bar glowing orange at one end",
       "sourceName": "الحديد الساخن",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alhdyd-alsakhn.webp",
+      "filename": "alhdyd-alsakhn.webp",
+      "hash": "528f8c0fcbda77a0f26b4bbf391e6efb3cb0bbb4c67517d9ffa9ea36fb21bf1e",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الحديد الساخن"
       ]
@@ -22575,13 +22575,13 @@
     {
       "canonicalKey": "alhmm-albrkanyh",
       "nameAr": "الحمم البركانية",
-      "nameEn": "الحمم البركانية",
+      "nameEn": "small volcanic lava rock with molten orange fissures",
       "sourceName": "الحمم البركانية",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alhmm-albrkanyh.webp",
+      "filename": "alhmm-albrkanyh.webp",
+      "hash": "663c478e5f4ec91e298cd3962a4cc39afef5a41c9afe594f8edff35ac4d60d41",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الحمم البركانية"
       ]
@@ -22659,13 +22659,13 @@
     {
       "canonicalKey": "aldkhan",
       "nameAr": "الدخان",
-      "nameEn": "الدخان",
+      "nameEn": "soft gray smoke curl isolated transparent",
       "sourceName": "الدخان",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/aldkhan.webp",
+      "filename": "aldkhan.webp",
+      "hash": "edf24c57268e6ca836b27efb2aac786a43c4358daeff477e1b8e7efb33ef3e17",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الدخان"
       ]
@@ -22729,13 +22729,13 @@
     {
       "canonicalKey": "alsjayr",
       "nameAr": "السجائر",
-      "nameEn": "السجائر",
+      "nameEn": "two unbranded cigarettes no text no pack",
       "sourceName": "السجائر",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alsjayr.webp",
+      "filename": "alsjayr.webp",
+      "hash": "661059f81ac5fde787cdce3253145ece11d9a7576c3ab62e4416a640b526c019",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "السجائر"
       ]
@@ -22743,13 +22743,13 @@
     {
       "canonicalKey": "alsyjar-alkwby",
       "nameAr": "السيجار الكوبي",
-      "nameEn": "السيجار الكوبي",
+      "nameEn": "single brown hand rolled cigar no band",
       "sourceName": "السيجار الكوبي",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alsyjar-alkwby.webp",
+      "filename": "alsyjar-alkwby.webp",
+      "hash": "6ea700f7f068d7a76596f80e9d048e5c424adc0547953f780826160c28f5bea8",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "السيجار الكوبي"
       ]
@@ -22855,13 +22855,13 @@
     {
       "canonicalKey": "alasl-alaswd",
       "nameAr": "العسل الأسود",
-      "nameEn": "العسل الأسود",
+      "nameEn": "thick dark molasses swirl",
       "sourceName": "العسل الأسود",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alasl-alaswd.webp",
+      "filename": "alasl-alaswd.webp",
+      "hash": "d9e32a6ab9671cd4b81972f1617feea649574001a8d4d26c85bd0198e515ca88",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "العسل الأسود"
       ]
@@ -23121,13 +23121,13 @@
     {
       "canonicalKey": "almnswjat",
       "nameAr": "المنسوجات",
-      "nameEn": "المنسوجات",
+      "nameEn": "stack of small woven textile swatches different textures",
       "sourceName": "المنسوجات",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/almnswjat.webp",
+      "filename": "almnswjat.webp",
+      "hash": "0b8c3d5646159019aec8c8ce7864632cc442744537c6ec84b61cd1cff16093a4",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "المنسوجات"
       ]
@@ -23191,13 +23191,13 @@
     {
       "canonicalKey": "alnywbryn",
       "nameAr": "النيوبرين",
-      "nameEn": "النيوبرين",
+      "nameEn": "black neoprene foam fabric cut swatch showing thickness",
       "sourceName": "النيوبرين",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alnywbryn.webp",
+      "filename": "alnywbryn.webp",
+      "hash": "60a6beb3b196067e6bcb9b4bf12cb237336e785a7e11ab08f7bf146d775e9aad",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "النيوبرين"
       ]
