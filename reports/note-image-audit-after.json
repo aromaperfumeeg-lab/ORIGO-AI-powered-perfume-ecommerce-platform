@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-09-14T15:50:16.489Z",
+  "generatedAt": "2026-09-14T20:46:51.721Z",
   "scope": "Library plus persisted note overrides; SQLite opened read-only. Visual semantics are not certified by filenames or hashes.",
   "notes": 1883,
   "products": 5,
-  "valid": 1598,
-  "missing": 267,
+  "valid": 1614,
+  "missing": 251,
   "duplicateGroups": 9,
   "needsReview": 0,
   "duplicates": [
@@ -22113,13 +22113,13 @@
     {
       "canonicalKey": "atarat",
       "nameAr": "إطارات",
-      "nameEn": "إطارات",
+      "nameEn": "single black rubber car tire with tread no branding",
       "sourceName": "إطارات",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/atarat.webp",
+      "filename": "atarat.webp",
+      "hash": "70e9e0dae92a5a569745d9c5da576507308b32b69761bb1712c6fc7d70cf7655",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "إطارات"
       ]
@@ -22393,13 +22393,13 @@
     {
       "canonicalKey": "albrwbwlys",
       "nameAr": "البروبوليس",
-      "nameEn": "البروبوليس",
+      "nameEn": "brown propolis resin chunks",
       "sourceName": "البروبوليس",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/albrwbwlys.webp",
+      "filename": "albrwbwlys.webp",
+      "hash": "8410b3a61ebf5596c9a784952972f37006a33b18b5ee5df6bd15a31a2477f2cb",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "البروبوليس"
       ]
@@ -22421,13 +22421,13 @@
     {
       "canonicalKey": "althqab-almshtal",
       "nameAr": "الثقاب المشتعل",
-      "nameEn": "الثقاب المشتعل",
+      "nameEn": "single burning wooden match small flame",
       "sourceName": "الثقاب المشتعل",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/althqab-almshtal.webp",
+      "filename": "althqab-almshtal.webp",
+      "hash": "8a5016fe7105ac0eafc37147faa4c11d2ffe84b8b2d9ef045210bdfe8519ded5",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الثقاب المشتعل"
       ]
@@ -22435,13 +22435,13 @@
     {
       "canonicalKey": "althlj",
       "nameAr": "الثلج",
-      "nameEn": "الثلج",
+      "nameEn": "irregular clear ice chunks",
       "sourceName": "الثلج",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/althlj.webp",
+      "filename": "althlj.webp",
+      "hash": "705d3a2e08d19d70666371c5c989da4a09de4c47382451b13eb132febe4a9e6c",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الثلج"
       ]
@@ -22925,13 +22925,13 @@
     {
       "canonicalKey": "alqsh",
       "nameAr": "القش",
-      "nameEn": "القش",
+      "nameEn": "dry golden straw small bundle",
       "sourceName": "القش",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/alqsh.webp",
+      "filename": "alqsh.webp",
+      "hash": "a32614ef8ee3081713bf0a4ec0a1a843baf0b43234c515a2a2babd1f6dff1365",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "القش"
       ]
@@ -22995,13 +22995,13 @@
     {
       "canonicalKey": "allwlw",
       "nameAr": "اللؤلؤ",
-      "nameEn": "اللؤلؤ",
+      "nameEn": "small cluster lustrous natural pearls",
       "sourceName": "اللؤلؤ",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/allwlw.webp",
+      "filename": "allwlw.webp",
+      "hash": "f70399d133f7687c2fd6985c48fe6d081037ada47e7e45f51283f2e9cc9acb67",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "اللؤلؤ"
       ]
@@ -23051,13 +23051,13 @@
     {
       "canonicalKey": "almas-alaswd",
       "nameAr": "الماس الأسود",
-      "nameEn": "الماس الأسود",
+      "nameEn": "faceted black diamond",
       "sourceName": "الماس الأسود",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/almas-alaswd.webp",
+      "filename": "almas-alaswd.webp",
+      "hash": "db613eaf0fe108e37807bc30f692d9b4d6150d2d60dcce7c0b7e8a7aab120a30",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الماس الأسود"
       ]
@@ -23093,13 +23093,13 @@
     {
       "canonicalKey": "almkhml",
       "nameAr": "المخمل",
-      "nameEn": "المخمل",
+      "nameEn": "burgundy velvet folded fabric swatch",
       "sourceName": "المخمل",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/almkhml.webp",
+      "filename": "almkhml.webp",
+      "hash": "e2c7aadb0c574d66692c588c77f11dfbd3fcff4edad01641aa232d1ce6677af3",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "المخمل"
       ]
@@ -23107,13 +23107,13 @@
     {
       "canonicalKey": "almlh",
       "nameAr": "الملح",
-      "nameEn": "الملح",
+      "nameEn": "coarse white salt crystals mound",
       "sourceName": "الملح",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/almlh.webp",
+      "filename": "almlh.webp",
+      "hash": "486b9ab96137a4fb74eb7203645f3c0812735eb6f14ad8c3cfecd00750609dd6",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "الملح"
       ]
@@ -24969,13 +24969,13 @@
     {
       "canonicalKey": "ktb-qdymh",
       "nameAr": "كتب قديمة",
-      "nameEn": "كتب قديمة",
+      "nameEn": "two antique closed books with worn blank leather covers no letters",
       "sourceName": "كتب قديمة",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/ktb-qdymh.webp",
+      "filename": "ktb-qdymh.webp",
+      "hash": "6509ae2975ef523174bbf9897504b007c849da893ce67b484fba113f8d7788e8",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "كتب قديمة"
       ]
@@ -25669,13 +25669,13 @@
     {
       "canonicalKey": "awraq-alghabh-almtsaqth",
       "nameAr": "أوراق الغابة المتساقطة",
-      "nameEn": "أوراق الغابة المتساقطة",
+      "nameEn": "fallen forest leaves small cluster brown oak and maple leaves",
       "sourceName": "أوراق الغابة المتساقطة",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/awraq-alghabh-almtsaqth.webp",
+      "filename": "awraq-alghabh-almtsaqth.webp",
+      "hash": "82cc460e92f2c57dbed92549599b385177f1b8096aafd4b08c8e442b942bdaf5",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "أوراق الغابة المتساقطة"
       ]
@@ -25725,13 +25725,13 @@
     {
       "canonicalKey": "albtata-alhlwh",
       "nameAr": "البطاطا الحلوة",
-      "nameEn": "البطاطا الحلوة",
+      "nameEn": "sweet potato whole and cut orange flesh",
       "sourceName": "البطاطا الحلوة",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/albtata-alhlwh.webp",
+      "filename": "albtata-alhlwh.webp",
+      "hash": "855593e0d7936cea34781feee44e3eafd95f496eec98bb97acd19391f1fafef7",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "البطاطا الحلوة"
       ]
@@ -25809,13 +25809,13 @@
     {
       "canonicalKey": "bskwyt-alskr",
       "nameAr": "بسكويت السكر",
-      "nameEn": "بسكويت السكر",
+      "nameEn": "sugar cookies sprinkled sugar",
       "sourceName": "بسكويت السكر",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/bskwyt-alskr.webp",
+      "filename": "bskwyt-alskr.webp",
+      "hash": "cf708f4bc825857088ee37a23d968d472e28b09ab8268ebd0d18827bd7ec0b24",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "بسكويت السكر"
       ]
@@ -25893,13 +25893,13 @@
     {
       "canonicalKey": "zbady-alfrawlh",
       "nameAr": "زبادي الفراولة",
-      "nameEn": "زبادي الفراولة",
+      "nameEn": "pink strawberry yogurt dollop and strawberry halves",
       "sourceName": "زبادي الفراولة",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/zbady-alfrawlh.webp",
+      "filename": "zbady-alfrawlh.webp",
+      "hash": "4212c92e99b37a6768dc420dbf19c69e8aed30de54b8346e9c195428829f58fa",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "زبادي الفراولة"
       ]
@@ -25935,13 +25935,13 @@
     {
       "canonicalKey": "sfar-albyd-almmlh",
       "nameAr": "صفار البيض المملح",
-      "nameEn": "صفار البيض المملح",
+      "nameEn": "salted egg yolks deep orange halved",
       "sourceName": "صفار البيض المملح",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/sfar-albyd-almmlh.webp",
+      "filename": "sfar-albyd-almmlh.webp",
+      "hash": "7972c0b21a0efe2073b426fd6ba26c839dedfb5f2ec2c4b7087cb92dc78c229c",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "صفار البيض المملح"
       ]
@@ -25991,13 +25991,13 @@
     {
       "canonicalKey": "mwtshy",
       "nameAr": "موتشي",
-      "nameEn": "موتشي",
+      "nameEn": "white mochi rice cakes one cut open",
       "sourceName": "موتشي",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/mwtshy.webp",
+      "filename": "mwtshy.webp",
+      "hash": "da3605f2e01dc4e94176b839601d92b194cd0d471713181dc56487b0a3741ce4",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "موتشي"
       ]
