@@ -121,6 +121,8 @@ import {
   markOrderViewed,
   quoteCheckout,
   replaceCommerceCart,
+  productReviews,
+  submitOrderItemReview,
   submitFeedback,
   syncWishlist,
   updateCheckoutSettings,
@@ -1809,6 +1811,23 @@ async function handleAPI(request, response, url, origin) {
       console.error("[ORIGO PRODUCT]", error.message);
       return jsonResponse(response, 400, { error: `تعذر حفظ المنتج: ${error.message}` }, origin);
     }
+  }
+
+  const accountItemReviewMatch = url.pathname.match(/^\/api\/account\/order-items\/(\d+)\/review$/);
+  if (accountItemReviewMatch && request.method === "POST") {
+    const user = requireUser(request, response, origin);
+    if (!user) return;
+    try {
+      const body = await readJSONBody(request);
+      return jsonResponse(response, 201, { review: submitOrderItemReview(user.id, accountItemReviewMatch[1], body), dashboard: accountDashboard(user.id) }, origin);
+    } catch (error) {
+      return jsonResponse(response, error.code === "ORDER_NOT_DELIVERED" ? 409 : 400, { error: error.message, code:error.code || "REVIEW_FAILED" }, origin);
+    }
+  }
+
+  const productReviewsMatch = url.pathname.match(/^\/api\/products\/([^/]+)\/reviews$/);
+  if (productReviewsMatch && request.method === "GET") {
+    return jsonResponse(response, 200, productReviews(decodeURIComponent(productReviewsMatch[1])), origin);
   }
 
   const adminProductImagesMatch = url.pathname.match(/^\/api\/admin\/products\/([^/]+)\/images$/);

@@ -6,7 +6,7 @@
     ["alternatives.js?v=9", /\/(?:alternatives|perfume)(?:\/|$)/],
     ["performance-insights.js?v=2", /\/performance(?:\/|$)/],
     ["commerce.js?v=3", /\/(?:cart|checkout|payment|track(?:ing)?|orders?)(?:\/|$)/],
-    ["account.js?v=3", /\/(?:account|login|register|profile)(?:\/|$)/]
+    ["account.js?v=4", /\/(?:account|login|register|profile)(?:\/|$)/]
   ];
   const routeStyles = [
     ["catalog", /^\/(?:perfumes|search|brands)(?:\/|$)/],

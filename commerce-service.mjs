@@ -740,6 +740,36 @@ export function submitFeedback(token,input={}){
   return {ok:true,supportCase};
 }
 
+export function productReviews(productId){
+  const id=clean(productId,120);
+  const rows=db.prepare(`SELECT r.id,r.rating,r.review_text reviewText,r.verified_purchase verifiedPurchase,r.created_at createdAt,u.name customerName
+    FROM product_reviews r LEFT JOIN users u ON u.id=r.customer_id
+    WHERE r.product_id=? AND r.moderation_status='approved' ORDER BY datetime(r.created_at) DESC,r.id DESC LIMIT 100`).all(id)
+    .map(row=>({...row,id:Number(row.id),rating:Number(row.rating),verifiedPurchase:Boolean(row.verifiedPurchase),customerName:row.customerName||"عميل ORIGO"}));
+  const count=rows.length,average=count?rows.reduce((sum,row)=>sum+row.rating,0)/count:0;
+  return {summary:{count,average:Math.round(average*10)/10},reviews:rows};
+}
+
+export function submitOrderItemReview(userId,orderItemId,input={}){
+  const row=db.prepare(`SELECT i.id,i.order_id,i.product_id,o.workflow_status,o.user_id FROM order_items i JOIN orders o ON o.id=i.order_id WHERE i.id=?`).get(Number(orderItemId));
+  if(!row||Number(row.user_id)!==Number(userId))throw Object.assign(new Error("عنصر الطلب غير موجود."),{code:"ORDER_ITEM_NOT_FOUND"});
+  if(row.workflow_status!=="delivered")throw Object.assign(new Error("يمكن تقييم العطر بعد استلام الطلب فقط."),{code:"ORDER_NOT_DELIVERED"});
+  const rating=Math.floor(number(input.rating));if(rating<1||rating>5)throw Object.assign(new Error("اختر تقييمًا من نجمة إلى خمس نجوم."),{code:"INVALID_RATING"});
+  db.prepare(`INSERT INTO product_reviews(order_id,order_item_id,product_id,customer_id,rating,review_text,verified_purchase,moderation_status)
+    VALUES(?,?,?,?,?,?,1,'approved') ON CONFLICT(order_item_id) DO UPDATE SET rating=excluded.rating,review_text=excluded.review_text,moderation_status='approved'`)
+    .run(Number(row.order_id),Number(row.id),row.product_id,Number(userId),rating,clean(input.reviewText,1000));
+  return db.prepare("SELECT id,order_item_id orderItemId,product_id productId,rating,review_text reviewText,verified_purchase verifiedPurchase,created_at createdAt FROM product_reviews WHERE order_item_id=?").get(Number(row.id));
+}
+
+function customerFragranceProfile(userId){
+  const rows=db.prepare(`SELECT r.rating,r.product_id productId,p.name_ar nameAr,p.name_en nameEn,p.image,p.notes_ar_json notesArJson,p.notes_en_json notesEnJson,p.catalog_json catalogJson
+    FROM product_reviews r LEFT JOIN products p ON p.id=r.product_id WHERE r.customer_id=? ORDER BY datetime(r.created_at) DESC`).all(Number(userId));
+  const countNotes=(selected)=>{const counts=new Map();selected.forEach(row=>{const catalog=json(row.catalogJson,{});const notes=[...json(row.notesArJson,[]),...json(row.notesEnJson,[]),...(catalog.mainIngredients||[])];notes.forEach(note=>{const key=clean(note,80);if(key)counts.set(key,(counts.get(key)||0)+1);});});return [...counts].sort((a,b)=>b[1]-a[1]).slice(0,8).map(([name,count])=>({name,count}));};
+  const liked=rows.filter(row=>Number(row.rating)>=4),disliked=rows.filter(row=>Number(row.rating)<=2);
+  const perfume=row=>({id:row.productId,nameAr:row.nameAr||"",nameEn:row.nameEn||"",image:row.image||"",rating:Number(row.rating)});
+  return {ratedCount:rows.length,likedNotes:countNotes(liked),dislikedNotes:countNotes(disliked),likedPerfumes:liked.slice(0,6).map(perfume),dislikedPerfumes:disliked.slice(0,6).map(perfume)};
+}
+
 export function feedbackAnalytics(periodDays=90){
   const days=Math.max(1,Math.min(3650,Number(periodDays)||90));const rows=db.prepare(`SELECT * FROM experience_feedback WHERE datetime(created_at)>=datetime('now',?)`).all(`-${days} days`);const count=rows.length;
   const avg=(key)=>count?rows.reduce((sum,row)=>sum+number(row[key]),0)/rows.filter(row=>row[key]!=null).length||0:0;
@@ -777,7 +807,9 @@ export function accountDashboard(userId){
   const notifications=db.prepare("SELECT id,type,title_ar titleAr,title_en titleEn,body_ar bodyAr,body_en bodyEn,read_at readAt,created_at createdAt FROM customer_notifications WHERE user_id=? ORDER BY id DESC LIMIT 20").all(Number(userId)).map(row=>({...row,id:Number(row.id)}));
   const wishlistCount=Number(db.prepare("SELECT COUNT(*) count FROM customer_wishlist WHERE user_id=?").get(Number(userId)).count);
   const addresses=listSavedAddresses(userId);const paymentMethods=db.prepare("SELECT id,provider,brand,last4,expiry_label expiryLabel,is_default isDefault FROM customer_payment_methods WHERE user_id=? ORDER BY is_default DESC,id DESC").all(Number(userId)).map(row=>({...row,id:Number(row.id),isDefault:Boolean(row.isDefault)}));
-  return {customer:{id:Number(user.id),name:user.name,email:user.email,phone:user.phone||"",avatarUrl:user.avatar_url||"",createdAt:user.created_at},stats:{totalOrders:orders.length,inShipping:orders.filter(order=>inShipping.has(order.status)).length,delivered:orders.filter(order=>order.status==="delivered").length,notificationsUnread:notifications.filter(item=>!item.readAt).length,wishlistCount},loyalty:loyaltyFor(userId),recentOrders:orders.slice(0,4),notifications,addresses,paymentMethods};
+  const reviews=db.prepare(`SELECT r.id,r.order_item_id orderItemId,r.product_id productId,r.rating,r.review_text reviewText,r.created_at createdAt,p.name_ar nameAr,p.name_en nameEn,p.image FROM product_reviews r LEFT JOIN products p ON p.id=r.product_id WHERE r.customer_id=? ORDER BY datetime(r.created_at) DESC`).all(Number(userId)).map(row=>({...row,id:Number(row.id),rating:Number(row.rating)}));
+  const reviewByItem=new Map(reviews.map(review=>[Number(review.orderItemId),review]));orders.forEach(order=>order.items.forEach(item=>{item.review=reviewByItem.get(Number(item.id))||null;item.canReview=order.status==="delivered";}));
+  return {customer:{id:Number(user.id),name:user.name,email:user.email,phone:user.phone||"",avatarUrl:user.avatar_url||"",createdAt:user.created_at},stats:{totalOrders:orders.length,inShipping:orders.filter(order=>inShipping.has(order.status)).length,delivered:orders.filter(order=>order.status==="delivered").length,notificationsUnread:notifications.filter(item=>!item.readAt).length,wishlistCount},loyalty:loyaltyFor(userId),recentOrders:orders.slice(0,4),orders,notifications,addresses,paymentMethods,reviews,fragranceProfile:customerFragranceProfile(userId)};
 }
 
 export function syncWishlist(userId,productIds=[]){

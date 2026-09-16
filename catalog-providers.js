@@ -109,10 +109,84 @@
   function normalize(value) {
     return String(value || "")
       .normalize("NFKD")
-      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[\u0300-\u036f\u0610-\u061a\u064b-\u065f\u0670\u06d6-\u06ed]/g, "")
+      .replace(/ـ/g, "")
+      .replace(/[أإآٱ]/g, "ا")
+      .replace(/[ؤ]/g, "و")
+      .replace(/[ئىي]/g, "ي")
+      .replace(/[ة]/g, "ه")
+      .replace(/[ک]/g, "ك")
+      .replace(/[گ]/g, "ك")
+      .replace(/[پ]/g, "ب")
+      .replace(/[ڤ]/g, "ف")
+      .replace(/[٠۰]/g, "0").replace(/[١۱]/g, "1").replace(/[٢۲]/g, "2")
+      .replace(/[٣۳]/g, "3").replace(/[٤۴]/g, "4").replace(/[٥۵]/g, "5")
+      .replace(/[٦۶]/g, "6").replace(/[٧۷]/g, "7").replace(/[٨۸]/g, "8").replace(/[٩۹]/g, "9")
       .replace(/[^\p{L}\p{N}]+/gu, " ")
+      .replace(/\s+/g, " ")
       .trim()
       .toLowerCase();
+  }
+
+  const ENGLISH_TO_ARABIC_KEYS = {
+    q:"ض", w:"ص", e:"ث", r:"ق", t:"ف", y:"غ", u:"ع", i:"ه", o:"خ", p:"ح", "[":"ج", "]":"د",
+    a:"ش", s:"س", d:"ي", f:"ب", g:"ل", h:"ا", j:"ت", k:"ن", l:"م", ";":"ك", "'":"ط",
+    z:"ئ", x:"ء", c:"ؤ", v:"ر", b:"لا", n:"ى", m:"ة", ",":"و", ".":"ز", "/":"ظ"
+  };
+  const ARABIC_TO_ENGLISH_KEYS = Object.fromEntries(Object.entries(ENGLISH_TO_ARABIC_KEYS).filter(([, value]) => value.length === 1).map(([key, value]) => [value, key]));
+
+  function swapKeyboardLayout(value, direction) {
+    const map = direction === "toArabic" ? ENGLISH_TO_ARABIC_KEYS : ARABIC_TO_ENGLISH_KEYS;
+    return [...String(value || "")].map((character) => map[character.toLowerCase()] || character).join("");
+  }
+
+  function searchVariants(value) {
+    const raw = String(value || "").trim();
+    const variants = [raw];
+    if (/[a-z]/i.test(raw)) variants.push(swapKeyboardLayout(raw, "toArabic"));
+    if (/[\u0600-\u06ff]/.test(raw)) variants.push(swapKeyboardLayout(raw, "toEnglish"));
+    return [...new Set(variants.map(normalize).filter(Boolean))];
+  }
+
+  function editDistance(left, right) {
+    const a = normalize(left), b = normalize(right);
+    const row = Array.from({ length:b.length + 1 }, (_, index) => index);
+    for (let i = 1; i <= a.length; i += 1) {
+      let previous = row[0]; row[0] = i;
+      for (let j = 1; j <= b.length; j += 1) {
+        const current = row[j];
+        row[j] = Math.min(row[j] + 1, row[j - 1] + 1, previous + (a[i - 1] === b[j - 1] ? 0 : 1));
+        previous = current;
+      }
+    }
+    return row[b.length];
+  }
+
+  function searchScore(query, values) {
+    const needles = searchVariants(query);
+    if (!needles.length) return 0;
+    const candidates = (values || []).flatMap((value) => {
+      const normalized = normalize(value);
+      return normalized ? [normalized, ...normalized.split(" ")] : [];
+    });
+    let best = 0;
+    needles.forEach((needle) => {
+      const words = needle.split(" ").filter(Boolean);
+      candidates.forEach((candidate) => {
+        if (candidate === needle) best = Math.max(best, 120);
+        else if (candidate.startsWith(needle)) best = Math.max(best, 105 - Math.min(20, candidate.length - needle.length));
+        else if (candidate.includes(needle)) best = Math.max(best, 88 - Math.min(20, candidate.length - needle.length));
+        if (words.length > 1 && words.every((word) => candidate.includes(word))) best = Math.max(best, 92);
+        words.forEach((word) => {
+          if (word.length < 3) return;
+          const candidateWords = candidate.split(" ");
+          const distance = Math.min(...candidateWords.map((candidateWord) => editDistance(word, candidateWord)));
+          const tolerance = Math.max(1, Math.floor(word.length * .25));
+          if (distance <= tolerance) best = Math.max(best, 72 - distance * 8);
+        });
+      });
+    });
+    return best;
   }
 
   function unique(values) {
@@ -672,6 +746,8 @@
     emptyProduct,
     computeConfidence,
     normalize,
+    searchVariants,
+    searchScore,
     aiStatus,
     fragranticaReference,
     connectAuthorizedFragranticaAPI

@@ -4614,7 +4614,9 @@ function catalogProductText(product) {
   return ORIGOCatalog.normalize([
     product.nameAr, product.nameEn, product.brand, product.type, product.typeEn, product.gender,
     product.concentration, product.familyAr, product.familyEn, product.fragranceFamily,
-    ...(product.scentCharacterAr || []), ...(product.scentCharacterEn || []), ...(Array.isArray(mainAccords) ? mainAccords : [mainAccords])
+    ...(product.scentCharacterAr || []), ...(product.scentCharacterEn || []), ...(Array.isArray(mainAccords) ? mainAccords : [mainAccords]),
+    ...(product.searchAliases || []), ...(product.misspellings || []), ...(product.notesAr || []), ...(product.notesEn || []),
+    ...(product.mainIngredients || []), ...(product.tags || [])
   ].filter(Boolean).join(" "));
 }
 
@@ -4689,7 +4691,7 @@ function catalogFilteredProducts() {
   const perfumeOnly = mergeStoreSettings(state.adminWorkspace.settings || {}).perfumeOnlyMode !== false;
   const products = state.products.filter((product) => (!perfumeOnly || product.category === "perfume") && (state.storefrontCategory === "all" || product.category === state.storefrontCategory))
     .filter(catalogMatchesQuick)
-    .filter((product) => !query || catalogProductText(product).includes(query))
+    .filter((product) => !query || ORIGOCatalog.searchScore(state.catalogQuery, smartSearchProductValues(product)) > 0)
     .filter((product) => ["gender", "brand", "concentration", "family", "accords", "character", "time", "occasion", "longevity", "projection"].every((key) => {
       const selected = filters[key] || [];
       if (!selected.length) return true;
@@ -4703,6 +4705,7 @@ function catalogFilteredProducts() {
   const landing = state.seoCatalogLanding || "";
   const landingProducts = ["day","night"].includes(landing) ? products.filter((product) => product.usageTimeScores?.[landing] != null && Number(product.usageTimeScores[landing]) > 0) : products;
   const sorted = [...landingProducts];
+  if (query && state.catalogSort === "relevance") sorted.sort((a, b) => ORIGOCatalog.searchScore(state.catalogQuery, smartSearchProductValues(b)) - ORIGOCatalog.searchScore(state.catalogQuery, smartSearchProductValues(a)));
   if (["winter","autumn","spring","summer"].includes(landing)) sorted.sort((a,b)=>Number(b.seasonScores?.[landing]??-1)-Number(a.seasonScores?.[landing]??-1));
   if (["day","night"].includes(landing)) sorted.sort((a,b)=>Number(b.usageTimeScores?.[landing]??-1)-Number(a.usageTimeScores?.[landing]??-1));
   if (state.catalogSort === "price-asc") sorted.sort((a, b) => Number(a.price) - Number(b.price));
@@ -5049,9 +5052,9 @@ function renderCatalogAutocomplete(query) {
   const normalized = ORIGOCatalog.normalize(query);
   if (!normalized) { holder.hidden = true; holder.innerHTML = ""; return; }
   const perfumeOnly = mergeStoreSettings(state.adminWorkspace.settings || {}).perfumeOnlyMode !== false;
-  const products = state.products.filter((product) => (!perfumeOnly || product.category === "perfume") && catalogProductText(product).includes(normalized)).slice(0, 4);
-  const brands = catalogOptionCounts("brand").filter(([brand]) => ORIGOCatalog.normalize(brand).includes(normalized)).slice(0, 4);
-  const notes = catalogOptionCounts("notes").filter(([note]) => ORIGOCatalog.normalize(note).includes(normalized)).slice(0, 4);
+  const products = state.products.map((product) => ({ product, score:ORIGOCatalog.searchScore(query, smartSearchProductValues(product)) })).filter(({ product, score }) => (!perfumeOnly || product.category === "perfume") && score > 0).sort((a,b) => b.score - a.score).slice(0, 4).map(({ product }) => product);
+  const brands = catalogOptionCounts("brand").map((item) => ({ item, score:ORIGOCatalog.searchScore(query, [item[0]]) })).filter(({ score }) => score > 0).sort((a,b) => b.score - a.score).slice(0, 4).map(({ item }) => item);
+  const notes = catalogOptionCounts("notes").map((item) => ({ item, score:ORIGOCatalog.searchScore(query, [item[0]]) })).filter(({ score }) => score > 0).sort((a,b) => b.score - a.score).slice(0, 4).map(({ item }) => item);
   const groups = [];
   if (products.length) groups.push([state.lang === "ar" ? "منتجات" : "Products", products.map((product) => `<button role="option" data-action="catalog-suggestion-product" data-id="${escapeHTML(product.id)}"><img src="${escapeHTML(product.image || PRODUCT_IMAGE_PLACEHOLDER)}" alt=""/><span><b>${escapeHTML(localizedProductName(product))}</b><small>${escapeHTML(product.brand)}</small></span></button>`).join("")]);
   if (brands.length) groups.push([state.lang === "ar" ? "ماركات" : "Brands", brands.map(([brand, count]) => `<button role="option" data-action="catalog-suggestion-filter" data-key="brand" data-value="${escapeHTML(brand)}"><span><b>${escapeHTML(brand)}</b><small>${count} ${state.lang === "ar" ? "منتج" : "products"}</small></span></button>`).join("")]);
@@ -7115,12 +7118,14 @@ function showProductDetails(product, shouldOpen = true) {
       ${productProfileAccordions(product)}
       ${productIngredientsMarkup(product)}
       ${window.ORIGOAlternatives?.productPanel?.(product) || productFragranceRelationshipsMarkup(product)}
+      <section class="pdp-customer-reviews" id="pdp-customer-reviews" data-product-id="${escapeHTML(product.id)}" aria-live="polite"><div class="pdp-reviews-empty"><p>${isArabic ? "جاري تحميل تقييمات العملاء…" : "Loading customer reviews…"}</p></div></section>
     </main>`;
   setMobileProductColumns(document.documentElement.dataset.productCardView === "one" ? "1" : "2", false);
   $("#product-dialog-content").querySelectorAll("img").forEach((image) => image.addEventListener("error", () => (image.src = PRODUCT_IMAGE_PLACEHOLDER), { once: true }));
   bindProductGallerySwipe();
   rememberProduct(product.id);
   productStructuredData(product, media);
+  import("./product-reviews.js?v=1").then(({ loadProductCustomerReviews }) => loadProductCustomerReviews(product.id, { api, lang:state.lang, escapeHTML, formatNumber })).catch(() => {});
   if (shouldOpen) {
     saveNavigationSnapshot();
     const slug = encodeURIComponent(product.slug || product.id);
@@ -7391,13 +7396,12 @@ function toggleWishlistDrawer(force) {
 }
 
 function searchProducts(query) {
-  const normalized = ORIGOCatalog.normalize(query);
-  if (!normalized) return [];
-  return state.products.filter((product) =>
-    ORIGOCatalog.normalize([product.nameAr, product.nameEn, product.brand, ...(product.notesAr || []), ...(product.notesEn || [])]
-      .join(" "))
-      .includes(normalized)
-  );
+  if (!ORIGOCatalog.normalize(query)) return [];
+  return state.products
+    .map((product) => ({ product, score:smartSearchScore(query, smartSearchProductValues(product)) }))
+    .filter(({ score }) => score > 0)
+    .sort((a, b) => b.score - a.score)
+    .map(({ product }) => product);
 }
 
 function smartSearchDistance(left, right) {
@@ -7419,6 +7423,7 @@ function smartSearchDistance(left, right) {
 }
 
 function smartSearchScore(query, values) {
+  if (typeof ORIGOCatalog.searchScore === "function") return ORIGOCatalog.searchScore(query, values);
   const needle = ORIGOCatalog.normalize(query);
   if (!needle) return 0;
   let best = 0;

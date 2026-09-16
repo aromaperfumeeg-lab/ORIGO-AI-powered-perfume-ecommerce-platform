@@ -1,4 +1,4 @@
-const CACHE_VERSION = "origo-static-v172";
+const CACHE_VERSION = "origo-static-v173";
 const APP_SHELL = [
   "/chunks/styles.min.css?v=16", "/chunks/home.min.css?v=6", "/chunks/shell.min.css?v=4",
   "/chunks/home-gender-slider.min.css?v=4", "/chunks/origo-identity.min.css?v=4",

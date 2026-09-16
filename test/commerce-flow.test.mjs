@@ -80,6 +80,9 @@ test("guest checkout, status history, feedback, complaint and analytics share re
   assert.equal(account.stats.delivered, 1);
   assert.equal(account.loyalty.balance, created.order.loyaltyPoints);
   assert.equal(account.recentOrders[0].orderNumber, created.order.orderNumber);
+  assert.equal(account.orders[0].items[0].canReview, true);
+  assert.equal(account.reviews[0].rating, 5);
+  assert.equal(account.fragranceProfile.ratedCount, 1);
   assert.ok(account.loyalty.currentTier);
   assert.equal(service.checkoutSettings().freeShippingThreshold, 3000);
 
@@ -108,6 +111,11 @@ test("guest checkout, status history, feedback, complaint and analytics share re
   });
   assert.equal(finderSession.currentStep, 4);
   assert.equal(service.getFragranceFinderSession(created.order.userId).answers.forWhom, "unisex");
+  const updatedReview = service.submitOrderItemReview(created.order.userId, created.order.items[0].id, { rating:4, reviewText:"عطر جميل وثباته جيد" });
+  assert.equal(Number(updatedReview.rating), 4);
+  const publicReviews = service.productReviews(product.id);
+  assert.equal(publicReviews.summary.count, 1);
+  assert.equal(publicReviews.reviews[0].verifiedPurchase, true);
 });
 
 test("order center supports manual drafts, search, audit, notes, notifications and safe inventory release", async () => {
