@@ -12,9 +12,9 @@ test("runtime checks the service worker immediately and reloads once after an up
   assert.match(deferred, /register\("\/sw\.js", \{ updateViaCache:"none" \}\)/);
   assert.match(deferred, /registration\.update\(\)/);
   assert.match(deferred, /addEventListener\("controllerchange"/);
-  assert.match(deferred, /origoRuntimeReload-v172/);
+  assert.match(deferred, /origoRuntimeReload-v174/);
   assert.match(deferred, /location\.reload\(\)/);
-  assert.match(html, /deferred-modules\.js\?v=21/);
-  assert.match(worker, /origo-static-v172/);
-  assert.match(worker, /deferred-modules\.js\?v=21/);
+  assert.match(html, /deferred-modules\.js\?v=22/);
+  assert.match(worker, /origo-static-v174/);
+  assert.match(worker, /deferred-modules\.js\?v=22/);
 });

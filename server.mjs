@@ -2,7 +2,7 @@ import { createServer } from "node:http";
 import { cp, mkdir, readFile, stat, writeFile } from "node:fs/promises";
 import { dirname, extname, join, normalize, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
-import { randomBytes } from "node:crypto";
+import { createHash, randomBytes } from "node:crypto";
 import { brotliCompress, constants as zlibConstants, gzip, gzipSync } from "node:zlib";
 import { promisify } from "node:util";
 import {
@@ -47,6 +47,7 @@ import {
   findUserByEmail,
   findUserForPasswordReset,
   getAdminWorkspaceState,
+  storefrontContentRevision,
   getAlternative,
   getFragranceNotesState,
   getStorefrontMedia,
@@ -2207,6 +2208,8 @@ async function handleAPI(request, response, url, origin) {
 
 const staticCompressionCache = new Map();
 const STATIC_COMPRESSION_CACHE_LIMIT = 80;
+const storefrontHtmlCache = new Map();
+const STOREFRONT_HTML_CACHE_LIMIT = 40;
 
 function cacheCompressedStatic(key, body) {
   if (staticCompressionCache.size >= STATIC_COMPRESSION_CACHE_LIMIT) {
@@ -2222,14 +2225,15 @@ async function serveStatic(request, response, url) {
   const isStorefrontRoute = /^\/(?:perfumes(?:\/[a-z0-9-]+)?|perfume\/[a-z0-9-]+|brands\/[a-z0-9-]+|search)\/?$/i.test(url.pathname);
   const isCommerceRoute = /^\/(checkout|order\/[^/]+|feedback\/[^/]+|feedback-insights|account(?:\/.*)?|fragrance-finder\/[a-z-]+|alternatives(?:\/compare\/[^/]+)?)\/?$/i.test(url.pathname);
   const isAdminRoute = /^\/admin\/orders(?:\/[^/]+)?\/?$/i.test(url.pathname);
-  const publicProducts = isStorefrontRoute ? listProducts() : [];
+  let publicProducts;
+  const getPublicProducts = () => publicProducts ||= (isStorefrontRoute || url.pathname === "/" ? listProducts() : []);
   const routeSlug = (value) => String(value || "").normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
   const productRouteMatch = url.pathname.match(/^\/perfume\/([^/]+)\/?$/i);
   const brandRouteMatch = url.pathname.match(/^\/brands\/([^/]+)\/?$/i);
   const routeExists = productRouteMatch
-    ? publicProducts.some((product) => [product.slug, product.id].some((value) => String(value || "") === decodeURIComponent(productRouteMatch[1])))
+    ? getPublicProducts().some((product) => [product.slug, product.id].some((value) => String(value || "") === decodeURIComponent(productRouteMatch[1])))
     : brandRouteMatch
-      ? publicProducts.some((product) => [product.brandEn, product.brand, product.brandAr].some((value) => routeSlug(value) === brandRouteMatch[1].toLowerCase()))
+      ? getPublicProducts().some((product) => [product.brandEn, product.brand, product.brandAr].some((value) => routeSlug(value) === brandRouteMatch[1].toLowerCase()))
       : true;
   const routeStatus = routeExists ? 200 : 404;
   const pathname = decodeURIComponent(url.pathname === "/" || isNotesRoute || isBenefitRoute || isStorefrontRoute || isCommerceRoute || isAdminRoute ? "/index.html" : url.pathname);
@@ -2251,24 +2255,33 @@ async function serveStatic(request, response, url) {
     const extension = extname(filePath).toLowerCase();
     const isHtml = extension === ".html";
     if (isHtml && cleanPath === "index.html") {
-      const { workspace } = await migrateWorkspaceStorefrontMedia(getAdminWorkspaceState());
-      const hero = (Array.isArray(workspace?.settings?.homeMedia) ? workspace.settings.homeMedia : [])
-        .filter((item) => item?.placement === "hero" && item?.url && item?.active !== false)
-        .sort((a, b) => Number(a?.sortOrder || 0) - Number(b?.sortOrder || 0))[0];
       const mobileRequest = /Android|iPhone|iPad|iPod|Mobile/i.test(String(request.headers["user-agent"] || ""));
-      const initialHeroUrl = mobileRequest && hero?.mobileUrl ? hero.mobileUrl : hero?.url;
-      const safeHeroUrl = String(initialHeroUrl || "").replace(/["'()\\\n\r]/g, "").replace(/&/g, "&amp;").replace(/</g, "%3C").replace(/>/g, "%3E");
-      let html = data.toString("utf8")
-        .replace("ORIGO_INITIAL_HERO_STATE", hero ? "data-initial-hero=\"true\"" : "hidden data-initial-hero=\"false\"")
-        .replace("ORIGO_INITIAL_HERO_STYLE", hero ? `style=\"background-image:url(&quot;${safeHeroUrl}&quot;)\"` : "")
-        .replace("<!-- ORIGO_INITIAL_HERO_PRELOAD -->", hero ? `<link rel=\"preload\" as=\"image\" href=\"${safeHeroUrl}\" fetchpriority=\"high\" />` : "");
-      if (productRouteMatch) html = html.replace(/<div class="origo-home" id="home">[\s\S]*?<\/div>\s*<template id="retired-home-content">/, '<div class="origo-home" id="home" hidden data-route-pruned="product"></div><template id="retired-home-content">');
-      if (!routeExists) html = html.replace('<main id="storefront-main">', `<main id="storefront-main"><section class="route-not-found" role="main"><h1>404</h1><p>الصفحة المطلوبة غير موجودة.</p><a href="/">العودة إلى الرئيسية</a></section>`);
-      data = Buffer.from(injectSeoIntoHtml(html, seoForRoute(url.pathname, listProducts())));
+      const htmlCacheKey = `${url.pathname}:${mobileRequest ? "mobile" : "desktop"}:${storefrontContentRevision()}:${Math.floor(info.mtimeMs)}`;
+      const cachedHtml = storefrontHtmlCache.get(htmlCacheKey);
+      if (cachedHtml) data = cachedHtml;
+      else {
+        const { workspace } = await migrateWorkspaceStorefrontMedia(getAdminWorkspaceState());
+        const hero = (Array.isArray(workspace?.settings?.homeMedia) ? workspace.settings.homeMedia : [])
+          .filter((item) => item?.placement === "hero" && item?.url && item?.active !== false)
+          .sort((a, b) => Number(a?.sortOrder || 0) - Number(b?.sortOrder || 0))[0];
+        const initialHeroUrl = mobileRequest && hero?.mobileUrl ? hero.mobileUrl : hero?.url;
+        const safeHeroUrl = String(initialHeroUrl || "").replace(/["'()\\\n\r]/g, "").replace(/&/g, "&amp;").replace(/</g, "%3C").replace(/>/g, "%3E");
+        let html = data.toString("utf8")
+          .replace("ORIGO_INITIAL_HERO_STATE", hero ? "data-initial-hero=\"true\"" : "hidden data-initial-hero=\"false\"")
+          .replace("ORIGO_INITIAL_HERO_STYLE", hero ? `style=\"background-image:url(&quot;${safeHeroUrl}&quot;)\"` : "")
+          .replace("<!-- ORIGO_INITIAL_HERO_PRELOAD -->", hero ? `<link rel=\"preload\" as=\"image\" href=\"${safeHeroUrl}\" fetchpriority=\"high\" />` : "");
+        if (productRouteMatch) html = html.replace(/<div class="origo-home" id="home">[\s\S]*?<\/div>\s*<template id="retired-home-content">/, '<div class="origo-home" id="home" hidden data-route-pruned="product"></div><template id="retired-home-content">');
+        if (!routeExists) html = html.replace('<main id="storefront-main">', `<main id="storefront-main"><section class="route-not-found" role="main"><h1>404</h1><p>الصفحة المطلوبة غير موجودة.</p><a href="/">العودة إلى الرئيسية</a></section>`);
+        data = Buffer.from(injectSeoIntoHtml(html, seoForRoute(url.pathname, getPublicProducts())));
+        if (storefrontHtmlCache.size >= STOREFRONT_HTML_CACHE_LIMIT) storefrontHtmlCache.delete(storefrontHtmlCache.keys().next().value);
+        storefrontHtmlCache.set(htmlCacheKey, data);
+      }
     }
     const isVersionedRuntimeAsset = [".js", ".mjs", ".css"].includes(extension) && url.searchParams.has("v");
     const isServiceWorker = cleanPath === "sw.js";
-    const etag = `W/"${info.size.toString(16)}-${Math.floor(info.mtimeMs).toString(16)}"`;
+    const etag = isHtml
+      ? `"${createHash("sha1").update(data).digest("hex")}"`
+      : `W/"${info.size.toString(16)}-${Math.floor(info.mtimeMs).toString(16)}"`;
     const headers = {
       "Cache-Control": process.env.NODE_ENV !== "production"
         ? "no-store"
@@ -2287,7 +2300,7 @@ async function serveStatic(request, response, url) {
       "X-Frame-Options": "SAMEORIGIN",
       "X-Content-Type-Options": "nosniff"
     };
-    if (!isHtml && request.headers["if-none-match"] === etag) {
+    if (request.headers["if-none-match"] === etag) {
       response.writeHead(304, headers).end();
       return;
     }
@@ -2302,21 +2315,21 @@ async function serveStatic(request, response, url) {
     const acceptedEncoding = request.headers["accept-encoding"] || "";
     if (canCompress && /\bbr\b/.test(acceptedEncoding)) {
       headers["Content-Encoding"] = "br";
-      const cacheKey = `${filePath}:${etag}:br`;
-      const cachedBody = isHtml ? null : staticCompressionCache.get(cacheKey);
-      const compressedBody = await promisify(brotliCompress)(data, {
+      const contentTag = isHtml ? createHash("sha1").update(data).digest("hex") : etag;
+      const cacheKey = `${filePath}:${contentTag}:br`;
+      const cachedBody = staticCompressionCache.get(cacheKey);
+      const body = cachedBody || cacheCompressedStatic(cacheKey, await promisify(brotliCompress)(data, {
         params: { [zlibConstants.BROTLI_PARAM_QUALITY]: 4 }
-      });
-      const body = cachedBody || (isHtml ? compressedBody : cacheCompressedStatic(cacheKey, compressedBody));
+      }));
       headers["Content-Length"] = String(body.length);
       response.writeHead(routeStatus, headers);
       response.end(body);
     } else if (canCompress && /\bgzip\b/.test(acceptedEncoding)) {
       headers["Content-Encoding"] = "gzip";
-      const cacheKey = `${filePath}:${etag}:gzip`;
-      const cachedBody = isHtml ? null : staticCompressionCache.get(cacheKey);
-      const compressedBody = await promisify(gzip)(data);
-      const body = cachedBody || (isHtml ? compressedBody : cacheCompressedStatic(cacheKey, compressedBody));
+      const contentTag = isHtml ? createHash("sha1").update(data).digest("hex") : etag;
+      const cacheKey = `${filePath}:${contentTag}:gzip`;
+      const cachedBody = staticCompressionCache.get(cacheKey);
+      const body = cachedBody || cacheCompressedStatic(cacheKey, await promisify(gzip)(data));
       headers["Content-Length"] = String(body.length);
       response.writeHead(routeStatus, headers);
       response.end(body);
@@ -2325,7 +2338,8 @@ async function serveStatic(request, response, url) {
       response.writeHead(routeStatus, headers);
       response.end(data);
     }
-  } catch {
+  } catch (error) {
+    console.error("[ORIGO STATIC]", error);
     response.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" }).end("Not found");
   }
 }

@@ -2232,6 +2232,12 @@ function normalizedAlternativeText(value) {
     .toLocaleLowerCase("ar").replace(/[^\p{L}\p{N}]+/gu, " ").trim();
 }
 
+export function storefrontContentRevision() {
+  const products = db.prepare("SELECT COUNT(*) AS count, COALESCE(MAX(updated_at),'') AS updatedAt FROM products WHERE status='published'").get();
+  const workspace = db.prepare("SELECT COALESCE(updated_at,'') AS updatedAt FROM admin_workspace_state WHERE id=1").get();
+  return `${Number(products?.count || 0)}:${products?.updatedAt || ""}:${workspace?.updatedAt || ""}`;
+}
+
 function automaticReferenceId(relation = {}) {
   const source = normalizedAlternativeText(`${relation.brandEn || relation.brandAr || ""} ${relation.nameEn || relation.nameAr || ""}`) || "fragrance";
   let hash = 2166136261;
