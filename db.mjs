@@ -2235,7 +2235,8 @@ function normalizedAlternativeText(value) {
 export function storefrontContentRevision() {
   const products = db.prepare("SELECT COUNT(*) AS count, COALESCE(MAX(updated_at),'') AS updatedAt FROM products WHERE status='published'").get();
   const workspace = db.prepare("SELECT COALESCE(updated_at,'') AS updatedAt FROM admin_workspace_state WHERE id=1").get();
-  return `${Number(products?.count || 0)}:${products?.updatedAt || ""}:${workspace?.updatedAt || ""}`;
+  const brands = db.prepare("SELECT COUNT(*) AS count, COALESCE(MAX(updated_at),'') AS updatedAt FROM product_options WHERE option_group='brand' AND active=1").get();
+  return `${Number(products?.count || 0)}:${products?.updatedAt || ""}:${Number(brands?.count || 0)}:${brands?.updatedAt || ""}:${workspace?.updatedAt || ""}`;
 }
 
 function automaticReferenceId(relation = {}) {

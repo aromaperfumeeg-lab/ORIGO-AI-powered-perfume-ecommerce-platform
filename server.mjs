@@ -2226,14 +2226,16 @@ async function serveStatic(request, response, url) {
   const isCommerceRoute = /^\/(checkout|order\/[^/]+|feedback\/[^/]+|feedback-insights|account(?:\/.*)?|fragrance-finder\/[a-z-]+|alternatives(?:\/compare\/[^/]+)?)\/?$/i.test(url.pathname);
   const isAdminRoute = /^\/admin\/orders(?:\/[^/]+)?\/?$/i.test(url.pathname);
   let publicProducts;
+  let publicBrands;
   const getPublicProducts = () => publicProducts ||= (isStorefrontRoute || url.pathname === "/" ? listProducts() : []);
+  const getPublicBrands = () => publicBrands ||= (isStorefrontRoute || url.pathname === "/" ? listProductOptions("brand") : []);
   const routeSlug = (value) => String(value || "").normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^\p{L}\p{N}]+/gu, "-").replace(/^-|-$/g, "");
   const productRouteMatch = url.pathname.match(/^\/perfume\/([^/]+)\/?$/i);
   const brandRouteMatch = url.pathname.match(/^\/brands\/([^/]+)\/?$/i);
   const routeExists = productRouteMatch
     ? Boolean(findProductForPath(getPublicProducts(), url.pathname))
     : brandRouteMatch
-      ? getPublicProducts().some((product) => [product.brandEn, product.brand, product.brandAr].some((value) => routeSlug(value) === routeSlug(decodeURIComponent(brandRouteMatch[1]))))
+      ? getPublicBrands().some((brand) => routeSlug(brand.slug || brand.nameEn || brand.nameAr) === routeSlug(decodeURIComponent(brandRouteMatch[1]))) || getPublicProducts().some((product) => [product.brandEn, product.brand, product.brandAr].some((value) => routeSlug(value) === routeSlug(decodeURIComponent(brandRouteMatch[1]))))
       : true;
   const routeStatus = routeExists ? 200 : 404;
   const pathname = decodeURIComponent(url.pathname === "/" || isNotesRoute || isBenefitRoute || isStorefrontRoute || isCommerceRoute || isAdminRoute ? "/index.html" : url.pathname);
@@ -2272,8 +2274,8 @@ async function serveStatic(request, response, url) {
           .replace("<!-- ORIGO_INITIAL_HERO_PRELOAD -->", hero ? `<link rel=\"preload\" as=\"image\" href=\"${safeHeroUrl}\" fetchpriority=\"high\" />` : "");
         if (productRouteMatch) html = html.replace(/<div class="origo-home" id="home">[\s\S]*?<\/div>\s*<template id="retired-home-content">/, '<div class="origo-home" id="home" hidden data-route-pruned="product"></div><template id="retired-home-content">');
         if (!routeExists) html = html.replace('<main id="storefront-main">', `<main id="storefront-main"><section class="route-not-found" role="main"><h1>404</h1><p>الصفحة المطلوبة غير موجودة.</p><a href="/">العودة إلى الرئيسية</a></section>`);
-        html = injectRouteContent(html, url.pathname, getPublicProducts());
-        data = Buffer.from(injectSeoIntoHtml(html, seoForRoute(url.pathname, getPublicProducts())));
+        html = injectRouteContent(html, url.pathname, getPublicProducts(), getPublicBrands());
+        data = Buffer.from(injectSeoIntoHtml(html, seoForRoute(url.pathname, getPublicProducts(), getPublicBrands())));
         if (storefrontHtmlCache.size >= STOREFRONT_HTML_CACHE_LIMIT) storefrontHtmlCache.delete(storefrontHtmlCache.keys().next().value);
         storefrontHtmlCache.set(htmlCacheKey, data);
       }
@@ -2441,7 +2443,7 @@ const server = createServer(async (request, response) => {
     return;
   }
   if (url.pathname === "/sitemap.xml") {
-    response.writeHead(200, { "Content-Type":"application/xml; charset=utf-8", "Cache-Control":"public, max-age=900" }).end(request.method === "HEAD" ? undefined : buildSitemap(listProducts()));
+    response.writeHead(200, { "Content-Type":"application/xml; charset=utf-8", "Cache-Control":"public, max-age=900" }).end(request.method === "HEAD" ? undefined : buildSitemap(listProducts(), listProductOptions("brand")));
     return;
   }
   await serveStatic(request, response, url);
