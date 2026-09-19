@@ -6452,10 +6452,11 @@ function productStructuredData(product, media) {
         ? "https://schema.org/OutOfStock" : "https://schema.org/InStock"
     }
   };
-  if (Number(product.reviewSummary?.count) > 0) schema.aggregateRating = {
+  const internalReviewSummary = product.origoReviewSummary;
+  if (internalReviewSummary?.source === "origo_customer_reviews" && internalReviewSummary?.verified === true && Number(internalReviewSummary.count) > 0 && Number(internalReviewSummary.average) > 0 && Number(internalReviewSummary.average) <= 5) schema.aggregateRating = {
     "@type": "AggregateRating",
-    ratingValue: Number(product.reviewSummary.average),
-    reviewCount: Number(product.reviewSummary.count)
+    ratingValue: Number(internalReviewSummary.average),
+    reviewCount: Number(internalReviewSummary.count)
   };
   const breadcrumbs = {
     "@context": "https://schema.org", "@type": "BreadcrumbList",
@@ -7072,7 +7073,9 @@ function showProductDetails(product, shouldOpen = true) {
   const restockEmail = state.user?.email || "";
   const restockPhone = state.user?.phone || "";
   const ratingSummary = productRatingSummary(product);
-  const ratingMarkup = ratingSummary.rating == null ? "" : `<div class="pdp-rating-summary" aria-label="${escapeHTML(isArabic ? "ملخص التقييم" : "Rating summary")}"><strong><span aria-hidden="true">★</span> ${formatNumber(ratingSummary.rating, { maximumFractionDigits:2 })}</strong>${ratingSummary.count == null ? "" : `<small>${formatNumber(ratingSummary.count)} ${isArabic ? "تقييم" : "reviews"}</small>`}</div>`;
+  const isExternalReferenceRating = product.ratingDetails?.is_origo_customer_rating === false;
+  const ratingLabel = isExternalReferenceRating ? (isArabic ? "تقييم مرجعي خارجي" : "External reference rating") : (isArabic ? "ملخص التقييم" : "Rating summary");
+  const ratingMarkup = ratingSummary.rating == null ? "" : `<div class="pdp-rating-summary" aria-label="${escapeHTML(ratingLabel)}"><strong><span aria-hidden="true">★</span> ${formatNumber(ratingSummary.rating, { maximumFractionDigits:2 })}</strong>${ratingSummary.count == null ? "" : `<small>${formatNumber(ratingSummary.count)} ${isArabic ? "تقييم" : "reviews"}${isExternalReferenceRating ? ` · ${escapeHTML(isArabic ? "مرجعي خارجي" : "external reference")}` : ""}</small>`}</div>`;
   const restockMarkup = available ? "" : `
     <section class="pdp-restock-card" id="pdp-restock-card" aria-labelledby="pdp-restock-title">
       <header><span aria-hidden="true">♧</span><div><strong id="pdp-restock-title">${isArabic ? "غير متوفر حاليًا" : "Currently unavailable"}</strong><p>${isArabic ? "سنعلمك فور عودة هذا المنتج إلى المخزون." : "We will let you know as soon as this product is back in stock."}</p></div></header>

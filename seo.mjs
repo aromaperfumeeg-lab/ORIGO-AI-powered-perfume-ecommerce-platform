@@ -50,7 +50,10 @@ export function buildProductStructuredData(product){
   const data={"@context":"https://schema.org","@type":"Product",name:names.join(" | "),description:seo.description,image:images,sku:product.sku||undefined,brand:{"@type":"Brand",name:product.brandAr||product.brandEn||product.brand},url:seo.canonical};
   const price=Number(product.price);if(Number.isFinite(price)&&price>=0)data.offers={"@type":"Offer",url:seo.canonical,priceCurrency:"EGP",price,availability:`https://schema.org/${available?"InStock":"OutOfStock"}`,itemCondition:"https://schema.org/NewCondition"};
   if(/^\d{8,14}$/.test(String(product.barcode||"")))data.gtin=String(product.barcode);
-  const rating=Number(product.reviewSummary?.average??product.rating),count=Number(product.reviewSummary?.count);if(rating>0&&rating<=5&&count>0)data.aggregateRating={"@type":"AggregateRating",ratingValue:rating,reviewCount:count};return data;
+  const internal=product.origoReviewSummary;
+  const internalRating=Number(internal?.average),internalCount=Number(internal?.count);
+  const verifiedInternal=internal?.source==="origo_customer_reviews"&&internal?.verified===true;
+  if(verifiedInternal&&internalRating>0&&internalRating<=5&&Number.isInteger(internalCount)&&internalCount>0)data.aggregateRating={"@type":"AggregateRating",ratingValue:internalRating,reviewCount:internalCount};return data;
 }
 
 export function buildBreadcrumbStructuredData(items){return{"@context":"https://schema.org","@type":"BreadcrumbList",itemListElement:items.map((item,index)=>({"@type":"ListItem",position:index+1,name:item.name,item:buildCanonicalUrl(item.path)}))}}
