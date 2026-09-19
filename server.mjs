@@ -143,7 +143,7 @@ import {
   setProductPerformanceVoteStatus,
   submitProductPerformanceVote
 } from "./performance-service.mjs";
-import { buildSitemap, injectSeoIntoHtml, robotsTxt, seoForRoute } from "./seo.mjs";
+import { buildSitemap, findProductForPath, injectRouteContent, injectSeoIntoHtml, robotsTxt, seoForRoute } from "./seo.mjs";
 
 const ROOT = resolve(fileURLToPath(new URL(".", import.meta.url)));
 const LEGACY_STOREFRONT_UPLOAD_ROOT = resolve(ROOT, "uploads", "storefront");
@@ -2222,18 +2222,18 @@ function cacheCompressedStatic(key, body) {
 async function serveStatic(request, response, url) {
   const isNotesRoute = /^\/notes(?:\/[a-z0-9-]+)?\/?$/i.test(url.pathname);
   const isBenefitRoute = /^\/benefits(?:\/[a-z0-9-]+)?\/?$/i.test(url.pathname);
-  const isStorefrontRoute = /^\/(?:perfumes(?:\/[a-z0-9-]+)?|perfume\/[a-z0-9-]+|brands\/[a-z0-9-]+|search)\/?$/i.test(url.pathname);
+  const isStorefrontRoute = /^\/(?:perfumes(?:\/[^/]+)?|perfume\/[^/]+|brands(?:\/[^/]+)?|search)\/?$/i.test(url.pathname);
   const isCommerceRoute = /^\/(checkout|order\/[^/]+|feedback\/[^/]+|feedback-insights|account(?:\/.*)?|fragrance-finder\/[a-z-]+|alternatives(?:\/compare\/[^/]+)?)\/?$/i.test(url.pathname);
   const isAdminRoute = /^\/admin\/orders(?:\/[^/]+)?\/?$/i.test(url.pathname);
   let publicProducts;
   const getPublicProducts = () => publicProducts ||= (isStorefrontRoute || url.pathname === "/" ? listProducts() : []);
-  const routeSlug = (value) => String(value || "").normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  const routeSlug = (value) => String(value || "").normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^\p{L}\p{N}]+/gu, "-").replace(/^-|-$/g, "");
   const productRouteMatch = url.pathname.match(/^\/perfume\/([^/]+)\/?$/i);
   const brandRouteMatch = url.pathname.match(/^\/brands\/([^/]+)\/?$/i);
   const routeExists = productRouteMatch
-    ? getPublicProducts().some((product) => [product.slug, product.id].some((value) => String(value || "") === decodeURIComponent(productRouteMatch[1])))
+    ? Boolean(findProductForPath(getPublicProducts(), url.pathname))
     : brandRouteMatch
-      ? getPublicProducts().some((product) => [product.brandEn, product.brand, product.brandAr].some((value) => routeSlug(value) === brandRouteMatch[1].toLowerCase()))
+      ? getPublicProducts().some((product) => [product.brandEn, product.brand, product.brandAr].some((value) => routeSlug(value) === routeSlug(decodeURIComponent(brandRouteMatch[1]))))
       : true;
   const routeStatus = routeExists ? 200 : 404;
   const pathname = decodeURIComponent(url.pathname === "/" || isNotesRoute || isBenefitRoute || isStorefrontRoute || isCommerceRoute || isAdminRoute ? "/index.html" : url.pathname);
@@ -2272,6 +2272,7 @@ async function serveStatic(request, response, url) {
           .replace("<!-- ORIGO_INITIAL_HERO_PRELOAD -->", hero ? `<link rel=\"preload\" as=\"image\" href=\"${safeHeroUrl}\" fetchpriority=\"high\" />` : "");
         if (productRouteMatch) html = html.replace(/<div class="origo-home" id="home">[\s\S]*?<\/div>\s*<template id="retired-home-content">/, '<div class="origo-home" id="home" hidden data-route-pruned="product"></div><template id="retired-home-content">');
         if (!routeExists) html = html.replace('<main id="storefront-main">', `<main id="storefront-main"><section class="route-not-found" role="main"><h1>404</h1><p>الصفحة المطلوبة غير موجودة.</p><a href="/">العودة إلى الرئيسية</a></section>`);
+        html = injectRouteContent(html, url.pathname, getPublicProducts());
         data = Buffer.from(injectSeoIntoHtml(html, seoForRoute(url.pathname, getPublicProducts())));
         if (storefrontHtmlCache.size >= STOREFRONT_HTML_CACHE_LIMIT) storefrontHtmlCache.delete(storefrontHtmlCache.keys().next().value);
         storefrontHtmlCache.set(htmlCacheKey, data);
