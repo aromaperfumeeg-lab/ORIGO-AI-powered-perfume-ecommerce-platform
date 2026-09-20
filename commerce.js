@@ -77,7 +77,7 @@
   }
   function trustBar() {
     return `<div class="commerce-trust">${[
-      ["shield","منتجات أصلية 100%","100% authentic"],["return","استرجاع سهل خلال 14 يوم","Easy 14-day returns"],
+      ["shield","منتجات أصلية 100%","100% authentic"],["return","استرجاع سهل خلال 7 أيام","Easy 7-day returns"],
       ["support","دعم عملاء 24/7","24/7 support"],["truck","شحن سريع وموثوق","Fast, reliable delivery"],["card","دفع آمن","Secure payment"]
     ].map(([i,a,e])=>`<div>${icon(i)}<span><b>${t(a,e)}</b><small>${i==="truck"?t("خلال 2–3 أيام عمل","Within 2–3 business days"):t("نحن دائمًا معك","Always here for you")}</small></span></div>`).join("")}</div>`;
   }
@@ -100,7 +100,7 @@
   function benefitSide() {
     return `<aside class="checkout-why"><h2>${t("لماذا تتسوق من ORIGO؟","Why shop with ORIGO?")}</h2>${[
       ["shield","منتجات أصلية 100%","100% authentic products"],["truck","شحن سريع وموثوق","Fast, reliable delivery"],
-      ["return","استرجاع سهل خلال 14 يوم","Easy returns within 14 days"],["support","دعم عملاء 24/7","24/7 customer support"],["card","دفع آمن 100%","100% secure payment"]
+      ["return","استرجاع سهل خلال 7 أيام","Easy returns within 7 days"],["support","دعم عملاء 24/7","24/7 customer support"],["card","دفع آمن 100%","100% secure payment"]
     ].map(([i,a,e])=>`<div>${icon(i)}<span><b>${t(a,e)}</b><small>${t("خدمة موثوقة ومصممة لراحتك","Trusted service designed for you")}</small></span></div>`).join("")}</aside>`;
   }
   function freeShippingProgress() {

@@ -915,11 +915,11 @@ const defaultFooterBenefits = [
   },
   {
     id: "benefit-easy-returns", slug: "easy-returns", icon: "returns", active: true, sort: 2,
-    titleAr: "استرجاع سهل", titleEn: "Easy returns", shortAr: "خلال 14 يوم", shortEn: "Within 14 days",
+    titleAr: "استرجاع سهل", titleEn: "Easy returns", shortAr: "خلال 7 أيام", shortEn: "Within 7 days",
     descriptionAr: "طلب الاسترجاع واضح وسريع، مع متابعة من فريقنا حتى اكتمال فحص المنتج وإعادة المبلغ بالطريقة المعتمدة.",
     descriptionEn: "A clear return journey with team follow-up until inspection and the approved refund are complete.",
-    stepsAr: ["تواصل معنا خلال 14 يومًا من الاستلام.", "أرسل صور المنتج والعبوة ورقم الطلب.", "بعد الموافقة ننسق الاستلام ونبدأ رد المبلغ."],
-    stepsEn: ["Contact us within 14 days of delivery.", "Send product, package, and order details.", "Once approved, we arrange collection and refund."],
+    stepsAr: ["تواصل معنا خلال 7 أيام من الاستلام.", "أرسل صور المنتج والعبوة ورقم الطلب.", "بعد الموافقة ننسق الاستلام ونبدأ رد المبلغ."],
+    stepsEn: ["Contact us within 7 days of delivery.", "Send product, package, and order details.", "Once approved, we arrange collection and refund."],
     conditionsAr: ["يجب أن يكون المنتج غير مستخدم وبحالته الأصلية.", "تبقى العبوة والأختام والهدايا مرفقة.", "المنتج التالف عند الوصول يُراجع بالأولوية."],
     conditionsEn: ["The product must be unused and in original condition.", "Packaging, seals, and gifts must be included.", "Delivery damage cases receive priority review."],
     faqs: [
@@ -6447,10 +6447,12 @@ function productStructuredData(product, media) {
       "@type": "Offer",
       url: canonical,
       priceCurrency: "EGP",
-      price: Number(product.price),
-      availability: product.status === "unavailable" || Number(product.inventory?.quantity) === 0
-        ? "https://schema.org/OutOfStock" : "https://schema.org/InStock"
-    }
+       price: Number(product.price),
+       availability: product.status === "unavailable" || Number(product.inventory?.quantity) === 0
+         ? "https://schema.org/OutOfStock" : "https://schema.org/InStock"
+       ,hasMerchantReturnPolicy: { "@id": `${location.origin}/policies/returns#policy` }
+       ,shippingDetails: { "@type": "OfferShippingDetails", hasShippingService: { "@id": `${location.origin}/policies/shipping#service` } }
+     }
   };
   const internalReviewSummary = product.origoReviewSummary;
   if (internalReviewSummary?.source === "origo_customer_reviews" && internalReviewSummary?.verified === true && Number(internalReviewSummary.count) > 0 && Number(internalReviewSummary.average) > 0 && Number(internalReviewSummary.average) <= 5) schema.aggregateRating = {
