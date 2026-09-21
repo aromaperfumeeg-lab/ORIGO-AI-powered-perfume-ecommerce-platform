@@ -99,50 +99,39 @@ test("benefit form edits can clear optional content and preserve the detail URL"
   assert.throws(() => context.benefitFromForm(form),/title and details/);
 });
 
-test("brand rail moves continuously, changes speed, pauses and never clones cards", async () => {
-  const frames = new Map();
-  let id = 0;
+test("brand rail autoplays on the compositor, pauses safely and keeps manual steps immediate", async () => {
   const mobile = Object.assign(new EventTarget(), {matches:true});
   const reduced = Object.assign(new EventTarget(), {matches:false});
   const document = Object.assign(new EventTarget(), {hidden:false, documentElement:{dir:"rtl"}, body:{classList:{contains:() => false}}});
   const window = new EventTarget();
+  let intersectionCallback;
+  const animation = {currentTime:0,plays:0,pauses:0,cancelled:false,play(){this.plays++},pause(){this.pauses++},cancel(){this.cancelled=true}};
+  const motion = {animate(keyframes, options){animation.keyframes=keyframes;animation.options=options;return animation}};
+  const group = {scrollWidth:1600};
   runInNewContext(await read("home-brand-navigation.js"), {
     window, document, AbortController,
     matchMedia:(query) => query.includes("700px") ? mobile : reduced,
-    requestAnimationFrame:(callback) => {frames.set(++id, callback); return id;},
-    cancelAnimationFrame:(key) => frames.delete(key), setTimeout:(callback) => callback()
+    requestAnimationFrame:(callback) => {callback();return 1}, cancelAnimationFrame(){}, setTimeout:(callback) => callback(),
+    ResizeObserver:class {observe(){} disconnect(){}},
+    IntersectionObserver:class {constructor(callback){intersectionCallback=callback} observe(){} disconnect(){}}
   });
-  const cards = Array.from({length:20}, (_, index) => ({index}));
   const track = Object.assign(new EventTarget(), {
-    children:cards, dataset:{}, clientWidth:360, scrollWidth:1600, scrollLeft:0,
+    dataset:{}, clientWidth:360,
     style:{setProperty(){}}, classList:{add(){},remove(){}}, isConnected:true,
     closest:() => null, contains:() => false,
-    append(card){cards.splice(cards.indexOf(card),1); cards.push(card);},
-    prepend(card){cards.splice(cards.indexOf(card),1); cards.unshift(card);}
+    querySelector(selector){return selector === ".brand-motion-group" ? group : motion}
   });
-  Object.defineProperties(track, {firstElementChild:{get:() => cards[0]}, lastElementChild:{get:() => cards.at(-1)}});
-  const slider = window.ORIGOBrandSlider.mount(track, cards.map(card => `<button>${card.index}</button>`));
-  track.dispatchEvent(Object.assign(new Event("pointerdown"), {clientX:100}));
-  window.dispatchEvent(Object.assign(new Event("pointerup"), {clientX:100}));
-  const tick = (time) => {const callback = frames.values().next().value; frames.clear(); callback(time);};
-  tick(100); tick(120);
-  const firstDistance = Math.abs(track.scrollLeft);
-  assert.ok(firstDistance > 0 && firstDistance < 3, "motion advances pixels, not a whole page");
-  tick(140); assert.ok(Math.abs(track.scrollLeft) > firstDistance);
-  slider.setInterval(6); tick(160);
-  const beforeSlow = Math.abs(track.scrollLeft); tick(180);
-  assert.ok(Math.abs(track.scrollLeft) - beforeSlow < firstDistance);
-  for(let index=0;index<30;index++) slider.step(1);
-  assert.equal(new Set(cards).size, 20);
-  assert.equal(cards.length, 20);
-  document.hidden=true; document.dispatchEvent(new Event("visibilitychange")); assert.equal(frames.size,0);
-  document.hidden=false; document.dispatchEvent(new Event("visibilitychange")); assert.equal(frames.size,1);
-  reduced.matches=true; reduced.dispatchEvent(new Event("change")); assert.equal(frames.size,0);
-  reduced.matches=false; reduced.dispatchEvent(new Event("change"));
-  mobile.matches=false; mobile.dispatchEvent(new Event("change")); assert.equal(frames.size,1);
-  slider.destroy(); assert.equal(frames.size,0);
-  track.scrollWidth=300;
-  window.ORIGOBrandSlider.mount(track, ["<button>One</button>"]); assert.equal(frames.size,0);
+  const slider = window.ORIGOBrandSlider.mount(track, Array.from({length:20}, (_, index) => `<button>${index}</button>`));
+  assert.ok(animation.plays > 0);
+  assert.match(animation.keyframes[1].transform,/translate3d\(/);
+  assert.equal(animation.options.iterations,Infinity);
+  slider.step(1); assert.notEqual(animation.currentTime,0);
+  intersectionCallback([{isIntersecting:false}]); assert.ok(animation.pauses > 0);
+  intersectionCallback([{isIntersecting:true}]); assert.ok(animation.plays > 1);
+  document.hidden=true; document.dispatchEvent(new Event("visibilitychange")); assert.ok(animation.pauses > 1);
+  document.hidden=false; document.dispatchEvent(new Event("visibilitychange"));
+  reduced.matches=true; reduced.dispatchEvent(new Event("change")); assert.ok(animation.pauses > 2);
+  slider.destroy(); assert.equal(animation.cancelled,true);
 });
 
 test("homepage exposes the requested commerce hierarchy without duplicate benefit strips", async () => {

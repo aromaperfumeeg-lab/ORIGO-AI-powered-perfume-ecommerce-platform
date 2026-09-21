@@ -3184,7 +3184,7 @@ function applyHomepageRailSettings() {
     element.style.order = String(Number(settings[key]?.order || 0));
     element.setAttribute("aria-label", state.lang === "ar" ? settings[key]?.titleAr || "" : settings[key]?.titleEn || "");
   });
-  window.ORIGOBrandSlider?.get($("#home-brand-carousel-track"))?.setInterval(settings.brands?.intervalSeconds || 3);
+  window.ORIGOBrandSlider?.get($("#home-brand-carousel-track"))?.setSpeed(settings.brands?.intervalSeconds || 3);
 }
 
 function renderAdminDashboard(view = state.adminView) {
@@ -3901,6 +3901,7 @@ function renderHomeNavigation() {
 
 let homeHeroTimer;
 let homeHeroAutoplayTimer;
+let homeHeroPreloadTimer;
 let homeHeroIndex = 0;
 const homeHeroMobileQuery = matchMedia("(max-width: 900px)");
 function homeHeroImageUrl(item) {
@@ -3915,8 +3916,9 @@ function renderHomeHero() {
   const media = settings.homeMedia
     .filter((item) => item.placement === "hero" && item.url && item.active !== false)
     .sort((a, b) => Number(a.sortOrder || 0) - Number(b.sortOrder || 0));
-  clearInterval(homeHeroTimer);
+  clearTimeout(homeHeroTimer);
   clearTimeout(homeHeroAutoplayTimer);
+  clearTimeout(homeHeroPreloadTimer);
   if (!media.length) {
     hero.hidden = true;
     hero.classList.remove("has-image", "is-dragging");
@@ -3994,22 +3996,38 @@ function renderHomeHero() {
   }
   const intervalMs = Math.max(1000, Math.min(30000, Number(settings.homeHero.intervalSeconds || 3) * 1000));
   if (slides.length > 1 && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    // Keep the first, preloaded hero stable through the critical rendering
-    // window. Manual controls remain immediate; autoplay starts only after
-    // the visitor interacts, so a late carousel paint cannot become the LCP.
-    const beginAutoplay = () => {
-      clearInterval(homeHeroTimer);
-      if (!document.hidden && hero.isConnected) homeHeroTimer = setInterval(() => show(homeHeroIndex + 1), intervalMs);
+    // Keep the first, server-sized hero stable during the critical rendering
+    // window, then resume normal autoplay. Each transition is one isolated
+    // paint; there is no animation-frame or layout loop.
+    const preloadNext = () => {
+      const url = homeHeroImageUrl(slides[(homeHeroIndex + 1) % slides.length]);
+      if (!url) return;
+      const image = new Image();
+      image.decoding = "async";
+      image.fetchPriority = "low";
+      image.src = url;
     };
-    const armAutoplay = () => {
-      beginAutoplay();
-      removeEventListener("pointerdown", armAutoplay, true);
-      removeEventListener("keydown", armAutoplay, true);
-      removeEventListener("touchstart", armAutoplay, true);
+    const scheduleNext = (delay = intervalMs) => {
+      clearTimeout(homeHeroTimer);
+      if (document.hidden || !hero.isConnected) return;
+      homeHeroPreloadTimer = setTimeout(preloadNext, Math.max(0, delay - 2500));
+      homeHeroTimer = setTimeout(() => {
+        show(homeHeroIndex + 1);
+        scheduleNext(intervalMs);
+      }, delay);
     };
-    addEventListener("pointerdown", armAutoplay, { once:true, capture:true, passive:true });
-    addEventListener("keydown", armAutoplay, { once:true, capture:true });
-    addEventListener("touchstart", armAutoplay, { once:true, capture:true, passive:true });
+    hero._origoResumeHero = () => scheduleNext(intervalMs);
+    if (hero.dataset.visibilityBound !== "true") {
+      hero.dataset.visibilityBound = "true";
+      document.addEventListener("visibilitychange", () => {
+        clearTimeout(homeHeroTimer);
+        clearTimeout(homeHeroPreloadTimer);
+        if (!document.hidden) hero._origoResumeHero?.();
+      });
+    }
+    const beginAutoplay = () => scheduleNext(12000);
+    if (document.readyState === "complete") beginAutoplay();
+    else addEventListener("load", beginAutoplay, { once:true });
   }
   show(homeHeroIndex);
 }

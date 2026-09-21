@@ -48,11 +48,12 @@ test("critical storefront geometry stays stable during hydration", async () => {
   assert.equal(holder["aria-busy"], "true");
 });
 
-test("only the PDP LCP image is high priority and carousel autoplay waits for interaction", async () => {
+test("only the PDP LCP image is high priority and hero autoplay starts after a stable first paint", async () => {
   const app = await read("app.js");
   const hero = app.slice(app.indexOf("function renderHomeHero("), app.indexOf("homeHeroMobileQuery.addEventListener"));
-  assert.match(hero, /addEventListener\("pointerdown", armAutoplay/);
-  assert.doesNotMatch(hero, /setTimeout\(beginAutoplay/);
+  assert.match(hero, /scheduleNext\(12000\)/);
+  assert.match(hero, /image\.fetchPriority = "low"/);
+  assert.doesNotMatch(hero, /setInterval/);
   assert.match(app, /width="800" height="900" loading="eager" fetchpriority="high" decoding="async"/);
   const cards = app.slice(app.indexOf("function productCardMarkup("), app.indexOf("function setCardImage("));
   assert.doesNotMatch(cards, /fetchpriority="high"/);
@@ -60,10 +61,14 @@ test("only the PDP LCP image is high priority and carousel autoplay waits for in
 });
 
 test("high-frequency observers and scroll work are frame-batched", async () => {
-  const app = await read("app.js");
+  const [app, brands] = await Promise.all([read("app.js"), read("home-brand-navigation.js")]);
   assert.match(app, /const pendingLatinDigitRoots = new Set\(\)/);
   assert.match(app, /latinDigitFrame = requestAnimationFrame/);
   assert.match(app, /const requestBackToTopUpdate = \(\) =>/);
+  assert.match(brands, /translate3d/);
+  assert.match(brands, /IntersectionObserver/);
+  assert.doesNotMatch(brands, /scrollLeft\s*=/);
+  assert.doesNotMatch(brands, /\.append\(|\.prepend\(/);
 });
 
 test("closing an overlay restores focus before making the surface inert", async () => {

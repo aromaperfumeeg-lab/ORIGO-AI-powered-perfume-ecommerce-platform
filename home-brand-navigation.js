@@ -1,4 +1,4 @@
-/* Continuous brand rail: recycle existing cards without duplicate controls. */
+/* Continuous brand rail: one compositor animation and one inert loop copy. */
 (() => {
   const controllers = new WeakMap();
   const interval = (value) => Math.max(1, Math.min(120, Number(value) || 3)) * 1000;
@@ -8,80 +8,85 @@
     const mobile = matchMedia("(max-width: 700px)");
     const reduced = matchMedia("(prefers-reduced-motion: reduce)");
     const abort = new AbortController();
-    let frame;
-    let previous = 0;
-    let offset = 0;
-    let pitch = 1;
+    let animation = null;
+    let resizeFrame = 0;
     let pointerX = null;
     let hovered = false;
     let focused = false;
+    let visible = true;
     let delay = interval(seconds);
-    let activated = false;
-    const sign = () => document.documentElement.dir === "rtl" ? -1 : 1;
-    const measure = () => {
+    const rtl = () => document.documentElement.dir === "rtl";
+    const paused = () => reduced.matches || document.hidden || !visible || hovered || focused || pointerX !== null;
+    const syncPlayback = () => {
+      if (!animation) return;
+      if (paused()) animation.pause();
+      else animation.play();
+    };
+    const buildAnimation = () => {
+      animation?.cancel();
+      animation = null;
       const gap = mobile.matches ? 12 : 20;
       const size = mobile.matches ? 4.5 : 13;
       const width = Math.max(44, (track.clientWidth - gap * (Math.ceil(size) - 1)) / size);
       track.style.setProperty("--brand-card-width", `${width}px`);
-      pitch = width + gap;
-      offset = Math.abs(track.scrollLeft);
+      track.style.setProperty("--brand-gap", `${gap}px`);
+      const group = track.querySelector(".brand-motion-group");
+      const distance = group?.scrollWidth || 0;
+      if (!distance || typeof track.querySelector(".brand-motion-track")?.animate !== "function") return;
+      const motion = track.querySelector(".brand-motion-track");
+      const travel = rtl() ? distance : -distance;
+      animation = motion.animate(
+        [{ transform:"translate3d(0,0,0)" }, { transform:`translate3d(${travel}px,0,0)` }],
+        { duration:Math.max(1000, delay * items.length), iterations:Infinity, easing:"linear" }
+      );
+      syncPlayback();
     };
     track.classList.remove("brand-paged-slider");
     track.classList.add("brand-continuous-track");
-    track.innerHTML = items.join("");
-    const move = (distance) => {
-      offset = Math.abs(track.scrollLeft) + distance;
-      while (offset >= pitch && track.children.length > 1) { track.append(track.firstElementChild); offset -= pitch; }
-      while (offset < 0 && track.children.length > 1) { track.prepend(track.lastElementChild); offset += pitch; }
-      track.scrollLeft = sign() * offset;
-    };
-    const tick = (now) => {
-      const elapsed = previous ? Math.min(50, now - previous) : 0;
-      previous = now;
-      if (track.isConnected && !track.closest("[hidden]") && !document.body.classList.contains("admin-mode")) move(pitch * elapsed / delay);
-      frame = requestAnimationFrame(tick);
-    };
-    const schedule = () => {
-      cancelAnimationFrame(frame);
-      previous = 0;
-      if (!activated || track.scrollWidth <= track.clientWidth + 1 || reduced.matches || document.hidden || hovered || focused || pointerX !== null) return;
-      frame = requestAnimationFrame(tick);
-    };
-    const activate = () => {
-      activated = true;
-      schedule();
-    };
+    const primary = items.join("");
+    const duplicate = primary.replaceAll("<button", '<button tabindex="-1"');
+    track.innerHTML = `<div class="brand-motion-track"><div class="brand-motion-group">${primary}</div><div class="brand-motion-group" aria-hidden="true" inert>${duplicate}</div></div>`;
     const step = (direction) => {
-      if (track.scrollWidth > track.clientWidth + 1) move(direction * pitch);
-      schedule();
+      if (!animation) return;
+      const cardDuration = delay;
+      const totalDuration = Math.max(1000, delay * items.length);
+      animation.currentTime = (Number(animation.currentTime || 0) + direction * (rtl() ? -1 : 1) * cardDuration + totalDuration) % totalDuration;
+      syncPlayback();
     };
     const listen = (target, name, handler) => target.addEventListener(name, handler, { signal:abort.signal });
-    listen(track, "pointerenter", (event) => { activate(); if (event.pointerType === "mouse") { hovered = true; schedule(); } });
-    listen(track, "pointerleave", () => { hovered = false; schedule(); });
-    listen(track, "focusin", () => { activate(); focused = true; schedule(); });
-    listen(track, "focusout", (event) => { focused = track.contains(event.relatedTarget); schedule(); });
-    listen(track, "pointerdown", (event) => { activate(); pointerX = event.clientX; schedule(); });
+    listen(track, "pointerenter", (event) => { if (event.pointerType === "mouse") { hovered = true; syncPlayback(); } });
+    listen(track, "pointerleave", () => { hovered = false; syncPlayback(); });
+    listen(track, "focusin", () => { focused = true; syncPlayback(); });
+    listen(track, "focusout", (event) => { focused = track.contains(event.relatedTarget); syncPlayback(); });
+    listen(track, "pointerdown", (event) => { pointerX = event.clientX; syncPlayback(); });
     listen(window, "pointerup", (event) => {
       if (pointerX === null) return;
       const delta = event.clientX - pointerX;
       pointerX = null;
-      if (Math.abs(delta) > 35) { track.dataset.suppressBrandClick = "1"; step((delta < 0 ? 1 : -1) * sign()); setTimeout(() => delete track.dataset.suppressBrandClick, 0); }
-      else schedule();
+      if (Math.abs(delta) > 35) { track.dataset.suppressBrandClick = "1"; step(delta < 0 ? 1 : -1); setTimeout(() => delete track.dataset.suppressBrandClick, 0); }
+      else syncPlayback();
     });
-    listen(window, "pointercancel", () => { pointerX = null; schedule(); });
-    listen(document, "visibilitychange", schedule);
-    listen(mobile, "change", () => { measure(); schedule(); });
-    listen(reduced, "change", schedule);
-    let resizeFrame = 0;
+    listen(window, "pointercancel", () => { pointerX = null; syncPlayback(); });
+    listen(document, "visibilitychange", syncPlayback);
+    listen(mobile, "change", () => buildAnimation());
+    listen(reduced, "change", syncPlayback);
     const observer = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(() => {
       cancelAnimationFrame(resizeFrame);
-      resizeFrame = requestAnimationFrame(() => { measure(); schedule(); });
+      resizeFrame = requestAnimationFrame(buildAnimation);
     });
     observer?.observe(track);
-    const controller = { step, setInterval(value) { delay = interval(value); schedule(); }, destroy() { cancelAnimationFrame(frame); cancelAnimationFrame(resizeFrame); observer?.disconnect(); abort.abort(); } };
+    const visibilityObserver = typeof IntersectionObserver === "undefined" ? null : new IntersectionObserver(([entry]) => {
+      visible = Boolean(entry?.isIntersecting);
+      syncPlayback();
+    }, { rootMargin:"120px" });
+    visibilityObserver?.observe(track);
+    const controller = {
+      step,
+      setSpeed(value) { delay = interval(value); buildAnimation(); },
+      destroy() { animation?.cancel(); cancelAnimationFrame(resizeFrame); observer?.disconnect(); visibilityObserver?.disconnect(); abort.abort(); }
+    };
     controllers.set(track, controller);
-    measure();
-    schedule();
+    buildAnimation();
     return controller;
   }
   window.ORIGOBrandSlider = { mount, indices, interval, get: (track) => controllers.get(track) };

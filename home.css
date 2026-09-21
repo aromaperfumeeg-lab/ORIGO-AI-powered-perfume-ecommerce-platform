@@ -1505,6 +1505,10 @@ body:not(.dark) .home-gender-section .gender-card:is(:hover,:focus-visible,:acti
 #home .home-hero-copy{display:none!important}
 #home .origo-home-hero{padding:0!important;overflow:hidden!important;background:#fcf5ef!important}
 #home .home-hero-products{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;display:block!important;cursor:pointer;text-decoration:none;touch-action:pan-y;background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important;transform:none!important}
+#home .brand-continuous-track{overflow:hidden!important;scroll-behavior:auto!important;touch-action:pan-y!important}
+#home .brand-motion-track{width:max-content;display:flex;direction:inherit;will-change:transform;transform:translate3d(0,0,0)}
+#home .brand-motion-group{display:flex;flex:0 0 auto;gap:var(--brand-gap,20px);padding-inline-end:var(--brand-gap,20px)}
+#home .brand-motion-group>.brand-slider-card{flex:0 0 var(--brand-card-width,140px);width:var(--brand-card-width,140px)}
 #home .home-hero-dots{z-index:4}
 #home .home-hero-arrow{display:none;position:absolute;top:50%;z-index:7;width:46px;height:46px;padding:0;place-items:center;transform:translateY(-50%);border:1px solid rgba(255,255,255,.72);border-radius:50%;color:#fff;background:rgba(91,0,25,.72);box-shadow:0 8px 24px rgba(40,0,12,.22);font-size:32px;line-height:1;cursor:pointer;-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);transition:transform .2s ease,background .2s ease}
 #home .home-hero-arrow:hover{transform:translateY(-50%) scale(1.06);background:#76001f}
