@@ -105,19 +105,23 @@ test("brand rail autoplays on the compositor, pauses safely and keeps manual ste
   const document = Object.assign(new EventTarget(), {hidden:false, documentElement:{dir:"rtl"}, body:{classList:{contains:() => false}}});
   const window = new EventTarget();
   let intersectionCallback;
+  const frames = [];
+  const flushFrames = () => { while (frames.length) frames.shift()(); };
+  const pointer = (name, values) => Object.assign(new Event(name), values);
   const animation = {currentTime:0,plays:0,pauses:0,cancelled:false,play(){this.plays++},pause(){this.pauses++},cancel(){this.cancelled=true}};
   const motion = {animate(keyframes, options){animation.keyframes=keyframes;animation.options=options;return animation}};
   const group = {scrollWidth:1600};
   runInNewContext(await read("home-brand-navigation.js"), {
     window, document, AbortController,
     matchMedia:(query) => query.includes("700px") ? mobile : reduced,
-    requestAnimationFrame:(callback) => {callback();return 1}, cancelAnimationFrame(){}, setTimeout:(callback) => callback(),
+    requestAnimationFrame:(callback) => {frames.push(callback);return frames.length}, cancelAnimationFrame(){}, setTimeout:(callback) => callback(), clearTimeout(){},
     ResizeObserver:class {observe(){} disconnect(){}},
     IntersectionObserver:class {constructor(callback){intersectionCallback=callback} observe(){} disconnect(){}}
   });
   const track = Object.assign(new EventTarget(), {
     dataset:{}, clientWidth:360,
     style:{setProperty(){}}, classList:{add(){},remove(){}}, isConnected:true,
+    setPointerCapture(){}, releasePointerCapture(){},
     closest:() => null, contains:() => false,
     querySelector(selector){return selector === ".brand-motion-group" ? group : motion}
   });
@@ -126,6 +130,26 @@ test("brand rail autoplays on the compositor, pauses safely and keeps manual ste
   assert.match(animation.keyframes[1].transform,/translate3d\(/);
   assert.equal(animation.options.iterations,Infinity);
   slider.step(1); assert.notEqual(animation.currentTime,0);
+  const timeBeforeDrag = animation.currentTime;
+  track.dispatchEvent(pointer("pointerdown",{pointerId:1,pointerType:"touch",clientX:100,clientY:100}));
+  assert.ok(animation.pauses > 0, "autoplay pauses as soon as dragging starts");
+  track.dispatchEvent(pointer("pointermove",{pointerId:1,pointerType:"touch",clientX:150,clientY:102}));
+  assert.equal(animation.currentTime,timeBeforeDrag, "pointermove waits for the next animation frame");
+  flushFrames();
+  assert.notEqual(animation.currentTime,timeBeforeDrag, "horizontal drag follows the pointer on the compositor timeline");
+  track.dispatchEvent(pointer("pointerup",{pointerId:1,pointerType:"touch",clientX:150,clientY:102}));
+  const timeBeforeVertical = animation.currentTime;
+  track.dispatchEvent(pointer("pointerdown",{pointerId:2,pointerType:"touch",clientX:100,clientY:100}));
+  track.dispatchEvent(pointer("pointermove",{pointerId:2,pointerType:"touch",clientX:102,clientY:150}));
+  flushFrames();
+  assert.equal(animation.currentTime,timeBeforeVertical, "vertical intent is left to native page scrolling");
+  track.dispatchEvent(pointer("lostpointercapture",{pointerId:2,pointerType:"touch",clientX:102,clientY:150}));
+  const playsBeforeCancel = animation.plays;
+  track.dispatchEvent(pointer("pointerdown",{pointerId:3,pointerType:"touch",clientX:100,clientY:100}));
+  track.dispatchEvent(pointer("pointermove",{pointerId:3,pointerType:"touch",clientX:135,clientY:101}));
+  flushFrames();
+  track.dispatchEvent(pointer("pointercancel",{pointerId:3,pointerType:"touch",clientX:135,clientY:101}));
+  assert.ok(animation.plays > playsBeforeCancel, "pointer cancellation cleans up and resumes autoplay");
   intersectionCallback([{isIntersecting:false}]); assert.ok(animation.pauses > 0);
   intersectionCallback([{isIntersecting:true}]); assert.ok(animation.plays > 1);
   document.hidden=true; document.dispatchEvent(new Event("visibilitychange")); assert.ok(animation.pauses > 1);

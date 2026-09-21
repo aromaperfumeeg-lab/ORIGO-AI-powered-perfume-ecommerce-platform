@@ -10,7 +10,15 @@
     const abort = new AbortController();
     let animation = null;
     let resizeFrame = 0;
+    let dragFrame = 0;
+    let resumeTimer = 0;
     let pointerX = null;
+    let pointerY = null;
+    let latestX = null;
+    let animationStartTime = 0;
+    let loopDistance = 0;
+    let horizontalDrag = false;
+    let verticalGesture = false;
     let hovered = false;
     let focused = false;
     let visible = true;
@@ -32,6 +40,7 @@
       track.style.setProperty("--brand-gap", `${gap}px`);
       const group = track.querySelector(".brand-motion-group");
       const distance = group?.scrollWidth || 0;
+      loopDistance = distance;
       if (!distance || typeof track.querySelector(".brand-motion-track")?.animate !== "function") return;
       const motion = track.querySelector(".brand-motion-track");
       const travel = rtl() ? distance : -distance;
@@ -53,20 +62,68 @@
       animation.currentTime = (Number(animation.currentTime || 0) + direction * (rtl() ? -1 : 1) * cardDuration + totalDuration) % totalDuration;
       syncPlayback();
     };
+    const applyDrag = () => {
+      dragFrame = 0;
+      if (!animation || pointerX === null || latestX === null || !loopDistance) return;
+      const delta = latestX - pointerX;
+      const totalDuration = Math.max(1000, delay * items.length);
+      const timeDelta = (delta / loopDistance) * totalDuration * (rtl() ? 1 : -1);
+      animation.currentTime = ((animationStartTime + timeDelta) % totalDuration + totalDuration) % totalDuration;
+    };
+    const resumeAfterDrag = () => {
+      clearTimeout(resumeTimer);
+      resumeTimer = setTimeout(syncPlayback, 700);
+    };
     const listen = (target, name, handler) => target.addEventListener(name, handler, { signal:abort.signal });
     listen(track, "pointerenter", (event) => { if (event.pointerType === "mouse") { hovered = true; syncPlayback(); } });
     listen(track, "pointerleave", () => { hovered = false; syncPlayback(); });
     listen(track, "focusin", () => { focused = true; syncPlayback(); });
     listen(track, "focusout", (event) => { focused = track.contains(event.relatedTarget); syncPlayback(); });
-    listen(track, "pointerdown", (event) => { pointerX = event.clientX; syncPlayback(); });
-    listen(window, "pointerup", (event) => {
-      if (pointerX === null) return;
-      const delta = event.clientX - pointerX;
-      pointerX = null;
-      if (Math.abs(delta) > 35) { track.dataset.suppressBrandClick = "1"; step(delta < 0 ? 1 : -1); setTimeout(() => delete track.dataset.suppressBrandClick, 0); }
-      else syncPlayback();
+    listen(track, "pointerdown", (event) => {
+      if (event.pointerType === "mouse" && event.button !== 0) return;
+      clearTimeout(resumeTimer);
+      pointerX = latestX = event.clientX;
+      pointerY = event.clientY;
+      animationStartTime = Number(animation?.currentTime || 0);
+      horizontalDrag = false;
+      verticalGesture = false;
+      syncPlayback();
+      track.setPointerCapture?.(event.pointerId);
     });
-    listen(window, "pointercancel", () => { pointerX = null; syncPlayback(); });
+    listen(track, "pointermove", (event) => {
+      if (pointerX === null || verticalGesture) return;
+      const deltaX = event.clientX - pointerX;
+      const deltaY = event.clientY - pointerY;
+      if (!horizontalDrag) {
+        if (Math.max(Math.abs(deltaX), Math.abs(deltaY)) < 7) return;
+        if (Math.abs(deltaY) >= Math.abs(deltaX) * 1.15) {
+          verticalGesture = true;
+          track.releasePointerCapture?.(event.pointerId);
+          return;
+        }
+        horizontalDrag = true;
+      }
+      latestX = event.clientX;
+      if (!dragFrame) dragFrame = requestAnimationFrame(applyDrag);
+    });
+    const finishDrag = (event) => {
+      if (pointerX === null) return;
+      const delta = (event.clientX ?? latestX) - pointerX;
+      if (dragFrame) { cancelAnimationFrame(dragFrame); applyDrag(); }
+      pointerX = null;
+      pointerY = null;
+      latestX = null;
+      if (horizontalDrag && Math.abs(delta) > 8) {
+        track.dataset.suppressBrandClick = "1";
+        setTimeout(() => delete track.dataset.suppressBrandClick, 0);
+      }
+      horizontalDrag = false;
+      verticalGesture = false;
+      resumeAfterDrag();
+    };
+    listen(track, "pointerup", finishDrag);
+    listen(track, "pointercancel", finishDrag);
+    listen(track, "lostpointercapture", finishDrag);
     listen(document, "visibilitychange", syncPlayback);
     listen(mobile, "change", () => buildAnimation());
     listen(reduced, "change", syncPlayback);
@@ -83,7 +140,7 @@
     const controller = {
       step,
       setSpeed(value) { delay = interval(value); buildAnimation(); },
-      destroy() { animation?.cancel(); cancelAnimationFrame(resizeFrame); observer?.disconnect(); visibilityObserver?.disconnect(); abort.abort(); }
+      destroy() { animation?.cancel(); clearTimeout(resumeTimer); cancelAnimationFrame(dragFrame); cancelAnimationFrame(resizeFrame); observer?.disconnect(); visibilityObserver?.disconnect(); abort.abort(); }
     };
     controllers.set(track, controller);
     buildAnimation();

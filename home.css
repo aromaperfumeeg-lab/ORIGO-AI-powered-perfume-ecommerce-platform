@@ -1504,7 +1504,7 @@ body:not(.dark) .home-gender-section .gender-card:is(:hover,:focus-visible,:acti
 #home .home-hero-products::after{display:none!important;content:none!important}
 #home .home-hero-copy{display:none!important}
 #home .origo-home-hero{padding:0!important;overflow:hidden!important;background:#fcf5ef!important}
-#home .home-hero-products{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;display:block!important;cursor:pointer;text-decoration:none;touch-action:pan-y;background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important;transform:none!important}
+#home .home-hero-products{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;display:block!important;cursor:pointer;text-decoration:none;touch-action:pan-y;background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important;transform:translate3d(var(--hero-drag-x,0),0,0)!important;will-change:transform}
 #home .brand-continuous-track{overflow:hidden!important;scroll-behavior:auto!important;touch-action:pan-y!important}
 #home .brand-motion-track{width:max-content;display:flex;direction:inherit;will-change:transform;transform:translate3d(0,0,0)}
 #home .brand-motion-group{display:flex;flex:0 0 auto;gap:var(--brand-gap,20px);padding-inline-end:var(--brand-gap,20px)}

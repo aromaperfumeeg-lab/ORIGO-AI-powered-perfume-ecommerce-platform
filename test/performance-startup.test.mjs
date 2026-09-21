@@ -69,6 +69,31 @@ test("high-frequency observers and scroll work are frame-batched", async () => {
   assert.match(brands, /IntersectionObserver/);
   assert.doesNotMatch(brands, /scrollLeft\s*=/);
   assert.doesNotMatch(brands, /\.append\(|\.prepend\(/);
+  assert.match(brands, /requestAnimationFrame\(applyDrag\)/);
+  assert.match(brands, /releasePointerCapture/);
+  assert.match(brands, /controllers\.get\(track\)\?\.destroy\(\)/);
+  const hero = app.slice(app.indexOf("function renderHomeHero("), app.indexOf("homeHeroMobileQuery.addEventListener"));
+  assert.match(hero, /requestAnimationFrame\(paintDrag\)/);
+  assert.match(hero, /lostpointercapture/);
+  assert.match(hero, /Math\.abs\(deltaY\) >= Math\.abs\(deltaX\) \* 1\.15/);
+  const marquee = app.slice(app.indexOf("function bindBrandMarquee("), app.indexOf("function bindHorizontalRail("));
+  assert.match(marquee, /requestAnimationFrame\(paintBrandDrag\)/);
+  assert.doesNotMatch(marquee, /scrollLeft\s*[+=]/);
+  assert.doesNotMatch(marquee, /getComputedStyle/);
+  const rail = app.slice(app.indexOf("function bindHorizontalRail("), app.indexOf("initializeFloatingCart\(\)"));
+  assert.match(rail, /requestAnimationFrame/);
+});
+
+test("drag surfaces batch transform work and avoid per-event layout measurement", async () => {
+  const app = await read("app.js");
+  const lightbox = app.slice(app.indexOf("const productImageLightboxState"), app.indexOf("function productDetailsMarkup("));
+  assert.match(lightbox, /requestAnimationFrame/);
+  const lightboxMove = lightbox.slice(lightbox.indexOf('stage.addEventListener("pointermove"'), lightbox.indexOf("const release"));
+  assert.doesNotMatch(lightboxMove, /clientWidth|clientHeight|getBoundingClientRect|offsetWidth|offsetHeight/);
+  const cart = app.slice(app.indexOf("function initializeFloatingCart("), app.indexOf("initializeFloatingCart();"));
+  const cartMove = cart.slice(cart.indexOf('button.addEventListener("pointermove"'), cart.indexOf("const finish"));
+  assert.match(cartMove, /requestAnimationFrame\(paintDrag\)/);
+  assert.doesNotMatch(cartMove, /getBoundingClientRect|offsetWidth|offsetHeight|style\.(left|top)/);
 });
 
 test("closing an overlay restores focus before making the surface inert", async () => {

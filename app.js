@@ -3959,39 +3959,77 @@ function renderHomeHero() {
   };
   if (hero.dataset.sliderBound !== "true") {
     hero.dataset.sliderBound = "true";
+    let activePointerId = null;
     let startX = 0;
+    let startY = 0;
     let lastX = 0;
+    let lastY = 0;
+    let dragFrame = 0;
+    let horizontalDrag = false;
+    let verticalGesture = false;
     let dragged = false;
+    const paintDrag = () => {
+      dragFrame = 0;
+      const delta = Math.max(-90, Math.min(90, lastX - startX));
+      hero.style.setProperty("--hero-drag-x", `${delta}px`);
+    };
     const finishSwipe = (event) => {
-      if (!startX) return;
+      if (activePointerId == null) return;
       const delta = (event.clientX || lastX) - startX;
       hero.classList.remove("is-dragging");
-      const currentVisual = hero.querySelector(".home-hero-products");
-      if (currentVisual) currentVisual.style.transform = "";
-      if (Math.abs(delta) > 42) hero._origoShowHeroSlide?.(homeHeroIndex + (delta < 0 ? 1 : -1));
-      dragged = Math.abs(delta) > 8;
+      cancelAnimationFrame(dragFrame);
+      dragFrame = 0;
+      hero.style.setProperty("--hero-drag-x", "0px");
+      if (horizontalDrag && Math.abs(delta) > 42) hero._origoShowHeroSlide?.(homeHeroIndex + (delta < 0 ? 1 : -1));
+      dragged = horizontalDrag && Math.abs(delta) > 8;
+      activePointerId = null;
       startX = 0;
+      startY = 0;
       lastX = 0;
+      lastY = 0;
+      horizontalDrag = false;
+      verticalGesture = false;
+      clearTimeout(homeHeroTimer);
+      clearTimeout(homeHeroPreloadTimer);
+      homeHeroAutoplayTimer = setTimeout(() => hero._origoResumeHero?.(), 2400);
     };
     hero.addEventListener("pointerdown", (event) => {
       if (event.target.closest(".home-hero-dots,button")) return;
+      activePointerId = event.pointerId;
       startX = event.clientX;
+      startY = event.clientY;
       lastX = event.clientX;
+      lastY = event.clientY;
+      horizontalDrag = false;
+      verticalGesture = false;
       dragged = false;
-      hero.classList.add("is-dragging");
+      clearTimeout(homeHeroTimer);
+      clearTimeout(homeHeroAutoplayTimer);
+      clearTimeout(homeHeroPreloadTimer);
       hero.setPointerCapture?.(event.pointerId);
     });
     hero.addEventListener("pointermove", (event) => {
-      if (!startX) return;
+      if (activePointerId == null || event.pointerId !== activePointerId) return;
       lastX = event.clientX;
-      const delta = Math.max(-90, Math.min(90, lastX - startX));
-      const currentVisual = hero.querySelector(".home-hero-products");
-      // Keep the artwork edge-to-edge while tracking the gesture; translating
-      // the background layer exposed the frame behind it at either side.
-      if (currentVisual) currentVisual.style.transform = "";
+      lastY = event.clientY;
+      const deltaX = lastX - startX;
+      const deltaY = lastY - startY;
+      if (verticalGesture) return;
+      if (!horizontalDrag) {
+        if (Math.max(Math.abs(deltaX), Math.abs(deltaY)) < 7) return;
+        if (Math.abs(deltaY) >= Math.abs(deltaX) * 1.15) {
+          verticalGesture = true;
+          hero.releasePointerCapture?.(event.pointerId);
+          return;
+        }
+        horizontalDrag = true;
+        hero.classList.add("is-dragging");
+      }
+      if (!dragFrame) dragFrame = requestAnimationFrame(paintDrag);
     });
     hero.addEventListener("pointerup", finishSwipe);
     hero.addEventListener("pointercancel", finishSwipe);
+    hero.addEventListener("lostpointercapture", finishSwipe);
     hero.addEventListener("click", (event) => { if (dragged) { event.preventDefault(); event.stopPropagation(); dragged = false; } }, true);
   }
   const intervalMs = Math.max(1000, Math.min(30000, Number(settings.homeHero.intervalSeconds || 3) * 1000));
@@ -4016,7 +4054,7 @@ function renderHomeHero() {
         scheduleNext(intervalMs);
       }, delay);
     };
-    hero._origoResumeHero = () => scheduleNext(intervalMs);
+    hero._origoResumeHero = (delay = intervalMs) => scheduleNext(delay);
     if (hero.dataset.visibilityBound !== "true") {
       hero.dataset.visibilityBound = "true";
       document.addEventListener("visibilitychange", () => {
@@ -6898,7 +6936,8 @@ const productImageLightboxState = {
   pointers: new Map(),
   lastPoint: null,
   pinchDistance: 0,
-  pinchScale: 1
+  pinchScale: 1,
+  transformFrame: 0
 };
 
 function clampProductImageLightboxPosition() {
@@ -6978,6 +7017,13 @@ function bindProductImageLightboxGestures() {
   if (!stage || stage.dataset.gesturesBound === "true") return;
   stage.dataset.gesturesBound = "true";
   const distance = (points) => Math.hypot(points[0].x - points[1].x, points[0].y - points[1].y);
+  const requestTransform = () => {
+    if (productImageLightboxState.transformFrame) return;
+    productImageLightboxState.transformFrame = requestAnimationFrame(() => {
+      productImageLightboxState.transformFrame = 0;
+      renderProductImageLightboxTransform();
+    });
+  };
   stage.addEventListener("pointerdown", (event) => {
     productImageLightboxState.pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
     stage.setPointerCapture?.(event.pointerId);
@@ -7000,7 +7046,7 @@ function bindProductImageLightboxGestures() {
       const nextDistance = distance(points);
       if (productImageLightboxState.pinchDistance > 0) productImageLightboxState.scale = Math.max(1, Math.min(5, productImageLightboxState.pinchScale * nextDistance / productImageLightboxState.pinchDistance));
       event.preventDefault();
-      renderProductImageLightboxTransform();
+      requestTransform();
       return;
     }
     if (points.length === 1 && productImageLightboxState.scale > 1 && productImageLightboxState.lastPoint) {
@@ -7008,10 +7054,15 @@ function bindProductImageLightboxGestures() {
       productImageLightboxState.y += points[0].y - productImageLightboxState.lastPoint.y;
       productImageLightboxState.lastPoint = points[0];
       event.preventDefault();
-      renderProductImageLightboxTransform();
+      requestTransform();
     }
   }, { passive: false });
   const release = (event) => {
+    if (productImageLightboxState.transformFrame) {
+      cancelAnimationFrame(productImageLightboxState.transformFrame);
+      productImageLightboxState.transformFrame = 0;
+      renderProductImageLightboxTransform();
+    }
     const swipeStart = productImageLightboxState.swipeStart;
     const releasedPoint = productImageLightboxState.pointers.get(event.pointerId);
     productImageLightboxState.pointers.delete(event.pointerId);
@@ -12359,8 +12410,12 @@ function bindBrandMarquee(brandTrack) {
   let brandDragging = false;
   let brandMoved = false;
   let brandStartX = 0;
-  let brandStartScroll = 0;
+  let brandStartY = 0;
+  let brandLatestX = 0;
   let brandPointerId = null;
+  let brandDragFrame = 0;
+  let brandHorizontalDrag = false;
+  let brandVerticalGesture = false;
   let brandAnimation = null;
   let brandAnimationStartTime = 0;
   let brandAnimationDuration = 0;
@@ -12406,13 +12461,18 @@ function bindBrandMarquee(brandTrack) {
     }, 140);
   };
 
+  const paintBrandDrag = () => {
+    brandDragFrame = 0;
+    moveAnimationBy(brandLatestX - brandStartX, brandAnimationStartTime);
+  };
+
   brandTrack.addEventListener("wheel", (event) => {
     const horizontalDelta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : (event.shiftKey ? event.deltaY : 0);
     if (!horizontalDelta) return;
     event.preventDefault();
     brandTrack.classList.add("is-interacting");
     pauseForInteraction();
-    if (!moveAnimationBy(-horizontalDelta * 1.35)) brandTrack.scrollLeft += horizontalDelta;
+    moveAnimationBy(-horizontalDelta * 1.35);
     resumeAfterInteraction();
   }, { passive: false });
   brandTrack.addEventListener("pointerdown", (event) => {
@@ -12422,29 +12482,45 @@ function bindBrandMarquee(brandTrack) {
     brandPointerId = event.pointerId;
     brandTrack.classList.add("is-interacting", "is-dragging");
     brandStartX = event.clientX;
-    brandStartScroll = brandTrack.scrollLeft;
+    brandStartY = event.clientY;
+    brandLatestX = event.clientX;
+    brandHorizontalDrag = false;
+    brandVerticalGesture = false;
     pauseForInteraction();
     brandTrack.setPointerCapture?.(event.pointerId);
   });
   brandTrack.addEventListener("pointermove", (event) => {
-    if (!brandDragging) return;
+    if (!brandDragging || event.pointerId !== brandPointerId || brandVerticalGesture) return;
     const delta = event.clientX - brandStartX;
-    if (Math.abs(delta) > 5) {
+    const verticalDelta = event.clientY - brandStartY;
+    if (!brandHorizontalDrag) {
+      if (Math.max(Math.abs(delta), Math.abs(verticalDelta)) < 7) return;
+      if (Math.abs(verticalDelta) >= Math.abs(delta) * 1.15) {
+        brandVerticalGesture = true;
+        brandTrack.classList.remove("is-dragging");
+        brandTrack.releasePointerCapture?.(event.pointerId);
+        return;
+      }
+      brandHorizontalDrag = true;
       brandMoved = true;
-      event.preventDefault();
     }
-    if (!moveAnimationBy(delta, brandAnimationStartTime)) {
-      const rtl = getComputedStyle(brandTrack).direction === "rtl";
-      brandTrack.scrollLeft = brandStartScroll + (rtl ? delta : -delta);
-    }
+    event.preventDefault();
+    brandLatestX = event.clientX;
+    if (!brandDragFrame) brandDragFrame = requestAnimationFrame(paintBrandDrag);
   });
   const stopBrandDrag = (event) => {
     if (!brandDragging) return;
+    if (brandDragFrame) {
+      cancelAnimationFrame(brandDragFrame);
+      paintBrandDrag();
+    }
     brandDragging = false;
     if (brandPointerId != null && brandTrack.hasPointerCapture?.(brandPointerId)) {
       brandTrack.releasePointerCapture?.(brandPointerId);
     }
     brandPointerId = null;
+    brandHorizontalDrag = false;
+    brandVerticalGesture = false;
     resumeAfterInteraction();
   };
   brandTrack.addEventListener("pointerup", stopBrandDrag);
@@ -12477,6 +12553,8 @@ function bindHorizontalRail(rail) {
   let startScroll = 0;
   let pointerId = null;
   let pointerType = "";
+  let latestX = 0;
+  let dragFrame = 0;
   let suppressClickUntil = 0;
   let scrollSettleTimer = 0;
   const settleScroll = () => {
@@ -12504,6 +12582,7 @@ function bindHorizontalRail(rail) {
     startX = event.clientX;
     startY = event.clientY;
     startScroll = rail.scrollLeft;
+    latestX = event.clientX;
     pointerId = event.pointerId;
     pointerType = event.pointerType;
   });
@@ -12522,11 +12601,22 @@ function bindHorizontalRail(rail) {
       rail.classList.add("is-dragging");
       if (pointerType !== "touch") rail.setPointerCapture?.(event.pointerId);
     }
-    if (pointerType !== "touch") rail.scrollLeft = startScroll - delta;
+    if (pointerType !== "touch") {
+      latestX = event.clientX;
+      if (!dragFrame) dragFrame = requestAnimationFrame(() => {
+        dragFrame = 0;
+        rail.scrollLeft = startScroll - (latestX - startX);
+      });
+    }
   });
   const finish = () => {
     if (!candidate && !dragging && pointerId == null) return;
     const activePointerId = pointerId;
+    if (dragFrame) {
+      cancelAnimationFrame(dragFrame);
+      dragFrame = 0;
+      if (pointerType !== "touch") rail.scrollLeft = startScroll - (latestX - startX);
+    }
     const shouldSuppressClick = moved;
     candidate = false;
     dragging = false;
@@ -12573,19 +12663,28 @@ function initializeFloatingCart() {
     if (saved && Number.isFinite(Number(saved.x)) && Number.isFinite(Number(saved.y))) applyPosition(saved);
   } catch {}
   let pointerId = null;
-  let offsetX = 0;
-  let offsetY = 0;
   let moved = false;
   let startX = 0;
   let startY = 0;
+  let latestX = 0;
+  let latestY = 0;
+  let baseLeft = 0;
+  let baseTop = 0;
+  let dragFrame = 0;
+  const paintDrag = () => {
+    dragFrame = 0;
+    applyPosition({ x:latestX, y:latestY });
+  };
   button.addEventListener("pointerdown", (event) => {
     if (event.button != null && event.button !== 0) return;
     const rect = button.getBoundingClientRect();
     pointerId = event.pointerId;
     startX = event.clientX;
     startY = event.clientY;
-    offsetX = event.clientX - rect.left;
-    offsetY = event.clientY - rect.top;
+    latestX = event.clientX;
+    latestY = event.clientY;
+    baseLeft = latestX = rect.left;
+    baseTop = latestY = rect.top;
     moved = false;
     button.classList.add("is-dragging");
     button.setPointerCapture?.(pointerId);
@@ -12594,14 +12693,19 @@ function initializeFloatingCart() {
     if (event.pointerId !== pointerId) return;
     if (!moved && Math.hypot(event.clientX - startX, event.clientY - startY) < 6) return;
     moved = true;
-    applyPosition({ x:event.clientX - offsetX, y:event.clientY - offsetY });
+    latestX = baseLeft + event.clientX - startX;
+    latestY = baseTop + event.clientY - startY;
+    if (!dragFrame) dragFrame = requestAnimationFrame(paintDrag);
   });
   const finish = (event) => {
     if (event.pointerId !== pointerId) return;
+    cancelAnimationFrame(dragFrame);
+    dragFrame = 0;
     button.classList.remove("is-dragging");
     if (moved) {
-      const rect = button.getBoundingClientRect();
-      localStorage.setItem(storageKey, JSON.stringify({ x:Math.round(rect.left), y:Math.round(rect.top) }));
+      const position = clampPosition(latestX, latestY);
+      applyPosition(position);
+      localStorage.setItem(storageKey, JSON.stringify({ x:Math.round(position.x), y:Math.round(position.y) }));
       button.dataset.suppressCartClick = "true";
       setTimeout(() => delete button.dataset.suppressCartClick, 0);
     }
