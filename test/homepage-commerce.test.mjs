@@ -122,6 +122,8 @@ test("brand rail moves continuously, changes speed, pauses and never clones card
   });
   Object.defineProperties(track, {firstElementChild:{get:() => cards[0]}, lastElementChild:{get:() => cards.at(-1)}});
   const slider = window.ORIGOBrandSlider.mount(track, cards.map(card => `<button>${card.index}</button>`));
+  track.dispatchEvent(Object.assign(new Event("pointerdown"), {clientX:100}));
+  window.dispatchEvent(Object.assign(new Event("pointerup"), {clientX:100}));
   const tick = (time) => {const callback = frames.values().next().value; frames.clear(); callback(time);};
   tick(100); tick(120);
   const firstDistance = Math.abs(track.scrollLeft);

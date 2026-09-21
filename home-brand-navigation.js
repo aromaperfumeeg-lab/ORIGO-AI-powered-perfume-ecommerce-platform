@@ -16,6 +16,7 @@
     let hovered = false;
     let focused = false;
     let delay = interval(seconds);
+    let activated = false;
     const sign = () => document.documentElement.dir === "rtl" ? -1 : 1;
     const measure = () => {
       const gap = mobile.matches ? 12 : 20;
@@ -43,19 +44,23 @@
     const schedule = () => {
       cancelAnimationFrame(frame);
       previous = 0;
-      if (track.scrollWidth <= track.clientWidth + 1 || reduced.matches || document.hidden || hovered || focused || pointerX !== null) return;
+      if (!activated || track.scrollWidth <= track.clientWidth + 1 || reduced.matches || document.hidden || hovered || focused || pointerX !== null) return;
       frame = requestAnimationFrame(tick);
+    };
+    const activate = () => {
+      activated = true;
+      schedule();
     };
     const step = (direction) => {
       if (track.scrollWidth > track.clientWidth + 1) move(direction * pitch);
       schedule();
     };
     const listen = (target, name, handler) => target.addEventListener(name, handler, { signal:abort.signal });
-    listen(track, "pointerenter", (event) => { if (event.pointerType === "mouse") { hovered = true; schedule(); } });
+    listen(track, "pointerenter", (event) => { activate(); if (event.pointerType === "mouse") { hovered = true; schedule(); } });
     listen(track, "pointerleave", () => { hovered = false; schedule(); });
-    listen(track, "focusin", () => { focused = true; schedule(); });
+    listen(track, "focusin", () => { activate(); focused = true; schedule(); });
     listen(track, "focusout", (event) => { focused = track.contains(event.relatedTarget); schedule(); });
-    listen(track, "pointerdown", (event) => { pointerX = event.clientX; schedule(); });
+    listen(track, "pointerdown", (event) => { activate(); pointerX = event.clientX; schedule(); });
     listen(window, "pointerup", (event) => {
       if (pointerX === null) return;
       const delta = event.clientX - pointerX;
@@ -97,3 +102,5 @@ document.addEventListener("click", (event) => {
   event.stopImmediatePropagation();
   window.location.assign(`/search?q=${encodeURIComponent(brand)}`);
 }, true);
+
+if (typeof Event === "function") window.dispatchEvent?.(new Event("origo:brand-slider-ready"));

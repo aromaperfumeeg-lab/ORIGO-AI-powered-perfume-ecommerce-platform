@@ -117,12 +117,11 @@
     const idle = (callback, timeout) => "requestIdleCallback" in window
       ? requestIdleCallback(callback, { timeout })
       : setTimeout(callback, Math.min(timeout, 1500));
-    loadKnowledgeResources();
     idle(() => loadStyles("link[data-idle-href]"), 1200);
     idle(loadIdleScripts, 2600);
     if ("serviceWorker" in navigator) {
       const hadController = Boolean(navigator.serviceWorker.controller);
-      const releaseKey = "origoRuntimeReload-v174";
+      const releaseKey = "origoRuntimeReload-v175";
       navigator.serviceWorker.addEventListener("controllerchange", () => {
         if (!hadController || sessionStorage.getItem(releaseKey)) return;
         sessionStorage.setItem(releaseKey, "1");

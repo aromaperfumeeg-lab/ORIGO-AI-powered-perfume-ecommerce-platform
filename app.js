@@ -3778,8 +3778,8 @@ function renderBrandCarousel(query = "") {
   const track = $("#home-brand-carousel-track");
   if (!track) return;
   if (!state.brandOptionsReady) {
-    window.ORIGOBrandSlider?.get(track)?.destroy();
-    track.innerHTML = "";
+    // Preserve the server-rendered links until public data is ready. Clearing
+    // and rebuilding this rail caused a large startup layout shift.
     track.setAttribute("aria-busy", "true");
     track.closest(".home-brand-directory")?.classList.add("brands-loading");
     return;
@@ -3802,7 +3802,8 @@ function renderBrandCarousel(query = "") {
     return `<button class="brand-slider-card" data-action="brand-search" data-query="${escapeHTML(brand)}" aria-label="${escapeHTML(`${state.lang === "ar" ? "عرض منتجات" : "View products by"} ${label}`)}">${artwork}</button>`;
   });
   const seconds = mergeStoreSettings(state.adminWorkspace.settings || {}).homepageRails.brands.intervalSeconds || 3;
-  window.ORIGOBrandSlider.mount(track, items, seconds);
+  if (window.ORIGOBrandSlider) window.ORIGOBrandSlider.mount(track, items, seconds);
+  else track.innerHTML = items.join("");
   if ($("#home-brand-dots")) $("#home-brand-dots").hidden = true;
 }
 
@@ -3899,6 +3900,7 @@ function renderHomeNavigation() {
 }
 
 let homeHeroTimer;
+let homeHeroAutoplayTimer;
 let homeHeroIndex = 0;
 const homeHeroMobileQuery = matchMedia("(max-width: 900px)");
 function homeHeroImageUrl(item) {
@@ -3914,6 +3916,7 @@ function renderHomeHero() {
     .filter((item) => item.placement === "hero" && item.url && item.active !== false)
     .sort((a, b) => Number(a.sortOrder || 0) - Number(b.sortOrder || 0));
   clearInterval(homeHeroTimer);
+  clearTimeout(homeHeroAutoplayTimer);
   if (!media.length) {
     hero.hidden = true;
     hero.classList.remove("has-image", "is-dragging");
@@ -3990,11 +3993,31 @@ function renderHomeHero() {
     hero.addEventListener("click", (event) => { if (dragged) { event.preventDefault(); event.stopPropagation(); dragged = false; } }, true);
   }
   const intervalMs = Math.max(1000, Math.min(30000, Number(settings.homeHero.intervalSeconds || 3) * 1000));
-  if (slides.length > 1 && !matchMedia("(prefers-reduced-motion: reduce)").matches) homeHeroTimer = setInterval(() => show(homeHeroIndex + 1), intervalMs);
+  if (slides.length > 1 && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    // Keep the first, preloaded hero stable through the critical rendering
+    // window. Manual controls remain immediate; autoplay starts only after
+    // the visitor interacts, so a late carousel paint cannot become the LCP.
+    const beginAutoplay = () => {
+      clearInterval(homeHeroTimer);
+      if (!document.hidden && hero.isConnected) homeHeroTimer = setInterval(() => show(homeHeroIndex + 1), intervalMs);
+    };
+    const armAutoplay = () => {
+      beginAutoplay();
+      removeEventListener("pointerdown", armAutoplay, true);
+      removeEventListener("keydown", armAutoplay, true);
+      removeEventListener("touchstart", armAutoplay, true);
+    };
+    addEventListener("pointerdown", armAutoplay, { once:true, capture:true, passive:true });
+    addEventListener("keydown", armAutoplay, { once:true, capture:true });
+    addEventListener("touchstart", armAutoplay, { once:true, capture:true, passive:true });
+  }
   show(homeHeroIndex);
 }
 
 homeHeroMobileQuery.addEventListener?.("change", () => renderHomeHero());
+window.addEventListener("origo:brand-slider-ready", () => {
+  if (location.pathname === "/") renderBrandCarousel($("#brand-carousel-search")?.value || "");
+}, { once:true });
 
 function productDateScore(product, index = 0) {
   const date = Date.parse(product.createdAt || product.updatedAt || product.releaseDate || "");
@@ -4062,21 +4085,25 @@ function bindConfiguredHomeProductRow(section) {
 function renderConfiguredHomeProductRows() {
   const holder = $("#home-configured-product-rows");
   if (!holder) return;
-  if (!state.storefrontReady) {
-    holder.innerHTML = sectionLoadingMarkup(state.lang === "ar" ? "جارٍ تحميل المنتجات…" : "Loading products…");
+  if (state.storefrontReady === false) {
+    // SSR already provides real cards with stable dimensions. Keep them in
+    // place rather than replacing them with a shorter loading skeleton.
+    if (!holder.children?.length) holder.innerHTML = sectionLoadingMarkup(state.lang === "ar" ? "جارٍ تحميل المنتجات…" : "Loading products…");
+    holder.setAttribute("aria-busy", "true");
     return;
   }
+  holder.removeAttribute?.("aria-busy");
   const settings = mergeStoreSettings(state.adminWorkspace.settings || {});
   const rows = settings.homeProductRows.filter((row) => row.enabled !== false).sort((a, b) => Number(a.order || 0) - Number(b.order || 0));
   let productViewControlAdded = false;
-  holder.innerHTML = rows.map((row) => {
+  holder.innerHTML = rows.map((row, rowIndex) => {
     const products = homeProductRowProducts(row);
     if (!products.length) return "";
     const viewControl = productViewControlAdded ? "" : mobileProductViewControlMarkup();
     productViewControlAdded = true;
     return `<section class="home-configured-product-row" data-home-product-source="${escapeHTML(row.source)}"${row.brand ? ` data-home-product-brand="${escapeHTML(row.brand)}"` : ""}>
       <div class="home-section-head">${homeProductRowViewAll(row)}<div class="ornament-heading"><h2>${escapeHTML(homeProductRowTitle(row))}</h2></div>${viewControl}</div>
-      <div class="home-products-wrap"><button class="home-product-row-arrow previous" type="button" data-home-product-row-direction="-1" aria-label="${state.lang === "ar" ? "المنتجات السابقة" : "Previous products"}">${state.lang === "ar" ? "›" : "‹"}</button><div class="product-grid home-product-row-track" data-mobile-product-rail>${products.map((product) => productCardMarkup(product, { context: "grid", delay: 0 })).join("")}</div><button class="home-product-row-arrow next" type="button" data-home-product-row-direction="1" aria-label="${state.lang === "ar" ? "المنتجات التالية" : "Next products"}">${state.lang === "ar" ? "‹" : "›"}</button></div>
+      <div class="home-products-wrap"><button class="home-product-row-arrow previous" type="button" data-home-product-row-direction="-1" aria-label="${state.lang === "ar" ? "المنتجات السابقة" : "Previous products"}">${state.lang === "ar" ? "›" : "‹"}</button><div class="product-grid home-product-row-track" data-mobile-product-rail>${products.map((product, productIndex) => productCardMarkup(product, { context: "grid", delay: 0, eager:rowIndex === 0 && productIndex < 2 })).join("")}</div><button class="home-product-row-arrow next" type="button" data-home-product-row-direction="1" aria-label="${state.lang === "ar" ? "المنتجات التالية" : "Next products"}">${state.lang === "ar" ? "‹" : "›"}</button></div>
     </section>`;
   }).join("");
   $$(".home-configured-product-row", holder).forEach(bindConfiguredHomeProductRow);
@@ -4563,10 +4590,11 @@ function renderProducts(filter = "all") {
       </div>`;
     return;
   }
-  grid.innerHTML = visibleProducts.map((product) => productCardMarkup(product, {
+  grid.innerHTML = visibleProducts.map((product, index) => productCardMarkup(product, {
     context: "grid",
     reveal: true,
-    delay: 0
+    delay: 0,
+    eager: index < 2
   })).join("");
   observeReveals();
 }
@@ -6811,7 +6839,7 @@ function productCardMarkup(product, options = {}) {
         <button class="card-action-button card-compare-button${compared ? " active" : ""}"${interactive ? ` data-action="toggle-product-compare"` : disabled} aria-label="${escapeHTML(compareLabel)}" aria-pressed="${compared}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h12m0 0-3-3m3 3-3 3M17 17H5m0 0 3 3m-3-3 3-3"/></svg></button>
       </div>
       <a class="product-card-media-link" href="/perfume/${encodeURIComponent(product.slug || product.id)}"${interactive ? ` data-action="open-product" data-id="${escapeHTML(product.id)}"` : ` tabindex="-1" aria-disabled="true"`} aria-label="${escapeHTML(isArabic ? `عرض ${name}` : `View ${name}`)}">${hasProductImage
-        ? `<img src="${escapeHTML(mainImage)}" alt="${escapeHTML(`${localizedProductBrand(product)} ${name}`)}" width="640" height="700" loading="lazy" decoding="async" draggable="false" />`
+        ? `<img src="${escapeHTML(mainImage)}" alt="${escapeHTML(`${localizedProductBrand(product)} ${name}`)}" width="640" height="700" loading="${options.eager ? "eager" : "lazy"}" decoding="async" draggable="false" />`
         : `<span class="product-image-missing" role="img" aria-label="${escapeHTML(isArabic ? "صورة المنتج غير متاحة" : "Product image unavailable")}"><i aria-hidden="true">◇</i><small>${isArabic ? "الصورة غير متاحة" : "Image unavailable"}</small></span>`}</a>
     </div>
     <div class="product-info">
@@ -7100,8 +7128,8 @@ function showProductDetails(product, shouldOpen = true) {
       <nav class="pdp-breadcrumb" aria-label="${isArabic ? "مسار الصفحة" : "Breadcrumb"}"><a href="/" data-action="catalog-home">${isArabic ? "الرئيسية" : "Home"}</a><i>‹</i><a href="/perfumes" data-action="product-breadcrumb-catalog">${isArabic ? "العطور" : "Perfumes"}</a><i>‹</i><a href="/brands/${encodeURIComponent(normalizeOptionSearch(product.brandEn || product.brand || product.brandAr).replaceAll(" ","-"))}">${escapeHTML(brandName)}</a><i>‹</i><b>${escapeHTML(name)}</b></nav>
       <section class="pdp-hero">
         <div class="pdp-gallery">
-          <div class="pdp-thumbnails" aria-label="${isArabic ? "صور المنتج" : "Product media"}">${media.map((item, index) => `<button class="${index === state.activeProductImageIndex ? "active" : ""}" data-action="product-image" data-index="${index}" aria-label="${isArabic ? `الصورة ${index + 1}` : `Image ${index + 1}`}" aria-pressed="${index === state.activeProductImageIndex}"><img src="${escapeHTML(item.url)}" alt="" loading="${index ? "lazy" : "eager"}" /></button>`).join("")}</div>
-          <div class="pdp-main-image" data-action="product-zoom" role="button" tabindex="0" aria-label="${isArabic ? "فتح صورة المنتج بملء الشاشة" : "Open product image fullscreen"}"><span>${escapeHTML(isArabic ? product.cardBadgeAr || product.badgeAr || "" : product.cardBadgeEn || product.badgeEn || "")}</span>${media.length > 1 ? `<button type="button" class="pdp-media-arrow previous" data-action="product-image-step" data-change="-1" aria-label="${isArabic ? "الصورة السابقة" : "Previous image"}">‹</button><button type="button" class="pdp-media-arrow next" data-action="product-image-step" data-change="1" aria-label="${isArabic ? "الصورة التالية" : "Next image"}">›</button><small class="pdp-media-count" aria-live="polite">${state.activeProductImageIndex + 1} / ${media.length}</small>` : ""}<img src="${escapeHTML(activeMedia.url)}" alt="${escapeHTML(`${product.brand} ${name}`)}" draggable="false" /></div>
+          <div class="pdp-thumbnails" aria-label="${isArabic ? "صور المنتج" : "Product media"}">${media.map((item, index) => `<button class="${index === state.activeProductImageIndex ? "active" : ""}" data-action="product-image" data-index="${index}" aria-label="${isArabic ? `الصورة ${index + 1}` : `Image ${index + 1}`}" aria-pressed="${index === state.activeProductImageIndex}"><img src="${escapeHTML(item.url)}" alt="" width="96" height="108" loading="${index ? "lazy" : "eager"}" decoding="async" /></button>`).join("")}</div>
+          <div class="pdp-main-image" data-action="product-zoom" role="button" tabindex="0" aria-label="${isArabic ? "فتح صورة المنتج بملء الشاشة" : "Open product image fullscreen"}"><span>${escapeHTML(isArabic ? product.cardBadgeAr || product.badgeAr || "" : product.cardBadgeEn || product.badgeEn || "")}</span>${media.length > 1 ? `<button type="button" class="pdp-media-arrow previous" data-action="product-image-step" data-change="-1" aria-label="${isArabic ? "الصورة السابقة" : "Previous image"}">‹</button><button type="button" class="pdp-media-arrow next" data-action="product-image-step" data-change="1" aria-label="${isArabic ? "الصورة التالية" : "Next image"}">›</button><small class="pdp-media-count" aria-live="polite">${state.activeProductImageIndex + 1} / ${media.length}</small>` : ""}<img src="${escapeHTML(activeMedia.url)}" alt="${escapeHTML(`${product.brand} ${name}`)}" width="800" height="900" loading="eager" fetchpriority="high" decoding="async" draggable="false" /></div>
         </div>
         <aside class="pdp-purchase">
           <a class="pdp-brand" href="/brands/${encodeURIComponent(normalizeOptionSearch(product.brand).replaceAll(" ","-"))}">${escapeHTML(brandName)}</a><h1 id="product-dialog-title">${escapeHTML(name)}</h1>${ratingMarkup}
@@ -7297,15 +7325,28 @@ function normalizeRenderedLatinDigits(root = document) {
   }
 }
 
+const pendingLatinDigitRoots = new Set();
+let latinDigitFrame = 0;
 const latinDigitObserver = new MutationObserver((mutations) => {
-  mutations.forEach((mutation) => {
-    mutation.addedNodes.forEach((node) => {
+  mutations.forEach((mutation) => mutation.addedNodes.forEach((node) => {
+    if (node.nodeType === Node.TEXT_NODE) {
+      if (node.parentElement?.closest("script,style,textarea,input,[contenteditable='true']")) return;
+      pendingLatinDigitRoots.add(node);
+    } else if (node instanceof Element) {
+      const covered = [...pendingLatinDigitRoots].some((root) => root instanceof Element && root.contains(node));
+      if (!covered) pendingLatinDigitRoots.add(node);
+    }
+  }));
+  if (!pendingLatinDigitRoots.size || latinDigitFrame) return;
+  latinDigitFrame = requestAnimationFrame(() => {
+    latinDigitFrame = 0;
+    pendingLatinDigitRoots.forEach((node) => {
       if (node.nodeType === Node.TEXT_NODE) {
-        if (node.parentElement?.closest("script,style,textarea,input,[contenteditable='true']")) return;
         const normalized = normalizeLatinDigits(node.nodeValue || "");
         if (normalized !== node.nodeValue) node.nodeValue = normalized;
-      } else if (node instanceof Element) normalizeRenderedLatinDigits(node);
+      } else if (node.isConnected) normalizeRenderedLatinDigits(node);
     });
+    pendingLatinDigitRoots.clear();
   });
 });
 
@@ -7325,7 +7366,9 @@ function syncBodyLock() {
 
 function closeDrawers() {
   $$(".drawer.open").forEach((drawer) => {
+    if (drawer.contains(document.activeElement)) document.activeElement.blur();
     drawer.classList.remove("open");
+    drawer.inert = true;
     drawer.setAttribute("aria-hidden", "true");
   });
   const catalogDrawer = $("#catalog-filter-drawer");
@@ -7340,6 +7383,7 @@ function toggleMobileMenu(force) {
   const panel = $("#mobile-menu");
   const backdrop = $(".mobile-menu-backdrop");
   const shouldOpen = force ?? !panel.classList.contains("open");
+  panel.inert = !shouldOpen;
   panel.classList.toggle("open", shouldOpen);
   backdrop.classList.toggle("open", shouldOpen);
   document.body.classList.toggle("mobile-menu-active", shouldOpen);
@@ -7353,7 +7397,9 @@ const dialogFocusable = (root) => [...root.querySelectorAll('a[href],button:not(
 
 function openOverlay(id) {
   $$(".overlay.open").forEach((overlay) => {
+    if (overlay.contains(document.activeElement)) document.activeElement.blur();
     overlay.classList.remove("open");
+    overlay.inert = true;
     overlay.setAttribute("aria-hidden", "true");
   });
   closeDrawers();
@@ -7361,6 +7407,7 @@ function openOverlay(id) {
   const overlay = $(id);
   if (!overlay) return;
   dialogReturnFocus.set(overlay, document.activeElement);
+  overlay.inert = false;
   overlay.classList.add("open");
   overlay.setAttribute("aria-hidden", "false");
   syncBodyLock();
@@ -7369,11 +7416,13 @@ function openOverlay(id) {
 
 function closeOverlay(overlay) {
   if (!overlay) return;
-  overlay.classList.remove("open");
-  overlay.setAttribute("aria-hidden", "true");
-  syncBodyLock();
   const returnTarget = dialogReturnFocus.get(overlay);
   if (returnTarget?.isConnected) returnTarget.focus({ preventScroll:true });
+  else if (overlay.contains(document.activeElement)) document.activeElement.blur();
+  overlay.classList.remove("open");
+  overlay.inert = true;
+  overlay.setAttribute("aria-hidden", "true");
+  syncBodyLock();
   dialogReturnFocus.delete(overlay);
 }
 
@@ -7382,9 +7431,12 @@ function toggleDrawer(id, force) {
   const shouldOpen = force ?? !drawer.classList.contains("open");
   closeDrawers();
   $$(".overlay.open").forEach((overlay) => {
+    if (overlay.contains(document.activeElement)) document.activeElement.blur();
     overlay.classList.remove("open");
+    overlay.inert = true;
     overlay.setAttribute("aria-hidden", "true");
   });
+  drawer.inert = !shouldOpen;
   drawer.classList.toggle("open", shouldOpen);
   drawer.setAttribute("aria-hidden", String(!shouldOpen));
   syncBodyLock();
@@ -12571,8 +12623,16 @@ if (backToTopButton) {
       ? `مستوى تصفح المتجر: ${percentage}% — اضغط للعودة إلى الأعلى`
       : `Store browsing progress: ${percentage}% — click to return to top`;
   };
-  window.addEventListener("scroll", updateBackToTop, { passive: true });
-  window.addEventListener("resize", updateBackToTop, { passive: true });
+  let backToTopFrame = 0;
+  const requestBackToTopUpdate = () => {
+    if (backToTopFrame) return;
+    backToTopFrame = requestAnimationFrame(() => {
+      backToTopFrame = 0;
+      updateBackToTop();
+    });
+  };
+  window.addEventListener("scroll", requestBackToTopUpdate, { passive: true });
+  window.addEventListener("resize", requestBackToTopUpdate, { passive: true });
   backToTopButton.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
   updateBackToTop();
 }
@@ -12606,6 +12666,7 @@ window.ORIGOStore = {
 checkoutFormMarkup = $("#checkout-overlay .checkout-grid").innerHTML;
 const directProductRoute = /^\/perfume\/[^/]+\/?$/i.test(location.pathname);
 const standaloneStorefrontRoute = /^\/(?:perfume(?:\/|$)|perfumes(?:\/|$)|search(?:\/|$)|brands(?:\/|$)|benefits(?:\/|$)|notes(?:\/|$)|alternatives(?:\/|$)|fragrance-finder(?:\/|$)|performance(?:\/|$)|cart(?:\/|$)|checkout(?:\/|$)|account(?:\/|$)|orders?(?:\/|$)|tracking?(?:\/|$)|login(?:\/|$)|register(?:\/|$)|profile(?:\/|$))/i.test(location.pathname);
+$$('.overlay[aria-hidden="true"],.drawer[aria-hidden="true"],.mobile-menu-panel[aria-hidden="true"]').forEach((surface) => { surface.inert = true; });
 setupTheme();
 saveNavigationSnapshot();
 updateLanguage();
