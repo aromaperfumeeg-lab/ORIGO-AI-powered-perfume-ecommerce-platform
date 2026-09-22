@@ -51,13 +51,29 @@ test("critical storefront geometry stays stable during hydration", async () => {
 test("only the PDP LCP image is high priority and hero autoplay starts after a stable first paint", async () => {
   const app = await read("app.js");
   const hero = app.slice(app.indexOf("function renderHomeHero("), app.indexOf("homeHeroMobileQuery.addEventListener"));
-  assert.match(hero, /scheduleNext\(12000\)/);
+  assert.match(hero, /scheduleNext\(20000\)/);
   assert.match(hero, /image\.fetchPriority = "low"/);
   assert.doesNotMatch(hero, /setInterval/);
   assert.match(app, /width="800" height="900" loading="eager" fetchpriority="high" decoding="async"/);
   const cards = app.slice(app.indexOf("function productCardMarkup("), app.indexOf("function setCardImage("));
   assert.doesNotMatch(cards, /fetchpriority="high"/);
   assert.match(app, /width="640" height="700" loading="\$\{options\.eager \? "eager" : "lazy"\}"/);
+});
+
+test("the homepage LCP hero is a stable eager SSR image and hydrated rails reserve space", async () => {
+  const [app, html, server, css] = await Promise.all([read("app.js"), read("index.html"), read("server.mjs"), read("home.css")]);
+  assert.match(html, /class="home-hero-image" width="1600" height="900" loading="eager" decoding="async" ORIGO_INITIAL_HERO_IMAGE/);
+  assert.doesNotMatch(html, /ORIGO_INITIAL_HERO_STYLE/);
+  assert.match(server, /fetchpriority=\\\"high\\\"/);
+  assert.match(server, /media=\"\(max-width:900px\)\"/);
+  assert.match(css, /#home \.home-hero-picture,#home \.home-hero-image/);
+  assert.match(css, /#home #home-brand-carousel-track\{min-height:/);
+  assert.match(css, /#home #home-benefits-track\{min-height:126px\}/);
+  assert.match(css, /#home #home-configured-product-rows\[data-ssr-home-products\]\{min-height:620px\}/);
+  assert.match(css, /#home #home-configured-product-rows\[data-ssr-home-products\]\{min-height:693px\}/);
+  assert.match(css, /#home \.home-gender-section\{[\s\S]*content-visibility:visible;[\s\S]*contain:none;/);
+  const brands = app.slice(app.indexOf("function renderBrandCarousel("), app.indexOf("function storefrontBrandEntries("));
+  assert.match(brands, /width=\"96\" height=\"96\" loading=\"lazy\" decoding=\"async\"/);
 });
 
 test("high-frequency observers and scroll work are frame-batched", async () => {

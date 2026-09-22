@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-09-14T21:01:38.772Z",
+  "generatedAt": "2026-09-16T20:12:37.826Z",
   "scope": "Library plus persisted note overrides; SQLite opened read-only. Visual semantics are not certified by filenames or hashes.",
   "notes": 1883,
   "products": 5,
-  "valid": 1630,
-  "missing": 235,
+  "valid": 1646,
+  "missing": 219,
   "duplicateGroups": 9,
   "needsReview": 0,
   "duplicates": [
@@ -23345,13 +23345,13 @@
     {
       "canonicalKey": "blay-dw",
       "nameAr": "بلاي دو",
-      "nameEn": "بلاي دو",
+      "nameEn": "three colorful modeling dough lumps",
       "sourceName": "بلاي دو",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/blay-dw.webp",
+      "filename": "blay-dw.webp",
+      "hash": "859efd178dc346685100196fe6405119b2afb887b81b265183dd5e143361f71e",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "بلاي دو"
       ]
@@ -23821,13 +23821,13 @@
     {
       "canonicalKey": "hbr",
       "nameAr": "حبر",
-      "nameEn": "حبر",
+      "nameEn": "black ink splash",
       "sourceName": "حبر",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/hbr.webp",
+      "filename": "hbr.webp",
+      "hash": "631bde79b66bc25fa051cffb51941ad99a3bbff8d5f279640f50e91a72a0c084",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "حبر"
       ]
@@ -23849,13 +23849,13 @@
     {
       "canonicalKey": "hjr-alrsyf",
       "nameAr": "حجر الرصيف",
-      "nameEn": "حجر الرصيف",
+      "nameEn": "gray cobblestone paving block",
       "sourceName": "حجر الرصيف",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/hjr-alrsyf.webp",
+      "filename": "hjr-alrsyf.webp",
+      "hash": "53681ce605a1b7d36fc709a199499e36b1eef1b630e1f5227927b59f4bde611e",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "حجر الرصيف"
       ]
@@ -23877,13 +23877,13 @@
     {
       "canonicalKey": "hjr-jyry-mrjany",
       "nameAr": "حجر جيري مرجاني",
-      "nameEn": "حجر جيري مرجاني",
+      "nameEn": "porous coral limestone specimen",
       "sourceName": "حجر جيري مرجاني",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/hjr-jyry-mrjany.webp",
+      "filename": "hjr-jyry-mrjany.webp",
+      "hash": "c4ae1a5813c7f15c8eb389445eadc04232fe5deecc2cf2caa731a82a2428fc4d",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "حجر جيري مرجاني"
       ]
@@ -23891,13 +23891,13 @@
     {
       "canonicalKey": "hjr-mbll",
       "nameAr": "حجر مبلل",
-      "nameEn": "حجر مبلل",
+      "nameEn": "wet dark stone with water droplets",
       "sourceName": "حجر مبلل",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/hjr-mbll.webp",
+      "filename": "hjr-mbll.webp",
+      "hash": "e36cdc44f70b63c8269d3aca124707b57fd74a96b5ace009a4ee85e2a5a2eb94",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "حجر مبلل"
       ]
@@ -23975,13 +23975,13 @@
     {
       "canonicalKey": "khshb-mtly-balwrnysh",
       "nameAr": "خشب مطلي بالورنيش",
-      "nameEn": "خشب مطلي بالورنيش",
+      "nameEn": "varnished wood small polished plank",
       "sourceName": "خشب مطلي بالورنيش",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/khshb-mtly-balwrnysh.webp",
+      "filename": "khshb-mtly-balwrnysh.webp",
+      "hash": "d5311fa6bd50990bc5826ded90bb8cfcedfcff401e0c29c84dcdfda65454dc72",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "خشب مطلي بالورنيش"
       ]
@@ -24031,13 +24031,13 @@
     {
       "canonicalKey": "dqyq",
       "nameAr": "دقيق",
-      "nameEn": "دقيق",
+      "nameEn": "wheat flour mound",
       "sourceName": "دقيق",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/dqyq.webp",
+      "filename": "dqyq.webp",
+      "hash": "2963ba50963cb4179081a63417c602e95c507573a918659249646c7154f1b9bf",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "دقيق"
       ]
@@ -24059,13 +24059,13 @@
     {
       "canonicalKey": "dhn-alshar",
       "nameAr": "دهن الشعر",
-      "nameEn": "دهن الشعر",
+      "nameEn": "amber hair pomade wax curl",
       "sourceName": "دهن الشعر",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/dhn-alshar.webp",
+      "filename": "dhn-alshar.webp",
+      "hash": "c3a40d85c8c9a41ac4ae81ba999f9ac11f1c700ef3098eb1a42c35190799adc0",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "دهن الشعر"
       ]
@@ -24227,13 +24227,13 @@
     {
       "canonicalKey": "rykwta",
       "nameAr": "ريكوتا",
-      "nameEn": "ريكوتا",
+      "nameEn": "fresh ricotta cheese crumbly white mound",
       "sourceName": "ريكوتا",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/rykwta.webp",
+      "filename": "rykwta.webp",
+      "hash": "5ccdeb1d111f147131a2528a5076e6d221335b369c2ef834ecc446b764288c5f",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "ريكوتا"
       ]
@@ -25011,13 +25011,13 @@
     {
       "canonicalKey": "krym-alyd",
       "nameAr": "كريم اليد",
-      "nameEn": "كريم اليد",
+      "nameEn": "white hand cream dollop",
       "sourceName": "كريم اليد",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/krym-alyd.webp",
+      "filename": "krym-alyd.webp",
+      "hash": "49a0420f1f0e494a4d2fb76c69932cd783830c7c5e864b02760160058d7ec9f2",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "كريم اليد"
       ]
@@ -25081,13 +25081,13 @@
     {
       "canonicalKey": "kys-blastyky",
       "nameAr": "كيس بلاستيكي",
-      "nameEn": "كيس بلاستيكي",
+      "nameEn": "crumpled transparent plastic bag",
       "sourceName": "كيس بلاستيكي",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/kys-blastyky.webp",
+      "filename": "kys-blastyky.webp",
+      "hash": "63b9411f52683895b21a1092c0c5b1eb4edc3c551adee70b3435290e2cafef2a",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "كيس بلاستيكي"
       ]
@@ -25221,13 +25221,13 @@
     {
       "canonicalKey": "majwn-asnan",
       "nameAr": "معجون أسنان",
-      "nameEn": "معجون أسنان",
+      "nameEn": "striped blue white toothpaste curl",
       "sourceName": "معجون أسنان",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/majwn-asnan.webp",
+      "filename": "majwn-asnan.webp",
+      "hash": "a5a18bb47af89dd8753a9ac322f525a6dbd6086fd2b6d55d522f93d79fcb208b",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "معجون أسنان"
       ]
@@ -25249,13 +25249,13 @@
     {
       "canonicalKey": "mlh-albhr-alwrdy-alhymalaya",
       "nameAr": "ملح البحر الوردي الهيمالايا",
-      "nameEn": "ملح البحر الوردي الهيمالايا",
+      "nameEn": "pink Himalayan salt crystals",
       "sourceName": "ملح البحر الوردي الهيمالايا",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/mlh-albhr-alwrdy-alhymalaya.webp",
+      "filename": "mlh-albhr-alwrdy-alhymalaya.webp",
+      "hash": "73f0cfa110bc8e158c18b67a751ea20465ac6d19c93c06f2a706fcf31b6a701e",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "ملح البحر الوردي الهيمالايا"
       ]
@@ -25263,13 +25263,13 @@
     {
       "canonicalKey": "mlma-alshfah",
       "nameAr": "ملمع الشفاة",
-      "nameEn": "ملمع الشفاة",
+      "nameEn": "pink glossy lip gloss smear",
       "sourceName": "ملمع الشفاة",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/mlma-alshfah.webp",
+      "filename": "mlma-alshfah.webp",
+      "hash": "5aa8c57b72043f66f21db5690e56eaced3ce6d451ce8ba841c087894cdb168ec",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "ملمع الشفاة"
       ]
@@ -25389,13 +25389,13 @@
     {
       "canonicalKey": "nhas",
       "nameAr": "نحاس",
-      "nameEn": "نحاس",
+      "nameEn": "native copper nugget reddish metallic",
       "sourceName": "نحاس",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/nhas.webp",
+      "filename": "nhas.webp",
+      "hash": "34384599e8c6b8b0f6c79c6d9bf5677adc41fa61505456438f61c554f209dd23",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "نحاس"
       ]
@@ -25487,13 +25487,13 @@
     {
       "canonicalKey": "nwth-almaywnyz",
       "nameAr": "نوتة المايونيز",
-      "nameEn": "نوتة المايونيز",
+      "nameEn": "pale yellow mayonnaise dollop",
       "sourceName": "نوتة المايونيز",
-      "imageUrl": "",
-      "filename": "",
-      "hash": null,
-      "status": "MISSING_IMAGE",
-      "validation": "MISSING_IMAGE",
+      "imageUrl": "assets/notes/generated/nwth-almaywnyz.webp",
+      "filename": "nwth-almaywnyz.webp",
+      "hash": "9ee8f7127636636563963a9b5a569a31ba117ba5d793d07b3f42cbf759f1ee6c",
+      "status": "VALID",
+      "validation": "VALID",
       "aliases": [
         "نوتة المايونيز"
       ]

@@ -3797,7 +3797,7 @@ function renderBrandCarousel(query = "") {
   const visibleBrands = brands;
   const items = visibleBrands.map(({ brand, option }) => {
     const logo = option ? option.image : origoBrandLogo(brand);
-    const artwork = logo ? `<img src="${escapeHTML(logo)}" alt="" loading="lazy"/>` : `<span aria-hidden="true">${escapeHTML(brand.slice(0, 2).toUpperCase())}</span>`;
+    const artwork = logo ? `<img src="${escapeHTML(logo)}" alt="" width="96" height="96" loading="lazy" decoding="async"/>` : `<span aria-hidden="true">${escapeHTML(brand.slice(0, 2).toUpperCase())}</span>`;
     const label = (state.lang === "ar" ? option?.nameAr : option?.nameEn) || localizedBrandLabel(brand);
     return `<button class="brand-slider-card" data-action="brand-search" data-query="${escapeHTML(brand)}" aria-label="${escapeHTML(`${state.lang === "ar" ? "عرض منتجات" : "View products by"} ${label}`)}">${artwork}</button>`;
   });
@@ -3910,6 +3910,8 @@ function homeHeroImageUrl(item) {
 function renderHomeHero() {
   const hero = $("#home-hero");
   const visual = hero?.querySelector(".home-hero-products");
+  let heroImage = visual?.querySelector(".home-hero-image");
+  let heroMobileSource = visual?.querySelector("source[media]");
   const dots = hero?.querySelector(".home-hero-dots");
   if (!hero || !visual || !dots) return;
   const settings = mergeStoreSettings(state.adminWorkspace.settings || {});
@@ -3924,6 +3926,8 @@ function renderHomeHero() {
     hero.classList.remove("has-image", "is-dragging");
     hero.classList.add("no-image");
     visual.style.backgroundImage = "none";
+    heroImage?.removeAttribute("src");
+    heroMobileSource?.removeAttribute("srcset");
     visual.removeAttribute("href");
     dots.innerHTML = "";
     hero.querySelectorAll("[data-home-hero-arrow]").forEach((button) => (button.hidden = true));
@@ -3938,7 +3942,15 @@ function renderHomeHero() {
     const responsiveUrl = homeHeroImageUrl(item);
     hero.classList.toggle("has-image", Boolean(responsiveUrl));
     hero.classList.toggle("no-image", !responsiveUrl);
-    visual.style.backgroundImage = responsiveUrl ? `url("${String(responsiveUrl).replace(/["\\]/g, "")}")` : "none";
+    const desktopUrl = String(item.url || "").replace(/["\\]/g, "");
+    const mobileUrl = String(item.mobileUrl || "").replace(/["\\]/g, "");
+    visual.style.backgroundImage = "none";
+    if (heroMobileSource) heroMobileSource.srcset = mobileUrl || desktopUrl;
+    if (heroImage && heroImage.getAttribute("src") !== desktopUrl) {
+      heroImage.fetchPriority = homeHeroIndex === 0 ? "high" : "low";
+      heroImage.src = desktopUrl;
+    }
+    if (heroImage) heroImage.alt = state.lang === "ar" ? item.altAr || item.name || "بانر دعائي" : item.altEn || item.name || "Campaign banner";
     // Uploaded hero artwork always fills the frame. `contain`, custom scales,
     // and the old `auto 100%` fallback all exposed empty side columns.
     visual.style.backgroundSize = "cover";
@@ -4063,7 +4075,7 @@ function renderHomeHero() {
         if (!document.hidden) hero._origoResumeHero?.();
       });
     }
-    const beginAutoplay = () => scheduleNext(12000);
+    const beginAutoplay = () => scheduleNext(20000);
     if (document.readyState === "complete") beginAutoplay();
     else addEventListener("load", beginAutoplay, { once:true });
   }

@@ -2266,12 +2266,16 @@ async function serveStatic(request, response, url) {
         const hero = (Array.isArray(workspace?.settings?.homeMedia) ? workspace.settings.homeMedia : [])
           .filter((item) => item?.placement === "hero" && item?.url && item?.active !== false)
           .sort((a, b) => Number(a?.sortOrder || 0) - Number(b?.sortOrder || 0))[0];
-        const initialHeroUrl = mobileRequest && hero?.mobileUrl ? hero.mobileUrl : hero?.url;
-        const safeHeroUrl = String(initialHeroUrl || "").replace(/["'()\\\n\r]/g, "").replace(/&/g, "&amp;").replace(/</g, "%3C").replace(/>/g, "%3E");
+        const cleanHeroUrl = (value) => String(value || "").replace(/["'()\\\n\r]/g, "").replace(/&/g, "&amp;").replace(/</g, "%3C").replace(/>/g, "%3E");
+        const safeHeroUrl = cleanHeroUrl(hero?.url);
+        const safeHeroMobileUrl = cleanHeroUrl(hero?.mobileUrl);
+        const safeHeroAlt = String(hero?.altAr || hero?.altEn || hero?.name || "عرض ORIGO Scents").replace(/["<>]/g, "");
+        const heroPreload = hero ? `${safeHeroMobileUrl ? `<link rel="preload" as="image" href="${safeHeroMobileUrl}" media="(max-width:900px)" fetchpriority="high" />` : ""}<link rel="preload" as="image" href="${safeHeroUrl}"${safeHeroMobileUrl ? ` media="(min-width:901px)"` : ""} fetchpriority="high" />` : "";
         let html = data.toString("utf8")
           .replace("ORIGO_INITIAL_HERO_STATE", hero ? "data-initial-hero=\"true\"" : "hidden data-initial-hero=\"false\"")
-          .replace("ORIGO_INITIAL_HERO_STYLE", hero ? `style=\"background-image:url(&quot;${safeHeroUrl}&quot;)\"` : "")
-          .replace("<!-- ORIGO_INITIAL_HERO_PRELOAD -->", hero ? `<link rel=\"preload\" as=\"image\" href=\"${safeHeroUrl}\" fetchpriority=\"high\" />` : "");
+          .replace("ORIGO_INITIAL_HERO_MOBILE", hero ? `srcset=\"${safeHeroMobileUrl || safeHeroUrl}\"` : "")
+          .replace("ORIGO_INITIAL_HERO_IMAGE", hero ? `src=\"${safeHeroUrl}\" alt=\"${safeHeroAlt}\" fetchpriority=\"high\"` : `alt=\"\"`)
+          .replace("<!-- ORIGO_INITIAL_HERO_PRELOAD -->", heroPreload);
         if (productRouteMatch) html = html.replace(/<div class="origo-home" id="home">[\s\S]*?<\/div>\s*<template id="retired-home-content">/, '<div class="origo-home" id="home" hidden data-route-pruned="product"></div><template id="retired-home-content">');
         if (!routeExists) html = html.replace('<main id="storefront-main">', `<main id="storefront-main"><section class="route-not-found" role="main"><h1>404</h1><p>الصفحة المطلوبة غير موجودة.</p><a href="/">العودة إلى الرئيسية</a></section>`);
         html = injectRouteContent(html, url.pathname, getPublicProducts(), getPublicBrands());
