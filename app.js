@@ -1012,7 +1012,7 @@ const defaultStoreSettings = {
     adminScale: 1.1,
     layoutTuningVersion: 3
   },
-  footerImage: "assets/origo-hero.png",
+  footerImage: "assets/origo-hero.webp",
   footerDescriptionAr: "في أوريجو، نؤمن أن العطر ليس مجرد رائحة، بل هو توقيعك الخاص الذي يترك أثرًا لا يُنسى. اكتشف عالم العطور الفاخرة بين الأصالة والتميز.",
   footerDescriptionEn: "At ORIGO, fragrance is more than a scent. It is your signature, leaving a memorable trace of character and elegance.",
   newsletterTitleAr: "اشترك في نشرتنا البريدية", newsletterTitleEn: "Join our newsletter",

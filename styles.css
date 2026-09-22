@@ -602,7 +602,7 @@ svg {
 
 .hero-image {
   z-index: -3;
-  background-image: url("assets/origo-hero.png");
+  background-image: url("assets/origo-hero.webp");
   background-size: cover;
   background-position: center;
   transform: scale(1.015);
@@ -1154,7 +1154,7 @@ html[data-theme="light"] .product-image {
   overflow: hidden;
   background:
     linear-gradient(90deg, rgba(10,5,6,.25), rgba(10,5,6,.8)),
-    url("assets/origo-hero.png") center / cover;
+    url("assets/origo-hero.webp") center / cover;
 }
 
 .story-visual::before {
@@ -8471,7 +8471,7 @@ body.notes-route #storefront-main > section:not(#notes-library-page) {
   color: #fff;
   background:
     linear-gradient(180deg, rgba(66,5,21,.15), rgba(45,4,15,.9)),
-    url("assets/origo-hero.png") 28% center / cover;
+    url("assets/origo-hero.webp") 28% center / cover;
 }
 
 .auth-art h2 {
