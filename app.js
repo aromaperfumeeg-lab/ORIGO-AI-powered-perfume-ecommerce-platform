@@ -1666,6 +1666,7 @@ async function hydrateServer() {
     updateAccountIndicator();
     handleBenefitRoute({ replace: true });
     handleBenefitsRoute({ replace: true });
+    handleBrandsRoute({ replace: true });
     handleCatalogRoute({ replace: true });
     handleProductRoute();
     await handleAdminOrderRoute();
@@ -3782,6 +3783,18 @@ function renderBrandCarousel(query = "") {
     // and rebuilding this rail caused a large startup layout shift.
     track.setAttribute("aria-busy", "true");
     track.closest(".home-brand-directory")?.classList.add("brands-loading");
+    if (window.ORIGOBrandSlider && !track.querySelector(".brand-motion-track")) {
+      const serverItems = [...track.children]
+        .filter((item) => item.matches("a,button"))
+        .map((item) => {
+          item.classList.add("brand-slider-card");
+          return item.outerHTML;
+        });
+      if (serverItems.length > 1) {
+        const seconds = mergeStoreSettings(state.adminWorkspace.settings || {}).homepageRails.brands.intervalSeconds || 3;
+        window.ORIGOBrandSlider.mount(track, serverItems, seconds);
+      }
+    }
     return;
   }
   track.removeAttribute("aria-busy");
@@ -4476,8 +4489,10 @@ function renderSiteFooter() {
   const hours = isArabic ? settings.supportHoursAr : settings.supportHoursEn;
   $("#footer-support-hours").innerHTML = escapeHTML(hours).replaceAll("\n", "<br />");
   $("#footer-support-note").textContent = isArabic ? "نجيب الرسائل خلال ساعات العمل الرسمية." : "Messages are answered during official business hours.";
-  $("#footer-privacy-link").href = `mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent(isArabic ? "سياسة الخصوصية" : "Privacy policy")}`;
-  $("#footer-terms-link").href = `mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent(isArabic ? "الشروط والأحكام" : "Terms and conditions")}`;
+  const privacyLink = $("#footer-privacy-link");
+  const termsLink = $("#footer-terms-link");
+  if (privacyLink) privacyLink.href = "/policies/privacy";
+  if (termsLink) termsLink.href = "/policies/terms";
   const appLinks = [
     ["googlePlay", settings.appLinks.googlePlay, "Google Play"], ["appStore", settings.appLinks.appStore, "App Store"]
   ].filter(([, url]) => safePublicHref(url, { externalOnly: true }));
@@ -5097,6 +5112,7 @@ function handleCatalogRoute({ replace = false } = {}) {
 function renderBrandsPage() {
   const root = $("#brands-page-content");
   if (!root) return;
+  if (!state.storefrontReady) return;
   const brandOptions = state.productOptions.filter((item) => item.group === "brand");
   const names = [...new Set(state.products.filter((product) => product.status === "published" && product.deleted !== true && (product.category || "perfume") === "perfume").map((product) => product.brandEn || product.brand || product.brandAr).filter(Boolean))];
   root.innerHTML = `<nav class="brands-page-breadcrumb"><button data-action="catalog-home">${state.lang === "ar" ? "الرئيسية" : "Home"}</button><span>‹</span><b>${state.lang === "ar" ? "العلامات التجارية" : "Brands"}</b></nav>

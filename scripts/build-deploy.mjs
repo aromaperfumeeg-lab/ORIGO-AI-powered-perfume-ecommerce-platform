@@ -1,6 +1,6 @@
 import { cp, mkdir, readdir, readFile, rm, stat, writeFile } from "node:fs/promises";
 import { spawnSync } from "node:child_process";
-import { dirname, extname, join, relative, resolve } from "node:path";
+import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -10,11 +10,38 @@ const archive = join(dist, "origo-production.tar");
 const includeData = process.env.DEPLOY_INCLUDE_DATA === "1";
 const includeUploads = process.env.DEPLOY_INCLUDE_UPLOADS === "1";
 
-const rootFiles = [
-  ".env.example", "index.html", "package.json", "pnpm-lock.yaml", "server.mjs", "db.mjs",
+const serverFiles = [
+  ".env.example", "package.json", "pnpm-lock.yaml", "server.mjs", "db.mjs",
   "portable-database.mjs", "external-integrations.mjs", "storefront-media.mjs", "seo.mjs",
   "commerce-service.mjs", "performance-service.mjs", "scripts/reset-admin-password.mjs"
 ];
+
+const publicFiles = [
+  "index.html", "404.html", "offline.html", "admin.html", "admin-login.html",
+  "manifest.webmanifest", "robots.txt"
+];
+
+// Keep this list explicit: root-level JavaScript and CSS also contain source,
+// test helpers, superseded builds, and generation tooling that must not ship.
+const runtimeFiles = [
+  "account.css", "account.js",
+  "admin-ai.css", "admin-extensions.js", "admin-icons.css", "admin-login.css", "admin-login.js",
+  "admin-media.css", "admin-order-center.css", "admin-ui-fixes.css", "admin.css", "admin.js",
+  "alternative-finder.css", "alternatives.css", "alternatives.js", "appearance.css",
+  "app.js", "app.min.js", "catalog-providers.min.js", "catalog.css", "commerce.css", "commerce.js",
+  "dark-theme.css", "deferred-modules.js", "external-tracking.js", "footer.css",
+  "fragrance-finder-engine.js", "fragrance-finder-i18n.js", "fragrance-finder.css", "fragrance-finder.js",
+  "fragrance-knowledge.js", "fragrance-notes-library.js", "home-brand-navigation.js",
+  "media-overrides.js", "no-effects.css", "notes-admin-fixes.css", "origo-identity.css",
+  "performance-insights.css", "performance-insights.js",
+  "perfume-aura.js", "perfume-bundle.js", "product-detail.css", "product-editor-runtime.css",
+  "product-reference-card.css", "product-reviews.js", "protocol-guard.js", "runtime-loader.js",
+  "smart-finder.css", "storefront-settings-runtime.css", "sw.js", "system.css", "system.js"
+];
+
+function excludedGeneratedAsset(relativePath) {
+  return /(?:^|\/)batch\d+-generation-specs\.json$/i.test(relativePath);
+}
 
 async function copyFile(relativePath) {
   const source = join(root, relativePath);
@@ -28,7 +55,7 @@ async function copyTree(relativeDirectory) {
   for (const entry of await readdir(source, { withFileTypes: true })) {
     const relativePath = join(relativeDirectory, entry.name).replaceAll("\\", "/");
     if (entry.isDirectory()) await copyTree(relativePath);
-    else await copyFile(relativePath);
+    else if (!excludedGeneratedAsset(relativePath)) await copyFile(relativePath);
   }
 }
 
@@ -36,12 +63,7 @@ await rm(stage, { recursive: true, force: true });
 await rm(archive, { force: true });
 await mkdir(stage, { recursive: true });
 
-for (const file of rootFiles) await copyFile(file);
-for (const entry of await readdir(root, { withFileTypes: true })) {
-  if (!entry.isFile()) continue;
-  const extension = extname(entry.name);
-  if (extension === ".css" || extension === ".js") await copyFile(entry.name);
-}
+for (const file of [...serverFiles, ...publicFiles, ...runtimeFiles]) await copyFile(file);
 if (await stat(join(root, "assets")).catch(() => null)) await copyTree("assets");
 if (await stat(join(root, "lib")).catch(() => null)) await copyTree("lib");
 if (await stat(join(root, "chunks")).catch(() => null)) await copyTree("chunks");

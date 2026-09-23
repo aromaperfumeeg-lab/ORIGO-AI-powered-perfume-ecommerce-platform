@@ -32,12 +32,14 @@ test("homepage startup leaves fragrance knowledge interaction-driven", async () 
 });
 
 test("critical storefront geometry stays stable during hydration", async () => {
-  const [app, html] = await Promise.all([read("app.js"), read("index.html")]);
+  const [app, html, serviceWorker] = await Promise.all([read("app.js"), read("index.html"), read("sw.js")]);
   const brands = app.slice(app.indexOf("function renderBrandCarousel("), app.indexOf("function storefrontBrandEntries("));
   const rows = app.slice(app.indexOf("function renderConfiguredHomeProductRows("), app.indexOf("function renderHomepageCommerce("));
   assert.doesNotMatch(brands, /track\.innerHTML = ""/);
   assert.match(rows, /if \(!holder\.children\?\.length\)/);
-  assert.match(html, /data-idle-src="home-brand-navigation\.js\?v=8"/);
+  const brandRuntime = html.match(/data-idle-src="(home-brand-navigation\.js\?v=\d+)"/)?.[1];
+  assert.ok(brandRuntime, "the home brand runtime is versioned in HTML");
+  assert.ok(serviceWorker.includes(`/${brandRuntime}`), "HTML and the service worker cache the same brand runtime version");
 
   const functionSource = app.slice(app.indexOf("function renderConfiguredHomeProductRows("), app.indexOf("function renderHomepageCommerce("));
   const holder = { children:[{}], innerHTML:"SSR", setAttribute(name, value){ this[name] = value; }, removeAttribute(){} };

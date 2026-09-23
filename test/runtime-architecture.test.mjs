@@ -69,8 +69,10 @@ test("product studio click passes through both asynchronous loaders exactly once
 });
 
 test("home loads production storefront core without admin editor or finder runtimes", async () => {
-  const [html, loader, core] = await Promise.all([read("../index.html"), read("../runtime-loader.js"), read("../chunks/storefront-core.min.js")]);
-  assert.match(html, /chunks\/storefront-core\.min\.js\?v=62/);
+  const [html, loader, core, serviceWorker] = await Promise.all([read("../index.html"), read("../runtime-loader.js"), read("../chunks/storefront-core.min.js"), read("../sw.js")]);
+  const storefrontCore = html.match(/src="(chunks\/storefront-core\.min\.js\?v=\d+)"/)?.[1];
+  assert.ok(storefrontCore, "the production storefront core is versioned in HTML");
+  assert.ok(serviceWorker.includes(`/${storefrontCore}`), "HTML and the service worker cache the same storefront core version");
   assert.match(html, /runtime-loader\.js\?v=19/);
   assert.doesNotMatch(html, /<script[^>]+(?:admin-runtime|product-editor-runtime|storefront-settings-runtime|fragrance-finder-(?:engine|i18n)|fragrance-finder\.js)/);
   assert.doesNotMatch(core, /function settingsMarkup\(|function renderImportReview\(|function overviewMarkup\(/);

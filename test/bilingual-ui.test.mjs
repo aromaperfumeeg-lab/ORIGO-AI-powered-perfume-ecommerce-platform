@@ -20,6 +20,7 @@ const noEffects = await readFile(new URL("../no-effects.css", import.meta.url), 
 const styles = await readFile(new URL("../styles.css", import.meta.url), "utf8");
 const productDetail = await readFile(new URL("../product-detail.css", import.meta.url), "utf8");
 const index = await readFile(new URL("../index.html", import.meta.url), "utf8");
+const brandNavigation = await readFile(new URL("../home-brand-navigation.js", import.meta.url), "utf8");
 const performance = app.slice(app.indexOf("function perfumePerformanceEditorSection"), app.indexOf("const PRODUCT_PROFILE_IMAGE_FIELDS"));
 
 test("dark mode uses a charcoal gradient behind product imagery", () => {
@@ -314,16 +315,21 @@ test("fragrance notes library is public in desktop and mobile navigation", () =>
   const actions = app.slice(app.indexOf('if (action === "open-notes")'), app.indexOf('if (action === "notes-home")'));
   assert.match(actions, /navigateNotes\(\)/);
   assert.doesNotMatch(actions, /isStaffUser\(\)/);
-  assert.match(app, /if \(!staffView\) state\.notesImageFilter = "available"/);
+  assert.match(app, /notesImageFilter:\s*"available"/);
 });
 
 test("public notes hero reports only notes and families while family cards form a draggable rail", () => {
   const notesView = app.slice(app.indexOf("function renderNotesLibrary()"), app.indexOf("function renderNoteDetail("));
-  const hero = notesView.slice(notesView.indexOf('<div class="notes-page-stats">'), notesView.indexOf("</header>"));
-  assert.match(hero, /إجمالي النوتات/);
-  assert.match(hero, /عائلة عطرية/);
+  assert.ok(notesView.length > 0);
+  const hero = notesView.slice(notesView.indexOf('<header class="notes-page-hero">'), notesView.indexOf("</header>") + "</header>".length);
+  assert.match(hero, /class="notes-page-stats"/);
+  assert.match(hero, /library\.notes\.length/);
+  assert.match(hero, /familyCards\.length/);
+  assert.match(hero, /عدد النوتات العطرية|Fragrance notes/);
+  assert.match(hero, /عدد العائلات العطرية|Fragrance families/);
   assert.doesNotMatch(hero, /صور معتمدة|بانتظار صورة|readyCount|pendingCount/);
   assert.match(notesView, /id="notes-family-showcase"/);
+  assert.match(notesView, /data-action="filter-note-family"/);
   assert.match(notesView, /bindHorizontalRail\(\$\("#notes-family-showcase"\)\)/);
   assert.match(styles, /\.notes-family-showcase \{[\s\S]*?display: flex;[\s\S]*?overflow-x: auto;/);
 });
@@ -495,7 +501,10 @@ test("mobile storefront exposes a persistent one-or-two product layout control",
   assert.match(appearance, /mobile-product-view-control\{position:static!important;order:2!important/);
   assert.doesNotMatch(appearance, /grid-column:3!important/);
   assert.doesNotMatch(app, /home-brand-carousel-track[^\n]+max-width: 700px[^\n]+return/);
-  assert.match(app, /getComputedStyle\(brandTrack\)\.direction === "rtl"/);
+  assert.match(brandNavigation, /document\.documentElement\.dir === "rtl"/);
+  assert.match(brandNavigation, /const travel = rtl\(\) \? distance : -distance/);
+  assert.match(brandNavigation, /direction \* \(rtl\(\) \? -1 : 1\)/);
+  assert.match(brandNavigation, /timeDelta = \(delta \/ loopDistance\) \* totalDuration \* \(rtl\(\) \? 1 : -1\)/);
   assert.match(app, /if \(action === "mobile-product-columns"\) \{\s*setMobileProductColumns/);
   const dragStart = app.slice(app.indexOf('document.addEventListener("dragstart"'), app.indexOf('document.addEventListener("dragover"'));
   assert.doesNotMatch(dragStart, /mobile-product-columns/);

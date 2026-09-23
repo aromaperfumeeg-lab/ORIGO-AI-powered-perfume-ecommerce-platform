@@ -264,6 +264,7 @@ const mimeTypes = {
   ".jpeg": "image/jpeg",
   ".js": "text/javascript; charset=utf-8",
   ".json": "application/json; charset=utf-8",
+  ".webmanifest": "application/manifest+json; charset=utf-8",
   ".png": "image/png",
   ".svg": "image/svg+xml; charset=utf-8",
   ".webp": "image/webp"
@@ -2222,7 +2223,7 @@ function cacheCompressedStatic(key, body) {
 async function serveStatic(request, response, url) {
   const isNotesRoute = /^\/notes(?:\/[a-z0-9-]+)?\/?$/i.test(url.pathname);
   const isBenefitRoute = /^\/benefits(?:\/[a-z0-9-]+)?\/?$/i.test(url.pathname);
-  const isStorefrontRoute = /^\/(?:perfumes(?:\/[^/]+)?|perfume\/[^/]+|brands(?:\/[^/]+)?|search|policies\/(?:shipping|returns|privacy)|about|contact)\/?$/i.test(url.pathname);
+  const isStorefrontRoute = /^\/(?:perfumes(?:\/[^/]+)?|perfume\/[^/]+|brands(?:\/[^/]+)?|search|policies\/(?:shipping|returns|privacy|terms)|about|contact)\/?$/i.test(url.pathname);
   const isCommerceRoute = /^\/(checkout|order\/[^/]+|feedback\/[^/]+|feedback-insights|account(?:\/.*)?|fragrance-finder\/[a-z-]+|alternatives(?:\/compare\/[^/]+)?)\/?$/i.test(url.pathname);
   const isAdminRoute = /^\/admin\/orders(?:\/[^/]+)?\/?$/i.test(url.pathname);
   let publicProducts;
@@ -2447,7 +2448,7 @@ const server = createServer(async (request, response) => {
     return;
   }
   if (url.pathname === "/sitemap.xml") {
-    const sitemap=buildSitemap(listProducts(), listProductOptions("brand")).replace("</urlset>",`<url><loc>https://origoscents.com/about</loc></url><url><loc>https://origoscents.com/contact</loc></url><url><loc>https://origoscents.com/policies/shipping</loc></url><url><loc>https://origoscents.com/policies/returns</loc></url><url><loc>https://origoscents.com/policies/privacy</loc></url></urlset>`);
+    const sitemap=buildSitemap(listProducts(), listProductOptions("brand")).replace("</urlset>",`<url><loc>https://origoscents.com/about</loc></url><url><loc>https://origoscents.com/contact</loc></url><url><loc>https://origoscents.com/policies/shipping</loc></url><url><loc>https://origoscents.com/policies/returns</loc></url><url><loc>https://origoscents.com/policies/privacy</loc></url><url><loc>https://origoscents.com/policies/terms</loc></url></urlset>`);
     response.writeHead(200, { "Content-Type":"application/xml; charset=utf-8", "Cache-Control":"public, max-age=900" }).end(request.method === "HEAD" ? undefined : sitemap);
     return;
   }

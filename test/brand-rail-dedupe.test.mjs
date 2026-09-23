@@ -52,3 +52,12 @@ test('brand rail preserves SSR links until current server options finish loading
   assert.ok(render.includes('window.ORIGOBrandSlider) window.ORIGOBrandSlider.mount(track, items, seconds)'));
   assert.ok(render.includes('else track.innerHTML = items.join("")'));
 });
+
+test('brand directory preserves SSR cards until storefront hydration completes', async () => {
+  const app = await readFile(new URL('../app.js', import.meta.url),'utf8');
+  const render = app.slice(app.indexOf('function renderBrandsPage('), app.indexOf('function handleBrandsRoute('));
+  assert.ok(render.indexOf('if (!state.storefrontReady) return;') < render.indexOf('root.innerHTML ='));
+
+  const hydrate = app.slice(app.indexOf('async function hydrateServer('), app.indexOf('async function loadAdminCatalog('));
+  assert.match(hydrate, /state\.storefrontReady = true;[\s\S]*handleBrandsRoute\(\{ replace: true \}\);/);
+});

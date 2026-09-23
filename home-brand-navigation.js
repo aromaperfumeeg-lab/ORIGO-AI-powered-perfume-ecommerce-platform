@@ -53,7 +53,9 @@
     track.classList.remove("brand-paged-slider");
     track.classList.add("brand-continuous-track");
     const primary = items.join("");
-    const duplicate = primary.replaceAll("<button", '<button tabindex="-1"');
+    const duplicate = primary
+      .replaceAll("<button", '<button tabindex="-1"')
+      .replaceAll("<a ", '<a tabindex="-1" ');
     track.innerHTML = `<div class="brand-motion-track"><div class="brand-motion-group">${primary}</div><div class="brand-motion-group" aria-hidden="true" inert>${duplicate}</div></div>`;
     const step = (direction) => {
       if (!animation) return;

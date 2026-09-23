@@ -56,8 +56,13 @@ test("storefront settings API migrates legacy media and new uploads store URLs o
 });
 
 test("product summaries and lazy product detail deduplication remain enabled", () => {
-  assert.match(server, /listProducts\(\{ limit, offset, summary: true \}\)/);
+  const summaryCall = server.match(/listProducts\(\{[^}]*\bsummary:\s*true[^}]*\}\)/)?.[0] || "";
+  assert.match(summaryCall, /\blimit\b/);
+  assert.match(summaryCall, /\boffset\b/);
+  assert.match(summaryCall, /\bsummary:\s*true\b/);
   assert.match(app, /const productDetailRequests = new Map\(\)/);
   assert.match(app, /productDetailRequests\.has\(product\.id\)/);
-  assert.match(app, /api\(`\/api\/products\/\$\{encodeURIComponent\(product\.id\)\}`\)/);
+  const hydration = app.slice(app.indexOf("async function hydrateProductDetails"), app.indexOf("function addToCart"));
+  assert.match(hydration, /encodeURIComponent\(product\.id\)/);
+  assert.match(hydration, /api\(`\/api\/products\/\$\{[^}]+\}`\)/);
 });

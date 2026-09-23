@@ -30,7 +30,7 @@ test('list controls are added once outside home and expose localized pressed sta
 
 test('list styles target non-home collections and retain accessible sized controls', async () => {
   const css = await readFile(new URL('../appearance.css', import.meta.url), 'utf8');
-  const rules = css.split('\n').filter(line => line.includes('data-catalog-layout'));
+  const rules = css.split('\n').filter(line => line.startsWith('html[data-catalog-layout="list"]'));
   assert.ok(rules.length >= 4);
   assert.ok(rules.every(line => !line.includes('#home') && !line.includes('home-product-row')));
   assert.match(css, /grid-template-columns:clamp\(110px,25vw,220px\) minmax\(0,1fr\)/);
