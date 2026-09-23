@@ -1666,6 +1666,7 @@ async function hydrateServer() {
     updateAccountIndicator();
     handleBenefitRoute({ replace: true });
     handleBenefitsRoute({ replace: true });
+    handleBrandsRoute({ replace: true });
     handleCatalogRoute({ replace: true });
     handleProductRoute();
     await handleAdminOrderRoute();
@@ -5097,6 +5098,7 @@ function handleCatalogRoute({ replace = false } = {}) {
 function renderBrandsPage() {
   const root = $("#brands-page-content");
   if (!root) return;
+  if (!state.storefrontReady) return;
   const brandOptions = state.productOptions.filter((item) => item.group === "brand");
   const names = [...new Set(state.products.filter((product) => product.status === "published" && product.deleted !== true && (product.category || "perfume") === "perfume").map((product) => product.brandEn || product.brand || product.brandAr).filter(Boolean))];
   root.innerHTML = `<nav class="brands-page-breadcrumb"><button data-action="catalog-home">${state.lang === "ar" ? "الرئيسية" : "Home"}</button><span>‹</span><b>${state.lang === "ar" ? "العلامات التجارية" : "Brands"}</b></nav>
