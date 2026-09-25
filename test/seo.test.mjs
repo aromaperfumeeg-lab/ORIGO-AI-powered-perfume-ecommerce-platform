@@ -64,6 +64,25 @@ test("original perfumes landing is canonical, indexable with products and breadc
   assert.doesNotMatch(buildSitemap([]),/perfumes\/original/);
 });
 
+test("catalog, category and brand directory routes expose CollectionPage ItemLists",()=>{
+  for(const path of ["/perfumes","/perfumes/original","/perfumes/men","/brands"]){
+    const seo=seoForRoute(path,[product,afnanProduct]);
+    const collection=seo.jsonLd.find(item=>item["@type"]==="CollectionPage");
+    assert.ok(collection,`${path} needs CollectionPage structured data`);
+    assert.equal(collection.mainEntity["@type"],"ItemList");
+    assert.ok(collection.mainEntity.numberOfItems>0);
+    assert.equal(collection.mainEntity.itemListElement[0].position,1);
+    assert.match(collection.mainEntity.itemListElement[0].url,/^https:\/\/origoscents\.com\//);
+  }
+});
+
+test("default social metadata uses the real share image and Arabic locale",()=>{
+  const html=injectSeoIntoHtml('<html><head><title>x</title><meta name="description" content="x"></head></html>',seoForRoute("/",[product]));
+  assert.match(html,/property="og:locale" content="ar_EG"/);
+  assert.match(html,/property="og:image" content="https:\/\/origoscents\.com\/assets\/origo-social-v2\.jpg"/);
+  assert.match(html,/name="twitter:image" content="https:\/\/origoscents\.com\/assets\/origo-social-v2\.jpg"/);
+});
+
 test("server injection keeps exactly one metadata set and restores og site name",()=>{
   const source='<html><head><title>Old</title><meta name="description" content="old"><meta name="robots" content="noindex"><link rel="canonical" href="old"><meta property="og:site_name" content="OLD"><meta property="og:title" content="old"><meta name="twitter:title" content="old"></head></html>';
   const once=injectSeoIntoHtml(source,seoForRoute("/",[product]));

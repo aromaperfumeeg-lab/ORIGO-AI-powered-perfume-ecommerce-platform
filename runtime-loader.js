@@ -2,6 +2,7 @@
   "use strict";
   const promises = new Map();
   const cssPromises = new Map();
+  let adminTemplatePromise;
   const assets = {
     admin:["chunks/admin-runtime.min.js?v=11"],
     productEditor:["chunks/product-editor-runtime.min.js?v=7"],
@@ -37,9 +38,22 @@
     return pending;
   }
 
+  async function ensureAdminTemplate() {
+    const template = document.querySelector("#admin-runtime-template");
+    if (!template || template.content.childElementCount) return template;
+    if (!adminTemplatePromise) adminTemplatePromise = fetch(template.dataset.runtimeFragment || "/admin-runtime-fragment", { credentials:"same-origin" })
+      .then(async (response) => {
+        if (!response.ok) throw new Error(`Admin interface request failed (${response.status})`);
+        template.innerHTML = await response.text();
+        return template;
+      })
+      .catch((error) => { adminTemplatePromise = undefined; throw error; });
+    return adminTemplatePromise;
+  }
+
   async function load(name) {
     if (["admin", "productEditor", "storefrontSettings"].includes(name)) {
-      const template = document.querySelector("#admin-runtime-template");
+      const template = await ensureAdminTemplate();
       if (template) {
         document.body.insertBefore(template.content.cloneNode(true), template);
         template.remove();

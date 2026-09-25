@@ -2277,6 +2277,7 @@ async function serveStatic(request, response, url) {
           .replace("ORIGO_INITIAL_HERO_MOBILE", hero ? `srcset=\"${safeHeroMobileUrl || safeHeroUrl}\"` : "")
           .replace("ORIGO_INITIAL_HERO_IMAGE", hero ? `src=\"${safeHeroUrl}\" alt=\"${safeHeroAlt}\" fetchpriority=\"high\"` : `alt=\"\"`)
           .replace("<!-- ORIGO_INITIAL_HERO_PRELOAD -->", heroPreload);
+        if (!isAdminRoute) html = html.replace(/<template id="admin-runtime-template">[\s\S]*?<\/template>/, '<template id="admin-runtime-template" data-runtime-fragment="/admin-runtime-fragment"></template>');
         if (productRouteMatch) html = html.replace(/<div class="origo-home" id="home">[\s\S]*?<\/div>\s*<template id="retired-home-content">/, '<div class="origo-home" id="home" hidden data-route-pruned="product"></div><template id="retired-home-content">');
         if (!routeExists) html = html.replace('<main id="storefront-main">', `<main id="storefront-main"><section class="route-not-found" role="main"><h1>404</h1><p>الصفحة المطلوبة غير موجودة.</p><a href="/">العودة إلى الرئيسية</a></section>`);
         html = injectRouteContent(html, url.pathname, getPublicProducts(), getPublicBrands());
@@ -2396,6 +2397,20 @@ const server = createServer(async (request, response) => {
   }
   if (request.method !== "GET" && request.method !== "HEAD") {
     response.writeHead(405).end("Method not allowed");
+    return;
+  }
+  if (url.pathname === "/admin-runtime-fragment" && request.method === "GET") {
+    const user = requireUser(request, response, origin, "staff");
+    if (!user) return;
+    try {
+      const shell = await readFile(resolve(ROOT, "index.html"), "utf8");
+      const fragment = shell.match(/<template id="admin-runtime-template">([\s\S]*?)<\/template>/)?.[1] || "";
+      if (!fragment) throw new Error("ADMIN_FRAGMENT_MISSING");
+      const body = Buffer.from(fragment);
+      response.writeHead(200, { "Cache-Control":"private, no-store", "Content-Type":"text/html; charset=utf-8", "Content-Length":String(body.length), "X-Content-Type-Options":"nosniff" }).end(body);
+    } catch {
+      response.writeHead(500, { "Cache-Control":"no-store", "Content-Type":"text/plain; charset=utf-8" }).end("Admin interface unavailable");
+    }
     return;
   }
 

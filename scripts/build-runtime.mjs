@@ -4,6 +4,7 @@ import { parse } from "../node_modules/terser/lib/parse.js";
 
 const root = new URL("../", import.meta.url);
 const source = await readFile(new URL("app.js", root), "utf8");
+const runtimeLoaderSource = await readFile(new URL("runtime-loader.js", root), "utf8");
 const ast = parse(source);
 const groups = {
   admin:[],
@@ -57,6 +58,9 @@ for (const [name, code] of Object.entries(outputs)) {
   if (!result.code) throw new Error(`Empty runtime chunk: ${name}`);
   await writeFile(new URL(`chunks/${name}`, root), `${result.code}\n`);
 }
+const runtimeLoader = await minify(runtimeLoaderSource, { compress:{ passes:2 }, mangle:true, format:{ comments:false } });
+if (!runtimeLoader.code) throw new Error("Empty runtime loader chunk");
+await writeFile(new URL("chunks/runtime-loader.min.js", root), `${runtimeLoader.code}\n`);
 console.log(Object.fromEntries(await Promise.all(Object.keys(outputs).map(async (name) => [name, (await readFile(new URL(`chunks/${name}`, root))).length]))));
 
 for (const name of ["styles", "home", "shell", "home-gender-slider", "origo-identity", "no-effects", "appearance"]) {

@@ -47,6 +47,10 @@ test("routes, security headers, body limits, and pruned product HTML are hardene
   const html = await productResponse.text();
   assert.match(html, /data-route-pruned="product"/);
   assert.doesNotMatch(html, /id="home-hero"/);
+  assert.doesNotMatch(html, /class="advanced-admin-overlay"/);
+  assert.match(html, /data-runtime-fragment="\/admin-runtime-fragment"/);
+  const protectedAdminFragment = await fetch(`http://127.0.0.1:${port}/admin-runtime-fragment`);
+  assert.equal(protectedAdminFragment.status, 401);
   const local = await fetch(`http://127.0.0.1:${port}/api/health`);
   assert.equal(local.headers.get("strict-transport-security"), null);
   const oversized = await fetch(`http://127.0.0.1:${port}/api/auth/login`, { method:"POST", headers:{ "content-type":"application/json" }, body:JSON.stringify({ value:"x".repeat(70 * 1024) }) });

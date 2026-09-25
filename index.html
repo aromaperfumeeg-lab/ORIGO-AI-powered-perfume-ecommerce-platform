@@ -18,7 +18,9 @@
     <meta property="og:title" content="ORIGO Scents | أوريجو سينتس - عطور أصلية 100% في مصر" />
     <meta property="og:description" content="عطور أصلية 100% للرجال والنساء وللجنسين من ORIGO Scents في مصر." />
     <meta property="og:url" content="https://origoscents.com/" />
-    <meta property="og:image" content="https://origoscents.com/assets/origo-logo.svg" />
+    <meta property="og:image" content="https://origoscents.com/assets/origo-social-v2.jpg" />
+    <meta property="og:image:alt" content="ORIGO Scents — عطور أصلية في مصر" />
+    <meta name="twitter:image" content="https://origoscents.com/assets/origo-social-v2.jpg" />
     <meta name="twitter:card" content="summary_large_image" />
     <title>ORIGO Scents | أوريجو سينتس - عطور أصلية 100% في مصر</title>
     <!-- ORIGO_INITIAL_HERO_PRELOAD -->
@@ -101,11 +103,11 @@
       <nav class="category-nav" aria-label="أقسام المتجر">
         <a class="active" href="/" data-action="catalog-home"><span class="nav-icon" aria-hidden="true">⌂</span><span data-i18n="home">الرئيسية</span></a>
         <div class="brands-nav">
-          <button data-action="brands-menu" aria-expanded="false"><span class="nav-icon" aria-hidden="true">◇</span><span data-i18n="navBrands">البراندات</span><i>⌄</i></button>
+          <button data-action="brands-menu" aria-label="فتح قائمة العلامات التجارية" aria-expanded="false" aria-controls="header-brands-dropdown"><span class="nav-icon" aria-hidden="true">◇</span><span data-i18n="navBrands">البراندات</span><i aria-hidden="true">⌄</i></button>
           <div class="brands-dropdown mega-dropdown" id="header-brands-dropdown"></div>
         </div>
         <div class="brands-nav categories-nav">
-          <button data-action="categories-menu" aria-expanded="false"><span class="nav-icon" aria-hidden="true">▦</span><span data-i18n="categories">الفئات</span><i>⌄</i></button>
+          <button data-action="categories-menu" aria-label="فتح قائمة الفئات" aria-expanded="false" aria-controls="header-categories-dropdown"><span class="nav-icon" aria-hidden="true">▦</span><span data-i18n="categories">الفئات</span><i aria-hidden="true">⌄</i></button>
           <div class="brands-dropdown mega-dropdown" id="header-categories-dropdown"></div>
         </div>
         <a href="#best-sellers"><span class="nav-icon" aria-hidden="true">★</span><span data-i18n="bestSellers">الأكثر مبيعًا</span></a>
@@ -603,6 +605,7 @@
         <section class="footer-contact footer-column">
           <h3>تواصل معنا</h3>
           <a id="footer-support-email" href="mailto:support@origoscents.com"><b dir="ltr">support@origoscents.com</b></a>
+          <a id="footer-support-phone" href="#" hidden><b dir="ltr"></b></a>
           <a id="footer-support-whatsapp" class="footer-whatsapp-link" href="#" target="_blank" rel="noopener noreferrer" hidden><b>واتساب</b></a>
           <p><b id="footer-support-hours">من السبت إلى الخميس<br />9:00 صباحًا – 11:00 مساءً</b></p>
           <small id="footer-support-note">نجيب الرسائل خلال ساعات العمل الرسمية.</small>
@@ -965,7 +968,7 @@
     <script defer src="catalog-providers.min.js?v=1"></script>
     <script data-idle-src="external-tracking.js?v=1"></script>
     <script data-admin-src="perfume-bundle.js?v=9"></script>
-    <script defer src="runtime-loader.js?v=19"></script>
+    <script defer src="chunks/runtime-loader.min.js?v=20"></script>
     <script defer src="chunks/storefront-core.min.js?v=63"></script>
     <script defer src="deferred-modules.js?v=22"></script>
   </body>
