@@ -73,7 +73,7 @@ test("home loads production storefront core without admin editor or finder runti
   const storefrontCore = html.match(/src="(chunks\/storefront-core\.min\.js\?v=\d+)"/)?.[1];
   assert.ok(storefrontCore, "the production storefront core is versioned in HTML");
   assert.ok(serviceWorker.includes(`/${storefrontCore}`), "HTML and the service worker cache the same storefront core version");
-  assert.match(html, /chunks\/runtime-loader\.min\.js\?v=20/);
+  assert.match(html, /chunks\/runtime-loader\.min\.js\?v=21/);
   assert.match(loader, /admin-runtime-fragment/);
   assert.doesNotMatch(html, /<script[^>]+(?:admin-runtime|product-editor-runtime|storefront-settings-runtime|fragrance-finder-(?:engine|i18n)|fragrance-finder\.js)/);
   assert.doesNotMatch(core, /function settingsMarkup\(|function renderImportReview\(|function overviewMarkup\(/);

@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { readFile, stat } from "node:fs/promises";
 import vm from "node:vm";
 
 const read = (file) => readFile(new URL(`../${file}`, import.meta.url), "utf8");
@@ -40,7 +40,7 @@ test("critical storefront geometry stays stable during hydration", async () => {
   const brandRuntime = html.match(/data-idle-src="(home-brand-navigation\.js\?v=\d+)"/)?.[1];
   assert.ok(brandRuntime, "the home brand runtime is versioned in HTML");
   assert.ok(serviceWorker.includes(`/${brandRuntime}`), "HTML and the service worker cache the same brand runtime version");
-  assert.match(html, /data-storefront-layout-stability[\s\S]*?#home \.origo-home-hero:not\(\[hidden\]\)[\s\S]*?aspect-ratio:16\/9/);
+  assert.match(html, /data-storefront-layout-stability[\s\S]*?#home \.origo-home-hero:not\(\[hidden\]\)[\s\S]*?aspect-ratio:40\/27/);
   assert.match(deferred, /!placeholder\.hasAttribute\("href"\)/);
 
   const functionSource = app.slice(app.indexOf("function renderConfiguredHomeProductRows("), app.indexOf("function renderHomepageCommerce("));
@@ -64,12 +64,17 @@ test("only the PDP LCP image is high priority and hero autoplay starts after a s
   assert.match(app, /width="640" height="700" loading="\$\{options\.eager \? "eager" : "lazy"\}"/);
 });
 
-test("the homepage LCP hero is a stable eager SSR image and hydrated rails reserve space", async () => {
+test("the homepage LCP hero is a stable eager responsive SSR image and hydrated rails reserve space", async () => {
   const [app, html, server, css] = await Promise.all([read("app.js"), read("index.html"), read("server.mjs"), read("home.css")]);
-  assert.match(html, /class="home-hero-image" width="1600" height="900" loading="eager" decoding="async" ORIGO_INITIAL_HERO_IMAGE/);
+  assert.match(html, /class="home-hero-image" width="1600" height="900" sizes="100vw" loading="eager" decoding="sync" ORIGO_INITIAL_HERO_IMAGE/);
   assert.doesNotMatch(html, /ORIGO_INITIAL_HERO_STYLE/);
   assert.match(server, /fetchpriority=\\\"high\\\"/);
   assert.match(server, /media=\"\(max-width:900px\)\"/);
+  assert.match(server, /generatedHeroMobileUrl/);
+  assert.match(server, /effectiveHeroMobileUrl/);
+  assert.match(app, /mobileUrl \|\| initialResponsiveUrl \|\| desktopUrl/);
+  const responsiveHero = await stat(new URL("../assets/hero-responsive/settings-35145be46b891372361eefc276616eaf-960.webp", import.meta.url));
+  assert.ok(responsiveHero.size > 10_000 && responsiveHero.size < 50_000, "the current mobile hero remains a compact real WebP asset");
   assert.match(css, /#home \.home-hero-picture,#home \.home-hero-image/);
   assert.match(css, /#home #home-brand-carousel-track\{min-height:/);
   assert.match(css, /#home #home-benefits-track\{min-height:126px\}/);

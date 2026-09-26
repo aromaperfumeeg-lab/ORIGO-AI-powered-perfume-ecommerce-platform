@@ -4,7 +4,7 @@
   const cssPromises = new Map();
   let adminTemplatePromise;
   const assets = {
-    core:["chunks/storefront-core.min.js?v=63"],
+    core:["chunks/storefront-core.min.js?v=64"],
     admin:["chunks/admin-runtime.min.js?v=11"],
     productEditor:["chunks/product-editor-runtime.min.js?v=7"],
     storefrontSettings:["chunks/storefront-settings-runtime.min.js?v=6"],
@@ -56,7 +56,7 @@
   async function load(name) {
     if (name === "core" && window.__origoEarlyCorePromise) {
       const earlyCore = window.__origoEarlyCorePromise;
-      promises.set("chunks/storefront-core.min.js?v=63", earlyCore);
+      promises.set("chunks/storefront-core.min.js?v=64", earlyCore);
       return earlyCore;
     }
     if (name !== "core") await load("core");
@@ -107,7 +107,7 @@
   }, true);
 
   document.addEventListener("submit", (event) => {
-    if (promises.has("chunks/storefront-core.min.js?v=63")) return;
+    if (promises.has("chunks/storefront-core.min.js?v=64")) return;
     event.preventDefault();
     event.stopImmediatePropagation();
     const form = event.target;

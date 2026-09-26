@@ -3957,10 +3957,14 @@ function renderHomeHero() {
     hero.classList.toggle("no-image", !responsiveUrl);
     const desktopUrl = String(item.url || "").replace(/["\\]/g, "");
     const mobileUrl = String(item.mobileUrl || "").replace(/["\\]/g, "");
+    const initialResponsiveUrl = heroMobileSource?.dataset.initialHeroUrl === desktopUrl
+      ? String(heroMobileSource.dataset.initialResponsiveUrl || "").replace(/["\\]/g, "")
+      : "";
     visual.style.backgroundImage = "none";
-    if (heroMobileSource) heroMobileSource.srcset = mobileUrl || desktopUrl;
+    if (heroMobileSource) heroMobileSource.srcset = mobileUrl || initialResponsiveUrl || desktopUrl;
     if (heroImage && heroImage.getAttribute("src") !== desktopUrl) {
       heroImage.fetchPriority = homeHeroIndex === 0 ? "high" : "low";
+      heroImage.decoding = homeHeroIndex === 0 ? "sync" : "async";
       heroImage.src = desktopUrl;
     }
     if (heroImage) heroImage.alt = state.lang === "ar" ? item.altAr || item.name || "بانر دعائي" : item.altEn || item.name || "Campaign banner";

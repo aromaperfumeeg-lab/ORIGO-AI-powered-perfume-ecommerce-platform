@@ -1,6 +1,6 @@
 import { createServer } from "node:http";
 import { cp, mkdir, readFile, stat, writeFile } from "node:fs/promises";
-import { dirname, extname, join, normalize, resolve, sep } from "node:path";
+import { basename, dirname, extname, join, normalize, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createHash, randomBytes } from "node:crypto";
 import { brotliCompress, constants as zlibConstants, gzip, gzipSync } from "node:zlib";
@@ -2320,11 +2320,18 @@ async function serveStatic(request, response, url) {
         const cleanHeroUrl = (value) => String(value || "").replace(/["'()\\\n\r]/g, "").replace(/&/g, "&amp;").replace(/</g, "%3C").replace(/>/g, "%3E");
         const safeHeroUrl = cleanHeroUrl(hero?.url);
         const safeHeroMobileUrl = cleanHeroUrl(hero?.mobileUrl);
+        const heroStem = basename(safeHeroUrl.split(/[?#]/)[0] || "").replace(/\.[^.]+$/, "");
+        const generatedHeroMobileUrl = /^[a-z0-9-]+$/i.test(heroStem) ? `/assets/hero-responsive/${heroStem}-960.webp` : "";
+        const generatedHeroMobilePath = generatedHeroMobileUrl ? join(ROOT, generatedHeroMobileUrl.slice(1)) : "";
+        const hasGeneratedHeroMobile = generatedHeroMobilePath
+          ? await stat(generatedHeroMobilePath).then((entry) => entry.isFile()).catch(() => false)
+          : false;
+        const effectiveHeroMobileUrl = safeHeroMobileUrl || (hasGeneratedHeroMobile ? generatedHeroMobileUrl : "");
         const safeHeroAlt = String(hero?.altAr || hero?.altEn || hero?.name || "عرض ORIGO Scents").replace(/["<>]/g, "");
-        const heroPreload = hero ? `${safeHeroMobileUrl ? `<link rel="preload" as="image" href="${safeHeroMobileUrl}" media="(max-width:900px)" fetchpriority="high" />` : ""}<link rel="preload" as="image" href="${safeHeroUrl}"${safeHeroMobileUrl ? ` media="(min-width:901px)"` : ""} fetchpriority="high" />` : "";
+        const heroPreload = hero ? `${effectiveHeroMobileUrl ? `<link rel="preload" as="image" href="${effectiveHeroMobileUrl}" media="(max-width:900px)" fetchpriority="high" />` : ""}<link rel="preload" as="image" href="${safeHeroUrl}"${effectiveHeroMobileUrl ? ` media="(min-width:901px)"` : ""} fetchpriority="high" />` : "";
         let html = data.toString("utf8")
           .replace("ORIGO_INITIAL_HERO_STATE", hero ? "data-initial-hero=\"true\"" : "hidden data-initial-hero=\"false\"")
-          .replace("ORIGO_INITIAL_HERO_MOBILE", hero ? `srcset=\"${safeHeroMobileUrl || safeHeroUrl}\"` : "")
+          .replace("ORIGO_INITIAL_HERO_MOBILE", hero ? `srcset=\"${effectiveHeroMobileUrl || safeHeroUrl}\" data-initial-hero-url=\"${safeHeroUrl}\" data-initial-responsive-url=\"${effectiveHeroMobileUrl}\"` : "")
           .replace("ORIGO_INITIAL_HERO_IMAGE", hero ? `src=\"${safeHeroUrl}\" alt=\"${safeHeroAlt}\" fetchpriority=\"high\"` : `alt=\"\"`)
           .replace("<!-- ORIGO_INITIAL_HERO_PRELOAD -->", heroPreload);
         const catalogInitialRoute = /^\/(?:perfumes|search|brands)(?:\/|$)/i.test(url.pathname);

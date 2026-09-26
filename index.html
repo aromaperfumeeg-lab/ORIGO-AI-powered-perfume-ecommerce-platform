@@ -28,7 +28,7 @@
     <link rel="stylesheet" href="chunks/storefront-home-critical.min.css?v=1" data-storefront-critical />
     <style data-storefront-layout-stability>
       @media(max-width:700px){
-        #home .origo-home-hero:not([hidden]){position:relative!important;width:calc(100% - 16px)!important;height:auto!important;min-height:0!important;aspect-ratio:16/9!important;margin:8px auto 16px!important;padding:0!important;display:block!important;overflow:hidden!important;border-radius:15px!important;background:#f8f2ee!important}
+        #home .origo-home-hero:not([hidden]){position:relative!important;width:calc(100% - 16px)!important;height:auto!important;min-height:0!important;aspect-ratio:40/27!important;margin:8px auto 8px!important;padding:0!important;display:block!important;overflow:hidden!important;border-radius:15px!important;background:#f8f2ee!important}
         #home .origo-home-hero:not([hidden]) .home-hero-products{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;display:block!important;visibility:visible!important;opacity:1!important;background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important}
       }
     </style>
@@ -201,7 +201,7 @@
 
       <div class="origo-home" id="home">
         <section class="origo-home-hero" id="home-hero" aria-label="سلايدر عروض المتجر" ORIGO_INITIAL_HERO_STATE>
-          <a class="home-hero-products" href="#new-arrivals" aria-label="عرض تفاصيل العرض"><picture class="home-hero-picture"><source media="(max-width:900px)" ORIGO_INITIAL_HERO_MOBILE><img class="home-hero-image" width="1600" height="900" loading="eager" decoding="async" ORIGO_INITIAL_HERO_IMAGE></picture></a>
+          <a class="home-hero-products" href="#new-arrivals" aria-label="عرض تفاصيل العرض"><picture class="home-hero-picture"><source media="(max-width:900px)" sizes="calc(100vw - 16px)" ORIGO_INITIAL_HERO_MOBILE><img class="home-hero-image" width="1600" height="900" sizes="100vw" loading="eager" decoding="sync" ORIGO_INITIAL_HERO_IMAGE></picture></a>
           <button type="button" class="home-hero-arrow previous" data-home-hero-arrow="-1" aria-label="الشريحة السابقة">‹</button>
           <button type="button" class="home-hero-arrow next" data-home-hero-arrow="1" aria-label="الشريحة التالية">›</button>
           <div class="home-hero-dots" aria-label="شرائح البنر"></div>
@@ -977,8 +977,8 @@
     <script defer src="catalog-providers.min.js?v=1"></script>
     <script data-idle-src="external-tracking.js?v=1"></script>
     <script data-admin-src="perfume-bundle.js?v=9"></script>
-    <script defer src="chunks/runtime-loader.min.js?v=20"></script>
-    <script data-storefront-core-src="chunks/storefront-core.min.js?v=63"></script>
+    <script defer src="chunks/runtime-loader.min.js?v=21"></script>
+    <script data-storefront-core-src="chunks/storefront-core.min.js?v=64"></script>
     <script defer src="deferred-modules.js?v=23"></script>
   </body>
 </html>
