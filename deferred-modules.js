@@ -34,7 +34,7 @@
   function loadStyles(selector) {
     document.querySelectorAll(selector).forEach((placeholder) => {
       const href = placeholder.dataset.idleHref || placeholder.dataset.foundationHref || placeholder.dataset.deferredHref || placeholder.dataset.adminHref || placeholder.dataset.routeHref;
-      if (href && !placeholder.href) placeholder.href = href;
+      if (href && !placeholder.hasAttribute("href")) placeholder.setAttribute("href", href);
     });
   }
 

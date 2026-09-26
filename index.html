@@ -26,6 +26,12 @@
     <title>ORIGO Scents | أوريجو سينتس - عطور أصلية 100% في مصر</title>
     <!-- ORIGO_INITIAL_HERO_PRELOAD -->
     <link rel="stylesheet" href="chunks/storefront-home-critical.min.css?v=1" data-storefront-critical />
+    <style data-storefront-layout-stability>
+      @media(max-width:700px){
+        #home .origo-home-hero:not([hidden]){position:relative!important;width:calc(100% - 16px)!important;height:auto!important;min-height:0!important;aspect-ratio:16/9!important;margin:8px auto 16px!important;padding:0!important;display:block!important;overflow:hidden!important;border-radius:15px!important;background:#f8f2ee!important}
+        #home .origo-home-hero:not([hidden]) .home-hero-products{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;display:block!important;visibility:visible!important;opacity:1!important;background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important}
+      }
+    </style>
     <link rel="stylesheet" data-foundation-href="chunks/styles.min.css?v=16" />
     <link rel="stylesheet" data-foundation-href="chunks/home.min.css?v=8" />
     <link rel="stylesheet" data-deferred-href="product-detail.css?v=55" />
@@ -973,6 +979,6 @@
     <script data-admin-src="perfume-bundle.js?v=9"></script>
     <script defer src="chunks/runtime-loader.min.js?v=20"></script>
     <script data-storefront-core-src="chunks/storefront-core.min.js?v=63"></script>
-    <script defer src="deferred-modules.js?v=22"></script>
+    <script defer src="deferred-modules.js?v=23"></script>
   </body>
 </html>

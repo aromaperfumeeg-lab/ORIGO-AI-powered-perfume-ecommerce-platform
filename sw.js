@@ -8,7 +8,7 @@ const APP_SHELL = [
   "/early-interaction-bootstrap.js?v=1",
   "/home-brand-navigation.js?v=9",
   "/appearance.css?v=86", "/origo-identity.css?v=20", "/no-effects.css?v=2",
-  "/catalog-providers.min.js?v=1", "/app.min.js?v=219", "/deferred-modules.js?v=22",
+  "/catalog-providers.min.js?v=1", "/app.min.js?v=219", "/deferred-modules.js?v=23",
   "/assets/origo-logo.svg", "/assets/product-image-placeholder.svg"
 ];
 

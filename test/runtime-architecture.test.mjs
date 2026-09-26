@@ -90,6 +90,8 @@ test("storefront navigation avoids artificial catalog waits and warms deferred k
   assert.match(deferred, /knowledgePromise = \[\.\.\.document\.querySelectorAll/);
   assert.match(deferred, /const afterLoad = \(\) => \{[\s\S]*?loadKnowledgeResources\(\)/);
   assert.match(deferred, /addEventListener\("pointerdown"/);
+  assert.match(deferred, /!placeholder\.hasAttribute\("href"\)/);
+  assert.doesNotMatch(deferred, /!placeholder\.href/);
 });
 
 test("storefront waits for the live catalog and shows local loading feedback", async () => {
