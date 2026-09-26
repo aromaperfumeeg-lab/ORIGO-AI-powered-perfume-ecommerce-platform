@@ -4463,15 +4463,23 @@ body #storefront-main #home .home-gender-section .home-gender-card .gender-card-
   scroll-behavior:auto!important;scroll-snap-type:none!important;scrollbar-width:none;touch-action:pan-x pan-y!important;
 }
 .brand-continuous-track::-webkit-scrollbar{display:none}
-#home .brand-continuous-track>.brand-slider-card,.brand-continuous-track>.brand-slider-card{
-  position:relative;box-sizing:border-box;flex:0 0 var(--brand-card-width);width:var(--brand-card-width)!important;
-  min-width:44px;min-height:0!important;height:auto!important;aspect-ratio:1/1;padding:0!important;
+#home .brand-motion-group>.brand-slider-card{
+  position:relative;box-sizing:border-box;display:grid;place-items:center;flex:0 0 var(--brand-card-width);width:var(--brand-card-width)!important;
+  min-width:44px;min-height:0!important;height:auto!important;aspect-ratio:1/1;padding:0!important;margin:0!important;
   border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--surface);color:var(--ink);
 }
-#home .brand-continuous-track>.brand-slider-card>img,.brand-continuous-track>.brand-slider-card>img{
-  position:absolute;inset:0;width:100%!important;height:100%!important;max-width:100%;object-fit:contain;
+#home .brand-motion-group>.brand-slider-card>img{
+  position:absolute;inset:0;display:block;box-sizing:border-box;width:100%!important;height:100%!important;margin:auto;
+  object-fit:contain;object-position:center;
 }
-#home .home-brand-directory.brands-loading #home-brand-carousel-track{min-height:clamp(54px,7vw,94px);overflow:hidden!important}
+#home .home-brand-directory.brands-loading #home-brand-carousel-track{
+  position:relative;display:grid!important;place-items:center;min-height:clamp(54px,7vw,94px);overflow:hidden!important;
+}
+#home .home-brand-directory.brands-loading #home-brand-carousel-track>*{visibility:hidden!important}
+#home .home-brand-directory.brands-loading #home-brand-carousel-track::after{
+  content:"";display:block;width:7px;height:7px;border-radius:50%;background:var(--burgundy);
+  box-shadow:-14px 0 color-mix(in srgb,var(--burgundy) 38%,transparent),14px 0 color-mix(in srgb,var(--burgundy) 68%,transparent);
+}
 @media(max-width:700px){
   #home .home-brand-directory .brand-continuous-track,.brand-carousel-track.brand-continuous-track{gap:12px!important}
 }

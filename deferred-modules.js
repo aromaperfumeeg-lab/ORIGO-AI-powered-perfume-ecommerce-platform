@@ -3,7 +3,7 @@
   const loaded = new Set([...document.scripts].map((script) => script.src).filter(Boolean));
   const route = location.pathname;
   const routeScripts = [
-    ["alternatives.js?v=9", /\/(?:alternatives|perfume)(?:\/|$)/],
+    ["alternatives.js?v=9", /\/alternatives(?:\/|$)/],
     ["performance-insights.js?v=2", /\/performance(?:\/|$)/],
     ["commerce.js?v=3", /\/(?:cart|checkout|payment|track(?:ing)?|orders?)(?:\/|$)/],
     ["account.js?v=4", /\/(?:account|login|register|profile)(?:\/|$)/]
@@ -33,7 +33,7 @@
 
   function loadStyles(selector) {
     document.querySelectorAll(selector).forEach((placeholder) => {
-      const href = placeholder.dataset.idleHref || placeholder.dataset.deferredHref || placeholder.dataset.adminHref || placeholder.dataset.routeHref;
+      const href = placeholder.dataset.idleHref || placeholder.dataset.foundationHref || placeholder.dataset.deferredHref || placeholder.dataset.adminHref || placeholder.dataset.routeHref;
       if (href && !placeholder.href) placeholder.href = href;
     });
   }
@@ -53,7 +53,7 @@
   }
 
   function loadAdminResources() {
-    loadStyles("link[data-admin-href],link[data-deferred-href]");
+    loadStyles("link[data-admin-href],link[data-deferred-href],link[data-foundation-href]");
     document.querySelectorAll("script[data-admin-src]").forEach((placeholder) => loadScript(placeholder.dataset.adminSrc));
   }
 
@@ -69,9 +69,9 @@
     });
   }
 
-  routeScripts.filter((entry) => entry[1].test(route)).forEach(([src, , module]) => loadScript(src, module));
-  routeStyles.filter((entry) => entry[1].test(route)).forEach(([id]) => loadStyles(`link[data-route="${id}"]`));
-  if (new URL(location.href).searchParams.has("product") || /^\/perfume\//.test(location.pathname)) loadStyles("link[data-deferred-href]");
+  const ensureCore = () => window.ORIGORuntime?.load?.("core") || Promise.resolve();
+  routeScripts.filter((entry) => entry[1].test(route)).forEach(([src, , module]) => ensureCore().then(() => loadScript(src, module)));
+  routeStyles.filter(([id, pattern]) => id !== "catalog" && pattern.test(route)).forEach(([id]) => loadStyles(`link[data-route="${id}"]`));
 
   function warmNavigationTarget(target) {
     target = target?.closest?.("[data-action],a[href]");
@@ -117,7 +117,13 @@
     const idle = (callback, timeout) => "requestIdleCallback" in window
       ? requestIdleCallback(callback, { timeout })
       : setTimeout(callback, Math.min(timeout, 1500));
-    idle(() => loadStyles("link[data-idle-href]"), 1200);
+    idle(() => {
+      loadStyles("link[data-idle-href],link[data-foundation-href]");
+      if (/^\/(?:perfumes|search|brands)(?:\/|$)/.test(route)) loadStyles('link[data-route="catalog"]');
+      if (new URL(location.href).searchParams.has("product") || /^\/perfume\//.test(route)) loadStyles("link[data-deferred-href]");
+    }, 1200);
+    // Keep the initial main thread free. Feature runtime is loaded by the
+    // early interaction bootstrap or the route-specific interaction handlers.
     idle(loadIdleScripts, 2600);
     if ("serviceWorker" in navigator) {
       const hadController = Boolean(navigator.serviceWorker.controller);

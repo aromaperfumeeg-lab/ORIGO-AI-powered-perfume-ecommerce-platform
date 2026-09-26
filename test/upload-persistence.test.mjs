@@ -20,7 +20,8 @@ test("storefront uploads use persistent storage outside production releases", ()
 
 test("legacy storefront URLs remain served from persistent storage", () => {
   assert.match(server,/const uploadPrefix = "\/uploads\/storefront\/"/);
-  assert.match(server,/const staticRoot = isPersistentUpload \? STOREFRONT_UPLOAD_ROOT : ROOT/);
+  assert.match(server,/resolve\(STOREFRONT_UPLOAD_ROOT, relativePath\)/);
+  assert.match(server,/isPersistentUpload:true/);
 });
 
 test("all product-editor relationship upload folders are retained", () => {

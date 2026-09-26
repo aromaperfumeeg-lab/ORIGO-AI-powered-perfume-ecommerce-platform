@@ -93,6 +93,10 @@ test("real server login succeeds and a restart reports the existing admin", asyn
   let second;
   try {
     first = await startTestServer({ database, password: "InitialHttpPassword123!", port });
+    const publicHome = await fetch(`http://127.0.0.1:${port}/`);
+    const publicHomeHtml = await publicHome.text();
+    assert.doesNotMatch(publicHomeHtml, /لوحة تحكم المتجر|Store dashboard/);
+    assert.doesNotMatch(publicHomeHtml, /<(?:a|button)\b[^>]*(?:href="\/admin(?:[\/"?#]|$)|data-action="admin")/i);
     const firstLogin = await fetch(`http://127.0.0.1:${port}/api/auth/login`, {
       method: "POST",
       headers: { "content-type": "application/json" },
@@ -102,6 +106,15 @@ test("real server login succeeds and a restart reports the existing admin", asyn
     assert.equal(first.health.adminConfigured, true);
     assert.equal(firstLogin.status, 200);
     assert.equal(firstPayload.user.role, "admin");
+    const sessionCookie = firstLogin.headers.get("set-cookie")?.split(";", 1)[0];
+    assert.ok(sessionCookie, "admin login must return a session cookie");
+    const staffHome = await fetch(`http://127.0.0.1:${port}/`, { headers: { cookie: sessionCookie } });
+    const staffHomeHtml = await staffHome.text();
+    assert.match(staffHomeHtml, /<button\b[^>]*class="[^"]*mobile-admin-link[^"]*"[^>]*data-action="admin"/i);
+    assert.match(staffHomeHtml, /لوحة تحكم المتجر/);
+    const staffAdminFragment = await fetch(`http://127.0.0.1:${port}/admin-runtime-fragment`, { headers: { cookie: sessionCookie } });
+    assert.equal(staffAdminFragment.status, 200);
+    assert.match(await staffAdminFragment.text(), /advanced-admin-overlay/);
     assert.match(first.output(), /Admin bootstrap: created/);
     assert.doesNotMatch(first.output(), /bootstrap-http@example\.test|InitialHttpPassword123!/);
     await stopTestServer(first.child);

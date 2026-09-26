@@ -33,12 +33,17 @@ test('saved brands never fall back to obsolete default artwork after clearing th
 });
 
 test('homepage contains one managed brand rail and no legacy carousel', async () => {
-  const [html, app] = await Promise.all(['index.html','app.js'].map(file => readFile(new URL('../' + file, import.meta.url),'utf8')));
+  const [html, app, appearance] = await Promise.all(['index.html','app.js','appearance.css'].map(file => readFile(new URL('../' + file, import.meta.url),'utf8')));
   assert.equal((html.match(/id="home-brand-carousel-track"/g) || []).length, 1);
+  assert.match(html, /class="home-brand-directory brands-loading"/);
   assert.equal((html.match(/id="brand-carousel-track"/g) || []).length, 0);
   assert.ok(!html.includes('class="brand-carousel-section"'));
   assert.ok(!app.includes('$("#brand-carousel-track")'));
   assert.ok(!app.includes('action === "brand-carousel-scroll"'));
+  assert.match(appearance, /\.brand-motion-group>\.brand-slider-card\{/);
+  assert.match(appearance, /\.brand-motion-group>\.brand-slider-card>img/);
+  assert.match(appearance, /brands-loading #home-brand-carousel-track>\*\{visibility:hidden!important\}/);
+  assert.match(appearance, /brands-loading #home-brand-carousel-track::after/);
 });
 
 test('brand rail preserves SSR links until current server options finish loading', async () => {

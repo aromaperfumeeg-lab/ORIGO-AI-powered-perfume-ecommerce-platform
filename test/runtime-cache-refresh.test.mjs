@@ -15,6 +15,6 @@ test("runtime checks the service worker immediately and reloads once after an up
   assert.match(deferred, /origoRuntimeReload-v175/);
   assert.match(deferred, /location\.reload\(\)/);
   assert.match(html, /deferred-modules\.js\?v=22/);
-  assert.match(worker, /origo-static-v177/);
+  assert.match(worker, /origo-static-v180/);
   assert.match(worker, /deferred-modules\.js\?v=22/);
 });

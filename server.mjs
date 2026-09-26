@@ -2212,6 +2212,58 @@ const STATIC_COMPRESSION_CACHE_LIMIT = 80;
 const storefrontHtmlCache = new Map();
 const STOREFRONT_HTML_CACHE_LIMIT = 40;
 
+const PUBLIC_ROOT_FILES = new Set([
+  "index.html", "404.html", "offline.html", "admin.html", "admin-login.html",
+  "manifest.webmanifest", "robots.txt",
+  "account.css", "account.js", "admin-ai.css", "admin-extensions.js", "admin-icons.css",
+  "admin-login.css", "admin-login.js", "admin-media.css", "admin-order-center.css",
+  "admin-ui-fixes.css", "admin.css", "admin.js", "alternative-finder.css", "alternatives.css",
+  "alternatives.js", "appearance.css", "app.min.js", "catalog-providers.min.js", "catalog.css",
+  "commerce.css", "commerce.js", "dark-theme.css", "deferred-modules.js",
+  "early-interaction-bootstrap.js", "external-tracking.js", "footer.css",
+  "fragrance-finder-engine.js", "fragrance-finder-i18n.js", "fragrance-finder.css",
+  "fragrance-finder.js", "fragrance-knowledge.js", "fragrance-notes-library.js",
+  "home-brand-navigation.js", "media-overrides.js", "no-effects.css", "notes-admin-fixes.css",
+  "origo-identity.css", "performance-insights.css", "performance-insights.js", "perfume-aura.js",
+  "perfume-bundle.js", "product-detail.css", "product-editor-runtime.css",
+  "product-reference-card.css", "product-reviews.js", "protocol-guard.js", "runtime-loader.js",
+  "smart-finder.css", "storefront-settings-runtime.css", "sw.js", "system.css", "system.js"
+]);
+const PUBLIC_DIRECTORY_EXTENSIONS = new Map([
+  ["assets", new Set([".avif", ".gif", ".jpeg", ".jpg", ".png", ".svg", ".webp", ".woff", ".woff2"])],
+  ["chunks", new Set([".css", ".js"])]
+]);
+const uploadPrefix = "/uploads/storefront/";
+
+function publicStaticTarget(rawPathname, routedToIndex = false) {
+  let pathname;
+  try {
+    pathname = decodeURIComponent(routedToIndex ? "/index.html" : rawPathname);
+  } catch {
+    return null;
+  }
+  if (pathname.includes("\0") || pathname.includes("\\")) return null;
+  const segments = pathname.split("/").filter(Boolean);
+  if (!segments.length || segments.some((segment) => segment === "." || segment === ".." || segment.startsWith("."))) return null;
+
+  if (pathname.startsWith(uploadPrefix) && segments[0] === "uploads" && segments[1] === "storefront" && segments.length > 2) {
+    const relativePath = segments.slice(2).join("/");
+    const filePath = resolve(STOREFRONT_UPLOAD_ROOT, relativePath);
+    if (filePath === STOREFRONT_UPLOAD_ROOT || !filePath.startsWith(`${STOREFRONT_UPLOAD_ROOT}${sep}`)) return null;
+    return { cleanPath:`uploads/storefront/${relativePath}`, filePath, isPersistentUpload:true };
+  }
+
+  const cleanPath = segments.join("/");
+  const allowedExtensions = PUBLIC_DIRECTORY_EXTENSIONS.get(segments[0]);
+  const allowed = segments.length === 1
+    ? PUBLIC_ROOT_FILES.has(cleanPath)
+    : Boolean(allowedExtensions?.has(extname(cleanPath).toLowerCase()));
+  if (!allowed) return null;
+  const filePath = resolve(ROOT, cleanPath);
+  if (filePath === ROOT || !filePath.startsWith(`${ROOT}${sep}`)) return null;
+  return { cleanPath, filePath, isPersistentUpload:false };
+}
+
 function cacheCompressedStatic(key, body) {
   if (staticCompressionCache.size >= STATIC_COMPRESSION_CACHE_LIMIT) {
     staticCompressionCache.delete(staticCompressionCache.keys().next().value);
@@ -2239,17 +2291,13 @@ async function serveStatic(request, response, url) {
       ? getPublicBrands().some((brand) => routeSlug(brand.slug || brand.nameEn || brand.nameAr) === routeSlug(decodeURIComponent(brandRouteMatch[1]))) || getPublicProducts().some((product) => [product.brandEn, product.brand, product.brandAr].some((value) => routeSlug(value) === routeSlug(decodeURIComponent(brandRouteMatch[1]))))
       : true;
   const routeStatus = routeExists ? 200 : 404;
-  const pathname = decodeURIComponent(url.pathname === "/" || isNotesRoute || isBenefitRoute || isStorefrontRoute || isCommerceRoute || isAdminRoute ? "/index.html" : url.pathname);
-  const uploadPrefix = "/uploads/storefront/";
-  const isPersistentUpload = pathname.startsWith(uploadPrefix);
-  const cleanPath = normalize(pathname).replace(/^([/\\])+/, "");
-  const uploadPath = isPersistentUpload ? normalize(pathname.slice(uploadPrefix.length)).replace(/^([/\\])+/, "") : "";
-  const staticRoot = isPersistentUpload ? STOREFRONT_UPLOAD_ROOT : ROOT;
-  const filePath = resolve(join(staticRoot, isPersistentUpload ? uploadPath : cleanPath));
-  if (filePath !== staticRoot && !filePath.startsWith(`${staticRoot}${sep}`)) {
-    response.writeHead(403).end("Forbidden");
+  const routedToIndex = url.pathname === "/" || isNotesRoute || isBenefitRoute || isStorefrontRoute || isCommerceRoute || isAdminRoute;
+  const staticTarget = publicStaticTarget(url.pathname, routedToIndex);
+  if (!staticTarget) {
+    response.writeHead(404, { "Content-Type":"text/plain; charset=utf-8" }).end("Not found");
     return;
   }
+  const { cleanPath, filePath, isPersistentUpload } = staticTarget;
 
   try {
     const info = await stat(filePath);
@@ -2259,7 +2307,9 @@ async function serveStatic(request, response, url) {
     const isHtml = extension === ".html";
     if (isHtml && cleanPath === "index.html") {
       const mobileRequest = /Android|iPhone|iPad|iPod|Mobile/i.test(String(request.headers["user-agent"] || ""));
-      const htmlCacheKey = `${url.pathname}:${mobileRequest ? "mobile" : "desktop"}:${storefrontContentRevision()}:${Math.floor(info.mtimeMs)}`;
+      const requestAccount = requestUser(request);
+      const staffRequest = Boolean(requestAccount && requestAccount.role !== "customer");
+      const htmlCacheKey = `${url.pathname}:${mobileRequest ? "mobile" : "desktop"}:${staffRequest ? "staff" : "guest"}:${storefrontContentRevision()}:${Math.floor(info.mtimeMs)}`;
       const cachedHtml = storefrontHtmlCache.get(htmlCacheKey);
       if (cachedHtml) data = cachedHtml;
       else {
@@ -2277,6 +2327,14 @@ async function serveStatic(request, response, url) {
           .replace("ORIGO_INITIAL_HERO_MOBILE", hero ? `srcset=\"${safeHeroMobileUrl || safeHeroUrl}\"` : "")
           .replace("ORIGO_INITIAL_HERO_IMAGE", hero ? `src=\"${safeHeroUrl}\" alt=\"${safeHeroAlt}\" fetchpriority=\"high\"` : `alt=\"\"`)
           .replace("<!-- ORIGO_INITIAL_HERO_PRELOAD -->", heroPreload);
+        const catalogInitialRoute = /^\/(?:perfumes|search|brands)(?:\/|$)/i.test(url.pathname);
+        if (productRouteMatch) html = html.replace("chunks/storefront-home-critical.min.css?v=1", "chunks/storefront-product-critical.min.css?v=1");
+        else if (catalogInitialRoute) html = html.replace("chunks/storefront-home-critical.min.css?v=1", "chunks/storefront-catalog-critical.min.css?v=1");
+        else if (url.pathname !== "/") {
+          html = html.replace(/\s*<link rel="stylesheet" href="chunks\/storefront-home-critical\.min\.css\?v=1" data-storefront-critical \/>/, "");
+          html = html.replaceAll("data-foundation-href=", "href=");
+        }
+        if (!staffRequest) html = html.replace(/\s*<button class="mobile-admin-link"[^>]*>[\s\S]*?<\/button>/, "");
         if (!isAdminRoute) html = html.replace(/<template id="admin-runtime-template">[\s\S]*?<\/template>/, '<template id="admin-runtime-template" data-runtime-fragment="/admin-runtime-fragment"></template>');
         if (productRouteMatch) html = html.replace(/<div class="origo-home" id="home">[\s\S]*?<\/div>\s*<template id="retired-home-content">/, '<div class="origo-home" id="home" hidden data-route-pruned="product"></div><template id="retired-home-content">');
         if (!routeExists) html = html.replace('<main id="storefront-main">', `<main id="storefront-main"><section class="route-not-found" role="main"><h1>404</h1><p>الصفحة المطلوبة غير موجودة.</p><a href="/">العودة إلى الرئيسية</a></section>`);

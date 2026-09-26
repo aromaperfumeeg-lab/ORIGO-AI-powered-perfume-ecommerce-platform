@@ -45,12 +45,47 @@ test("routes, security headers, body limits, and pruned product HTML are hardene
   assert.doesNotMatch(productResponse.headers.get("content-security-policy") || "", /script-src[^;]*unsafe-inline/);
   assert.equal(productResponse.headers.get("strict-transport-security"), "max-age=15552000");
   const html = await productResponse.text();
+  assert.match(html, /storefront-product-critical\.min\.css\?v=1/);
+  assert.doesNotMatch(html, /storefront-home-critical\.min\.css\?v=1/);
   assert.match(html, /data-route-pruned="product"/);
   assert.doesNotMatch(html, /id="home-hero"/);
   assert.doesNotMatch(html, /class="advanced-admin-overlay"/);
   assert.match(html, /data-runtime-fragment="\/admin-runtime-fragment"/);
+  const publicHome = await fetch(`http://127.0.0.1:${port}/`);
+  const publicHomeHtml = await publicHome.text();
+  assert.match(publicHomeHtml, /storefront-home-critical\.min\.css\?v=1/);
+  assert.doesNotMatch(publicHomeHtml, /لوحة تحكم المتجر|Store dashboard/);
+  assert.doesNotMatch(publicHomeHtml, /<button\b[^>]*class="[^"]*mobile-admin-link[^"]*"/i);
+  assert.doesNotMatch(publicHomeHtml, /<(?:a|button)\b[^>]*(?:href="\/admin(?:[\/"?#]|$)|data-action="admin")/i);
   const protectedAdminFragment = await fetch(`http://127.0.0.1:${port}/admin-runtime-fragment`);
   assert.equal(protectedAdminFragment.status, 401);
+  for (const path of [
+    "/scripts/reset-admin-password.mjs",
+    "/data/origo.db",
+    "/.env",
+    "/.git/config",
+    "/.diagnostic/private.txt",
+    "/.tmp-test",
+    "/server.mjs",
+    "/package.json",
+    "/lib/perfume-engine/index.mjs",
+    "/assets/notes/batch77-generation-specs.json",
+    "/%2e%2e%2fserver.mjs",
+    "/assets/%2e%2e%2fserver.mjs",
+    "/../server.mjs"
+  ]) {
+    const response = await fetch(`http://127.0.0.1:${port}${path}`);
+    assert.ok(response.status === 403 || response.status === 404, `${path} returned ${response.status}`);
+    assert.doesNotMatch(await response.text(), /resetExistingAdminPassword|createServer|"name"\s*:\s*"origo-store"/);
+  }
+  for (const path of [
+    "/appearance.css",
+    "/runtime-loader.js",
+    "/deferred-modules.js",
+    "/sw.js",
+    "/assets/origo-logo.svg",
+    "/chunks/runtime-loader.min.js"
+  ]) assert.equal((await fetch(`http://127.0.0.1:${port}${path}`)).status, 200, path);
   const local = await fetch(`http://127.0.0.1:${port}/api/health`);
   assert.equal(local.headers.get("strict-transport-security"), null);
   const oversized = await fetch(`http://127.0.0.1:${port}/api/auth/login`, { method:"POST", headers:{ "content-type":"application/json" }, body:JSON.stringify({ value:"x".repeat(70 * 1024) }) });

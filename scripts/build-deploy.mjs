@@ -30,6 +30,7 @@ const runtimeFiles = [
   "alternative-finder.css", "alternatives.css", "alternatives.js", "appearance.css",
   "app.js", "app.min.js", "catalog-providers.min.js", "catalog.css", "commerce.css", "commerce.js",
   "dark-theme.css", "deferred-modules.js", "external-tracking.js", "footer.css",
+  "early-interaction-bootstrap.js",
   "fragrance-finder-engine.js", "fragrance-finder-i18n.js", "fragrance-finder.css", "fragrance-finder.js",
   "fragrance-knowledge.js", "fragrance-notes-library.js", "home-brand-navigation.js",
   "media-overrides.js", "no-effects.css", "notes-admin-fixes.css", "origo-identity.css",
